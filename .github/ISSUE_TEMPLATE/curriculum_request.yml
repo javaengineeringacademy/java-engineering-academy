@@ -1,0 +1,29 @@
+name: Curriculum request
+description: Propose a new lesson, exercise, module, or project.
+title: "feat: "
+labels:
+  - enhancement
+  - curriculum
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      placeholder: "For example: Java records, generics wildcards, virtual threads"
+    validations:
+      required: true
+  - type: textarea
+    id: learning-outcome
+    attributes:
+      label: Learning outcome
+      description: What should learners be able to do after this is added?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suggested scope
+      description: Include lesson ideas, exercises, examples, or assessment notes.
+    validations:
+      required: false
+
