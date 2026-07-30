@@ -1,47 +1,116 @@
-name: Bug report
-description: Report a problem in code, build tooling, documentation, or learning content.
-title: "bug: "
-labels:
-  - bug
+---
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[BUG] "
+labels: ["bug", "triage"]
+assignees: []
+
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for helping improve Java Engineering Academy. Please include enough detail for maintainers to
-        reproduce or review the issue.
-  - type: textarea
-    id: problem
-    attributes:
-      label: Problem
-      description: What is wrong or confusing?
-    validations:
-      required: true
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behavior
-      description: What should happen instead?
-    validations:
-      required: true
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to reproduce
-      description: Include commands, file paths, lesson names, or links when possible.
-    validations:
-      required: false
+        Thanks for reporting a bug! Please fill out the form below with as much detail as possible.
+
   - type: input
     id: java-version
     attributes:
-      label: Java version
-      placeholder: "java -version"
+      label: Java Version
+      description: What Java version are you using? (Run `java --version`)
+      placeholder: "21.0.x"
     validations:
-      required: false
-  - type: textarea
-    id: context
-    attributes:
-      label: Additional context
-      description: Add screenshots, logs, or examples if helpful.
-    validations:
-      required: false
+      required: true
 
+  - type: input
+    id: maven-version
+    attributes:
+      label: Maven Version
+      description: What Maven version are you using? (Run `mvn --version`)
+      placeholder: "3.9.x"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: What OS are you running on?
+      placeholder: "Ubuntu 22.04 / macOS 14 / Windows 11"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Affected Module
+      description: Which module is affected?
+      options:
+        - java-fundamentals (Sprint 1)
+        - oop-fundamentals (Sprint 2)
+        - Root project / Build configuration
+        - Documentation
+        - CI/CD Pipeline
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Run command '...'
+        3. See error '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened (include stack traces, error messages)
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs / Output
+      description: Paste any relevant logs, compiler output, or test results
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or information about the problem
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have provided all requested information
+          required: true
+        - label: This bug is reproducible on the latest main branch
+          required: true

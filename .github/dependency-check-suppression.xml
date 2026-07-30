@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions>
+  <!-- 
+    Suppressions for OWASP Dependency Check
+    Only suppress false positives with clear justification.
+    Each suppression must include a comment explaining why it's safe.
+  -->
+  
+  <!-- 
+    Maven plugin transitive dependencies that are not part of the actual application classpath.
+    These are build-time only and don't ship with the application.
+  -->
+  <suppress>
+    <notes>Build plugin - not in application classpath</notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.maven\.plugins/.*$</packageUrl>
+  </suppress>
+  
+  <suppress>
+    <notes>Build plugin - not in application classpath</notes>
+    <packageUrl regex="true">^pkg:maven/org\.codehaus\.mojo/.*$</packageUrl>
+  </suppress>
+  
+  <!-- Test dependencies not shipped with application -->
+  <suppress>
+    <notes>Test scope dependency - not in production</notes>
+    <packageUrl regex="true">^pkg:maven/org\.junit/.*$</packageUrl>
+    <scope>test</scope>
+  </suppress>
+  
+  <suppress>
+    <notes>Test scope dependency - not in production</notes>
+    <packageUrl regex="true">^pkg:maven/org\.mockito/.*$</packageUrl>
+    <scope>test</scope>
+  </suppress>
+  
+  <suppress>
+    <notes>Test scope dependency - not in production</notes>
+    <packageUrl regex="true">^pkg:maven/org\.assertj/.*$</packageUrl>
+    <scope>test</scope>
+  </suppress>
+  
+  <!-- SpotBugs - analysis tool, not shipped -->
+  <suppress>
+    <notes>Static analysis tool - build time only</notes>
+    <packageUrl regex="true">^pkg:maven/com\.github\.spotbugs/.*$</packageUrl>
+  </suppress>
+  
+  <!-- Checkstyle - build tool, not shipped -->
+  <suppress>
+    <notes>Code style checker - build time only</notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.maven\.plugins/maven-checkstyle-plugin.*$</packageUrl>
+  </suppress>
+  
+  <!-- PMD - build tool, not shipped -->
+  <suppress>
+    <notes>Static analysis tool - build time only</notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.maven\.plugins/maven-pmd-plugin.*$</packageUrl>
+  </suppress>
+  
+  <!-- JaCoCo - coverage tool, not shipped -->
+  <suppress>
+    <notes>Code coverage tool - build time only</notes>
+    <packageUrl regex="true">^pkg:maven/org\.jacoco/.*$</packageUrl>
+  </suppress>
+  
+  <!-- Maven Enforcer - build plugin -->
+  <suppress>
+    <notes>Build rule enforcement - not shipped</notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.maven\.plugins/maven-enforcer-plugin.*$</packageUrl>
+  </suppress>
+  
+  <!-- 
+    Known false positives for specific versions.
+    Update when newer versions are available.
+  -->
+  <!-- Example template for future suppressions:
+  <suppress>
+    <notes>CVE-XXXX-XXXXX - Fixed in version X.Y.Z, waiting for update</notes>
+    <cve>CVE-XXXX-XXXXX</cve>
+    <packageUrl>pkg:maven/group/artifact@version</packageUrl>
+  </suppress>
+  -->
+</suppressions>

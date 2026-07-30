@@ -1,32 +1,93 @@
-name: Content improvement
-description: Suggest a correction or improvement to lessons, exercises, docs, or interview material.
-title: "docs: "
-labels:
-  - documentation
+---
+name: Content Improvement
+description: Report an issue with existing content (typo, unclear explanation, outdated info, etc.)
+title: "[CONTENT] "
+labels: ["documentation", "content-improvement", "triage"]
+assignees: []
+
 body:
-  - type: textarea
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our content! Please fill out the form below.
+
+  - type: input
     id: location
     attributes:
-      label: Location
-      description: Which file, section, exercise, or concept should be improved?
+      label: File / Location
+      description: Path to the file or URL of the content (e.g., `java-fundamentals/docs/theory.md`, `README.md`, or GitHub URL)
+      placeholder: "java-fundamentals/docs/theory.md"
     validations:
       required: true
-  - type: textarea
-    id: improvement
-    attributes:
-      label: Suggested improvement
-      description: Describe the change and why it helps learners.
-    validations:
-      required: true
-  - type: dropdown
-    id: learner-level
-    attributes:
-      label: Learner level
-      options:
-        - Beginner
-        - Intermediate
-        - Advanced
-        - Interview preparation
-    validations:
-      required: false
 
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of content issue is this?
+      options:
+        - Typo / Grammar
+        - Unclear Explanation
+        - Outdated Information
+        - Missing Code Example
+        - Broken Link
+        - Incorrect Code
+        - Missing Explanation (needs more detail)
+        - Formatting Issue
+        - Mermaid Diagram Not Rendering
+        - Exercise/Solution Mismatch
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - java-fundamentals (Sprint 1)
+        - oop-fundamentals (Sprint 2)
+        - Root Documentation
+        - CI/CD / Workflows
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Content
+      description: What does it currently say? (quote the problematic section)
+      placeholder: "The text currently says..."
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested Improvement
+      description: What should it say instead? (provide the corrected/improved version)
+      placeholder: "It should say..."
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Why This Change?
+      description: Explain why this improvement helps learners
+      placeholder: "This change clarifies... because..."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have verified this is not already fixed in the latest version
+          required: true
+        - label: The suggested change follows the existing style guide
+          required: true
+        - label: The change improves clarity for beginners
+          required: true

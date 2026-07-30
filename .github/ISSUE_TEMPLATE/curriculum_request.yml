@@ -1,29 +1,137 @@
-name: Curriculum request
-description: Propose a new lesson, exercise, module, or project.
-title: "feat: "
-labels:
-  - enhancement
-  - curriculum
+---
+name: Curriculum Request
+description: Request a new topic, sprint, or learning module
+title: "[CURRICULUM] "
+labels: ["curriculum", "enhancement", "triage"]
+assignees: []
+
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a curriculum addition! This helps us plan future sprints.
+
+  - type: dropdown
+    id: level
+    attributes:
+      label: Difficulty Level
+      description: At what level should this topic be taught?
+      options:
+        - Beginner (Sprint 1-3)
+        - Intermediate (Sprint 4-8)
+        - Advanced (Sprint 9-12)
+        - Expert / Specialized
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What category does this topic fall under?
+      options:
+        - Core Java Language
+        - Java Standard Library
+        - JVM & Performance
+        - Concurrency & Multithreading
+        - Frameworks (Spring, etc.)
+        - Databases & Persistence
+        - Messaging & Event-Driven
+        - Microservices Architecture
+        - Cloud & DevOps
+        - Testing & Quality
+        - Security
+        - Data Structures & Algorithms
+        - System Design
+        - Tools & Build Systems
+        - Career / Interview Prep
+        - Other
+    validations:
+      required: true
+
   - type: input
     id: topic
     attributes:
-      label: Topic
-      placeholder: "For example: Java records, generics wildcards, virtual threads"
+      label: Topic Name
+      description: Name of the topic/module (e.g., "Java Records", "Virtual Threads", "Spring WebFlux")
+      placeholder: "Java Records & Pattern Matching"
     validations:
       required: true
-  - type: textarea
-    id: learning-outcome
-    attributes:
-      label: Learning outcome
-      description: What should learners be able to do after this is added?
-    validations:
-      required: true
-  - type: textarea
-    id: scope
-    attributes:
-      label: Suggested scope
-      description: Include lesson ideas, exercises, examples, or assessment notes.
-    validations:
-      required: false
 
+  - type: textarea
+    id: description
+    attributes:
+      label: Topic Description
+      description: What should this topic cover? What are the learning objectives?
+      placeholder: |
+        This module should teach:
+        - Record syntax and use cases
+        - Pattern matching with records
+        - Serialization considerations
+        - Migration from POJOs
+    validations:
+      required: true
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: What knowledge should learners have before starting this topic?
+      placeholder: |
+        - Java basics (variables, methods, classes)
+        - Understanding of immutability
+        - Basic pattern matching (instanceof)
+
+  - type: textarea
+    id: realworld
+    attributes:
+      label: Real-world Applications
+      description: Where is this used in production? Give concrete examples.
+      placeholder: |
+        - DTOs in REST APIs
+        - Domain modeling in DDD
+        - Event sourcing events
+        - Database entity mapping
+
+  - type: textarea
+    id: exercises
+    attributes:
+      label: Suggested Exercises / Projects
+      description: What hands-on exercises would reinforce this topic?
+      placeholder: |
+        1. Convert a POJO to a record
+        2. Add pattern matching to a visitor pattern
+        3. Build a mini JSON serializer using records
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Reference Resources
+      description: Links to official docs, tutorials, books, or articles
+      placeholder: |
+        - JEP 395: Records
+        - JEP 405: Pattern Matching for instanceof
+        - Effective Java Item: "Prefer records to classes"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - High - Critical gap in current curriculum
+        - Medium - Valuable addition
+        - Low - Nice to have / advanced topic
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: This topic is not already covered in existing sprints
+          required: true
+        - label: This aligns with Java 21+ modern best practices
+          required: true
+        - label: This can be taught with practical, runnable code examples
+          required: true

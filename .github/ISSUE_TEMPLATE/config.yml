@@ -1,6 +1,17 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Questions and discussion
-    url: https://github.com/javaengineeringacademy/java-engineering-academy/discussions
-    about: Ask questions, propose ideas, and discuss learning direction.
-
+  - name: Ask a Question
+    url: https://github.com/javaengineeringacademy/java-engineering-academy/discussions/new?category=q-a
+    about: Ask questions about Java concepts, exercises, or learning path
+  - name: Request a Feature
+    url: https://github.com/javaengineeringacademy/java-engineering-academy/issues/new?template=feature_request.yml
+    about: Suggest a new topic, exercise, or improvement
+  - name: Report a Bug
+    url: https://github.com/javaengineeringacademy/java-engineering-academy/issues/new?template=bug_report.yml
+    about: Report incorrect code, broken examples, or build issues
+  - name: Improve Content
+    url: https://github.com/javaengineeringacademy/java-engineering-academy/issues/new?template=content_improvement.yml
+    about: Report typos, unclear explanations, or missing content
+  - name: Curriculum Request
+    url: https://github.com/javaengineeringacademy/java-engineering-academy/issues/new?template=curriculum_request.yml
+    about: Request a new topic or sprint for future development
