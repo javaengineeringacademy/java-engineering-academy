@@ -22,13 +22,13 @@ By the end of this sprint, you will be able to:
 
 | Topic | Theory | Examples | Exercises | Solutions | Quiz |
 |-------|--------|----------|-----------|-----------|------|
-| [Java Basics](docs/basics.md) | [✓](docs/basics.md) | [Code](src/main/java/com/javaacademy/sprint1/basics) | [Exercises](exercises/basics) | [Solutions](solutions/basics) | [Quiz](quiz/basics.md) |
-| [Data Types](docs/datatypes.md) | [✓](docs/datatypes.md) | [Code](src/main/java/com/javaacademy/sprint1/datatypes) | [Exercises](exercises/datatypes) | [Solutions](solutions/datatypes) | [Quiz](quiz/datatypes.md) |
-| [Operators](docs/operators.md) | [✓](docs/operators.md) | [Code](src/main/java/com/javaacademy/sprint1/operators) | [Exercises](exercises/operators) | [Solutions](solutions/operators) | [Quiz](quiz/operators.md) |
-| [Control Flow](docs/controlflow.md) | [✓](docs/controlflow.md) | [Code](src/main/java/com/javaacademy/sprint1/controlflow) | [Exercises](exercises/controlflow) | [Solutions](solutions/controlflow) | [Quiz](quiz/controlflow.md) |
-| [Arrays](docs/arrays.md) | [✓](docs/arrays.md) | [Code](src/main/java/com/javaacademy/sprint1/arrays) | [Exercises](exercises/arrays) | [Solutions](solutions/arrays) | [Quiz](quiz/arrays.md) |
-| [Strings](docs/strings.md) | [✓](docs/strings.md) | [Code](src/main/java/com/javaacademy/sprint1/strings) | [Exercises](exercises/strings) | [Solutions](solutions/strings) | [Quiz](quiz/strings.md) |
-| [Methods](docs/methods.md) | [✓](docs/methods.md) | [Code](src/main/java/com/javaacademy/sprint1/methods) | [Exercises](exercises/methods) | [Solutions](solutions/methods) | [Quiz](quiz/methods.md) |
+| [Java Basics](docs/basics.md) | [✓](docs/basics.md) | [Code](src/main/java/com/javaacademy/sprint1/basics) | [Exercises](../exercises/basics.md) | [Solutions](../solutions/basics.md) | [Quiz](../quiz/basics.md) |
+| [Data Types](docs/datatypes.md) | [✓](docs/datatypes.md) | [Code](src/main/java/com/javaacademy/sprint1/datatypes) | [Exercises](../exercises/datatypes.md) | [Solutions](../solutions/datatypes.md) | [Quiz](../quiz/datatypes.md) |
+| [Operators](docs/operators.md) | [✓](docs/operators.md) | [Code](src/main/java/com/javaacademy/sprint1/operators) | [Exercises](../exercises/operators.md) | [Solutions](../solutions/operators.md) | [Quiz](../quiz/operators.md) |
+| [Control Flow](docs/controlflow.md) | [✓](docs/controlflow.md) | [Code](src/main/java/com/javaacademy/sprint1/controlflow) | [Exercises](../exercises/controlflow.md) | [Solutions](../solutions/controlflow.md) | [Quiz](../quiz/controlflow.md) |
+| [Arrays](docs/arrays.md) | [✓](docs/arrays.md) | [Code](src/main/java/com/javaacademy/sprint1/arrays) | [Exercises](../exercises/arrays.md) | [Solutions](../solutions/arrays.md) | [Quiz](../quiz/arrays.md) |
+| [Strings](docs/strings.md) | [✓](docs/strings.md) | [Code](src/main/java/com/javaacademy/sprint1/strings) | [Exercises](../exercises/strings.md) | [Solutions](../solutions/strings.md) | [Quiz](../quiz/strings.md) |
+| [Methods](docs/methods.md) | [✓](docs/methods.md) | [Code](src/main/java/com/javaacademy/sprint1/methods) | [Exercises](../exercises/methods.md) | [Solutions](../solutions/methods.md) | [Quiz](../quiz/methods.md) |
 
 ---
 
@@ -51,7 +51,6 @@ java-fundamentals/
 │       └── java/com/javaacademy/sprint1/
 │           └── ... (mirrors main structure)
 ├── docs/                       # Theory documents with diagrams
-├── examples/                   # Runnable example programs
 ├── exercises/                  # Practice problems
 ├── solutions/                  # Exercise solutions with explanations
 ├── quiz/                       # Self-assessment quizzes
@@ -235,7 +234,7 @@ Build a calculator supporting:
 ```
 project/
 ├── README.md              # Project requirements
-├── SPEC.md                       # Design document
+├── SPEC.md                # Design document
 ├── src/main/java/...      # Implementation
 ├── src/test/java/...      # Tests
 └── pom.xml                # Project configuration
@@ -295,7 +294,7 @@ project/
 
 ## 📝 Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed history.
+See [CHANGELOG.md](../CHANGELOG.md) for detailed history.
 
 ---
 
@@ -311,4 +310,4 @@ Apache License 2.0 — See [LICENSE](../LICENSE)
 
 ---
 
-> **Next Sprint:** [Sprint 2 - Object Oriented Programming](../sprint-2-oop/README.md)
+> **Next Sprint:** [Sprint 2 - Object Oriented Programming](../oop-fundamentals/README.md)
