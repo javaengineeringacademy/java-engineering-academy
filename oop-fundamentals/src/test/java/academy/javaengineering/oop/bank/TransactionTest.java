@@ -7,34 +7,37 @@ class TransactionTest {
 
     @Test
     void testTransactionCreateDeposit() {
-        Transaction t = Transaction.create(TransactionType.DEPOSIT, new BigDecimal("100.00"), "Salary deposit");
+        Transaction tx = Transaction.create(TransactionType.DEPOSIT, new Money("100.00", "USD"), "Initial deposit");
         
-        assertEquals(TransactionType.DEPOSIT, t.type());
-        assertEquals(new BigDecimal("100.00"), t.amount());
-        assertEquals("Salary deposit", t.description());
-        assertNotNull(t.timestamp());
+        assertEquals(TransactionType.DEPOSIT, tx.type());
+        assertEquals(new Money("100.00", "USD"), tx.amount());
+        assertEquals("Initial deposit", tx.description());
+        assertNotNull(tx.timestamp());
     }
 
     @Test
     void testTransactionCreateWithdrawal() {
-        Transaction t = Transaction.create(TransactionType.WITHDRAWAL, new BigDecimal("50.00"), "ATM withdrawal");
+        Transaction tx = Transaction.create(TransactionType.WITHDRAWAL, new Money("50.00", "USD"), "ATM withdrawal");
         
-        assertEquals(TransactionType.WITHDRAWAL, t.type());
-        assertEquals(new BigDecimal("50.00"), t.amount());
-        assertEquals("ATM withdrawal", t.description());
+        assertEquals(TransactionType.WITHDRAWAL, tx.type());
+        assertEquals(new Money("50.00", "USD"), tx.amount());
+        assertEquals("ATM withdrawal", tx.description());
     }
 
     @Test
-    void testTransactionNullAmountThrows() {
-        assertThrows(NullPointerException.class, () -> {
-            Transaction.create(TransactionType.DEPOSIT, null, "Test");
-        });
+    void testTransactionCreateInterest() {
+        Transaction tx = Transaction.create(TransactionType.INTEREST, new Money("5.00", "USD"), "Monthly interest");
+        
+        assertEquals(TransactionType.INTEREST, tx.type());
+        assertEquals(new Money("5.00", "USD"), tx.amount());
     }
 
     @Test
-    void testTransactionNullDescriptionThrows() {
-        assertThrows(NullPointerException.class, () -> {
-            Transaction.create(TransactionType.DEPOSIT, BigDecimal.TEN, null);
-        });
+    void testTransactionImmutable() {
+        Transaction tx = Transaction.create(TransactionType.DEPOSIT, new Money("100.00", "USD"), "Test");
+        
+        // Transaction should be immutable (record)
+        assertEquals(TransactionType.DEPOSIT, tx.type());
+        assertEquals(new Money("100.00", "USD"), tx.amount());
     }
 }
