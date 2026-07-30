@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="~.*\.(module|package)-info"/>
+    </Match>
+    <Match>
+        <Class name="~.*\.module-info"/>
+    </Match>
+    <Match>
+        <Class name="~.*\.package-info"/>
+    </Match>
+    <Match>
+        <Bug code="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug code="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_ARRAY"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_HASHTABLE"/>
+    </Match>
+    <Match>
+        <Bug code="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug code="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_ARRAY"/>
+    </Match>
+    <Match>
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <Bug code="MS_SHOULD_BE_FINAL"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_HASHTABLE"/>
+    </Match>
+    <Match>
+        <Bug code="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Bug code="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug code="EI2"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_ARRAY"/>
+    </Match>
+    <Match>
+        <Bug code="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug code="MS_MUTABLE_HASHTABLE"/>
+    </Match>
+</FindBugsFilter>
