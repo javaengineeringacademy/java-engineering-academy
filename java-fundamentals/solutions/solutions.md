@@ -252,7 +252,7 @@ public class Exercise2_5 {
 
 ---
 
-## ✅ Exercise 3.1: Binary Search
+## ✅ Exercise 3.1: Binary Search Implementation
 
 ```java
 package com.javaacademy.sprint1.exercises;
@@ -273,7 +273,7 @@ public class Exercise3_1 {
     static int binarySearch(int[] arr, int target) {
         int left = 0, right = arr.length - 1;
         while (left <= right) {
-            int mid = left + (right - left) / 2; // Avoids overflow
+            int mid = left + (right - left) / 2;
             if (arr[mid] == target) return mid;
             if (arr[mid] < target) left = mid + 1;
             else right = mid - 1;
@@ -306,14 +306,16 @@ public class Exercise3_2 {
             for (int j = i + 1; j < arr.length; j++) {
                 if (arr[j] < arr[minIdx]) minIdx = j;
             }
-            if (minIdx != i) {
-                int temp = arr[i];
-                arr[i] = arr[minIdx];
-                arr[minIdx] = temp;
-            }
+            if (minIdx != i) swap(arr, i, minIdx);
             System.out.println("Pass " + (i + 1) + ": " + Arrays.toString(arr));
         }
         System.out.println("Sorted: " + Arrays.toString(arr));
+    }
+    
+    static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[minIdx];
+        arr[minIdx] = temp;
     }
 }
 ```
@@ -337,11 +339,9 @@ public class Exercise3_3 {
     
     static String compress(String s) {
         if (s == null || s.isEmpty()) return s;
-        
         StringBuilder sb = new StringBuilder();
         char current = s.charAt(0);
         int count = 1;
-        
         for (int i = 1; i < s.length(); i++) {
             if (s.charAt(i) == current) {
                 count++;
@@ -352,7 +352,6 @@ public class Exercise3_3 {
             }
         }
         sb.append(current).append(count);
-        
         return sb.length() < s.length() ? sb.toString() : s;
     }
 }
