@@ -5,6 +5,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/ci.yml">
+    <img alt="CI/CD" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/ci.yml/badge.svg" />
+  </a>
   <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/build.yml">
     <img alt="Build" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/build.yml/badge.svg" />
   </a>
@@ -15,7 +18,12 @@
     <img alt="CodeQL" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/codeql.yml/badge.svg" />
   </a>
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-red" />
+  <img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.javaacademy/java-engineering-academy" />
   <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" />
+  <img alt="Code Style: Google" src="https://img.shields.io/badge/Code%20Style-Google-blueviolet" />
+  <img alt="Quality: SpotBugs" src="https://img.shields.io/badge/Quality-SpotBugs-orange" />
+  <img alt="Quality: PMD" src="https://img.shields.io/badge/Quality-PMD-green" />
+  <img alt="Coverage: JaCoCo" src="https://img.shields.io/badge/Coverage-JaCoCo-yellow" />
 </p>
 
 Java Engineering Academy is an open-source learning platform for engineers who want to master modern Java
