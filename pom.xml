@@ -97,7 +97,7 @@
 
     <modules>
         <module>java-fundamentals</module>
-        <module>object-oriented-programming</module>
+        <module>oop-fundamentals</module>
     </modules>
 
     <build>
