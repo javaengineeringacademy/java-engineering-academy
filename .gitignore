@@ -1,0 +1,21 @@
+# IDE
+.DS_Store
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Build
+target/
+*.class
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
