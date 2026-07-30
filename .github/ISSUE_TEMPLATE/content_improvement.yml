@@ -1,0 +1,32 @@
+name: Content improvement
+description: Suggest a correction or improvement to lessons, exercises, docs, or interview material.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Which file, section, exercise, or concept should be improved?
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Suggested improvement
+      description: Describe the change and why it helps learners.
+    validations:
+      required: true
+  - type: dropdown
+    id: learner-level
+    attributes:
+      label: Learner level
+      options:
+        - Beginner
+        - Intermediate
+        - Advanced
+        - Interview preparation
+    validations:
+      required: false
+

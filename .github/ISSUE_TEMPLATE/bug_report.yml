@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a problem in code, build tooling, documentation, or learning content.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve Java Engineering Academy. Please include enough detail for maintainers to
+        reproduce or review the issue.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is wrong or confusing?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, file paths, lesson names, or links when possible.
+    validations:
+      required: false
+  - type: input
+    id: java-version
+    attributes:
+      label: Java version
+      placeholder: "java -version"
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add screenshots, logs, or examples if helpful.
+    validations:
+      required: false
+
