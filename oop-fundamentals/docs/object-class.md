@@ -2,7 +2,7 @@
 
 ## Key Methods to Override
 
-### `toString()`
+### toString()
 ```java
 @Override
 public String toString() {
@@ -10,7 +10,7 @@ public String toString() {
 }
 ```
 
-### `equals(Object obj)` & `hashCode()`
+### equals(Object obj) & hashCode()
 **Contract:** If `a.equals(b)` then `a.hashCode() == b.hashCode()`
 
 ```java
@@ -28,15 +28,41 @@ public int hashCode() {
 }
 ```
 
-### `clone()`
+### clone()
 ```java
 @Override
-protected Object clone() throws CloneNotSupportedException {
-    return super.clone();  // Shallow copy
+protected Person clone() throws CloneNotSupportedException {
+    return (Person) super.clone();  // Shallow copy
 }
 ```
 
 ## Other Methods
-- `finalize()`: Deprecated (Java 9+), use try-with-resources/Cleaner
-- `getClass()`: Returns runtime class
-- `notify()`, `notifyAll()`, `wait()`: Thread synchronization
+
+### finalize() (Deprecated)
+```java
+@Deprecated(since = "9", forRemoval = true)
+@Override
+protected void finalize() throws Throwable {
+    try {
+        // Cleanup
+    } finally {
+        super.finalize();
+    }
+}
+```
+
+**Use try-with-resources or Cleaner instead.**
+
+### getClass()
+Returns runtime class of object.
+
+### notify(), notifyAll(), wait()
+Thread synchronization methods.
+
+## Best Practices
+
+1. **Always override both** `equals` and `hashCode`
+2. **Use `Objects.hash()`** for hashCode
+3. **Use `Objects.equals()`** for null-safe comparison
+4. **Make `toString()` informative**
+5. **Avoid `finalize()`** - use try-with-resources/Cleaner

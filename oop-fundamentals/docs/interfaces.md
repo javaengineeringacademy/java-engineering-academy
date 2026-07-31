@@ -1,34 +1,137 @@
 # Interfaces
 
-## What is an Interface?
-Contract specifying what a class can do, without saying how. Pure abstraction (pre-Java 8).
-
 ## Modern Interfaces (Java 8+)
+
 ```java
 public interface Payable {
-    void pay(BigDecimal amount);  // Abstract
+    // Abstract - must implement
+    void pay(BigDecimal amount);
 
-    default void printReceipt() {  // Default implementation
+    // Default - optional override
+    default void printReceipt() {
         System.out.println("Receipt printed");
     }
 
-    static BigDecimal calculateTax(BigDecimal amount) {  // Static
+    // Static utility
+    static BigDecimal calculateTax(BigDecimal amount) {
         return amount.multiply(BigDecimal.valueOf(0.18));
     }
+
+    // Private (Java 9+)
+    private void log(String msg) { System.out.println(msg); }
 }
 ```
 
 ## Interface Rules
-- All fields: `public static final` (constants)
-- All methods: `public` (default since Java 8)
-- Multiple inheritance: `class A implements B, C { }`
-- Functional interface: Single abstract method → lambda support
+
+| Element | Modifiers |
+|---------|-----------|
+| Fields | `public static final` (implicit) |
+| Methods | `public` (default) |
+| Constructors | Not allowed |
+| Methods since Java 8 | default, static, private |
+
+## Default Methods
+
+```java
+interface Drawable {
+    void draw();  // Abstract
+
+    default void drawTwice() {  // Default
+        draw();
+        draw();
+    }
+}
+
+class Circle implements Drawable {
+    @Override public void draw() { System.out.println("Circle"); }
+}
+```
+
+## Static Methods
+
+```java
+interface MathUtils {
+    static int max(int a, int b) { return Math.max(a, b); }
+}
+
+// Call: MathUtils.max(5, 10)
+```
+
+## Private Methods (Java 9+)
+
+```java
+interface Validator {
+    default boolean validate(String s) { return check(s); }
+    private boolean check(String s) { return s != null && !s.isBlank(); }
+}
+```
+
+## Functional Interfaces
+
+Single abstract method → Lambda support:
+
+```java
+@FunctionalInterface
+interface Operation {
+    int apply(int a, int b);
+}
+
+// Lambdas
+Operation add = (a, b) -> a + b;
+Operation multiply = (a, b) -> a * b;
+```
 
 ## Interface vs Abstract Class
+
 | Feature | Interface | Abstract Class |
 |---------|-----------|----------------|
-| Multiple impl | Yes | No (single) |
-| Fields | Constants only | Instance fields OK |
+| Inheritance | Multiple | Single |
+| Fields | Constants only | Instance + constants |
 | Constructors | No | Yes |
-| Default methods | Yes (Java 8+) | N/A |
-| Use case | Contract, capability | Shared code + contract |
+| Methods | Abstract, default, static | Abstract + concrete |
+| Access | public | Any |
+
+## Functional Interfaces
+
+```java
+@FunctionalInterface
+interface Calculator {
+    int calc(int a, int b);
+}
+
+// Built-in: java.util.function
+Function<String, Integer> parser = Integer::parseInt;
+Predicate<String> isEmpty = String::isEmpty;
+Consumer<String> printer = System.out::println;
+Supplier<LocalDate> now = LocalDate::now;
+```
+
+## Default Methods & Diamond Problem
+
+```java
+interface A { default void m() { System.out.println("A"); } }
+interface B { default void m() { System.out.println("B"); } }
+
+class C implements A, B {
+    @Override public void m() { A.super.m(); }  // Must override
+}
+```
+
+## Interface vs Abstract Class
+
+| Scenario | Choice |
+|----------|--------|
+| Shared code + contract | Abstract class |
+| Pure contract | Interface |
+| Multiple implementations | Interface |
+| Need constructors/fields | Abstract class |
+| Functional interface | Interface |
+
+## Best Practices
+
+- Use `@FunctionalInterface` annotation
+- Prefer interfaces for contracts
+- Default methods for backward compatibility
+- Static methods for utilities
+- Keep interfaces focused (ISP)

@@ -1,39 +1,45 @@
-/*
- * Copyright 2026 Java Engineering Academy contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package academy.javaengineering.oop.bank;
 
 /**
- * Immutable customer identity used by accounts, cards, and loans.
- *
- * @param customerId stable customer identifier
- * @param fullName customer legal name
- * @param email contact email address
+ * Represents a customer in the banking system.
  */
-public record Customer(String customerId, String fullName, String email) {
+public final class Customer {
+    private final String customerId;
+    private final String name;
+    private final String email;
+    private final Address address;
 
-    /**
-     * Creates a validated customer.
-     */
-    public Customer {
-        customerId = Text.require(customerId, "customerId");
-        fullName = Text.require(fullName, "fullName");
-        email = Text.require(email, "email").toLowerCase();
-        if (!email.contains("@")) {
-            throw new IllegalArgumentException("email must contain @");
-        }
+    public Customer(String customerId, String name, String email, Address address) {
+        this.customerId = Objects.requireNonNull(customerId, "Customer ID required");
+        this.name = Objects.requireNonNull(name, "Name required");
+        this.email = Objects.requireNonNull(email, "Email required");
+        this.address = Objects.requireNonNull(address, "Address required");
+    }
+
+    public String getCustomerId() { return customerId; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public Address getAddress() { return address; }
+
+    public void updateEmail(String newEmail) {
+        this.email = Objects.requireNonNull(newEmail);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return customerId.equals(customer.customerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customerId);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{customerId='%s', name='%s', email='%s'}".formatted(customerId, name, email);
     }
 }
-

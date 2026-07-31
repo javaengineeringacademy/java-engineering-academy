@@ -1,33 +1,55 @@
 # Records (Java 16+)
 
 ## What are Records?
-Immutable data carriers with automatic implementations:
+Immutable data carriers with automatic implementations.
+
+## Syntax
 ```java
-public record Person(String name, int age, String email) { }
-
-// Equivalent to:
-public final class Person {
-    private final String name;
-    private final int age;
-    private final String email;
-
-    public Person(String name, int age, String email) { ... }
-    public String name() { return name; }
-    public int age() { return age; }
-    public String email() { return email; }
-    // equals, hashCode, toString auto-generated
+public record Person(String name, int age, String email) {
+    public Person {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException();
+        if (age < 0) throw new IllegalArgumentException();
+    }
 }
 ```
 
-## Compact Constructors (Validation)
+## Auto-Generated
+- Constructor
+- Accessors: `name()`, `age()`, `email()`
+- `equals()`, `hashCode()`, `toString()`
+- `record` is `final`
+
+## Compact Constructor (Validation)
 ```java
 public record Person(String name, int age) {
     public Person {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name required");
-        }
+        if (name == null || name.isBlank()) throw new IllegalArgumentException();
         if (age < 0) throw new IllegalArgumentException("Age >= 0");
     }
+}
+```
+
+## Custom Methods
+```java
+public record Person(String name, int age) {
+    public boolean isAdult() { return age >= 18; }
+}
+```
+
+## Serialization
+```java
+record Person(String name, int age) implements Serializable {
+    // Custom serialization
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+    }
+}
+```
+
+## Pattern Matching (Java 17+)
+```java
+if (obj instanceof Person p) {
+    System.out.println(p.name());
 }
 ```
 
@@ -35,3 +57,6 @@ public record Person(String name, int age) {
 - DTOs, value objects, data carriers
 - Immutable data carriers
 - Not for mutable entities with behavior
+
+## References
+- [JEP 395: Records](https://openjdk.org/jeps/395)
