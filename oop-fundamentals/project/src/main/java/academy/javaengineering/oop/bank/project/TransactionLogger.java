@@ -1,0 +1,16 @@
+package academy.javaengineering.oop.bank.project;
+
+import java.time.LocalDateTime;
+
+/**
+ * TransactionLogger - Logs all banking transactions.
+ * 
+ * @author Java Engineering Academy
+ * @version 1.0
+ */
+public class TransactionLogger {
+
+    public void log(String message) {
+        System.out.printf("  [%s] %s%n", LocalDateTime.now().toLocalTime(), message);
+    }
+}
