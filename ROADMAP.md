@@ -1,54 +1,120 @@
 # Roadmap
 
-Java Engineering Academy will grow in public, with each phase focused on durable learning outcomes and maintainable
-repository structure.
+## Vision
 
-## Phase 1: Repository Foundation
+Build the world's best open-source Java Engineering curriculum that can compete with commercial platforms like Educative, Pluralsight, Udemy, Baeldung, and JetBrains Academy.
 
-- Establish documentation, licensing, contribution standards, and community expectations.
-- Add a Java 21 Maven build with tests, static analysis, and coverage.
-- Create the first curriculum module structure.
-- Enable automated build, test, and CodeQL workflows.
+## Phases
 
-## Phase 2: Java Fundamentals
+### Phase 1: Repository Foundation ✅
 
-- Publish lessons for syntax, types, methods, records, packages, and exceptions.
-- Add guided exercises with automated tests.
-- Introduce debugging and reading compiler errors.
-- Create milestone assessments for core language fluency.
+**Status**: Complete
 
-## Phase 3: Object-Oriented Design
+- [x] Project structure
+- [x] Maven multi-module setup
+- [x] CI/CD pipeline (GitHub Actions)
+- [x] Code quality tools (Checkstyle, PMD, SpotBugs, JaCoCo)
+- [x] Issue templates
+- [x] PR template
+- [x] Contributing guidelines
+- [x] Code of conduct
 
-- Cover encapsulation, interfaces, inheritance, polymorphism, and composition.
-- Add refactoring exercises and design review prompts.
-- Introduce SOLID principles through practical examples.
+### Phase 2: Java Fundamentals ✅
 
-## Phase 4: Collections, Generics, and Testing
+**Status**: Complete
 
-- Teach lists, maps, sets, equality, ordering, iteration, and immutability.
-- Add generics lessons with realistic API design examples.
-- Expand testing material with JUnit 5, assertions, fixtures, and test design.
+- [x] Variables and data types
+- [x] Operators
+- [x] Control flow
+- [x] Methods
+- [x] Arrays
+- [x] Strings
+- [x] Calculator project
 
-## Phase 5: Concurrency and Modern Java
+### Phase 3: Object-Oriented Programming ✅
 
-- Cover threads, executors, virtual threads, synchronization, and concurrency hazards.
-- Add exercises for thread safety, performance, and cancellation.
-- Introduce structured concurrency where stable and appropriate.
+**Status**: Complete
 
-## Phase 6: Persistence, APIs, and Integration
+- [x] 33 topics covering all OOP concepts
+- [x] Easy/Medium/Hard examples
+- [x] Exercises with solutions
+- [x] Interview questions
+- [x] Bank Management System project
+- [x] 14 mini-projects scaffolded
 
-- Build database-backed examples using transactions and repository patterns.
-- Add HTTP API projects and integration tests.
-- Teach validation, error handling, and observability basics.
+### Phase 4: Core Java (Planned)
 
-## Phase 7: System Design and Production Engineering
+**Status**: Planned
 
-- Add architecture case studies and trade-off analysis.
-- Teach reliability, scalability, monitoring, and deployment readiness.
-- Build capstone projects suitable for portfolio review.
+- [ ] Exception Handling
+- [ ] Collections Framework
+- [ ] Generics
+- [ ] Java I/O and NIO
+- [ ] Functional Programming
+- [ ] Multithreading & Concurrency
+- [ ] JVM Internals
+- [ ] Design Patterns
+- [ ] Testing with JUnit & Mockito
+- [ ] Maven & Gradle
 
-## Phase 8: Interview Preparation
+### Phase 5: Enterprise Java (Planned)
 
-- Publish structured interview tracks for coding, design, Java depth, and behavioral communication.
-- Add timed exercises, solution walkthroughs, and mock review rubrics.
+**Status**: Planned
 
+- [ ] JDBC & Database
+- [ ] Spring Framework
+- [ ] Spring Boot
+- [ ] Spring Security
+- [ ] REST API Development
+- [ ] Microservices Architecture
+- [ ] Apache Kafka
+- [ ] Redis
+
+### Phase 6: Infrastructure & DevOps (Planned)
+
+**Status**: Planned
+
+- [ ] Docker
+- [ ] Kubernetes
+- [ ] AWS
+- [ ] System Design
+
+### Phase 7: Mastery (Planned)
+
+**Status**: Planned
+
+- [ ] Enterprise Projects
+- [ ] Interview Preparation
+- [ ] Community Building
+
+## Contribution Opportunities
+
+| Priority | Task | Difficulty | Est. Time |
+|----------|------|-----------|-----------|
+| High | Implement Module 03: Exception Handling | Medium | 2 weeks |
+| High | Implement Module 04: Collections Framework | Medium | 3 weeks |
+| High | Implement Module 05: Generics | Easy | 1 week |
+| Medium | Create diagrams for OOP topics | Easy | 1 week |
+| Medium | Add real-world examples to existing topics | Easy | 2 weeks |
+| Low | Review and improve existing content | Easy | Ongoing |
+
+## Success Metrics
+
+| Metric | Target | Current |
+|--------|--------|---------|
+| Topics implemented | 100+ | 40 |
+| Java files | 500+ | 230+ |
+| Test classes | 100+ | 25+ |
+| Documentation lines | 50,000+ | 15,000+ |
+| Contributors | 50+ | 1 |
+| GitHub stars | 1,000+ | 0 |
+
+## Release Plan
+
+| Version | Content | Target Date |
+|---------|---------|-------------|
+| v1.0.0 | Java Fundamentals | Released |
+| v1.1.0 | OOP Complete | Released |
+| v2.0.0 | Core Java Complete | TBD |
+| v3.0.0 | Enterprise Java | TBD |
+| v4.0.0 | Full Stack Ready | TBD |
