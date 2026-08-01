@@ -11,6 +11,27 @@ Thank you for your interest in contributing! This guide will help you get starte
 - **Documentation**: Improve README, fix typos, add diagrams
 - **Testing**: Write tests for existing code
 - **Review**: Review pull requests and provide feedback
+- **Diagrams**: Create Mermaid/UML diagrams for visual learners
+
+## Templates
+
+We provide ready-to-use templates for all contribution types. **Always use these templates** to maintain consistency across the curriculum.
+
+| Template | Purpose | Link |
+|----------|---------|------|
+| Topic Template | Full topic structure with README, examples, exercises | [templates/README.md](templates/README.md) |
+| Exercise Template | Practice problems with starter code and solutions | [templates/exercise-template.md](templates/exercise-template.md) |
+| Interview Template | Questions organized by difficulty level | [templates/interview-template.md](templates/interview-template.md) |
+| Quiz Template | Multiple-choice knowledge checks | [templates/quiz-template.md](templates/quiz-template.md) |
+
+### How to Use Templates
+
+1. Copy the directory structure from the [Topic Template](templates/README.md)
+2. Replace all `{{placeholders}}` with actual content
+3. Follow the README.md template for consistent lesson format
+4. Use the exercise template for practice materials
+5. Use the interview template for interview prep
+6. Use the quiz template for knowledge checks
 
 ## Local Development
 
@@ -60,6 +81,8 @@ topic-name/
 └── solutions/             # Answer key
 ```
 
+See [templates/README.md](templates/README.md) for the full template with all placeholders.
+
 ### README Template
 
 Every topic README should include:
@@ -80,6 +103,108 @@ Every topic README should include:
 14. **Real World Usage** - Framework usage
 15. **Summary** - Key takeaways
 
+## Exercise Template
+
+Every exercise should follow the [exercise template](templates/exercise-template.md):
+
+- **Difficulty level**: Easy, Medium, or Hard
+- **Estimated time**: How long it should take
+- **Objective**: What students will practice
+- **Requirements**: Clear, numbered steps
+- **Starter code**: Java class with TODOs
+- **Expected behavior**: Input/output examples
+- **Evaluation criteria**: Checklist for self-assessment
+- **Hints**: Progressive hints if stuck
+- **Solution**: Link to the solution file
+
+## Interview Template
+
+Every interview question set should follow the [interview template](templates/interview-template.md):
+
+### Easy (0-2 years experience)
+- Basic concept recall
+- Simple code examples
+- Definition questions
+
+### Medium (2-5 years experience)
+- Applied concepts
+- Code walkthroughs
+- Comparison questions
+
+### Hard (5+ years experience)
+- Architecture decisions
+- Trade-off analysis
+- Real-world scenarios
+
+## Quality Standards
+
+### Code Standards
+
+- Follow [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+- Use Java 21 features where appropriate
+- Write meaningful variable and method names
+- Add Javadoc for public APIs
+- Include unit tests
+
+### Documentation Standards
+
+- Use clear, concise language
+- Include code examples
+- Add Mermaid diagrams where helpful
+- Cross-link related topics
+- Keep formatting consistent
+
+### Example Standards
+
+- Every example must compile and run
+- Include expected output
+- Explain execution flow
+- Note time/space complexity where relevant
+- Show best practices
+
+### Exercise Standards
+
+- Clear problem statement
+- Starter code provided
+- Tests included
+- Hints available
+- Solution linked
+
+## Review Process
+
+### Before Submitting a PR
+
+- [ ] Code compiles without errors: `mvn clean compile`
+- [ ] All tests pass: `mvn test`
+- [ ] Checkstyle passes: `mvn checkstyle:check`
+- [ ] PMD passes: `mvn pmd:check`
+- [ ] SpotBugs passes: `mvn spotbugs:check`
+- [ ] Documentation is clear and complete
+- [ ] Examples are correct and runnable
+- [ ] No TODOs left in code
+- [ ] Commit messages follow convention
+- [ ] Topic follows the template structure
+- [ ] Exercises have starter code and solutions
+- [ ] Interview questions are organized by difficulty
+
+### PR Review Checklist
+
+Reviewers will check:
+
+1. **Correctness**: Does the code compile and run?
+2. **Quality**: Does it follow Google Java Style?
+3. **Completeness**: Are all template sections filled?
+4. **Clarity**: Is the documentation clear?
+5. **Consistency**: Does it match existing topic style?
+6. **Tests**: Are there adequate tests?
+7. **Diagrams**: Are visual aids included where helpful?
+
+### Review Timeline
+
+- Initial review: Within 3 business days
+- Follow-up review: Within 2 business days
+- Merge: After approval and all checks pass
+
 ## Commit Messages
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
@@ -90,6 +215,7 @@ fix(scope): correct explanation
 docs(scope): improve documentation
 test(scope): add unit tests
 refactor(scope): improve code structure
+diagrams(scope): add visual learning aids
 ```
 
 Examples:
@@ -99,6 +225,7 @@ feat(oop): add sealed classes topic
 fix(exercises): correct solution for exercise 3
 docs(readme): improve learning path
 test(encapsulation): add tests for Person class
+diagrams(inheritance): add class hierarchy diagram
 ```
 
 ## Pull Request Process
@@ -112,42 +239,11 @@ test(encapsulation): add tests for Person class
 7. **Address feedback**: Make requested changes
 8. **Merge**: After approval
 
-## Code Standards
-
-### Java Code
-
-- Follow [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-- Use Java 21 features where appropriate
-- Write meaningful variable and method names
-- Add Javadoc for public APIs
-- Include unit tests
-
-### Documentation
-
-- Use clear, concise language
-- Include code examples
-- Add diagrams where helpful
-- Cross-link related topics
-- Keep formatting consistent
-
-## Review Checklist
-
-Before submitting a PR, verify:
-
-- [ ] Code compiles without errors
-- [ ] All tests pass
-- [ ] Checkstyle passes
-- [ ] PMD passes
-- [ ] SpotBugs passes
-- [ ] Documentation is clear
-- [ ] Examples are correct
-- [ ] No TODOs left in code
-- [ ] Commit messages follow convention
-
 ## Getting Help
 
 - **Issues**: [Report bugs or request features](https://github.com/javaengineeringacademy/java-engineering-academy/issues)
 - **Discussions**: [Ask questions](https://github.com/javaengineeringacademy/java-engineering-academy/discussions)
+- **Templates**: [templates/README.md](templates/README.md)
 - **Code of Conduct**: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ## Recognition
