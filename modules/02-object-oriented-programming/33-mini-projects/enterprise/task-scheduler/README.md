@@ -69,9 +69,9 @@ graph TB
     end
     
     subgraph Storage Layer
-        DB[(Task Database)]
-        Redis[(Redis Cache)]
-        ZooKeeper[(Coordination)]
+        DB["Task Database"]
+        Redis["Redis Cache"]
+        ZooKeeper["Coordination"]
     end
     
     subgraph Monitoring

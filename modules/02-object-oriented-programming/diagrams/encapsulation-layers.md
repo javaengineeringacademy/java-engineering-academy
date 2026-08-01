@@ -11,7 +11,7 @@ graph TB
     end
     
     subgraph "Same Package"
-        SP[default (package-private)<br/>Accessible within package]
+        SP["default (package-private)<br/>Accessible within package"]
     end
     
     subgraph "Subclasses"

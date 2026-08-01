@@ -79,7 +79,7 @@ graph TB
     end
     
     subgraph "Runtime Dispatch"
-        animal[Animal ref = new Dog()]
+        animal["Animal ref = new Dog()"]
         animal -->|lookup| dv1
     end
     
