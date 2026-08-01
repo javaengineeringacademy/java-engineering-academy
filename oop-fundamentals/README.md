@@ -38,6 +38,8 @@ By the end of this sprint, you will be able to:
 | [Composition & Aggregation](docs/composition-aggregation.md) | [✓](docs/composition-aggregation.md) | [Code](src/main/java/academy/javaengineering/oop/composition-aggregation) | [Exercises](../exercises/composition-aggregation.md) | [Solutions](../solutions/composition-aggregation.md) | [Quiz](../quiz/composition-aggregation.md) |
 | [Dependency Injection](docs/dependency-injection.md) | [✓](docs/dependency-injection.md) | [Code](src/main/java/academy/javaengineering/oop/dependency-injection) | [Exercises](../exercises/dependency-injection.md) | [Solutions](../solutions/dependency-injection.md) | [Quiz](../quiz/dependency-injection.md) |
 | [SOLID Principles](docs/solid.md) | [✓](docs/solid.md) | [Code](src/main/java/academy/javaengineering/oop/solid) | [Exercises](../exercises/solid.md) | [Solutions](../solutions/solid.md) | [Quiz](../quiz/solid.md) |
+| [Object Copying](docs/object-copying.md) | [✓](docs/object-copying.md) | [Code](src/main/java/academy/javaengineering/oop/object-copying) | [Exercises](../exercises/object-copying-easy.md) | [Solutions](../solutions/) | [Quiz](../quiz/) |
+| [Serialization](docs/serialization.md) | [✓](docs/serialization.md) | [Code](src/main/java/academy/javaengineering/oop/serialization) | [Exercises](../exercises/serialization-easy.md) | [Solutions](../solutions/) | [Quiz](../quiz/) |
 
 ---
 
@@ -62,7 +64,9 @@ oop-fundamentals/
 │   │   │   ├── equals-hashcode/      # Proper implementation
 │   │   │   ├── composition-aggregation/ # has-a relationships
 │   │   │   ├── dependency-injection/ # Constructor/Setter/Field injection
-│   │   │   └── solid/                # SOLID principle examples
+│   │   │   ├── solid/                # SOLID principle examples
+│   │   │   ├── object-copying/       # Reference, Shallow, Deep copy
+│   │   │   └── serialization/        # Serializable, Externalizable, transient
 │   │   └── resources/
 │   └── test/
 │       └── java/academy/javaengineering/oop/
