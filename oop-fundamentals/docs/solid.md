@@ -2168,10 +2168,10 @@ public class TaskManager {
 
 ### Related Topics
 
-- [Design Patterns](./design-patterns.md)
-- [Refactoring](./refactoring.md)
-- [Test-Driven Development](./tdd.md)
-- [Clean Architecture](./clean-architecture.md)
+- [Design Patterns](https://www.baeldung.com/java-design-patterns)
+- [Refactoring](https://www.baeldung.com/refactoring-to-patterns)
+- [Test-Driven Development](https://www.oracle.com/java/technologies/tdd.html)
+- [Clean Architecture](https://www.baeldung.com/hexagonal-architecture)
 
 ---
 

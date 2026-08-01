@@ -24,22 +24,22 @@ By the end of this sprint, you will be able to:
 
 | Topic | Theory | Examples | Exercises | Solutions | Quiz |
 |-------|--------|----------|-----------|-----------|------|
-| [Classes & Objects](docs/classes.md) | [✓](docs/classes.md) | [Code](src/main/java/academy/javaengineering/oop/classes) | [Exercises](../exercises/classes.md) | [Solutions](../solutions/classes.md) | [Quiz](../quiz/classes.md) |
-| [Constructors](docs/constructors.md) | [✓](docs/constructors.md) | [Code](src/main/java/academy/javaengineering/oop/constructors) | [Exercises](../exercises/constructors.md) | [Solutions](../solutions/constructors.md) | [Quiz](../quiz/constructors.md) |
-| [Methods](docs/methods.md) | [✓](docs/methods.md) | [Code](src/main/java/academy/javaengineering/oop/methods) | [Exercises](../exercises/methods.md) | [Solutions](../solutions/methods.md) | [Quiz](../quiz/methods.md) |
-| [Encapsulation](docs/encapsulation.md) | [✓](docs/encapsulation.md) | [Code](src/main/java/academy/javaengineering/oop/encapsulation) | [Exercises](../exercises/encapsulation.md) | [Solutions](../solutions/encapsulation.md) | [Quiz](../quiz/encapsulation.md) |
-| [Inheritance](docs/inheritance.md) | [✓](docs/inheritance.md) | [Code](src/main/java/academy/javaengineering/oop/inheritance) | [Exercises](../exercises/inheritance.md) | [Solutions](../solutions/inheritance.md) | [Quiz](../quiz/inheritance.md) |
-| [Polymorphism](docs/polymorphism.md) | [✓](docs/polymorphism.md) | [Code](src/main/java/academy/javaengineering/oop/polymorphism) | [Exercises](../exercises/polymorphism.md) | [Solutions](../solutions/polymorphism.md) | [Quiz](../quiz/polymorphism.md) |
-| [Abstraction](docs/abstraction.md) | [✓](docs/abstraction.md) | [Code](src/main/java/academy/javaengineering/oop/abstraction) | [Exercises](../exercises/abstraction.md) | [Solutions](../solutions/abstraction.md) | [Quiz](../quiz/abstraction.md) |
-| [Interfaces](docs/interfaces.md) | [✓](docs/interfaces.md) | [Code](src/main/java/academy/javaengineering/oop/interfaces) | [Exercises](../exercises/interfaces.md) | [Solutions](../solutions/interfaces.md) | [Quiz](../quiz/interfaces.md) |
-| [Abstract Classes](docs/abstract-classes.md) | [✓](docs/abstract-classes.md) | [Code](src/main/java/academy/javaengineering/oop/abstract-classes) | [Exercises](../exercises/abstract-classes.md) | [Solutions](../solutions/abstract-classes.md) | [Quiz](../quiz/abstract-classes.md) |
-| [Object Class](docs/object-class.md) | [✓](docs/object-class.md) | [Code](src/main/java/academy/javaengineering/oop/object-class) | [Exercises](../exercises/object-class.md) | [Solutions](../solutions/object-class.md) | [Quiz](../quiz/object-class.md) |
-| [Equals & HashCode](docs/equals-hashcode.md) | [✓](docs/equals-hashcode.md) | [Code](src/main/java/academy/javaengineering/oop/equals-hashcode) | [Exercises](../exercises/equals-hashcode.md) | [Solutions](../solutions/equals-hashcode.md) | [Quiz](../quiz/equals-hashcode.md) |
-| [Composition & Aggregation](docs/composition-aggregation.md) | [✓](docs/composition-aggregation.md) | [Code](src/main/java/academy/javaengineering/oop/composition-aggregation) | [Exercises](../exercises/composition-aggregation.md) | [Solutions](../solutions/composition-aggregation.md) | [Quiz](../quiz/composition-aggregation.md) |
-| [Dependency Injection](docs/dependency-injection.md) | [✓](docs/dependency-injection.md) | [Code](src/main/java/academy/javaengineering/oop/dependency-injection) | [Exercises](../exercises/dependency-injection.md) | [Solutions](../solutions/dependency-injection.md) | [Quiz](../quiz/dependency-injection.md) |
-| [SOLID Principles](docs/solid.md) | [✓](docs/solid.md) | [Code](src/main/java/academy/javaengineering/oop/solid) | [Exercises](../exercises/solid.md) | [Solutions](../solutions/solid.md) | [Quiz](../quiz/solid.md) |
-| [Object Copying](docs/object-copying.md) | [✓](docs/object-copying.md) | [Code](src/main/java/academy/javaengineering/oop/object-copying) | [Exercises](../exercises/object-copying-easy.md) | [Solutions](../solutions/) | [Quiz](../quiz/) |
-| [Serialization](docs/serialization.md) | [✓](docs/serialization.md) | [Code](src/main/java/academy/javaengineering/oop/serialization) | [Exercises](../exercises/serialization-easy.md) | [Solutions](../solutions/) | [Quiz](../quiz/) |
+| [Classes & Objects](docs/classes.md) | [✓](docs/classes.md) | [Code](src/main/java/academy/javaengineering/oop/classes) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Constructors](docs/constructors.md) | [✓](docs/constructors.md) | [Code](src/main/java/academy/javaengineering/oop/constructors) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Methods](docs/methods.md) | [✓](docs/methods.md) | [Code](src/main/java/academy/javaengineering/oop/methods) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Encapsulation](docs/encapsulation.md) | [✓](docs/encapsulation.md) | [Code](src/main/java/academy/javaengineering/oop/encapsulation) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Inheritance](docs/inheritance.md) | [✓](docs/inheritance.md) | [Code](src/main/java/academy/javaengineering/oop/inheritance) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Polymorphism](docs/polymorphism.md) | [✓](docs/polymorphism.md) | [Code](src/main/java/academy/javaengineering/oop/polymorphism) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Abstraction](docs/abstraction.md) | [✓](docs/abstraction.md) | [Code](src/main/java/academy/javaengineering/oop/abstraction) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Interfaces](docs/interfaces.md) | [✓](docs/interfaces.md) | [Code](src/main/java/academy/javaengineering/oop/interfaces) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Abstract Classes](docs/abstract-classes.md) | [✓](docs/abstract-classes.md) | [Code](src/main/java/academy/javaengineering/oop/abstract-classes) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Object Class](docs/object-class.md) | [✓](docs/object-class.md) | [Code](src/main/java/academy/javaengineering/oop/object-class) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Equals & HashCode](docs/equals-hashcode.md) | [✓](docs/equals-hashcode.md) | [Code](src/main/java/academy/javaengineering/oop/equals-hashcode) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Composition & Aggregation](docs/composition-aggregation.md) | [✓](docs/composition-aggregation.md) | [Code](src/main/java/academy/javaengineering/oop/composition-aggregation) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Dependency Injection](docs/dependency-injection.md) | [✓](docs/dependency-injection.md) | [Code](src/main/java/academy/javaengineering/oop/dependency-injection) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [SOLID Principles](docs/solid.md) | [✓](docs/solid.md) | [Code](src/main/java/academy/javaengineering/oop/solid) | [Exercises](exercises/) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Object Copying](docs/object-copying.md) | [✓](docs/object-copying.md) | [Code](src/main/java/academy/javaengineering/oop/object-copying) | [Exercises](exercises/object-copying-easy.md) | [Solutions](solutions/) | [Quiz](quiz/) |
+| [Serialization](docs/serialization.md) | [✓](docs/serialization.md) | [Code](src/main/java/academy/javaengineering/oop/serialization) | [Exercises](exercises/serialization-easy.md) | [Solutions](solutions/) | [Quiz](quiz/) |
 
 ---
 
@@ -326,20 +326,20 @@ project/
 
 ## 📝 Changelog
 
-See [CHANGELOG.md](../CHANGELOG.md) for detailed history.
+See [CHANGELOG.md](../../CHANGELOG.md) for detailed history.
 
 ---
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
 
 ---
 
 ## 📄 License
 
-Apache License 2.0 — See [LICENSE](../LICENSE)
+Apache License 2.0 — See [LICENSE](../../LICENSE)
 
 ---
 
-> **Next Sprint:** [Sprint 3 - Collections & Generics](../collections-fundamentals/README.md)
+> **Next Sprint:** [Sprint 3 - Exception Handling](../03-exception-handling/README.md)

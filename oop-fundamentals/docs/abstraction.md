@@ -2211,7 +2211,6 @@ public class TaskSchedulerDemo {
 - [Encapsulation](./encapsulation.md)
 - [Polymorphism](./polymorphism.md)
 - [Inheritance](./inheritance.md)
-- [Design Patterns](./design-patterns.md)
 - [SOLID Principles](./solid.md)
 
 ---

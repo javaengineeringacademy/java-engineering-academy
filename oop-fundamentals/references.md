@@ -90,9 +90,9 @@
 - [OOP Examples](../oop-fundamentals/examples/examples.md)
 
 ### Sprint 3+: Future Sprints
-- [Collections & Generics](../collections-fundamentals/README.md)
-- [Functional Programming](../java8-functional/README.md)
-- [Multithreading](../multithreading/README.md)
+- [Collections & Generics](https://www.baeldung.com/java-collections-generics)
+- [Functional Programming](https://www.baeldung.com/java-functional-programming)
+- [Multithreading](https://www.baeldung.com/java-concurrency-threads)
 
 ---
 
