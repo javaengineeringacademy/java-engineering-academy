@@ -78,7 +78,22 @@ module com.company.project {
 ```
 
 ## Best Practices
-- One public class per file
-- Logical grouping by feature/layer
-- Max 3-4 nesting levels
-- Use domain name (reverse)
+
+1. **One public class per file** — File name must match the public class name.
+2. **Logical grouping by feature or layer** — Group related classes into cohesive packages.
+3. **Max 3-4 nesting levels** — Deep package hierarchies reduce readability.
+4. **Use reverse domain name** — Prevents naming collisions (`com.company.project`).
+5. **Prefer specific imports** — Avoid wildcard imports (`import com.company.*`); they obscure dependencies and cause conflicts.
+6. **Keep related classes close** — A class should only reference classes in the same package or one level up.
+7. **Avoid circular dependencies** — If package A depends on B, B should not depend on A.
+8. **Use `module-info.java`** — Encapsulate internal APIs and expose only what is necessary (Java 9+).
+9. **Package-private for internals** — Use package-private access for helper classes and methods that should not leak outside the package.
+10. **Consistent naming** — Follow `com.company.project.module.submodule` pattern throughout the codebase.
+
+## References
+
+- [JLS §7.4 — Package Declarations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html#jls-7.4)
+- [JLS §7.5 — Import Declarations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html#jls-7.5)
+- [JLS §8 — Classes (Access Modifiers)](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html)
+- [Java Platform Module System](https://docs.oracle.com/javase/9/modules/)
+- [Google Java Style Guide — Package Statements](https://google.github.io/styleguide/javaguide.html#s3-package-statements)

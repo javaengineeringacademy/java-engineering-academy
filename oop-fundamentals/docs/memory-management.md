@@ -210,6 +210,86 @@ jcmd <pid> JFR.start duration=60s filename=record.jfr
 
 ## Best Practices
 
+### Heap Sizing
+
+```bash
+# Fixed heap size to avoid resizing overhead
+-Xms4g -Xmx4g
+
+# Avoid dynamic resizing in production
+# Monitor and set based on workload
+```
+
+### Object Creation
+
+```java
+// Use primitives when possible
+int count = 0;  // Good: 4 bytes on stack
+Integer count = 0;  // Avoid: 16+ bytes on heap
+
+// Reuse objects with pooling
+private static final ObjectPool<Connection> pool = new ObjectPool<>();
+
+// Use StringBuilder for string concatenation
+StringBuilder sb = new StringBuilder();  // Good
+String result = "";  // Avoid in loops
+for (String s : list) {
+    result += s;  // Creates new String each iteration
+}
+```
+
+### Reference Types for Caches
+
+```java
+// WeakHashMap for automatic cleanup
+Map<Key, Value> cache = new WeakHashMap<>();
+
+// SoftReference for memory-sensitive caching
+SoftReference<byte[]> cache = new SoftReference<>(largeData);
+
+// ThreadLocal cleanup
+private static final ThreadLocal<Buffer> BUFFER = ThreadLocal.withInitial(Buffer::new);
+
+public void process() {
+    try {
+        Buffer buf = BUFFER.get();
+        // Use buffer
+    } finally {
+        BUFFER.remove();  // Prevent memory leak
+    }
+}
+```
+
+### Resource Management
+
+```java
+// Use try-with-resources for deterministic cleanup
+try (var connection = dataSource.getConnection();
+     var stmt = connection.prepareStatement(sql)) {
+    // Resources auto-closed
+}
+
+// Manual cleanup for non-AutoCloseable resources
+LargeObject obj = createLargeObject();
+try {
+    // Use object
+} finally {
+    obj.release();  // Explicit cleanup
+}
+```
+
+### Monitoring and Profiling
+
+```bash
+# Enable GC logging
+-Xlog:gc*:file=gc.log:time,uptime,level,tags
+
+# Profile before tuning
+# Measure allocation rates, GC frequency, pause times
+```
+
+### Performance Summary
+
 | Practice | Reason |
 |----------|--------|
 | Size heap appropriately | Avoid frequent GC / OOM |
@@ -217,6 +297,9 @@ jcmd <pid> JFR.start duration=60s filename=record.jfr
 | Object pooling | Reduce allocation pressure |
 | Weak/Soft references | Memory-sensitive caches |
 | Profile before tuning | Measure first |
+| Fixed heap size | Avoid resizing overhead |
+| Clean ThreadLocal | Prevent memory leaks |
+| try-with-resources | Deterministic cleanup |
 
 ## Related Topics
 ← [Stack vs Heap](stack-vs-heap.md) | → [Garbage Collection](garbage-collection.md)

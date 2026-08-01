@@ -87,15 +87,40 @@ Person p = new Person("Alice", 30);
 
 ## Comparison Table
 
+| Aspect | Stack | Heap |
+|--------|-------|------|
+| **Purpose** | Method execution & local variables | Object storage & dynamic allocation |
+| **Allocation** | LIFO (automatic) | Dynamic (GC-managed) |
+| **Size** | Small (~1 MB/thread default) | Large (multi-GB) |
+| **Speed** | Very fast (pointer arithmetic) | Slower (allocation + GC overhead) |
+| **Lifetime** | Method scope (automatic deallocation) | Until GC collects unreachable objects |
+| **Thread Safety** | Thread-local (no synchronization) | Shared (requires synchronization) |
+| **Fragmentation** | None | Possible (compacted by GC) |
+| **Tuning Flags** | `-Xss` | `-Xms`, `-Xmx` |
+
+### Where Things Live
+
 | Scenario | Stack | Heap |
 |----------|-------|------|
 | `int x = 10;` | ✓ Value stored | |
 | `Person p = new Person();` | ✓ Reference `p` | ✓ Object |
 | `int[] arr = new int[100];` | ✓ Reference `arr` | ✓ Array |
-| Method parameters | ✓ | |
+| Method parameters | ✓ (copied) | ✓ (objects via reference) |
 | Local variables | ✓ | |
 | Instance fields | | ✓ |
-| Static fields | | ✓ (Method Area) |
+| Static fields | | ✓ (Method Area / Metaspace) |
+| String constants (`"hello"`) | | ✓ (String Pool in Heap) |
+| Lambda captured variables | ✓ (if value types) | ✓ (if object references) |
+
+### When to Prefer Stack vs Heap
+
+| Scenario | Best Choice | Reason |
+|----------|-------------|--------|
+| Small, fixed-size data | Stack | Fast, no GC overhead |
+| Large arrays | Heap | Stack frame too small |
+| Short-lived objects | Heap (Eden) | Quickly GC-collected |
+| Long-lived shared objects | Heap (Old Gen) | Survive multiple GC cycles |
+| Thread-confined objects | Stack (via escape analysis) | No synchronization needed |
 
 ## Escape Analysis
 
@@ -151,20 +176,3 @@ Heap
 └── Metaspace
     └── Class metadata
 ```
-
-## Reference
-
-| Scenario | Stack | Heap |
-|----------|-------|------|
-| `int x = 10;` | ✓ Value stored | |
-| `Person p = new Person();` | ✓ Reference `p` | ✓ Object |
-| `int[] arr = new int[100];` | ✓ Reference `arr` | ✓ Array |
-| Method parameters | ✓ | |
-| Local variables | ✓ | |
-| Instance fields | | ✓ |
-| Static fields | | ✓ (Method Area) |
-
-## Escape Analysis
-- JVM may allocate non-escaping objects on stack
-- `-XX:+DoEscapeAnalysis` (default on)
-- `-XX:+EliminateAllocations` for scalar replacement

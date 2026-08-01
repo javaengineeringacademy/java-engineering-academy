@@ -173,11 +173,11 @@ flowchart TD
     A --> E[Consistent]
     A --> F[Non-Null]
     
-    B --> B1[a.equals a = true]
-    C --> C1[a.equals b = b.equals a]
-    D --> D1[a=b and b=c → a=c]
+    B --> B1["a.equals a = true"]
+    C --> C1["a.equals b = b.equals a"]
+    D --> D1["a=b and b=c → a=c"]
     E --> E1[Same result if unchanged]
-    F --> F1[a.equals null = false]
+    F --> F1["a.equals null = false"]
     
     G[Implementation Rules] --> H[Use same fields]
     G --> I[Override both methods]

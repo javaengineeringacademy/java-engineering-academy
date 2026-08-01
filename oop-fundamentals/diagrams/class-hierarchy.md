@@ -236,33 +236,34 @@ classDiagram
     direction TB
     
     class SingleResponsibility {
-        UserService : handles only users
-        NotificationService : handles only notifications
-        ReportService : handles only reports
+        <<principle>>
+        handles only users
+        handles only notifications
+        handles only reports
     }
     
     class OpenClosed {
-        Shape3 : open for extension
-        ShapeAreaCalculator : closed for modification
+        <<principle>>
+        open for extension
+        closed for modification
     }
     
     class LiskovSubstitution {
-        PaymentProcessor2 : interface
-        CreditCardProcessor2 : substitutable
-        PayPalProcessor2 : substitutable
-        CryptoProcessor2 : substitutable
+        <<principle>>
+        interface
+        substitutable
     }
     
     class InterfaceSegregation {
-        Printer : print only
-        Scanner : scan only
-        FaxMachine : fax only
+        <<principle>>
+        print only
+        scan only
+        fax only
     }
     
     class DependencyInversion {
-        MessageService : abstraction
-        EmailService : implementation
-        SmsService : implementation
-        OrderService3 : depends on abstraction
+        <<principle>>
+        abstraction
+        implementation
     }
 ```
