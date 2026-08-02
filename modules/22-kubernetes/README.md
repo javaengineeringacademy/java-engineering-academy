@@ -1,65 +1,303 @@
 # Module 22: Kubernetes
 
 ## Overview
-
-This module covers Kubernetes, the container orchestration platform for managing containerized applications at scale. Students will learn about pods, services, deployments, and configuration management for building resilient, scalable cloud-native applications.
+Kubernetes (K8s) is a container orchestration platform for automating deployment, scaling, and management of containerized applications.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Understand Kubernetes architecture and components
-- Deploy and manage applications using pods
-- Create services for network exposure
-- Implement rolling updates and rollbacks
-- Manage application configuration and secrets
-- Use Helm for package management
-- Monitor and troubleshoot cluster health
+- Understand K8s architecture
+- Deploy applications
+- Scale and manage services
+- Configure networking
+- Apply K8s patterns
 
 ## Prerequisites
+- Docker basics
+- Container concepts
+- Networking basics
 
-- [Module 21: Docker](../21-docker/)
+## Why This Concept Exists
+Container management needs:
+- Automated deployment
+- Scaling
+- Self-healing
+- Service discovery
 
-## Topics
+Kubernetes provides:
+- Orchestration
+- Load balancing
+- Rollouts/rollbacks
+- Storage orchestration
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [K8s Fundamentals](01-k8s-fundamentals/) | 2 hours | Architecture, components, CLI |
-| 02 | [Pods](02-k8s-pods/) | 2 hours | Pod lifecycle, multi-container pods |
-| 03 | [Services](03-k8s-services/) | 2 hours | ClusterIP, NodePort, LoadBalancer |
-| 04 | [Deployments](04-k8s-deployments/) | 2 hours | ReplicaSets, rolling updates, scaling |
-| 05 | [ConfigMaps](05-k8s-configmaps/) | 2 hours | Configuration, secrets, environment variables |
-| 06 | [Helm](06-helm/) | 2 hours | Charts, releases, package management |
+## Problem Statement
+How do you manage containerized applications at scale?
 
-## Key Concepts
+## Theory
 
-- Declarative vs. imperative management
-- Desired state and reconciliation
-- Service discovery and load balancing
-- Horizontal pod autoscaling
-- Resource requests and limits
+### K8s Components
 
-## Enterprise Applications
+| Component | Description |
+|-----------|-------------|
+| Pod | Smallest deployable unit |
+| Service | Network endpoint |
+| Deployment | Pod management |
+| ConfigMap | Configuration |
+| Secret | Sensitive data |
+| Namespace | Isolation |
 
-Kubernetes is the industry standard for container orchestration, enabling organizations to deploy, scale, and manage containerized applications across hybrid and multi-cloud environments with high availability.
+### K8s Architecture
 
-## Estimated Total Time
+| Component | Purpose |
+|-----------|---------|
+| Master Node | Control plane |
+| Worker Node | Runs pods |
+| etcd | Key-value store |
+| API Server | K8s API |
+| Scheduler | Pod scheduling |
 
-**12 hours**
+## Internal Working
 
-## Module Project
+### Pod Lifecycle
+```
+Pending → Running → Succeeded/Failed
+```
 
-Build a **Kubernetes Deployment** that:
-- Defines pods and deployments for Java services
-- Creates services for internal and external access
-- Implements ConfigMaps and Secrets management
-- Demonstrates rolling updates and scaling
-- Uses Helm for application packaging
+### Service Types
 
-## Resources
+| Type | Description |
+|------|-------------|
+| ClusterIP | Internal access |
+| NodePort | External access |
+| LoadBalancer | Cloud load balancer |
+| Ingress | HTTP routing |
 
-- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
-- [Helm Documentation](https://helm.sh/docs/)
+## JVM Perspective
 
-**Previous Module**: [Module 21: Docker](../21-docker/)
-**Next Module**: [Module 23: AWS](../23-aws/)
+### Java on K8s
+- JVM memory settings
+- Health checks
+- Graceful shutdown
+- Resource limits
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Kubernetes Cluster] --> B[Master Node]
+    A --> C[Worker Node]
+    
+    B --> D[API Server]
+    B --> E[Scheduler]
+    B --> F[Controller Manager]
+    B --> G[etcd]
+    
+    C --> H[kubelet]
+    C --> I[kube-proxy]
+    C --> J[Pods]
+    
+    J --> K[Container Runtime]
+    J --> L[App Container]
+```
+
+## Syntax
+
+### Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: my-app:1.0
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+```
+
+### Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: LoadBalancer
+```
+
+## Easy Example
+```bash
+# Create deployment
+kubectl create deployment my-app --image=my-app:1.0
+
+# Expose deployment
+kubectl expose deployment my-app --port=80 --type=LoadBalancer
+
+# Check status
+kubectl get pods
+kubectl get services
+```
+
+## Medium Example
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spring-boot
+  template:
+    metadata:
+      labels:
+        app: spring-boot
+    spec:
+      containers:
+      - name: app
+        image: spring-boot-app:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: url
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+## Hard Example
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+## Enterprise Example
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - myapp.example.com
+    secretName: my-app-tls
+```
+
+## Performance Considerations
+- Set resource limits
+- Use horizontal scaling
+- Configure health checks
+- Use namespaces for isolation
+
+## Best Practices
+1. Use declarative configuration
+2. Set resource limits
+3. Use namespaces
+4. Implement health checks
+5. Use rolling updates
+
+## Comparison Table
+
+| Feature | Kubernetes | Docker Swarm | Nomad |
+|---------|------------|--------------|-------|
+| Complexity | High | Low | Medium |
+| Scaling | Excellent | Good | Good |
+| Ecosystem | Large | Small | Medium |
+| Learning Curve | Steep | Easy | Medium |
+
+## Interview Questions
+
+### Q1: What is a Pod?
+**Answer:** Smallest deployable unit containing one or more containers.
+
+### Q2: What is a Deployment?
+**Answer:** Manages pod replicas and updates.
+
+### Q3: What is a Service?
+**Answer:** Network endpoint for accessing pods.
+
+### Q4: What is the difference between ClusterIP and NodePort?
+**Answer:** ClusterIP is internal, NodePort exposes externally.
+
+### Q5: What is a ConfigMap?
+**Answer:** Stores non-sensitive configuration data.
+
+## Summary
+Kubernetes provides container orchestration for scalable, manageable applications.
+
+## References
+- Kubernetes Documentation
+- Kubernetes the Hard Way
+- Spring on Kubernetes
