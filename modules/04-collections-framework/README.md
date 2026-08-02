@@ -45,8 +45,13 @@ Explore Java's powerful Collections Framework to store, manipulate, and manage g
 | 20 | [Sorting](20-sorting/) | 45 min | Intermediate |
 | 21 | [Collection Utilities](21-collection-utilities/) | 45 min | Intermediate |
 | 22 | [Mini Project](22-mini-project/) | 120 min | Advanced |
+| 23 | [Hashtable](23-hashtable/) | 45 min | Intermediate |
+| 24 | [Iterator](24-iterator/) | 60 min | Intermediate |
+| 25 | [Enumeration](25-enumeration/) | 30 min | Beginner |
+| 26 | [Fail-Fast vs Fail-Safe](26-fail-fast-vs-fail-safe/) | 60 min | Advanced |
+| 27 | [Collections Utilities](27-collections-utilities/) | 45 min | Intermediate |
 
-**Total Estimated Time: 16-18 hours**
+**Total Estimated Time: 20-22 hours**
 
 ## Learning Path
 
