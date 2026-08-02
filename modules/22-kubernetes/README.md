@@ -1,4 +1,4 @@
-# Module 22: kuuernetes
+# Module 22: Kubernetes
 
 ## Overview
 

@@ -81,34 +81,34 @@ mvn test -pl modules/02-object-oriented-programming
 
 ## Current Implementation Status
 
-| Module | Status | Topics | Files | Tests |
-|--------|--------|--------|-------|-------|
-| [01 — Java Fundamentals](modules/01-java-fundamentals/) | ✅ Complete | 7 | 35 | 7 |
-| [02 — Object-Oriented Programming](modules/02-object-oriented-programming/) | ✅ Complete | 35 | 230+ | 25+ |
-| [03 — Exception Handling](modules/03-exception-handling/) | 🔄 In Progress | 9 | — | — |
-| [04 — Collections Framework](modules/04-collections-framework/) | 🔄 In Progress | 22 | — | — |
-| [05 — Generics](modules/05-generics/) | 🔄 In Progress | 9 | — | — |
-| [06 — Java I/O and NIO](modules/06-java-io-and-nio/) | 🔲 Scaffolded | — | — | — |
-| [07 — Functional Programming & Streams](modules/07-functional-programming/) | 🔲 Scaffolded | — | — | — |
-| [08 — Multithreading & Concurrency](modules/08-multithreading/) | 🔲 Scaffolded | — | — | — |
-| [09 — JVM Internals](modules/09-jvm-internals/) | 🔲 Scaffolded | — | — | — |
-| [10 — Design Patterns](modules/10-design-patterns/) | 🔲 Scaffolded | — | — | — |
-| [11 — Testing (JUnit & Mockito)](modules/11-testing/) | 🔲 Scaffolded | — | — | — |
-| [12 — Maven & Gradle](modules/12-build-tools/) | 🔲 Scaffolded | — | — | — |
-| [13 — JDBC & Database](modules/13-jdbc-database/) | 🔲 Scaffolded | — | — | — |
-| [14 — Spring Framework](modules/14-spring-framework/) | 🔲 Scaffolded | — | — | — |
-| [15 — Spring Boot](modules/15-spring-boot/) | 🔲 Scaffolded | — | — | — |
-| [16 — Spring Security](modules/16-spring-security/) | 🔲 Scaffolded | — | — | — |
-| [17 — REST API Development](modules/17-rest-api/) | 🔲 Scaffolded | — | — | — |
-| [18 — Microservices](modules/18-microservices/) | 🔲 Scaffolded | — | — | — |
-| [19 — Apache Kafka](modules/19-apache-kafka/) | 🔲 Scaffolded | — | — | — |
-| [20 — Redis](modules/20-redis/) | 🔲 Scaffolded | — | — | — |
-| [21 — Docker](modules/21-docker/) | 🔲 Scaffolded | — | — | — |
-| [22 — Kubernetes](modules/22-kubernetes/) | 🔲 Scaffolded | — | — | — |
-| [23 — AWS](modules/23-aws/) | 🔲 Scaffolded | — | — | — |
-| [24 — System Design](modules/24-system-design/) | 🔲 Scaffolded | — | — | — |
-| [25 — Enterprise Projects](modules/25-enterprise-projects/) | 🔲 Scaffolded | — | — | — |
-| [26 — Interview Preparation](modules/26-interview-preparation/) | 🔲 Scaffolded | — | — | — |
+| Module | Status | Topics | Java Files | Tests |
+|--------|--------|--------|------------|-------|
+| [01 — Java Fundamentals](java-fundamentals/) | ✅ Complete | 7 | 37 | — |
+| [02 — Object-Oriented Programming](oop-fundamentals/) | ✅ Complete | 35 | 240+ | 25+ |
+| [03 — Exception Handling](modules/03-exception-handling/) | ✅ Complete | 10 | 7 | 3 |
+| [04 — Collections Framework](modules/04-collections-framework/) | ✅ Complete | 28 | 13 | 6 |
+| [05 — Generics](modules/05-generics/) | ✅ Complete | 10 | 7 | 3 |
+| [06 — Java I/O and NIO](modules/06-java-io-and-nio/) | ✅ Complete | 19 | 10 | 8 |
+| [07 — Functional Programming & Streams](modules/07-functional-programming/) | ✅ Complete | 13 | 11 | 5 |
+| [08 — Multithreading & Concurrency](modules/08-multithreading/) | ✅ Complete | 14 | 8 | 4 |
+| [09 — JVM Internals](modules/09-jvm-internals/) | 🔄 Docs Only | 22 | 0 | 0 |
+| [10 — Design Patterns](modules/10-design-patterns/) | ✅ Complete | 14 | 11 | 11 |
+| [11 — Testing (JUnit & Mockito)](modules/11-testing/) | ✅ Complete | 14 | 8 | 6 |
+| [12 — Maven & Gradle](modules/12-build-tools/) | ✅ Complete | 12 | 4 | 4 |
+| [13 — JDBC & Database](modules/13-jdbc-database/) | ✅ Complete | 14 | 7 | 6 |
+| [14 — Spring Framework](modules/14-spring-framework/) | ✅ Complete | 14 | 8 | 8 |
+| [15 — Spring Boot](modules/15-spring-boot/) | ✅ Complete | 12 | 8 | 8 |
+| [16 — Spring Security](modules/16-spring-security/) | ✅ Complete | 5 | 4 | 4 |
+| [17 — REST API Development](modules/17-rest-api/) | ✅ Complete | 7 | 5 | 4 |
+| [18 — Microservices](modules/18-microservices/) | ✅ Complete | 7 | 4 | 4 |
+| [19 — Apache Kafka](modules/19-apache-kafka/) | ✅ Complete | 6 | 5 | 4 |
+| [20 — Redis](modules/20-redis/) | ✅ Complete | 6 | 5 | 5 |
+| [21 — Docker](modules/21-docker/) | ✅ Complete | 6 | 4 | 3 |
+| [22 — Kubernetes](modules/22-kubernetes/) | ✅ Complete | 6 | 4 | 4 |
+| [23 — AWS](modules/23-aws/) | ✅ Complete | 7 | 6 | 6 |
+| [24 — System Design](modules/24-system-design/) | ✅ Complete | 8 | 6 | 6 |
+| [25 — Enterprise Projects](modules/25-enterprise-projects/) | ✅ Complete | 6 | 5 | 5 |
+| [26 — Interview Preparation](modules/26-interview-preparation/) | ✅ Complete | 8 | 5 | 5 |
 
 ---
 

@@ -66,4 +66,4 @@ Build a complete CRUD application with:
 - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
 - [Flyway Documentation](https://flywaydb.org/documentation/)
 
-**Next Module**: [Module 14: REST APIs](../14-rest-api/)
+**Next Module**: [Module 14: Spring Framework](../14-spring-framework/)

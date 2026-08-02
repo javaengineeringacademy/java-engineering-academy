@@ -1,4 +1,4 @@
-# Module 15: spring uoot
+# Module 15: Spring Boot
 
 ## Overview
 
