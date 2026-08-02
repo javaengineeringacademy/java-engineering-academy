@@ -1,65 +1,392 @@
 # Module 15: Spring Boot
 
 ## Overview
-
-This module covers Spring Boot, the convention-over-configuration framework that simplifies Spring application development. Students will learn auto-configuration, starter dependencies, Actuator monitoring, and how to build production-ready applications with minimal configuration.
+Spring Boot simplifies Spring application development with auto-configuration, embedded servers, and production-ready features. It enables rapid application development with minimal configuration.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Create Spring Boot applications using initializers
-- Understand auto-configuration and conditional beans
-- Configure applications using properties and YAML
-- Build RESTful web applications with embedded servers
-- Implement data access with Spring Data JPA
-- Add validation and security to applications
-- Monitor applications using Spring Boot Actuator
+- Understand auto-configuration
+- Create REST APIs
+- Configure properties
+- Use embedded servers
+- Apply production features
 
 ## Prerequisites
+- Spring Framework basics
+- REST API concepts
+- Web development
 
-- [Module 14: Spring Framework](../14-spring-framework/)
+## Why This Concept Exists
+Spring applications need:
+- Configuration management
+- Server setup
+- Production features
+- Quick development
 
-## Topics
+Spring Boot provides:
+- Auto-configuration
+- Embedded servers
+- Actuator
+- Starter dependencies
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [Spring Boot Fundamentals](01-spring-boot-fundamentals/) | 2 hours | Auto-configuration, starter dependencies |
-| 02 | [Configuration](02-spring-boot-configuration/) | 2 hours | Properties, YAML, externalized configuration |
-| 03 | [Web Starter](03-spring-boot-starter-web/) | 3 hours | REST controllers, embedded Tomcat, content negotiation |
-| 04 | [Data JPA Starter](04-spring-boot-starter-data-jpa/) | 3 hours | Repositories, queries, auditing |
-| 05 | [Validation Starter](05-spring-boot-starter-validation/) | 2 hours | Bean validation, custom constraints |
-| 06 | [Security Starter](06-spring-boot-starter-security/) | 3 hours | Auto-configured security, custom configuration |
+## Problem Statement
+How do you quickly develop production-ready Spring applications?
 
-## Key Concepts
+## Theory
 
-- Convention over configuration principle
-- Starter dependencies and dependency management
-- Auto-configuration and conditional beans
-- Externalized configuration and profiles
-- Embedded server architecture
+### Spring Boot Features
 
-## Enterprise Applications
+| Feature | Description |
+|---------|-------------|
+| Auto-Configuration | Automatic setup |
+| Embedded Server | Tomcat, Jetty, Undertow |
+| Actuator | Production monitoring |
+| Starters | Dependency management |
+| Externalized Config | Properties/YAML |
 
-Spring Boot is the industry standard for building production-ready Spring applications, enabling rapid development of microservices, web applications, and REST APIs with built-in monitoring and deployment features.
+### Starters
 
-## Estimated Total Time
+| Starter | Purpose |
+|---------|---------|
+| spring-boot-starter-web | Web applications |
+| spring-boot-starter-data-jpa | Database access |
+| spring-boot-starter-security | Security |
+| spring-boot-starter-test | Testing |
 
-**15 hours**
+## Internal Working
 
-## Module Project
+### Auto-Configuration
+1. @EnableAutoConfiguration
+2. Read META-INF/spring.factories
+3. Match conditions
+4. Configure beans
 
-Build a **Product Management REST API** that:
-- Uses Spring Boot auto-configuration
-- Implements CRUD operations with Spring Data JPA
-- Adds input validation and error handling
-- Secures endpoints with Spring Security
-- Monitors health and metrics with Actuator
+### Application Startup
+1. Create SpringApplication
+2. Run application
+3. Load ApplicationContext
+4. Refresh context
+5. Start embedded server
 
-## Resources
+## JVM Perspective
 
-- [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
-- [Spring Initializr](https://start.spring.io/)
+### Spring Boot JAR
+- Executable JAR format
+- Nested JARs
+- Custom classloader
+- Embedded server
 
-**Previous Module**: [Module 14: Spring Framework](../14-spring-framework/)
-**Next Module**: [Module 16: Spring Security](../16-spring-security/)
+### Memory
+- Embedded server overhead
+- Auto-configured pools
+- Actuator endpoints
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Spring Boot] --> B[Auto-Configuration]
+    A --> C[Embedded Server]
+    A --> D[Actuator]
+    A --> E[Externalized Config]
+    
+    B --> F[Starters]
+    B --> G[Conditions]
+    
+    C --> H[Tomcat]
+    C --> I[Jetty]
+    
+    D --> J[Health]
+    D --> K[Metrics]
+    D --> L[Endpoints]
+```
+
+## Syntax
+
+### Application Class
+```java
+@SpringBootApplication
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+```
+
+### REST Controller
+```java
+@RestController
+@RequestMapping("/api")
+public class ApiController {
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+    
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.findById(id);
+    }
+}
+```
+
+### Configuration
+```properties
+# application.properties
+server.port=8080
+spring.application.name=my-app
+
+# Database
+spring.datasource.url=jdbc:postgresql://localhost:5432/mydb
+spring.datasource.username=user
+spring.datasource.password=pass
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+## Easy Example
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+@SpringBootApplication
+@RestController
+public class EasyApplication {
+    
+    @GetMapping("/")
+    public String home() {
+        return "Hello, Spring Boot!";
+    }
+    
+    @GetMapping("/greet/{name}")
+    public String greet(@PathVariable String name) {
+        return "Hello, " + name + "!";
+    }
+    
+    public static void main(String[] args) {
+        SpringApplication.run(EasyApplication.class, args);
+    }
+}
+```
+
+## Medium Example
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+
+@SpringBootApplication
+@RestController
+@RequestMapping("/api/users")
+public class MediumApplication {
+    
+    private final Map<Long, User> users = new HashMap<>();
+    private Long nextId = 1L;
+    
+    @GetMapping
+    public List<User> getAll() {
+        return new ArrayList<>(users.values());
+    }
+    
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        return users.get(id);
+    }
+    
+    @PostMapping
+    public User create(@RequestBody User user) {
+        user.setId(nextId++);
+        users.put(user.getId(), user);
+        return user;
+    }
+    
+    @PutMapping("/{id}")
+    public User update(@PathVariable Long id, @RequestBody User user) {
+        user.setId(id);
+        users.put(id, user);
+        return user;
+    }
+    
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        users.remove(id);
+    }
+    
+    public static void main(String[] args) {
+        SpringApplication.run(MediumApplication.class, args);
+    }
+}
+
+class User {
+    private Long id;
+    private String name;
+    private String email;
+    
+    // Getters and setters
+}
+```
+
+## Hard Example
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import java.util.*;
+
+@SpringBootApplication
+public class HardApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(HardApplication.class, args);
+    }
+}
+
+@Service
+class OrderService {
+    private final OrderRepository repository;
+    private final PaymentService paymentService;
+    
+    OrderService(OrderRepository repository, PaymentService paymentService) {
+        this.repository = repository;
+        this.paymentService = paymentService;
+    }
+    
+    public Order createOrder(OrderRequest request) {
+        // Validate
+        if (request.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Order must have items");
+        }
+        
+        // Process payment
+        boolean paid = paymentService.charge(request.getTotal());
+        if (!paid) {
+            throw new PaymentException("Payment failed");
+        }
+        
+        // Save order
+        Order order = new Order(request);
+        order.setStatus("COMPLETED");
+        return repository.save(order);
+    }
+}
+
+@RestController
+@RequestMapping("/api/orders")
+class OrderController {
+    private final OrderService orderService;
+    
+    OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+    
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest request) {
+        Order order = orderService.createOrder(request);
+        return ResponseEntity.ok(order);
+    }
+}
+```
+
+## Enterprise Example
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.scheduling.annotation.*;
+import org.springframework.cache.annotation.*;
+import java.util.concurrent.*;
+
+@SpringBootApplication
+@EnableCaching
+@EnableScheduling
+public class EnterpriseApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(EnterpriseApplication.class, args);
+    }
+}
+
+@Service
+class CachedUserService {
+    private final UserRepository repository;
+    
+    CachedUserService(UserRepository repository) {
+        this.repository = repository;
+    }
+    
+    @Cacheable("users")
+    public User findById(Long id) {
+        // Simulate slow database call
+        return repository.findById(id).orElse(null);
+    }
+    
+    @CacheEvict("users")
+    public void evictCache(Long id) {
+        // Cache evicted
+    }
+}
+
+@Component
+class HealthCheck {
+    @Scheduled(fixedRate = 60000)
+    public void checkHealth() {
+        System.out.println("Health check: " + LocalDateTime.now());
+    }
+}
+```
+
+## Performance Considerations
+- Use embedded server for development
+- Configure connection pooling
+- Enable caching
+- Use async processing
+
+## Best Practices
+1. Use Spring Boot starters
+2. Externalize configuration
+3. Use profiles for environments
+4. Enable actuator for monitoring
+5. Use @Valid for validation
+
+## Common Mistakes
+1. Over-configuration
+2. Not using profiles
+3. Ignoring actuator
+4. Not validating input
+
+## Comparison Table
+
+| Feature | Spring Boot | Micronaut | Quarkus |
+|---------|-------------|-----------|---------|
+| Startup Time | Medium | Fast | Fast |
+| Memory | Medium | Low | Low |
+| Ecosystem | Large | Growing | Growing |
+| Native | Yes | Yes | Yes |
+
+## Interview Questions
+
+### Q1: What is Spring Boot?
+**Answer:** Framework for creating stand-alone Spring applications.
+
+### Q2: What is auto-configuration?
+**Answer:** Automatic configuration based on dependencies.
+
+### Q3: What are Spring Boot starters?
+**Answer:** Dependencies that include necessary libraries.
+
+### Q4: What is embedded server?
+**Answer:** Server bundled with the application (Tomcat, Jetty).
+
+### Q5: What is Actuator?
+**Answer:** Production monitoring and management features.
+
+## Summary
+Spring Boot enables rapid development of production-ready Spring applications.
+
+## References
+- Spring Boot Documentation
+- Spring Boot Guides
+- Baeldung Spring Boot

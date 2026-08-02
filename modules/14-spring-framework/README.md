@@ -1,73 +1,321 @@
 # Module 14: Spring Framework
 
 ## Overview
-
-This module introduces the Spring Framework, the most widely used Java enterprise framework. Students will learn dependency injection, aspect-oriented programming, configuration management, and core Spring concepts essential for building robust, testable enterprise applications.
+Spring Framework is the most popular Java framework for building enterprise applications. It provides Inversion of Control (IoC), Dependency Injection (DI), and comprehensive infrastructure support.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Implement dependency injection using Spring IoC container
-- Configure beans using annotations and XML
-- Understand bean lifecycle and scopes
-- Apply aspect-oriented programming (AOP) concepts
-- Use Spring configuration and profile management
-- Implement validation and scheduling
-- Work with Spring JDBC and transaction management
+- Understand Spring IoC container
+- Master dependency injection
+- Use Spring annotations
+- Understand bean lifecycle
+- Apply Spring best practices
 
 ## Prerequisites
+- Java fundamentals
+- OOP concepts
+- Design patterns
 
-- [Module 13: JDBC & Database](../13-jdbc-database/)
+## Why This Concept Exists
+Enterprise applications need:
+- Loose coupling
+- Testability
+- Configuration management
+- Infrastructure support
 
-## Topics
+Spring provides:
+- IoC container
+- Dependency injection
+- AOP support
+- Transaction management
+- MVC framework
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [Spring Fundamentals](01-spring-fundamentals/) | 2 hours | IoC container, Spring architecture |
-| 02 | [Dependency Injection](02-spring-dependency-injection/) | 3 hours | Constructor, setter, field injection |
-| 03 | [Bean Lifecycle](03-spring-bean-lifecycle/) | 2 hours | Initialization, destruction, callbacks |
-| 04 | [Bean Scopes](04-spring-scopes/) | 2 hours | Singleton, prototype, web scopes |
-| 05 | [Spring AOP](05-spring-aop/) | 3 hours | Aspects, pointcuts, advice types |
-| 06 | [AOP Advanced](06-spring-aop-advanced/) | 2 hours | Weaving, aspectj integration |
-| 07 | [Configuration](07-spring-configuration/) | 2 hours | Java config, profiles, property sources |
-| 08 | [Spring Events](08-spring-events/) | 1 hour | Application events, listeners |
-| 09 | [Validation](09-spring-validation/) | 2 hours | Bean validation, custom validators |
-| 10 | [Scheduling](10-spring-scheduling/) | 2 hours | Task scheduling, cron expressions |
-| 11 | [Caching](11-spring-cache/) | 2 hours | Cache abstraction, implementations |
-| 12 | [Spring JDBC](12-spring-jdbc/) | 2 hours | JdbcTemplate, NamedParameterJdbc |
-| 13 | [Transaction Management](13-spring-transaction/) | 3 hours | Declarative/programmatic transactions |
-| 14 | [Spring Testing](14-spring-testing/) | 2 hours | Test context, mocking, slices |
+## Problem Statement
+How do you build maintainable, testable enterprise applications?
 
-## Key Concepts
+## Theory
 
-- Inversion of Control (IoC) and Dependency Injection (DI)
-- Aspect-Oriented Programming (AOP) paradigm
-- Spring Bean Factory vs. ApplicationContext
-- Transaction propagation and isolation levels
-- Spring profiles and environment abstraction
+### Spring Concepts
 
-## Enterprise Applications
+| Concept | Description |
+|---------|-------------|
+| IoC | Inversion of Control |
+| DI | Dependency Injection |
+| Bean | Spring-managed object |
+| Container | Bean factory |
+| Context | Application configuration |
 
-Spring Framework is the foundation of modern Java enterprise development, providing comprehensive infrastructure support for building loosely coupled, testable, and maintainable applications across all tiers.
+### Bean Scopes
 
-## Estimated Total Time
+| Scope | Description |
+|-------|-------------|
+| Singleton | One instance per container |
+| Prototype | New instance each request |
+| Request | Per HTTP request |
+| Session | Per HTTP session |
 
-**30 hours**
+## Internal Working
 
-## Module Project
+### Spring Boot Startup
+1. Load configuration
+2. Create ApplicationContext
+3. Scan for components
+4. Create beans
+5. Inject dependencies
+6. Initialize beans
+7. Ready for use
 
-Build a **Spring Library Management System** that:
-- Implements dependency injection throughout the application
-- Uses AOP for logging and security
-- Manages transactions for book operations
-- Implements scheduling for due date notifications
-- Demonstrates Spring configuration and profiles
+## JVM Perspective
 
-## Resources
+### Spring Proxies
+- CGLIB for classes
+- JDK Dynamic Proxy for interfaces
+- AOP implementation
+- Transaction proxies
 
-- [Spring Documentation](https://docs.spring.io/spring-framework/reference/)
-- [Spring Guides](https://spring.io/guides)
+### Memory
+- Singleton beans cached
+- Prototype beans GC'd
+- Context manages lifecycle
 
-**Previous Module**: [Module 13: JDBC & Database](../13-jdbc-database/)
-**Next Module**: [Module 15: Spring Boot](../15-spring-boot/)
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Spring Framework] --> B[IoC Container]
+    A --> C[AOP]
+    A --> D[MVC]
+    A --> E[Data Access]
+    
+    B --> F[BeanFactory]
+    B --> G[ApplicationContext]
+    
+    C --> H[Aspects]
+    C --> I[Pointcuts]
+    
+    D --> J[DispatcherServlet]
+    D --> K[Controllers]
+    
+    E --> L[JDBC]
+    E --> M[JPA]
+    E --> N[Hibernate]
+```
+
+## Syntax
+
+### Configuration
+```java
+@Configuration
+@ComponentScan
+public class AppConfig {
+    @Bean
+    public GreetingService greetingService() {
+        return new GreetingService();
+    }
+}
+```
+
+### Dependency Injection
+```java
+@Service
+public class UserService {
+    private final UserRepository repository;
+    
+    @Autowired
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+}
+```
+
+### Bean Lifecycle
+```java
+@Component
+public class MyBean {
+    @PostConstruct
+    public void init() {
+        System.out.println("Bean initialized");
+    }
+    
+    @PreDestroy
+    public void cleanup() {
+        System.out.println("Bean destroyed");
+    }
+}
+```
+
+## Easy Example
+```java
+import org.springframework.context.annotation.*;
+import org.springframework.stereotype.*;
+
+@Component
+public class GreetingService {
+    public String greet(String name) {
+        return "Hello, " + name + "!";
+    }
+}
+
+@Configuration
+@ComponentScan
+public class AppConfig {
+    @Bean
+    public GreetingService greetingService() {
+        return new GreetingService();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = 
+            new AnnotationConfigApplicationContext(AppConfig.class);
+        
+        GreetingService service = context.getBean(GreetingService.class);
+        System.out.println(service.greet("World"));
+        context.close();
+    }
+}
+```
+
+## Medium Example
+```java
+import org.springframework.context.annotation.*;
+import org.springframework.stereotype.*;
+
+@Repository
+public class UserRepository {
+    public User findById(Long id) {
+        return new User(id, "John");
+    }
+}
+
+@Service
+public class UserService {
+    private final UserRepository repository;
+    
+    @Autowired
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+    
+    public User getUser(Long id) {
+        return repository.findById(id);
+    }
+}
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    private final UserService userService;
+    
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+    
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+}
+```
+
+## Hard Example
+```java
+import org.springframework.context.annotation.*;
+import org.springframework.stereotype.*;
+
+@Component
+@Scope("prototype")
+public class PrototypeBean {
+    private final String id = UUID.randomUUID().toString();
+    
+    public String getId() {
+        return id;
+    }
+}
+
+@Configuration
+public class ConditionalConfig {
+    @Bean
+    @ConditionalOnProperty(name = "feature.enabled", havingValue = "true")
+    public FeatureService featureService() {
+        return new FeatureService();
+    }
+}
+```
+
+## Enterprise Example
+```java
+import org.springframework.context.annotation.*;
+import org.springframework.stereotype.*;
+import org.springframework.scheduling.annotation.*;
+
+@Service
+public class AsyncService {
+    @Async
+    public CompletableFuture<String> processAsync() {
+        return CompletableFuture.completedFuture("Done");
+    }
+}
+
+@Component
+public class ScheduledTasks {
+    @Scheduled(fixedRate = 5000)
+    public void reportCurrentTime() {
+        System.out.println("Time: " + LocalDateTime.now());
+    }
+}
+```
+
+## Performance Considerations
+- Singleton beans are fastest
+- Lazy initialization reduces startup
+- Use component scanning wisely
+- Avoid circular dependencies
+
+## Best Practices
+1. Use constructor injection
+2. Keep beans focused
+3. Use profiles for environments
+4. Prefer @Configuration over XML
+5. Use @Qualifier for multiple beans
+
+## Common Mistakes
+1. Using field injection
+2. Circular dependencies
+3. Overusing singleton scope
+4. Not handling exceptions
+
+## Comparison Table
+
+| Feature | Spring | Guice | Dagger |
+|---------|--------|-------|--------|
+| DI Type | Runtime | Runtime | Compile-time |
+| AOP | Yes | Limited | No |
+| Configuration | Java/XML | Java | Annotations |
+| Performance | Good | Good | Best |
+
+## Interview Questions
+
+### Q1: What is IoC?
+**Answer:** Inversion of Control - framework manages object creation.
+
+### Q2: What is Dependency Injection?
+**Answer:** Providing dependencies from outside.
+
+### Q3: What are the types of DI?
+**Answer:** Constructor, setter, and field injection.
+
+### Q4: Why is constructor injection preferred?
+**Answer:** Immutable dependencies, testable, required dependencies clear.
+
+### Q5: What is a Spring Bean?
+**Answer:** An object managed by Spring IoC container.
+
+## Summary
+Spring Framework provides comprehensive infrastructure for enterprise Java development.
+
+## References
+- Spring Documentation
+- Spring in Action
+- Baeldung Spring Tutorial
