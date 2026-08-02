@@ -1,145 +1,533 @@
-# Object-Oriented Programming
+# Module 02: Object-Oriented Programming
 
 ## Overview
-
-Master Java's object-oriented programming paradigm through 33 progressive topics covering everything from basic classes to enterprise design principles.
+Object-Oriented Programming (OOP) is a programming paradigm based on objects that contain data and code. Java is a pure OOP language supporting encapsulation, inheritance, polymorphism, and abstraction.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Design and implement classes with proper encapsulation
-- Use inheritance and polymorphism effectively
-- Apply abstraction through interfaces and abstract classes
-- Implement SOLID principles in Java code
-- Create immutable objects and use records
-- Apply design principles to real-world problems
-- Build mini-projects demonstrating all OOP concepts
+- Master OOP principles
+- Understand classes and objects
+- Apply inheritance and polymorphism
+- Use interfaces and abstract classes
+- Implement design principles
 
 ## Prerequisites
+- Basic Java syntax
+- Variables and data types
+- Control flow statements
 
-- [Module 01: Java Fundamentals](../01-java-fundamentals/)
+## Why This Concept Exists
+OOP provides:
+- Code reusability
+- Modular design
+- Easier maintenance
+- Better organization
+- Real-world modeling
 
-## Topics
+## Problem Statement
+How do you organize code to be modular, reusable, and maintainable?
 
-### Foundations (01-08)
+## Theory
 
-| # | Topic | Focus | Est. Time |
-|---|-------|-------|-----------|
-| 01 | [Introduction](01-introduction/) | What is OOP, Why OOP, Paradigms | 1 hour |
-| 02 | [Classes](02-classes/) | Class definition, fields, methods | 2 hours |
-| 03 | [Objects](03-objects/) | Object creation, references, memory | 2 hours |
-| 04 | [Constructors](04-constructors/) | Default, parameterized, copy constructors | 2 hours |
-| 05 | [Methods](05-methods/) | Signatures, return types, parameters | 2 hours |
-| 06 | [this keyword](06-this-keyword/) | Reference to current object | 1 hour |
-| 07 | [Static members](07-static-members/) | Static fields, methods, blocks | 2 hours |
-| 08 | [Encapsulation](08-encapsulation/) | Access modifiers, getters/setters | 3 hours |
+### Four Pillars of OOP
 
-### Inheritance & Polymorphism (09-18)
+| Pillar | Description |
+|--------|-------------|
+| Encapsulation | Hiding internal state |
+| Inheritance | Creating new classes from existing |
+| Polymorphism | Multiple forms of behavior |
+| Abstraction | Hiding complexity |
 
-| # | Topic | Focus | Est. Time |
-|---|-------|-------|-----------|
-| 09 | [Inheritance](09-inheritance/) | extends, super, IS-A relationship | 3 hours |
-| 10 | [Polymorphism](10-polymorphism/) | Compile-time vs runtime | 3 hours |
-| 11 | [Abstraction](11-abstraction/) | Hiding complexity | 2 hours |
-| 12 | [Interfaces](12-interfaces/) | Contracts, default methods, multiple inheritance | 3 hours |
-| 13 | [Abstract classes](13-abstract-classes/) | Template method, partial implementation | 2 hours |
-| 14 | [Object class](14-object-class/) | toString, equals, hashCode, clone | 3 hours |
-| 15 | [Method overloading](15-method-overloading/) | Static polymorphism | 2 hours |
-| 16 | [Method overriding](16-method-overriding/) | Runtime polymorphism | 2 hours |
-| 17 | [Dynamic binding](17-dynamic-binding/) | Runtime method resolution | 2 hours |
-| 18 | [Static binding](18-static-binding/) | Compile-time method resolution | 1 hour |
+### Class Components
 
-### Relationships (19-22)
+| Component | Description |
+|-----------|-------------|
+| Fields | State (variables) |
+| Methods | Behavior (functions) |
+| Constructors | Object initialization |
+| Access Modifiers | Visibility control |
 
-| # | Topic | Focus | Est. Time |
-|---|-------|-------|-----------|
-| 19 | [Composition](19-composition/) | Strong HAS-A, lifecycle management | 3 hours |
-| 20 | [Association](20-association/) | General relationships | 2 hours |
-| 21 | [Aggregation](21-aggregation/) | Weak HAS-A, independent lifecycle | 2 hours |
-| 22 | [Dependency](22-dependency/) | USES-A, loose coupling | 2 hours |
+### Access Modifiers
 
-### Advanced Concepts (23-32)
+| Modifier | Class | Package | Subclass | World |
+|----------|-------|---------|----------|-------|
+| public | ✅ | ✅ | ✅ | ✅ |
+| protected | ✅ | ✅ | ✅ | ❌ |
+| default | ✅ | ✅ | ❌ | ❌ |
+| private | ✅ | ❌ | ❌ | ❌ |
 
-| # | Topic | Focus | Est. Time |
-|---|-------|-------|-----------|
-| 23 | [Immutable objects](23-immutable-objects/) | Thread safety, defensive copying | 3 hours |
-| 24 | [Records](24-records/) | Java 16+ data classes | 2 hours |
-| 25 | [Sealed classes](25-sealed-classes/) | Java 17+ restricted inheritance | 2 hours |
-| 26 | [Enums](26-enums/) | Type-safe constants with behavior | 3 hours |
-| 27 | [Inner classes](27-inner-classes/) | Member inner classes | 2 hours |
-| 28 | [Nested classes](28-nested-classes/) | Static nested classes | 2 hours |
-| 29 | [Anonymous classes](29-anonymous-classes/) | Inline implementations | 2 hours |
-| 30 | [Functional interfaces](30-functional-interfaces/) | Lambda expressions, method references | 3 hours |
-| 31 | [SOLID principles](31-solid-principles/) | Single, Open, Liskov, Interface, Dependency | 4 hours |
-| 32 | [Design principles](32-design-principles/) | DRY, KISS, YAGNI, SoC, LoD | 3 hours |
+## Internal Working
 
-### Projects (33)
+### Object Creation
+1. Class loading
+2. Memory allocation
+3. Constructor execution
+4. Reference assignment
 
-| # | Topic | Focus | Est. Time |
-|---|-------|-------|-----------|
-| 33 | [Mini projects](33-mini-projects/) | Progressive project-based learning | 20+ hours |
-
-## Module Project
-
-Build a **Bank Management System** demonstrating all OOP concepts:
-- Account hierarchy (Savings, Checking, Business)
-- Customer management
-- Transaction processing
-- Interest calculation
-- Overdraft protection
-
-See [Bank Management System](../01-java-fundamentals/project/) for the starter project.
-
-## Estimated Total Time
-
-- **Foundations**: 15 hours
-- **Inheritance & Polymorphism**: 23 hours
-- **Relationships**: 9 hours
-- **Advanced Concepts**: 24 hours
-- **Projects**: 20+ hours
-- **Total**: 90+ hours
-
-## Learning Path
-
-```mermaid
-flowchart TD
-    A[01-Introduction] --> B[02-Classes]
-    B --> C[03-Objects]
-    C --> D[04-Constructors]
-    D --> E[05-Methods]
-    E --> F[06-this keyword]
-    F --> G[07-Static members]
-    G --> H[08-Encapsulation]
-    H --> I[09-Inheritance]
-    I --> J[10-Polymorphism]
-    J --> K[11-Abstraction]
-    K --> L[12-Interfaces]
-    L --> M[13-Abstract classes]
-    M --> N[14-Object class]
-    N --> O[15-Overloading]
-    O --> P[16-Overriding]
-    P --> Q[17-Dynamic binding]
-    Q --> R[18-Static binding]
-    R --> S[19-Composition]
-    S --> T[20-Association]
-    T --> U[21-Aggregation]
-    U --> V[22-Dependency]
-    V --> W[23-Immutable objects]
-    W --> X[24-Records]
-    X --> Y[25-Sealed classes]
-    Y --> Z[26-Enums]
-    Z --> AA[27-Inner classes]
-    AA --> AB[28-Nested classes]
-    AB --> AC[29-Anonymous classes]
-    AC --> AD[30-Functional interfaces]
-    AD --> AE[31-SOLID principles]
-    AE --> AF[32-Design principles]
-    AF --> AG[33-Mini projects]
+### Memory Model
+```
+Stack:                          Heap:
+┌──────────────────┐          ┌──────────────────┐
+│ main() frame     │          │ Object: Person    │
+│  - person ref ───│──────────│  - name: "John"   │
+│                  │          │  - age: 25        │
+└──────────────────┘          └──────────────────┘
 ```
 
-## Resources
+## JVM Perspective
 
-- [Java Documentation](https://docs.oracle.com/en/java/)
-- [Effective Java](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Clean Code](https://www.oreilly.com/library/view/clean-code/9780136083238/)
+### Class Loading
+- Bootstrap classloader
+- Extension classloader
+- Application classloader
+- Custom classloaders
+
+### Object Header
+- Mark word (hashcode, age, lock)
+- Klass pointer
+- Instance data
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Class] --> B[Fields]
+    A --> C[Methods]
+    A --> D[Constructors]
+    
+    B --> E[Instance Variables]
+    B --> F[Static Variables]
+    
+    C --> G[Instance Methods]
+    C --> H[Static Methods]
+    
+    D --> I[Default]
+    D --> J[Parameterized]
+    D --> K[Copy]
+```
+
+## Flow Diagram
+
+```mermaid
+graph TD
+    A[Define Class] --> B[Create Object]
+    B --> C[Call Constructor]
+    C --> D[Initialize Fields]
+    D --> E[Use Object]
+    E --> F[Garbage Collection]
+```
+
+## Syntax
+
+### Class Definition
+```java
+public class Person {
+    // Fields
+    private String name;
+    private int age;
+    
+    // Default constructor
+    public Person() {
+        this.name = "Unknown";
+        this.age = 0;
+    }
+    
+    // Parameterized constructor
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    // Methods
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void greet() {
+        System.out.println("Hello, I'm " + name);
+    }
+}
+```
+
+### Inheritance
+```java
+public class Employee extends Person {
+    private double salary;
+    
+    public Employee(String name, int age, double salary) {
+        super(name, age);
+        this.salary = salary;
+    }
+    
+    public double getSalary() {
+        return salary;
+    }
+    
+    @Override
+    public void greet() {
+        System.out.println("Hello, I'm " + getName() + " and I work here");
+    }
+}
+```
+
+### Polymorphism
+```java
+public class Animal {
+    public void speak() {
+        System.out.println("Animal speaks");
+    }
+}
+
+public class Dog extends Animal {
+    @Override
+    public void speak() {
+        System.out.println("Dog barks");
+    }
+}
+
+public class Cat extends Animal {
+    @Override
+    public void speak() {
+        System.out.println("Cat meows");
+    }
+}
+
+// Polymorphic code
+Animal animal = new Dog();
+animal.speak(); // Dog barks
+```
+
+### Abstract Classes
+```java
+public abstract class Shape {
+    protected String color;
+    
+    public Shape(String color) {
+        this.color = color;
+    }
+    
+    public abstract double area();
+    public abstract double perimeter();
+    
+    public void display() {
+        System.out.println("Color: " + color + ", Area: " + area());
+    }
+}
+
+public class Circle extends Shape {
+    private double radius;
+    
+    public Circle(String color, double radius) {
+        super(color);
+        this.radius = radius;
+    }
+    
+    @Override
+    public double area() {
+        return Math.PI * radius * radius;
+    }
+    
+    @Override
+    public double perimeter() {
+        return 2 * Math.PI * radius;
+    }
+}
+```
+
+### Interfaces
+```java
+public interface Drawable {
+    void draw();
+    
+    default void fill() {
+        System.out.println("Filling shape");
+    }
+}
+
+public interface Resizable {
+    void resize(double factor);
+}
+
+public class Rectangle implements Drawable, Resizable {
+    private double width, height;
+    
+    @Override
+    public void draw() {
+        System.out.println("Drawing rectangle");
+    }
+    
+    @Override
+    public void resize(double factor) {
+        width *= factor;
+        height *= factor;
+    }
+}
+```
+
+## Easy Example
+```java
+public class Car {
+    private String brand;
+    private String model;
+    private int year;
+    
+    public Car(String brand, String model, int year) {
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+    }
+    
+    public void start() {
+        System.out.println(brand + " " + model + " started");
+    }
+    
+    public void stop() {
+        System.out.println(brand + " " + model + " stopped");
+    }
+    
+    public static void main(String[] args) {
+        Car car = new Car("Toyota", "Camry", 2024);
+        car.start();
+        car.stop();
+    }
+}
+```
+
+## Medium Example
+```java
+public class BankAccount {
+    private String accountId;
+    private double balance;
+    private String owner;
+    
+    public BankAccount(String accountId, String owner, double initialBalance) {
+        this.accountId = accountId;
+        this.owner = owner;
+        this.balance = initialBalance;
+    }
+    
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposited: $" + amount);
+        }
+    }
+    
+    public boolean withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrew: $" + amount);
+            return true;
+        }
+        System.out.println("Insufficient funds");
+        return false;
+    }
+    
+    public double getBalance() {
+        return balance;
+    }
+    
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount("001", "John", 1000);
+        account.deposit(500);
+        account.withdraw(200);
+        System.out.println("Balance: $" + account.getBalance());
+    }
+}
+```
+
+## Hard Example
+```java
+// Composition over inheritance
+public class Engine {
+    private String type;
+    private int horsepower;
+    
+    public Engine(String type, int horsepower) {
+        this.type = type;
+        this.horsepower = horsepower;
+    }
+    
+    public void start() {
+        System.out.println(type + " engine started");
+    }
+}
+
+public class Car {
+    private String make;
+    private Engine engine;  // Composition
+    
+    public Car(String make, Engine engine) {
+        this.make = make;
+        this.engine = engine;
+    }
+    
+    public void start() {
+        System.out.println("Starting " + make);
+        engine.start();
+    }
+}
+
+// Usage
+Engine v6 = new Engine("V6", 300);
+Car car = new Car("Toyota", v6);
+car.start();
+```
+
+## Enterprise Example
+```java
+// SOLID principles example
+public interface PaymentProcessor {
+    PaymentResult process(PaymentRequest request);
+}
+
+public class CreditCardProcessor implements PaymentProcessor {
+    @Override
+    public PaymentResult process(PaymentRequest request) {
+        // Process credit card
+        return new PaymentResult(true, "Success");
+    }
+}
+
+public class PayPalProcessor implements PaymentProcessor {
+    @Override
+    public PaymentResult process(PaymentRequest request) {
+        // Process PayPal
+        return new PaymentResult(true, "Success");
+    }
+}
+
+// Dependency injection
+public class OrderService {
+    private final PaymentProcessor processor;
+    
+    public OrderService(PaymentProcessor processor) {
+        this.processor = processor;
+    }
+    
+    public void processOrder(Order order) {
+        PaymentResult result = processor.process(order.getPayment());
+        if (result.isSuccess()) {
+            completeOrder(order);
+        }
+    }
+}
+```
+
+## Performance Considerations
+- Object creation has overhead
+- Inheritance adds method lookup cost
+- Polymorphism uses vtable
+- Composition is generally preferred
+
+## Time & Space Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| Object creation | O(1) | O(fields) |
+| Method call | O(1) | O(1) |
+| Inheritance lookup | O(depth) | O(1) |
+| Interface call | O(1) | O(1) |
+
+## Thread Safety
+- Objects are not thread-safe by default
+- Use synchronization for shared state
+- Immutable objects are thread-safe
+- Thread-local storage for isolation
+
+## Best Practices
+1. Favor composition over inheritance
+2. Program to interfaces
+3. Keep classes small and focused
+4. Use appropriate access modifiers
+5. Make classes immutable when possible
+
+## Common Mistakes
+1. Deep inheritance hierarchies
+2. Exposing internal state
+3. Circular dependencies
+4. God classes
+
+## Comparison Table
+
+| Feature | Inheritance | Composition |
+|---------|-------------|-------------|
+| Coupling | Tight | Loose |
+| Flexibility | Limited | High |
+| Reuse | IS-A relationship | HAS-A relationship |
+| Testing | Harder | Easier |
+
+## Interview Questions
+
+### Q1: What are the four pillars of OOP?
+**Answer:** Encapsulation, Inheritance, Polymorphism, Abstraction.
+
+### Q2: What is the difference between abstract class and interface?
+**Answer:** Abstract class can have state and constructors, interface cannot (until Java 8).
+
+### Q3: What is polymorphism?
+**Answer:** Ability of objects to take multiple forms through inheritance.
+
+### Q4: What is encapsulation?
+**Answer:** Hiding internal state and providing public methods for access.
+
+### Q5: What is the difference between == and .equals()?
+**Answer:** == checks reference equality, .equals() checks value equality.
+
+### Q6: What is method overriding?
+**Answer:** Redefining parent class method in child class.
+
+### Q7: What is method overloading?
+**Answer:** Multiple methods with same name but different parameters.
+
+### Q8: What is the difference between composition and inheritance?
+**Answer:** Composition uses HAS-A relationship, inheritance uses IS-A.
+
+### Q9: What is a design pattern?
+**Answer:** Reusable solution to common software design problems.
+
+### Q10: What is SOLID?
+**Answer:** Five OOP design principles for maintainable code.
+
+### Q11: What is the Liskov Substitution Principle?
+**Answer:** Objects of superclass should be replaceable with subclass objects.
+
+### Q12: What is dependency injection?
+**Answer:** Providing dependencies from outside rather than creating internally.
+
+### Q13: What is an immutable class?
+**Answer:** Class whose objects cannot be modified after creation.
+
+### Q14: What is the difference between shallow and deep copy?
+**Answer:** Shallow copies references, deep copies the objects.
+
+### Q15: What is a value object?
+**Answer:** Immutable object representing a value without identity.
+
+## Exercises
+
+### Easy
+1. Create a Person class with constructors
+2. Implement inheritance with Animal hierarchy
+3. Use polymorphism with different shapes
+
+### Medium
+1. Design a library management system
+2. Implement a payment processing system
+3. Create a vehicle rental system
+
+### Hard
+1. Design a complete e-commerce system
+2. Implement a banking system with accounts
+3. Create a game character hierarchy
+
+## Summary
+OOP is fundamental to Java development. Master the four pillars and apply design principles for maintainable code.
+
+## References
+- Oracle Java Documentation: OOP
+- Effective Java by Joshua Bloch
+- Head First Design Patterns
