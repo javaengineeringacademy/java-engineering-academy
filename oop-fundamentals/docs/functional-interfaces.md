@@ -797,3 +797,962 @@ Functional interfaces are the foundation of functional programming in Java. Key 
 - **Use cases**: Callbacks, strategies, pipelines, streams
 
 **Next Steps**: Learn about sealed classes for restricted hierarchies, or design patterns that use functional interfaces.
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    JAVA 21 FUNCTIONAL INTERFACES            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              java.util.function Package              │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │                                                     │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐         │   │
+│  │  │Predicate │  │ Function │  │ Consumer │         │   │
+│  │  │  <T>     │  │  <T,R>   │  │  <T>     │         │   │
+│  │  └────┬─────┘  └────┬─────┘  └────┬─────┘         │   │
+│  │       │              │              │               │   │
+│  │       ▼              ▼              ▼               │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐         │   │
+│  │  │ Supplier │  │UnaryOp   │  │BinaryOp  │         │   │
+│  │  │  <T>     │  │  <T>     │  │  <T>     │         │   │
+│  │  └──────────┘  └──────────┘  └──────────┘         │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              Implementation Mechanisms              │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │                                                     │   │
+│  │  Lambda Expressions ──► Anonymous Classes           │   │
+│  │         │                      │                    │   │
+│  │         ▼                      ▼                    │   │
+│  │  Method References ──► Bytecode Generation          │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              Composition Pipeline                   │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │                                                     │   │
+│  │  Input ──► andThen() ──► andThen() ──► Output       │   │
+│  │    ▲                                       │        │   │
+│  │    └───────────── compose() ◄─────────────┘        │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Flow Diagram
+
+```
+┌──────────────┐
+│   Start      │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐     No
+│ Need to      ├──────────┐
+│ pass behavior│          │
+│ as parameter?│          │
+└──────┬───────┘          │
+       │ Yes              │
+       ▼                  ▼
+┌──────────────┐  ┌──────────────┐
+│ Define or    │  │ Use regular  │
+│ use existing │  │ method/class │
+│ functional   │  └──────────────┘
+│ interface?   │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐     Yes
+│ Has exactly  ├──────────┐
+│ one abstract │          │
+│ method?      │          │
+└──────┬───────┘          │
+       │ No               │
+       ▼                  ▼
+┌──────────────┐  ┌──────────────┐
+│ Use @        │  │ Apply        │
+│ Functional   │  │ @Functional  │
+│ Interface    │  │ Interface    │
+│ anyway       │  │ annotation   │
+└──────┬───────┘  └──────┬───────┘
+       │                 │
+       │                 ▼
+       │          ┌──────────────┐
+       │          │ Choose       │
+       │          │ syntax:      │
+       │          │ Lambda or    │
+       │          │ Method Ref?  │
+       │          └──────┬───────┘
+       │                 │
+       │      ┌──────────┴──────────┐
+       │      ▼                     ▼
+       │ ┌──────────────┐  ┌──────────────┐
+       │ │ Write lambda │  │ Use ::       │
+       │ │ expression   │  │ method ref   │
+       │ └──────┬───────┘  └──────┬───────┘
+       │        │                 │
+       │        └────────┬────────┘
+       │                 │
+       │                 ▼
+       │          ┌──────────────┐
+       │          │ Apply to     │
+       │          │ streams or   │
+       │          │ higher-order │
+       │          │ functions    │
+       │          └──────┬───────┘
+       │                 │
+       └────────┬────────┘
+                │
+                ▼
+         ┌──────────────┐
+         │     End      │
+         └──────────────┘
+```
+
+## Time Complexity
+
+| Operation | Complexity | Description |
+|-----------|------------|-------------|
+| Lambda creation | O(1) | Compiling a lambda is constant time |
+| Method reference | O(1) | Same as lambda, just syntactic sugar |
+| Single `apply()` call | O(1) | Direct method invocation |
+| `Predicate.test()` | O(1) typically | Depends on implementation |
+| `Function.apply()` | O(1) typically | Depends on implementation |
+| `andThen()` composition | O(1) | Creates composed wrapper, no execution |
+| `compose()` composition | O(1) | Creates composed wrapper, no execution |
+| Stream `filter(Predicate)` | O(n) | Evaluates predicate per element |
+| Stream `map(Function)` | O(n) | Applies function per element |
+| Stream `reduce(BinaryOperator)` | O(n) | Combines n elements |
+
+### Benchmarking Example
+
+```java
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
+
+public class ComplexityBenchmark {
+    
+    static long benchmark(Runnable operation, int iterations) {
+        long start = System.nanoTime();
+        for (int i = 0; i < iterations; i++) {
+            operation.run();
+        }
+        return System.nanoTime() - start;
+    }
+    
+    public static void main(String[] args) {
+        int iterations = 10_000_000;
+        
+        // O(1) lambda creation vs execution
+        IntUnaryOperator square = x -> x * x;
+        long lambdaTime = benchmark(() -> square.applyAsInt(42), iterations);
+        System.out.println("Lambda execution: " + lambdaTime / 1_000_000 + "ms");
+        
+        // Composition overhead
+        IntUnaryOperator doubleIt = x -> x * 2;
+        IntUnaryOperator addTen = x -> x + 10;
+        IntUnaryOperator composed = doubleIt.andThen(addTen);
+        long composedTime = benchmark(() -> composed.applyAsInt(42), iterations);
+        System.out.println("Composed execution: " + composedTime / 1_000_000 + "ms");
+        
+        // Direct method call for comparison
+        long directTime = benchmark(() -> {
+            int result = 42;
+            result = result * 2;
+            result = result + 10;
+        }, iterations);
+        System.out.println("Direct execution: " + directTime / 1_000_000 + "ms");
+    }
+}
+```
+
+## Space Complexity
+
+| Object Created | Space | Notes |
+|----------------|-------|-------|
+| Lambda instance | O(1) | JVM may cache and reuse |
+| Method reference | O(1) | Same as lambda |
+| `andThen()` chain | O(k) | k = chain depth |
+| `compose()` chain | O(k) | k = chain depth |
+| Closure capturing | O(c) | c = captured variables |
+
+### Memory Analysis Example
+
+```java
+import java.util.function.*;
+import java.util.List;
+import java.util.ArrayList;
+
+public class SpaceComplexityDemo {
+    
+    // Captures no variables - can be cached
+    static final Function<Integer, Integer> CACHED_LAMBDA = x -> x * 2;
+    
+    // Captures variable - new instance each time (if effectively non-final)
+    static Function<Integer, Integer> createMultiplier(int factor) {
+        return x -> x * factor; // Captures 'factor'
+    }
+    
+    public static void main(String[] args) {
+        // These may reuse the same object (JVM optimization)
+        Function<Integer, Integer> f1 = x -> x + 1;
+        Function<Integer, Integer> f2 = x -> x + 1;
+        System.out.println("Same instance? " + (f1 == f2)); // Often true
+        
+        // Composition creates new objects
+        Function<Integer, Integer> addOne = x -> x + 1;
+        Function<Integer, Integer> doubleIt = x -> x * 2;
+        Function<Integer, Integer> tripleIt = x -> x * 3;
+        
+        // Chain depth 2: addOne -> doubleIt
+        Function<Integer, Integer> chain2 = addOne.andThen(doubleIt);
+        
+        // Chain depth 3: addOne -> doubleIt -> tripleIt
+        Function<Integer, Integer> chain3 = addOne.andThen(doubleIt).andThen(tripleIt);
+        
+        System.out.println("Chain2 result: " + chain2.apply(5)); // (5+1)*2 = 12
+        System.out.println("Chain3 result: " + chain3.apply(5)); // ((5+1)*2)*3 = 36
+        
+        // Each composition adds one wrapper object to memory
+        // Prefer flatMap over nested andThen when possible
+    }
+}
+```
+
+## Thread Safety
+
+### Immutable Functional Interfaces (Thread-Safe)
+
+```java
+import java.util.function.*;
+
+public class ThreadSafeFunctional {
+    
+    // Predicate: stateless, thread-safe
+    static final Predicate<String> IS_EMPTY = String::isEmpty;
+    
+    // Function: stateless, thread-safe
+    static final Function<String, Integer> TO_LENGTH = String::length;
+    
+    // Consumer: stateless, thread-safe
+    static final Consumer<String> PRINTER = System.out::println;
+    
+    public static void main(String[] args) throws InterruptedException {
+        // Safe to share across threads
+        List<Thread> threads = new ArrayList<>();
+        List<String> names = List.of("Alice", "Bob", "Charlie", "Diana");
+        
+        for (int i = 0; i < 4; i++) {
+            final int index = i;
+            Thread t = new Thread(() -> {
+                String name = names.get(index);
+                if (IS_EMPTY.test(name)) {
+                    PRINTER.accept("Empty: " + name);
+                } else {
+                    PRINTER.accept("Length " + TO_LENGTH.apply(name) + ": " + name);
+                }
+            });
+            threads.add(t);
+            t.start();
+        }
+        
+        for (Thread t : threads) {
+            t.join();
+        }
+    }
+}
+```
+
+### Mutable State Pitfall
+
+```java
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
+
+public class MutableStatePitfall {
+    
+    public static void main(String[] args) {
+        // WRONG: Race condition
+        // int[] counter = {0};
+        // IntConsumer increment = i -> counter[0]++; // Not thread-safe
+        
+        // RIGHT: Use AtomicReference
+        AtomicInteger safeCounter = new AtomicInteger(0);
+        IntConsumer safeIncrement = safeCounter::incrementAndGet;
+        
+        // Simulate concurrent access
+        Thread[] threads = new Thread[10];
+        for (int i = 0; i < 10; i++) {
+            threads[i] = new Thread(() -> {
+                for (int j = 0; j < 1000; j++) {
+                    safeIncrement.accept(j);
+                }
+            });
+        }
+        
+        for (Thread t : threads) t.start();
+        for (Thread t : threads) {
+            try { t.join(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        }
+        
+        System.out.println("Safe counter: " + safeCounter.get()); // 10000
+    }
+}
+```
+
+## Comparison Table
+
+| Feature | Functional Interface | Abstract Class | Regular Interface |
+|---------|---------------------|----------------|-------------------|
+| Abstract methods | Exactly 1 | 0 or more | 0 or more |
+| Default methods | Yes | Yes | Yes |
+| Static methods | Yes | Yes | Yes |
+| Instance fields | No | Yes | No (only static final) |
+| Constructor | No | Yes | No |
+| Instantiation via lambda | Yes | No | No |
+| Multiple inheritance | No (single method) | Yes | Yes |
+| @FunctionalInterface | Recommended | N/A | N/A |
+
+### Java Functional Interfaces vs C++ Function Objects
+
+| Aspect | Java | C++ |
+|--------|------|-----|
+| Mechanism | Interface + lambda | `std::function` + functor |
+| Type safety | Full | Full |
+| Overhead | Indirect (invokedynamic) | Direct (template) |
+| Multiple methods | No (1 abstract only) | Yes (operator()) |
+| State capture | Via closure | Via lambda capture |
+
+## Decision Tree
+
+```
+Should you use a functional interface?
+
+Do you need to pass behavior as a parameter?
+├── Yes
+│   ├── Is the behavior a single method call?
+│   │   ├── Yes → Use method reference (ClassName::methodName)
+│   │   └── No
+│   │       ├── Is it a simple expression?
+│   │       │   ├── Yes → Use lambda expression
+│   │       │   └── No → Consider named class + @FunctionalInterface
+│   │       │
+│   │       └── Do you need to compose multiple behaviors?
+│   │           ├── Yes → Use andThen()/compose() pipeline
+│   │           └── No → Single functional interface
+│   │
+│   └── Does the behavior need state?
+│       ├── Yes → Use class with mutable fields (not functional interface)
+│       └── No → Use functional interface
+│
+└── No
+    └── Use a regular interface/abstract class
+```
+
+### Code Decision Helper
+
+```java
+import java.util.function.*;
+
+public class DecisionHelper {
+    
+    // DECISION: Simple callback → use Consumer
+    public static <T> void executeWithCallback(T value, Consumer<T> callback) {
+        callback.accept(value);
+    }
+    
+    // DECISION: Validation → use Predicate
+    public static <T> boolean validate(T value, Predicate<T> validator) {
+        return validator.test(value);
+    }
+    
+    // DECISION: Transformation → use Function
+    public static <T, R> R transform(T input, Function<T, R> transformer) {
+        return transformer.apply(input);
+    }
+    
+    // DECISION: Lazy initialization → use Supplier
+    public static <T> T lazilyInitialize(Supplier<T> factory) {
+        return factory.get();
+    }
+    
+    public static void main(String[] args) {
+        // Using each decision path
+        executeWithCallback("Hello", s -> System.out.println(s.toUpperCase()));
+        
+        boolean valid = validate(42, n -> n > 0 && n < 100);
+        System.out.println("Valid: " + valid);
+        
+        String result = transform(42, n -> "Number: " + n);
+        System.out.println(result);
+        
+        String lazy = lazilyInitialize(() -> "Expensive initialization");
+        System.out.println(lazy);
+    }
+}
+```
+
+## Assignments
+
+### Assignment 1: Event Handler System (Easy)
+
+Create a generic event handler system using functional interfaces.
+
+```java
+@FunctionalInterface
+public interface EventHandler<T> {
+    void handle(T event);
+    
+    default EventHandler<T> andThen(EventHandler<T> after) {
+        return event -> {
+            handle(event);
+            after.handle(event);
+        };
+    }
+}
+
+public class EventEmitter<T> {
+    private final List<EventHandler<T>> handlers = new ArrayList<>();
+    
+    public void on(EventHandler<T> handler) {
+        handlers.add(handler);
+    }
+    
+    public void emit(T event) {
+        handlers.forEach(h -> h.handle(event));
+    }
+    
+    public static void main(String[] args) {
+        EventEmitter<String> emitter = new EventEmitter<>();
+        
+        emitter.on(event -> System.out.println("Logger: " + event));
+        emitter.on(event -> System.out.println("Metrics: " + event.length()));
+        
+        emitter.emit("User logged in");
+    }
+}
+```
+
+### Assignment 2: Data Pipeline Builder (Medium)
+
+Build a reusable data pipeline using function composition.
+
+```java
+import java.util.function.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class PipelineBuilder<T> {
+    private Function<T, T> pipeline = Function.identity();
+    
+    public PipelineBuilder<T> addStep(Function<T, T> step) {
+        pipeline = pipeline.andThen(step);
+        return this;
+    }
+    
+    public PipelineBuilder<T> addFilter(Predicate<T> filter) {
+        // This is simplified; in practice you'd work with Stream<T>
+        return this;
+    }
+    
+    public Function<T, T> build() {
+        return pipeline;
+    }
+    
+    public T execute(T input) {
+        return pipeline.apply(input);
+    }
+    
+    public static void main(String[] args) {
+        PipelineBuilder<String> pipeline = new PipelineBuilder<>();
+        
+        Function<String, String> processor = pipeline
+            .addStep(String::trim)
+            .addStep(String::toLowerCase)
+            .addStep(s -> s.replaceAll("\\s+", "_"))
+            .build();
+        
+        System.out.println(processor.apply("  Hello World  ")); // hello_world
+        System.out.println(processor.apply("  Java 21  is  GREAT  ")); // java_21_is_great
+    }
+}
+```
+
+### Assignment 3: Functional Cache (Hard)
+
+Implement a memoization utility using functional interfaces.
+
+```java
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
+public class Memoizer<T, R> {
+    private final Map<T, R> cache = new ConcurrentHashMap<>();
+    private final Function<T, R> function;
+    
+    private Memoizer(Function<T, R> function) {
+        this.function = function;
+    }
+    
+    public static <T, R> Memoizer<T, R> memoize(Function<T, R> function) {
+        return new Memoizer<>(function);
+    }
+    
+    public R apply(T input) {
+        return cache.computeIfAbsent(input, function);
+    }
+    
+    public int cacheSize() {
+        return cache.size();
+    }
+    
+    public static void main(String[] args) {
+        // Expensive computation
+        Memoizer<Integer, Long> fibonacci = Memoizer.memoize(n -> {
+            if (n <= 1) return (long) n;
+            long a = 0, b = 1;
+            for (int i = 2; i <= n; i++) {
+                long temp = a + b;
+                a = b;
+                b = temp;
+            }
+            return b;
+        });
+        
+        System.out.println(fibonacci.apply(50)); // 12586269025
+        System.out.println("Cache size: " + fibonacci.cacheSize()); // 1
+        
+        System.out.println(fibonacci.apply(50)); // 12586269025 (from cache)
+        System.out.println("Cache size: " + fibonacci.cacheSize()); // 1
+    }
+}
+```
+
+## Mini Project: Functional Configuration System
+
+Build a configuration system that uses functional interfaces for transformation, validation, and defaults.
+
+```java
+import java.util.*;
+import java.util.function.*;
+
+public class ConfigEntry<T> {
+    private final String key;
+    private final T defaultValue;
+    private final Function<String, Optional<T>> parser;
+    private final Predicate<T> validator;
+    private final Function<T, T> transformer;
+    
+    private ConfigEntry(Builder<T> builder) {
+        this.key = builder.key;
+        this.defaultValue = builder.defaultValue;
+        this.parser = builder.parser;
+        this.validator = builder.validator;
+        this.transformer = builder.transformer;
+    }
+    
+    public Optional<T> parse(String rawValue) {
+        return parser.apply(rawValue)
+            .map(transformer)
+            .filter(validator);
+    }
+    
+    public T getValue(Map<String, String> config) {
+        return config.containsKey(key)
+            ? parse(config.get(key)).orElse(defaultValue)
+            : defaultValue;
+    }
+    
+    public static <T> Builder<T> builder(String key) {
+        return new Builder<>(key);
+    }
+    
+    public static class Builder<T> {
+        private final String key;
+        private T defaultValue;
+        private Function<String, Optional<T>> parser;
+        private Predicate<T> validator = v -> true;
+        private Function<T, T> transformer = Function.identity();
+        
+        Builder(String key) { this.key = key; }
+        
+        public Builder<T> defaultValue(T val) { this.defaultValue = val; return this; }
+        public Builder<T> parser(Function<String, Optional<T>> p) { this.parser = p; return this; }
+        public Builder<T> validator(Predicate<T> v) { this.validator = v; return this; }
+        public Builder<T> transformer(Function<T, T> t) { this.transformer = t; return this; }
+        
+        public ConfigEntry<T> build() { return new ConfigEntry<>(this); }
+    }
+}
+
+class FunctionalConfig {
+    private final Map<String, String> rawConfig;
+    private final List<String> errors = new ArrayList<>();
+    
+    public FunctionalConfig(Map<String, String> rawConfig) {
+        this.rawConfig = rawConfig;
+    }
+    
+    public <T> T get(ConfigEntry<T> entry) {
+        T value = entry.getValue(rawConfig);
+        if (value == null) {
+            errors.add("Invalid value for key: " + entry.key);
+        }
+        return value;
+    }
+    
+    public List<String> getErrors() { return errors; }
+    
+    public static void main(String[] args) {
+        Map<String, String> props = Map.of(
+            "server.port", "8080",
+            "server.host", "localhost",
+            "app.debug", "true",
+            "app.max.connections", "200"
+        );
+        
+        // Define configuration entries with functional interfaces
+        ConfigEntry<Integer> port = ConfigEntry.<Integer>builder("server.port")
+            .defaultValue(80)
+            .parser(s -> { try { return Optional.of(Integer.parseInt(s)); } catch (Exception e) { return Optional.empty(); } })
+            .validator(p -> p > 0 && p < 65535)
+            .transformer(p -> p)
+            .build();
+        
+        ConfigEntry<String> host = ConfigEntry.<String>builder("server.host")
+            .defaultValue("0.0.0.0")
+            .parser(Optional::of)
+            .validator(h -> !h.isEmpty())
+            .transformer(String::toLowerCase)
+            .build();
+        
+        ConfigEntry<Boolean> debug = ConfigEntry.<Boolean>builder("app.debug")
+            .defaultValue(false)
+            .parser(s -> Optional.of(Boolean.parseBoolean(s)))
+            .validator(Objects::nonNull)
+            .build();
+        
+        ConfigEntry<Integer> maxConn = ConfigEntry.<Integer>builder("app.max.connections")
+            .defaultValue(10)
+            .parser(s -> { try { return Optional.of(Integer.parseInt(s)); } catch (Exception e) { return Optional.empty(); } })
+            .validator(n -> n > 0)
+            .transformer(n -> Math.min(n, 1000)) // Cap at 1000
+            .build();
+        
+        FunctionalConfig config = new FunctionalConfig(props);
+        
+        System.out.println("Port: " + config.get(port));       // 8080
+        System.out.println("Host: " + config.get(host));       // localhost
+        System.out.println("Debug: " + config.get(debug));     // true
+        System.out.println("Max Conn: " + config.get(maxConn)); // 200
+        
+        if (!config.getErrors().isEmpty()) {
+            System.out.println("Errors: " + config.getErrors());
+        }
+    }
+}
+```
+
+## Use Cases
+
+| Use Case | Functional Interface | Example |
+|----------|---------------------|---------|
+| Event handling | `Consumer<T>` | Button click listener |
+| Data validation | `Predicate<T>` | Form field validation |
+| Data transformation | `Function<T,R>` | Map a stream element |
+| Lazy initialization | `Supplier<T>` | Database connection factory |
+| Combining values | `BinaryOperator<T>` | Reduce operation |
+| Logging | `Consumer<T>` | Debug output |
+| Caching | `Function<T,R>` | Memoization wrapper |
+| Strategy pattern | Any single-method | Sorting algorithm selection |
+
+### Use Case: Retry Mechanism
+
+```java
+import java.util.function.Supplier;
+import java.util.function.Predicate;
+
+public class RetryUtil {
+    
+    public static <T> T retryWithPredicate(
+            Supplier<T> action,
+            Predicate<T> isSuccess,
+            int maxAttempts) {
+        
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            T result = action.get();
+            if (isSuccess.test(result)) {
+                return result;
+            }
+            System.out.println("Attempt " + attempt + " failed, retrying...");
+        }
+        throw new RuntimeException("All " + maxAttempts + " attempts failed");
+    }
+    
+    public static void main(String[] args) {
+        String result = retryWithPredicate(
+            () -> {
+                // Simulate flaky operation
+                double random = Math.random();
+                return random > 0.7 ? "SUCCESS" : "FAIL";
+            },
+            "SUCCESS"::equals,
+            10
+        );
+        System.out.println("Got: " + result);
+    }
+}
+```
+
+## Design Patterns
+
+### Strategy Pattern with Functional Interfaces
+
+```java
+import java.util.Map;
+import java.util.HashMap;
+import java.util.function.BinaryOperator;
+
+public class DiscountStrategy {
+    
+    private final Map<String, BinaryOperator<Double>> strategies = new HashMap<>();
+    
+    public DiscountStrategy() {
+        strategies.put("SUMMER", (price, discount) -> price * (1 - discount / 100));
+        strategies.put("BLACK_FRIDAY", (price, discount) -> price - discount);
+        strategies.put("STUDENT", (price, discount) -> price * 0.9);
+    }
+    
+    public double applyDiscount(String strategy, double price, double discount) {
+        BinaryOperator<Double> calculator = strategies.get(strategy);
+        if (calculator == null) {
+            throw new IllegalArgumentException("Unknown strategy: " + strategy);
+        }
+        return calculator.apply(price, discount);
+    }
+    
+    public static void main(String[] args) {
+        DiscountStrategy ds = new DiscountStrategy();
+        System.out.println(ds.applyDiscount("SUMMER", 100.0, 20.0)); // 80.0
+        System.out.println(ds.applyDiscount("BLACK_FRIDAY", 100.0, 25.0)); // 75.0
+        System.out.println(ds.applyDiscount("STUDENT", 100.0, 0.0)); // 90.0
+    }
+}
+```
+
+### Observer Pattern with Functional Interfaces
+
+```java
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+public class EventBus {
+    private final Map<String, List<Consumer<Object>>> subscribers = new HashMap<>();
+    
+    public <T> void subscribe(String topic, Consumer<T> handler) {
+        subscribers.computeIfAbsent(topic, k -> new ArrayList<>())
+            .add(event -> handler.accept((T) event));
+    }
+    
+    public void publish(String topic, Object event) {
+        List<Consumer<Object>> handlers = subscribers.getOrDefault(topic, List.of());
+        handlers.forEach(h -> h.accept(event));
+    }
+    
+    public static void main(String[] args) {
+        EventBus bus = new EventBus();
+        
+        bus.subscribe("user.created", (String name) -> 
+            System.out.println("Welcome email sent to: " + name));
+        
+        bus.subscribe("user.created", (String name) -> 
+            System.out.println("Audit log: user " + name + " created"));
+        
+        bus.publish("user.created", "Alice");
+    }
+}
+```
+
+## Testing
+
+### Testing Functional Interfaces
+
+```java
+import java.util.function.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FunctionalInterfaceTest {
+    
+    static <T> List<T> filter(List<T> list, Predicate<T> predicate) {
+        return list.stream().filter(predicate).collect(Collectors.toList());
+    }
+    
+    static <T, R> List<R> map(List<T> list, Function<T, R> mapper) {
+        return list.stream().map(mapper).collect(Collectors.toList());
+    }
+    
+    static <T> void forEach(List<T> list, Consumer<T> action) {
+        list.forEach(action);
+    }
+    
+    // Test helper: create a predicate that tracks invocations
+    static <T> Predicate<T> countingPredicate(Predicate<T> delegate, int[] counter) {
+        return item -> {
+            counter[0]++;
+            return delegate.test(item);
+        };
+    }
+    
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        
+        // Test predicate
+        int[] counter = {0};
+        Predicate<Integer> isEven = countingPredicate(n -> n % 2 == 0, counter);
+        List<Integer> evens = filter(numbers, isEven);
+        assert evens.equals(List.of(2, 4, 6, 8, 10)) : "Even filter failed";
+        assert counter[0] == 10 : "Predicate called wrong number of times: " + counter[0];
+        
+        // Test function
+        List<String> strings = map(numbers, n -> "n=" + n);
+        assert strings.size() == 10 : "Map size wrong";
+        assert strings.get(0).equals("n=1") : "Map transformation wrong";
+        
+        // Test consumer
+        StringBuilder sb = new StringBuilder();
+        forEach(numbers.subList(0, 3), n -> sb.append(n).append(","));
+        assert sb.toString().equals("1,2,3,") : "Consumer chain failed";
+        
+        System.out.println("All tests passed!");
+    }
+}
+```
+
+## Performance Optimization
+
+### Object Reuse
+
+```java
+import java.util.function.*;
+
+public class PerformanceTips {
+    
+    // BAD: Creates new lambda on each invocation
+    static void badExample() {
+        List<String> list = List.of("a", "b", "c");
+        for (int i = 0; i < 1000; i++) {
+            list.stream().filter(s -> s.length() > 0).count(); // New lambda each time
+        }
+    }
+    
+    // GOOD: Reuse lambda instance
+    static void goodExample() {
+        List<String> list = List.of("a", "b", "c");
+        Predicate<String> nonEmpty = s -> !s.isEmpty();
+        for (int i = 0; i < 1000; i++) {
+            list.stream().filter(nonEmpty).count(); // Reused lambda
+        }
+    }
+    
+    // GOOD: Use static final for stateless lambdas
+    static final Predicate<String> NON_EMPTY = s -> !s.isEmpty();
+    static final Function<String, Integer> TO_UPPER_LEN = s -> s.toUpperCase().length();
+    
+    public static void main(String[] args) {
+        goodExample();
+        
+        List<String> names = List.of("Alice", "Bob", "Charlie");
+        long count = names.stream().filter(NON_EMPTY).count();
+        System.out.println("Non-empty count: " + count);
+    }
+}
+```
+
+## Java Version Evolution
+
+| Version | Feature | Functional Interface Impact |
+|---------|---------|---------------------------|
+| Java 8 | Lambda expressions | Introduction of functional interfaces |
+| Java 8 | `java.util.function` | 43 built-in functional interfaces |
+| Java 8 | Method references | Shorthand for simple lambdas |
+| Java 9 | Private methods in interfaces | Can share code in default methods |
+| Java 10 | `var` in lambda params | `@FunctionalInterface` with type inference |
+| Java 11 | `String.isBlank()`, `indent()` | Cleaner method references |
+| Java 12 | `String.transform()` | Direct Function application |
+| Java 14 | Switch expressions | Expression lambdas with switch |
+| Java 16 | Records | Concise DTOs for functional pipelines |
+| Java 17 | Sealed interfaces | Restricted functional hierarchies |
+| Java 21 | Virtual threads | Functional interfaces in concurrency |
+| Java 21 | Pattern matching | `switch` with `Function` and `Predicate` |
+
+### Java 21 Example: Pattern Matching with Functional Interfaces
+
+```java
+import java.util.function.Function;
+
+public class Java21Features {
+    
+    static Function<Object, String> describe = obj -> switch (obj) {
+        case Integer i -> "Integer: " + i;
+        case String s -> "String: \"" + s + "\"";
+        case null -> "Null value";
+        default -> "Unknown: " + obj.getClass().getSimpleName();
+    };
+    
+    public static void main(String[] args) {
+        System.out.println(describe.apply(42));      // Integer: 42
+        System.out.println(describe.apply("hello")); // String: "hello"
+        System.out.println(describe.apply(null));    // Null value
+        System.out.println(describe.apply(3.14));    // Unknown: Double
+    }
+}
+```
+
+## Resources
+
+### Official Documentation
+- [Java SE 21 - java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html)
+- [Java Language Specification - Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.27)
+
+### Books
+- *Effective Java* by Joshua Bloch - Chapter on Lambdas and Streams
+- *Java Concurrency in Practice* - Thread safety with functional interfaces
+- *Modern Java in Action* - Comprehensive lambda/stream coverage
+
+### Online Resources
+- [Baeldung - Java 8 Functional Interfaces](https://www.baeldung.com/java-8-functional-interface)
+- [Oracle Java Tutorials - Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
+
+## Glossary
+
+| Term | Definition |
+|------|-----------|
+| **Functional Interface** | An interface with exactly one abstract method |
+| **SAM (Single Abstract Method)** | Synonym for functional interface |
+| **Lambda Expression** | Anonymous function that implements a functional interface |
+| **Method Reference** | Shorthand syntax (`ClassName::methodName`) for simple lambdas |
+| **Composition** | Combining multiple functions into a pipeline |
+| **andThen** | Applies this function first, then the next |
+| **compose** | Applies the other function first, then this one |
+| **Predicate** | Function returning boolean |
+| **Consumer** | Function returning void |
+| **Supplier** | Function taking no arguments |
+| **UnaryOperator** | Function from T to T |
+| **BinaryOperator** | Function from (T, T) to T |
+| **@FunctionalInterface** | Annotation to verify single abstract method |
+| **Effectively Final** | Variable that can be safely captured in a lambda |
+| **Type Inference** | Compiler determining types from context |
+| **Invokedynamic** | JVM instruction used to implement lambdas |
+| **Closure** | Lambda capturing variables from its enclosing scope |

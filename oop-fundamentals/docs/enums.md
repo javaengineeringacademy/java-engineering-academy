@@ -57,7 +57,187 @@ Think of enums as a **menu at a restaurant**:
 - You can only order items on the menu (type safety)
 - The menu can't change at runtime (fixed set)
 
-## Internal Working
+## Problem Statement
+
+Before Java 5, developers faced several challenges with constants:
+
+1. **Type Safety Issues**: No compile-time checking for invalid values
+2. **Maintenance Problems**: Constants scattered across classes
+3. **Namespace Pollution**: Constants polluting class namespaces
+4. **No Behavior**: Cannot attach behavior to constants
+5. **Switch Statement Limitations**: Limited support for constant-based switching
+
+Consider this scenario: You need to represent colors in a drawing application. Without enums, you'd use magic numbers or strings, leading to runtime errors and poor maintainability.
+
+## Theory
+
+### Core Concepts
+
+Enums are based on several fundamental concepts:
+
+1. **Type Safety**: Enums provide compile-time type checking
+2. **Singleton Pattern**: Each enum constant is a singleton instance
+3. **Inheritance**: Enums implicitly extend `java.lang.Enum`
+4. **Interface Implementation**: Enums can implement interfaces
+5. **Abstract Methods**: Enums can have abstract methods implemented per constant
+
+### Enum vs Constants Comparison
+
+| Aspect | Enums | Constants |
+|--------|-------|-----------|
+| Type Safety | Compile-time checking | Runtime errors possible |
+| Behavior | Can have methods and fields | Only static final fields |
+| Namespace | Separate type | Pollutes class namespace |
+| Iteration | Built-in `values()` method | Manual iteration required |
+| Switch Support | Full support | Limited support |
+| Serialization | Automatic handling | Manual implementation |
+
+### Enum Features
+
+1. **Fields**: Enums can have instance fields
+2. **Constructors**: Enums can have constructors (private)
+3. **Methods**: Enums can have instance and static methods
+4. **Abstract Methods**: Each constant can implement abstract methods
+5. **Interfaces**: Enums can implement interfaces
+
+## JVM Perspective
+
+### Bytecode Generation
+
+Enums are compiled to regular classes with special characteristics:
+
+```java
+// Your enum
+public enum Color {
+    RED, GREEN, BLUE;
+}
+
+// Compiled bytecode (simplified):
+public final class Color extends java.lang.Enum<Color> {
+    public static final Color RED;
+    public static final Color GREEN;
+    public static final Color BLUE;
+    
+    static {
+        RED = new Color("RED", 0);
+        GREEN = new Color("GREEN", 1);
+        BLUE = new Color("BLUE", 2);
+    }
+    
+    private Color(String name, int ordinal) {
+        super(name, ordinal);
+    }
+    
+    public static Color[] values() {
+        // Returns array of all constants
+    }
+    
+    public static Color valueOf(String name) {
+        // Returns constant by name
+    }
+}
+```
+
+### Runtime Behavior
+
+1. **Class Loading**: Enums are loaded when first referenced
+2. **Singleton Guarantee**: Each constant is a single instance
+3. **Thread Safety**: Static initialization is thread-safe
+4. **Serialization**: Special handling to maintain singleton property
+
+## Architecture Diagram
+
+### Enum Class Structure
+
+```
+java.lang.Enum<E>
+└── YourEnum
+    ├── Constant 1 (static final)
+    ├── Constant 2 (static final)
+    ├── Constant N (static final)
+    ├── Fields
+    ├── Constructors (private)
+    └── Methods
+```
+
+### Enum in Type Hierarchy
+
+```
+Object
+└── java.lang.Enum<E>
+    └── YourEnum
+        ├── implements Interface1
+        └── implements Interface2
+```
+
+### Memory Architecture
+
+```
+PermGen/Metaspace (Class Metadata)
+├── Enum class definition
+├── Constant pool
+└── Method definitions
+
+Heap (Instance Data)
+├── Constant 1 instance
+├── Constant 2 instance
+└── Constant N instance
+```
+
+## Flow Diagram
+
+### Enum Lifecycle
+
+```
+┌─────────────────┐
+│ Define Enum      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Compile to       │
+│ .class file      │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Load Class       │
+│ (static init)    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Create Constants │
+│ (singletons)     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Use Constants    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Garbage Collect  │
+│ (never for enums)│
+└─────────────────┘
+```
+
+### Enum Usage Flow
+
+```
+Use Enum Constant
+    ↓
+Check Type Safety
+    ↓ (valid)
+Access Fields/Methods
+    ↓
+Compare with == or equals()
+    ↓
+Use in Switch Statement
+```
+
+## Syntax
 
 ### How Enums Work
 
@@ -89,6 +269,27 @@ public final class Color extends Enum<Color> {
 ## Memory Representation
 
 Enum constants are stored in the PermGen/Metaspace area (not heap). Each constant is a singleton, so `==` comparison works.
+
+## Theory
+
+### Enum Internals
+
+1. **Class Definition**: Enums are compiled to final classes extending `java.lang.Enum`
+2. **Constants**: Each constant is a `public static final` field of the enum type
+3. **Constructor**: Invoked once per constant during static initialization
+4. **Values Array**: The compiler generates a `values()` method returning all constants
+5. **Ordinal**: Each constant has an implicit ordinal (position) starting from 0
+
+### Enum vs Constants Comparison
+
+| Aspect | Enums | Constants |
+|--------|-------|-----------|
+| Type Safety | Compile-time checking | Runtime errors possible |
+| Behavior | Can have methods and fields | Only static final fields |
+| Namespace | Separate type | Pollutes class namespace |
+| Iteration | Built-in `values()` method | Manual iteration required |
+| Switch Support | Full support | Limited support |
+| Serialization | Automatic handling | Manual implementation |
 
 ## Syntax
 
@@ -450,9 +651,105 @@ System.out.println(ShapeType.TRIANGLE.getDescription() + ": " +
     ShapeType.TRIANGLE.calculateArea(3.0, 4.0)); // Triangle (base, height): 6.0
 ```
 
+## Enterprise Example
+
+### Example 6: Order Management System
+
+**Problem Statement**: Design a production-grade order management system using enums for status, priority, and payment methods.
+
+**Implementation**:
+
+```java
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
+
+public enum OrderStatus {
+    CREATED(100, "Order created"),
+    VALIDATING(200, "Validating order"),
+    PROCESSING(300, "Processing payment"),
+    SHIPPED(400, "Order shipped"),
+    DELIVERED(500, "Order delivered"),
+    CANCELLED(600, "Order cancelled"),
+    REFUNDED(700, "Order refunded");
+
+    private final int code;
+    private final String description;
+
+    OrderStatus(int code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
+    public int getCode() { return code; }
+    public String getDescription() { return description; }
+
+    public boolean canTransitionTo(OrderStatus next) {
+        return switch (this) {
+            case CREATED -> next == VALIDATING || next == CANCELLED;
+            case VALIDATING -> next == PROCESSING || next == CANCELLED;
+            case PROCESSING -> next == SHIPPED || next == CANCELLED;
+            case SHIPPED -> next == DELIVERED;
+            case DELIVERED -> next == REFUNDED;
+            default -> false;
+        };
+    }
+
+    public static OrderStatus fromCode(int code) {
+        for (OrderStatus status : values()) {
+            if (status.code == code) return status;
+        }
+        throw new IllegalArgumentException("Unknown status code: " + code);
+    }
+}
+
+public enum PaymentMethod {
+    CREDIT_CARD("CC", BigDecimal.valueOf(0.029)),
+    DEBIT_CARD("DC", BigDecimal.valueOf(0.015)),
+    BANK_TRANSFER("BT", BigDecimal.valueOf(0.01)),
+    DIGITAL_WALLET("DW", BigDecimal.valueOf(0.02));
+
+    private final String code;
+    private final BigDecimal feeRate;
+
+    PaymentMethod(String code, BigDecimal feeRate) {
+        this.code = code;
+        this.feeRate = feeRate;
+    }
+
+    public String getCode() { return code; }
+    public BigDecimal calculateFee(BigDecimal amount) {
+        return amount.multiply(feeRate);
+    }
+}
+
+public enum Priority {
+    LOW(1), MEDIUM(2), HIGH(3), CRITICAL(4);
+
+    private final int level;
+
+    Priority(int level) { this.level = level; }
+    public int getLevel() { return level; }
+    public boolean isHigherThan(Priority other) {
+        return this.level > other.level;
+    }
+}
+```
+
+**Output**:
+```java
+OrderStatus status = OrderStatus.CREATED;
+System.out.println(status.getDescription()); // Order created
+System.out.println(status.canTransitionTo(OrderStatus.PROCESSING)); // false
+System.out.println(status.canTransitionTo(OrderStatus.VALIDATING)); // true
+
+BigDecimal fee = PaymentMethod.CREDIT_CARD.calculateFee(new BigDecimal("1000"));
+System.out.println("Fee: " + fee); // Fee: 29.00
+```
+
 ## Hard Examples
 
-### Example 6: Enum Singleton Pattern
+### Example 7: Enum Singleton Pattern
 
 **Problem Statement**: Implement a thread-safe singleton using enum.
 
@@ -635,6 +932,46 @@ order2.cancel(); // Order ORD-002 cancelled
 - Use enums for state machines with fixed states
 - Encapsulate state transitions in the enum
 - Use methods to enforce valid transitions
+
+## Performance
+
+Enums have minimal performance overhead. They are singleton instances cached in the PermGen/Metaspace, so `==` comparisons are extremely fast. The `values()` method returns a new array each time (defensive copy), so avoid calling it in tight loops.
+
+## Time Complexity
+
+| Operation | Complexity | Notes |
+|-----------|------------|-------|
+| `valueOf(String)` | O(n) | Linear search through constants |
+| `values()` | O(n) | Creates new array copy |
+| `ordinal()` | O(1) | Direct field access |
+| `==` comparison | O(1) | Reference comparison |
+| `compareTo()` | O(1) | Integer comparison |
+
+## Space Complexity
+
+Enum instances are stored in Metaspace as class metadata. Each constant occupies approximately 16-32 bytes of heap memory for instance data. The `values()` array creates an O(n) copy on each invocation.
+
+## Thread Safety
+
+Enum constants are inherently thread-safe due to JVM guarantees:
+
+1. **Class Loading**: Static initialization is thread-safe per JLS §12.4.2
+2. **Singleton Guarantee**: Only one instance exists per constant
+3. **Immutable**: Enum fields should be `final` for true immutability
+4. **No Synchronization Needed**: `==` comparisons are atomic
+
+```java
+// Thread-safe singleton
+public enum DatabaseConfig {
+    INSTANCE;
+    
+    private final String url;
+    
+    DatabaseConfig() {
+        this.url = System.getenv("DB_URL");
+    }
+}
+```
 
 ## Exercises
 

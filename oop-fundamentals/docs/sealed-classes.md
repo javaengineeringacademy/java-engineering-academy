@@ -840,3 +840,1495 @@ Sealed classes provide precise control over inheritance hierarchies in Java. Key
 - **When to use**: When you need to control the hierarchy and enable exhaustive handling
 
 **Next Steps**: Learn about enums for fixed constant sets, or pattern matching for advanced type-based dispatch.
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Sealed Class Hierarchy                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────────────┐                                       │
+│   │   sealed class       │                                       │
+│   │      Shape           │                                       │
+│   │  ┌───────────────┐  │                                       │
+│   │  │ permits        │  │                                       │
+│   │  │ Circle, Rect,  │  │                                       │
+│   │  │ Triangle       │  │                                       │
+│   │  └───────┬───────┘  │                                       │
+│   └──────────┼──────────┘                                       │
+│              │                                                   │
+│   ┌──────────┼──────────┬──────────────┐                        │
+│   │          │          │              │                        │
+│   ▼          ▼          ▼              ▼                        │
+│ ┌──────┐ ┌──────┐ ┌──────────┐ ┌────────────┐                  │
+│ │final │ │final │ │non-sealed│ │sealed      │                  │
+│ │Circle│ │Rect  │ │Triangle  │ │Polygon     │                  │
+│ └──────┘ └──────┘ └──────────┘ └─────┬──────┘                  │
+│                                       │                         │
+│                            ┌──────────┼──────────┐              │
+│                            │                     │              │
+│                            ▼                     ▼              │
+│                      ┌──────────┐         ┌──────────┐         │
+│                      │final     │         │final     │         │
+│                      │Square    │         │Pentagon  │         │
+│                      └──────────┘         └──────────┘         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+Component Relationships:
+─────────────────────────────────────────────────────────────────
+  Sealed Class ──permits──▶ Subtype 1 (final)
+                 │
+                 ├──permits──▶ Subtype 2 (sealed) ──permits──▶ Sub-subtype
+                 │
+                 └──permits──▶ Subtype 3 (non-sealed)
+─────────────────────────────────────────────────────────────────
+```
+
+## Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                Sealed Class Processing Flow                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌──────────────┐                                              │
+│   │  Define       │                                              │
+│   │  Sealed Class │                                              │
+│   └──────┬───────┘                                              │
+│          │                                                       │
+│          ▼                                                       │
+│   ┌──────────────┐     ┌─────────────────┐                      │
+│   │ List         │────▶│ Verify          │                      │
+│   │ Permits      │     │ Same Module     │                      │
+│   └──────────────┘     └────────┬────────┘                      │
+│                                 │                                │
+│                    ┌────────────┴────────────┐                   │
+│                    │                         │                   │
+│                    ▼                         ▼                   │
+│           ┌──────────────┐         ┌──────────────┐             │
+│           │  Pass        │         │  Fail        │             │
+│           │  Compilation │         │  Compilation │             │
+│           └──────┬───────┘         └──────────────┘             │
+│                  │                                               │
+│                  ▼                                               │
+│   ┌──────────────────────────────────────────┐                  │
+│   │         Process Subtypes                  │                  │
+│   └──────────────────┬───────────────────────┘                  │
+│                      │                                          │
+│         ┌────────────┼────────────┬────────────┐                │
+│         │            │            │            │                │
+│         ▼            ▼            ▼            ▼                │
+│   ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
+│   │  final   │ │ sealed   │ │non-sealed│ │  record  │         │
+│   │ subclass │ │ subclass │ │ subclass │ │ subtype  │         │
+│   └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘         │
+│        │            │            │            │                  │
+│        ▼            ▼            ▼            ▼                  │
+│   ┌──────────────────────────────────────────────────────┐     │
+│   │          Exhaustive Pattern Matching                  │     │
+│   │   switch (sealed) {                                    │     │
+│   │       case SubType1 s1 -> ...                         │     │
+│   │       case SubType2 s2 -> ...                         │     │
+│   │       // No default needed - all cases covered        │     │
+│   │   }                                                    │     │
+│   └──────────────────────────────────────────────────────┘     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Time Complexity
+
+| Operation | Time Complexity | Description |
+|-----------|----------------|-------------|
+| Class loading | O(n) | Where n = number of permitted subtypes |
+| Type checking | O(1) | Compiler checks are constant time |
+| Pattern matching | O(1) | Each case is constant time |
+| Switch expression | O(1) | Dispatch is constant time |
+| instanceof check | O(1) | Runtime type check |
+| Field access | O(1) | Same as regular classes |
+| Method invocation | O(1) | Virtual dispatch is constant |
+| Serialization | O(n) | Where n = object graph size |
+| Deserialization | O(n) | Where n = object graph size |
+| Reflection API | O(n) | Where n = permitted subtypes |
+
+**Note**: Sealed classes themselves don't introduce runtime overhead. The benefits are primarily compile-time.
+
+## Space Complexity
+
+| Component | Space Complexity | Description |
+|-----------|-----------------|-------------|
+| Sealed class metadata | O(p) | p = number of permitted subtypes |
+| Subtype records | O(1) per field | Same as regular records |
+| Pattern matching | O(1) | No extra space needed |
+| Switch tables | O(p) | Compiler generates lookup tables |
+| Runtime type info | O(p) | JVM stores permitted subtypes |
+| Module metadata | O(p) | Module system tracks hierarchy |
+
+**Memory Layout**:
+```
+┌─────────────────────────────────────────┐
+│  Sealed Class Instance                   │
+├─────────────────────────────────────────┤
+│  Object Header (16 bytes)               │
+│  ┌─────────────────────────────────┐    │
+│  │  Class Pointer → SealedMeta     │    │
+│  │  - Permitted subtypes (O(p))    │    │
+│  │  - Modifier flags               │    │
+│  └─────────────────────────────────┘    │
+│  Fields (same as non-sealed class)      │
+└─────────────────────────────────────────┘
+```
+
+## Thread Safety
+
+Sealed classes don't affect thread safety directly, but they enable patterns that improve concurrent code:
+
+```java
+// Thread-safe state machine using sealed classes
+public sealed interface ThreadSafeState permits Idle, Active, Terminated {
+    
+    ThreadSafeState next();
+    
+    // Immutable record - thread safe by design
+    public record Idle() implements ThreadSafeState {
+        @Override
+        public ThreadSafeState next() {
+            return new Active();
+        }
+    }
+    
+    public record Active() implements ThreadSafeState {
+        @Override
+        public ThreadSafeState next() {
+            return new Terminated();
+        }
+    }
+    
+    public record Terminated() implements ThreadSafeState {
+        @Override
+        public ThreadSafeState next() {
+            throw new IllegalStateException("Cannot transition from terminated");
+        }
+    }
+}
+
+// Thread-safe processor using sealed class guarantees
+public class ThreadSafeProcessor {
+    private final AtomicReference<ThreadSafeState> state = 
+        new AtomicReference<>(new ThreadSafeState.Idle());
+    
+    public ThreadSafeState transition() {
+        return state.updateAndGet(current -> current.next());
+    }
+    
+    // Exhaustive switch ensures all states handled
+    public String describe() {
+        return switch (state.get()) {
+            case ThreadSafeState.Idle i -> "Idle";
+            case ThreadSafeState.Active a -> "Active";
+            case ThreadSafeState.Terminated t -> "Terminated";
+        };
+    }
+}
+```
+
+**Thread Safety Guarantees**:
+- Immutable records: Thread-safe by default
+- Exhaustive matching: No missing state handling
+- AtomicReference: Safe state transitions
+- No shared mutable state: No synchronization needed
+
+## Comparison Table
+
+| Feature | Sealed Classes | Enums | Regular Inheritance | Interfaces |
+|---------|---------------|-------|-------------------|------------|
+| **Subtype Control** | Yes (permits) | Fixed set | Open | Open |
+| **Exhaustive Switch** | Yes | Yes | No | No |
+| **Fields per Subtype** | Yes | No | Yes | No (constants only) |
+| **Generic Types** | Yes | Limited | Yes | Yes |
+| **Multiple Inheritance** | No | No | No | Yes |
+| **Pattern Matching** | Full | Full | Partial | Full |
+| **Compile-time Safety** | High | High | Low | Medium |
+| **Runtime Performance** | O(1) | O(1) | O(1) | O(1) |
+| **Memory Overhead** | Minimal | Minimal | Minimal | Minimal |
+| **Extensibility** | Controlled | None | Open | Open |
+| **Use Case** | Domain modeling | Constants | General | Contracts |
+| **Example** | `sealed class Shape` | `enum Color` | `class Animal` | `interface Serializable` |
+
+## Decision Tree
+
+```
+Should you use a Sealed Class?
+═══════════════════════════════════════════════════════════════════
+
+Do you need to restrict which classes can extend/implement?
+├── YES
+│   ├── Do you need exhaustive pattern matching?
+│   │   ├── YES → Use Sealed Class/Interface ✓
+│   │   └── NO
+│   │       ├── Do you need different fields per subtype?
+│   │       │   ├── YES → Use Sealed Class with Records ✓
+│   │       │   └── NO → Consider Enum (if fixed set)
+│   │       └── Do you need generic type parameters?
+│   │           ├── YES → Use Sealed Interface ✓
+│   │           └── NO → Consider Enum
+│   └── Is this for domain modeling?
+│       ├── YES → Use Sealed Class ✓
+│       └── NO → Use Sealed Interface ✓
+└── NO
+    ├── Do you need a fixed set of constants?
+    │   ├── YES → Use Enum
+    │   └── NO → Use Regular Interface/Class
+    └── Is extensibility important?
+        ├── YES → Use Regular Interface/Abstract Class
+        └── NO → Use Sealed Class/Interface ✓
+
+═══════════════════════════════════════════════════════════════════
+
+Example Decision Paths:
+─────────────────────────────────────────────────────────────────
+
+Path 1: Payment Processing
+  Need different payment methods? YES
+  Need exhaustive handling? YES
+  Different fields per type? YES
+  → Use Sealed Interface with Records
+
+Path 2: State Machine
+  Need to restrict states? YES
+  Need exhaustive transitions? YES
+  Different behavior per state? YES
+  → Use Sealed Class with Pattern Matching
+
+Path 3: Configuration
+  Fixed set of options? YES
+  Need different behavior? NO
+  → Use Enum
+
+Path 4: Plugin System
+  Need to restrict plugins? YES
+  Need open extension? YES
+  → Use Sealed Interface with non-sealed implementations
+```
+
+## Assignments
+
+### Assignment 1: File System Model (Easy)
+
+**Objective**: Create a sealed class hierarchy for a file system.
+
+**Requirements**:
+1. Create a sealed `FileSystemNode` interface
+2. Implement `File`, `Directory`, and `SymbolicLink` as records
+3. Add methods: `getName()`, `getSize()`, `isDirectory()`
+4. Implement a `FileSystem` class that can traverse the hierarchy
+5. Use pattern matching to display node information
+
+**Starter Code**:
+```java
+public sealed interface FileSystemNode permits File, Directory, SymbolicLink {
+    String getName();
+    long getSize();
+    boolean isDirectory();
+}
+```
+
+### Assignment 2: Command Pattern (Medium)
+
+**Objective**: Implement a command pattern using sealed classes.
+
+**Requirements**:
+1. Create a sealed `Command` interface
+2. Implement `MoveCommand`, `ResizeCommand`, `RotateCommand`, `ColorCommand`
+3. Each command should have `execute()`, `undo()`, and `description()`
+4. Create a `CommandHistory` class that tracks executed commands
+5. Use exhaustive pattern matching for undo operations
+
+### Assignment 3: Validation System (Medium)
+
+**Objective**: Build a validation system using sealed classes.
+
+**Requirements**:
+1. Create a sealed `ValidationResult` interface
+2. Implement `Valid`, `Invalid`, `Warning`, `Error` types
+3. Each type should carry different data (field, message, severity)
+4. Create a `Validator` class that chains validations
+5. Use pattern matching to generate validation reports
+
+### Assignment 4: State Machine Framework (Hard)
+
+**Objective**: Create a reusable state machine framework.
+
+**Requirements**:
+1. Create a generic sealed `State<S, E>` interface
+2. Implement `Idle`, `Active`, `Terminal` states
+3. Create `Transition` records for state changes
+4. Build a `StateMachine` class with `onTransition()` callbacks
+5. Use pattern matching to enforce valid transitions
+6. Add logging and error handling
+
+### Assignment 5: Expression Parser (Hard)
+
+**Objective**: Build an expression parser with sealed AST.
+
+**Requirements**:
+1. Create a sealed `Expression` interface
+2. Implement `Number`, `Add`, `Subtract`, `Multiply`, `Divide`, `Negate`
+3. Create an `ExpressionParser` that parses string expressions
+4. Implement an `ExpressionEvaluator` using pattern matching
+5. Add an `ExpressionPrinter` for display
+
+## Mini Project: Event Sourcing System
+
+**Objective**: Build an event sourcing system using sealed classes.
+
+### Project Structure
+
+```
+event-sourcing/
+├── src/main/java/com/example/eventsourcing/
+│   ├── Event.java
+│   ├── EventStore.java
+│   ├── AggregateRoot.java
+│   ├── Command.java
+│   └── OrderAggregate.java
+└── src/test/java/com/example/eventsourcing/
+    └── OrderAggregateTest.java
+```
+
+### Implementation
+
+**Event.java**:
+```java
+public sealed interface Event permits 
+    OrderCreated, 
+    ItemAdded, 
+    ItemRemoved, 
+    OrderConfirmed, 
+    OrderShipped, 
+    OrderDelivered {
+    
+    UUID eventId();
+    Instant timestamp();
+    String aggregateId();
+}
+
+public record OrderCreated(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    String customerId
+) implements Event {}
+
+public record ItemAdded(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    String productId,
+    int quantity,
+    double price
+) implements Event {}
+
+public record ItemRemoved(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    String productId,
+    int quantity
+) implements Event {}
+
+public record OrderConfirmed(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    Instant confirmedAt
+) implements Event {}
+
+public record OrderShipped(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    String trackingNumber,
+    Instant shippedAt
+) implements Event {}
+
+public record OrderDelivered(
+    UUID eventId,
+    Instant timestamp,
+    String aggregateId,
+    Instant deliveredAt
+) implements Event {}
+```
+
+**Command.java**:
+```java
+public sealed interface Command permits 
+    CreateOrder, 
+    AddItem, 
+    RemoveItem, 
+    ConfirmOrder, 
+    ShipOrder, 
+    DeliverOrder {
+    
+    String aggregateId();
+}
+
+public record CreateOrder(String aggregateId, String customerId) implements Command {}
+public record AddItem(String aggregateId, String productId, int quantity, double price) implements Command {}
+public record RemoveItem(String aggregateId, String productId, int quantity) implements Command {}
+public record ConfirmOrder(String aggregateId) implements Command {}
+public record ShipOrder(String aggregateId, String trackingNumber) implements Command {}
+public record DeliverOrder(String aggregateId) implements Command {}
+```
+
+**EventStore.java**:
+```java
+public class EventStore {
+    private final Map<String, List<Event>> events = new HashMap<>();
+    private final List<Consumer<Event>> subscribers = new ArrayList<>();
+    
+    public void append(Event event) {
+        events.computeIfAbsent(event.aggregateId(), k -> new ArrayList<>())
+               .add(event);
+        subscribers.forEach(sub -> sub.accept(event));
+    }
+    
+    public List<Event> getEvents(String aggregateId) {
+        return events.getOrDefault(aggregateId, List.of());
+    }
+    
+    public void subscribe(Consumer<Event> subscriber) {
+        subscribers.add(subscriber);
+    }
+}
+```
+
+**OrderAggregate.java**:
+```java
+public class OrderAggregate {
+    private String id;
+    private String customerId;
+    private List<OrderItem> items = new ArrayList<>();
+    private OrderStatus status;
+    private String trackingNumber;
+    
+    public OrderAggregate(String id) {
+        this.id = id;
+        this.status = OrderStatus.CREATED;
+    }
+    
+    // Apply events using exhaustive pattern matching
+    public void apply(Event event) {
+        switch (event) {
+            case OrderCreated e -> {
+                this.id = e.aggregateId();
+                this.customerId = e.customerId();
+                this.status = OrderStatus.CREATED;
+            }
+            case ItemAdded e -> {
+                items.add(new OrderItem(e.productId(), e.quantity(), e.price()));
+            }
+            case ItemRemoved e -> {
+                items.removeIf(item -> item.productId().equals(e.productId()));
+            }
+            case OrderConfirmed e -> {
+                this.status = OrderStatus.CONFIRMED;
+            }
+            case OrderShipped e -> {
+                this.status = OrderStatus.SHIPPED;
+                this.trackingNumber = e.trackingNumber();
+            }
+            case OrderDelivered e -> {
+                this.status = OrderStatus.DELIVERED;
+            }
+        }
+    }
+    
+    // Process commands
+    public List<Event> processCommand(Command command) {
+        return switch (command) {
+            case CreateOrder c -> List.of(
+                new OrderCreated(UUID.randomUUID(), Instant.now(), c.aggregateId(), c.customerId())
+            );
+            case AddItem c -> List.of(
+                new ItemAdded(UUID.randomUUID(), Instant.now(), c.aggregateId(), 
+                    c.productId(), c.quantity(), c.price())
+            );
+            case RemoveItem c -> List.of(
+                new ItemRemoved(UUID.randomUUID(), Instant.now(), c.aggregateId(), 
+                    c.productId(), c.quantity())
+            );
+            case ConfirmOrder c -> List.of(
+                new OrderConfirmed(UUID.randomUUID(), Instant.now(), c.aggregateId(), Instant.now())
+            );
+            case ShipOrder c -> List.of(
+                new OrderShipped(UUID.randomUUID(), Instant.now(), c.aggregateId(), 
+                    c.trackingNumber(), Instant.now())
+            );
+            case DeliverOrder c -> List.of(
+                new OrderDelivered(UUID.randomUUID(), Instant.now(), c.aggregateId(), Instant.now())
+            );
+        };
+    }
+    
+    // Rebuild from events
+    public void rebuildFromEvents(List<Event> events) {
+        events.forEach(this::apply);
+    }
+    
+    // Get current state
+    public Map<String, Object> getState() {
+        return Map.of(
+            "id", id,
+            "customerId", customerId,
+            "items", items,
+            "status", status,
+            "trackingNumber", trackingNumber != null ? trackingNumber : "N/A"
+        );
+    }
+    
+    private enum OrderStatus {
+        CREATED, CONFIRMED, SHIPPED, DELIVERED
+    }
+    
+    private record OrderItem(String productId, int quantity, double price) {}
+}
+```
+
+### Usage Example
+
+```java
+public class EventSourcingDemo {
+    public static void main(String[] args) {
+        EventStore store = new EventStore();
+        String orderId = "ORDER-001";
+        
+        // Create order
+        CreateOrder createCmd = new CreateOrder(orderId, "CUST-001");
+        OrderAggregate aggregate = new OrderAggregate(orderId);
+        
+        List<Event> events = aggregate.processCommand(createCmd);
+        events.forEach(store::append);
+        events.forEach(aggregate::apply);
+        
+        // Add items
+        AddItem addCmd = new AddItem(orderId, "PROD-001", 2, 29.99);
+        events = aggregate.processCommand(addCmd);
+        events.forEach(store::append);
+        events.forEach(aggregate::apply);
+        
+        // Confirm order
+        ConfirmOrder confirmCmd = new ConfirmOrder(orderId);
+        events = aggregate.processCommand(confirmCmd);
+        events.forEach(store::append);
+        events.forEach(aggregate::apply);
+        
+        // Display state
+        System.out.println("Order State: " + aggregate.getState());
+        
+        // Rebuild from events
+        OrderAggregate rebuilt = new OrderAggregate(orderId);
+        rebuilt.rebuildFromEvents(store.getEvents(orderId));
+        System.out.println("Rebuilt State: " + rebuilt.getState());
+    }
+}
+```
+
+## Use Cases
+
+### 1. Domain-Driven Design (DDD)
+
+```java
+// Value Objects
+public sealed interface Money permits Dollar, Euro, Pound {
+    double amount();
+    String currency();
+}
+
+public record Dollar(double amount) implements Money {
+    @Override
+    public String currency() { return "USD"; }
+}
+
+public record Euro(double amount) implements Money {
+    @Override
+    public String currency() { return "EUR"; }
+}
+
+public record Pound(double amount) implements Money {
+    @Override
+    public String currency() { return "GBP"; }
+}
+
+// Domain Events
+public sealed interface DomainEvent permits 
+    AccountCreated, MoneyDeposited, MoneyWithdrawn, AccountClosed {
+    
+    String accountId();
+    Instant occurredOn();
+}
+```
+
+### 2. Compiler/Interpreter Design
+
+```java
+// Abstract Syntax Tree (AST)
+public sealed interface AST permits 
+    NumberLiteral, 
+    StringLiteral, 
+    BinaryOperation, 
+    UnaryOperation,
+    Variable,
+    FunctionCall {
+    
+    Type type();
+}
+
+public record NumberLiteral(double value) implements AST {
+    @Override
+    public Type type() { return Type.NUMBER; }
+}
+
+public record BinaryOperation(AST left, Operator op, AST right) implements AST {
+    @Override
+    public Type type() { return Type.NUMBER; }
+    
+    public enum Operator { ADD, SUBTRACT, MULTIPLY, DIVIDE }
+}
+```
+
+### 3. API Response Handling
+
+```java
+public sealed interface ApiResponse<T> permits 
+    Success, 
+    Error, 
+    Loading, 
+    Paginated {
+    
+    boolean isSuccessful();
+}
+
+public record Success<T>(T data) implements ApiResponse<T> {
+    @Override
+    public boolean isSuccessful() { return true; }
+}
+
+public record Error<T>(String message, int code) implements ApiResponse<T> {
+    @Override
+    public boolean isSuccessful() { return false; }
+}
+
+public record Loading<T>() implements ApiResponse<T> {
+    @Override
+    public boolean isSuccessful() { return false; }
+}
+
+public record Paginated<T>(List<T> data, int page, int totalPages) implements ApiResponse<T> {
+    @Override
+    public boolean isSuccessful() { return true; }
+}
+```
+
+### 4. Configuration Management
+
+```java
+public sealed interface DatabaseConfig permits 
+    PostgreSQLConfig, 
+    MySQLConfig, 
+    MongoDBConfig {
+    
+    String host();
+    int port();
+    String database();
+}
+
+public record PostgreSQLConfig(String host, int port, String database, boolean useSSL) 
+    implements DatabaseConfig {
+    
+    public PostgreSQLConfig {
+        if (port <= 0) throw new IllegalArgumentException("Port must be positive");
+    }
+}
+
+public record MySQLConfig(String host, int port, String database, String charset) 
+    implements DatabaseConfig {}
+```
+
+### 5. Game Development
+
+```java
+public sealed interface GameEvent permits 
+    PlayerJoined, 
+    PlayerLeft, 
+    PlayerMoved, 
+    PlayerAttacked,
+    ItemCollected,
+    GameOver {
+    
+    String gameId();
+    Instant timestamp();
+}
+
+public record PlayerJoined(String gameId, Instant timestamp, String playerId) 
+    implements GameEvent {}
+
+public record PlayerAttacked(
+    String gameId, 
+    Instant timestamp, 
+    String attackerId, 
+    String targetId, 
+    int damage
+) implements GameEvent {}
+```
+
+## Testing Strategies
+
+### Unit Testing Sealed Classes
+
+```java
+@DisplayName("Shape Sealed Class Tests")
+class ShapeTest {
+    
+    @Test
+    @DisplayName("Should create all permitted subtypes")
+    void shouldCreateAllSubtypes() {
+        Shape circle = new Circle(5.0);
+        Shape rectangle = new Rectangle(4.0, 6.0);
+        Shape triangle = new Triangle(3.0, 4.0, 5.0);
+        
+        assertNotNull(circle);
+        assertNotNull(rectangle);
+        assertNotNull(triangle);
+    }
+    
+    @Test
+    @DisplayName("Should handle exhaustive switch")
+    void shouldHandleExhaustiveSwitch() {
+        List<Shape> shapes = List.of(
+            new Circle(5.0),
+            new Rectangle(4.0, 6.0),
+            new Triangle(3.0, 4.0, 5.0)
+        );
+        
+        shapes.forEach(shape -> {
+            String result = switch (shape) {
+                case Circle c -> "Circle";
+                case Rectangle r -> "Rectangle";
+                case Triangle t -> "Triangle";
+            };
+            assertNotNull(result);
+        });
+    }
+    
+    @Test
+    @DisplayName("Should calculate area for each subtype")
+    void shouldCalculateArea() {
+        Shape circle = new Circle(5.0);
+        Shape rectangle = new Rectangle(4.0, 6.0);
+        
+        assertEquals(Math.PI * 25, circle.area(), 0.001);
+        assertEquals(24.0, rectangle.area(), 0.001);
+    }
+    
+    @Test
+    @DisplayName("Should reject non-permitted subtypes at compile time")
+    void shouldRejectNonPermittedSubtypes() {
+        // This test verifies compile-time enforcement
+        // The following would cause a compilation error:
+        // public class InvalidShape extends Shape {}
+        
+        // Verify sealed class is sealed
+        assertTrue(Shape.class.isSealed());
+    }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "5.0, 78.539",
+        "10.0, 314.159",
+        "1.0, 3.141"
+    })
+    @DisplayName("Should calculate circle area correctly")
+    void shouldCalculateCircleArea(double radius, double expected) {
+        Circle circle = new Circle(radius);
+        assertEquals(expected, circle.area(), 0.001);
+    }
+}
+
+// Mock testing with sealed classes
+@ExtendWith(MockitoExtension.class)
+class PaymentProcessorTest {
+    
+    @Mock
+    private PaymentGateway gateway;
+    
+    @Test
+    @DisplayName("Should process different payment types")
+    void shouldProcessDifferentPaymentTypes() {
+        Payment creditCard = new CreditCardPayment(100.0, "USD", "4111111111111234");
+        Payment paypal = new PayPalPayment(50.0, "EUR", "user@example.com");
+        
+        when(gateway.process(any())).thenReturn(true);
+        
+        PaymentProcessor processor = new PaymentProcessor(gateway);
+        
+        assertDoesNotThrow(() -> processor.process(creditCard));
+        assertDoesNotThrow(() -> processor.process(paypal));
+    }
+}
+```
+
+### Integration Testing
+
+```java
+@SpringBootTest
+class OrderIntegrationTest {
+    
+    @Autowired
+    private OrderRepository repository;
+    
+    @Test
+    @DisplayName("Should persist and retrieve sealed order status")
+    void shouldPersistAndRetrieveOrderStatus() {
+        Order order = new Order("TEST-001");
+        order.confirm("CONF-123");
+        
+        repository.save(order);
+        
+        Order retrieved = repository.findById("TEST-001").orElseThrow();
+        
+        String status = switch (retrieved.getStatus()) {
+            case Pending p -> "PENDING";
+            case Confirmed c -> "CONFIRMED";
+            case Shipped s -> "SHIPPED";
+            case Delivered d -> "DELIVERED";
+            case Cancelled c -> "CANCELLED";
+        };
+        
+        assertEquals("CONFIRMED", status);
+    }
+}
+```
+
+### Property-Based Testing
+
+```java
+class SealedClassProperties {
+    
+    @Property
+    void allSubtypesAreHandled(@ForAll Shape shape) {
+        // Property: Every shape must have a valid area
+        double area = switch (shape) {
+            case Circle c -> Math.PI * c.radius() * c.radius();
+            case Rectangle r -> r.width() * r.height();
+            case Triangle t -> calculateTriangleArea(t);
+        };
+        
+        assertTrue(area >= 0, "Area must be non-negative");
+    }
+    
+    @Property
+    void exhaustiveSwitchIsComplete(@ForAll OrderStatus status) {
+        // Property: Every status must have a description
+        String description = switch (status) {
+            case Pending p -> p.description();
+            case Confirmed c -> c.description();
+            case Shipped s -> s.description();
+            case Delivered d -> d.description();
+            case Cancelled c -> c.description();
+        };
+        
+        assertNotNull(description);
+        assertFalse(description.isEmpty());
+    }
+    
+    private double calculateTriangleArea(Triangle t) {
+        double s = (t.a() + t.b() + t.c()) / 2;
+        return Math.sqrt(s * (s - t.a()) * (s - t.b()) * (s - t.c()));
+    }
+}
+```
+
+## Advanced Patterns
+
+### 1. Sealed Class with Builder Pattern
+
+```java
+public sealed interface HttpResult permits Success, Redirect, ClientError, ServerError {
+    
+    int statusCode();
+    String message();
+    
+    public static Builder builder() {
+        return new Builder();
+    }
+    
+    public static class Builder {
+        private int statusCode;
+        private String message;
+        private Map<String, String> headers = new HashMap<>();
+        
+        public Builder statusCode(int code) {
+            this.statusCode = code;
+            return this;
+        }
+        
+        public Builder message(String msg) {
+            this.message = msg;
+            return this;
+        }
+        
+        public Builder header(String key, String value) {
+            this.headers.put(key, value);
+            return this;
+        }
+        
+        public HttpResult build() {
+            return switch (statusCode / 100) {
+                case 2 -> new Success(statusCode, message, headers);
+                case 3 -> new Redirect(statusCode, message, headers.get("Location"));
+                case 4 -> new ClientError(statusCode, message);
+                case 5 -> new ServerError(statusCode, message);
+                default -> throw new IllegalArgumentException("Invalid status code: " + statusCode);
+            };
+        }
+    }
+}
+
+public record Success(int statusCode, String message, Map<String, String> headers) 
+    implements HttpResult {}
+
+public record Redirect(int statusCode, String message, String location) 
+    implements HttpResult {}
+
+public record ClientError(int statusCode, String message) 
+    implements HttpResult {}
+
+public record ServerError(int statusCode, String message) 
+    implements HttpResult {}
+```
+
+### 2. Sealed Class with Visitor Pattern
+
+```java
+public sealed interface ASTVisitor<T> permits 
+    NumberEvaluator, 
+    StringEvaluator, 
+    BooleanEvaluator {
+    
+    T visit(NumberLiteral expr);
+    T visit(BinaryOperation expr);
+    T visit(UnaryOperation expr);
+}
+
+public class NumberEvaluator implements ASTVisitor<Double> {
+    
+    @Override
+    public Double visit(NumberLiteral expr) {
+        return expr.value();
+    }
+    
+    @Override
+    public Double visit(BinaryOperation expr) {
+        double left = expr.left().accept(this);
+        double right = expr.right().accept(this);
+        
+        return switch (expr.op()) {
+            case ADD -> left + right;
+            case SUBTRACT -> left - right;
+            case MULTIPLY -> left * right;
+            case DIVIDE -> left / right;
+        };
+    }
+    
+    @Override
+    public Double visit(UnaryOperation expr) {
+        double value = expr.operand().accept(this);
+        return switch (expr.op()) {
+            case NEGATE -> -value;
+        };
+    }
+}
+```
+
+### 3. Sealed Class with Strategy Pattern
+
+```java
+public sealed interface CompressionStrategy permits 
+    GzipCompression, 
+    DeflateCompression, 
+    BrotliCompression, 
+    NoCompression {
+    
+    byte[] compress(byte[] data);
+    byte[] decompress(byte[] data);
+    String algorithm();
+}
+
+public class CompressionService {
+    private final CompressionStrategy strategy;
+    
+    public CompressionService(CompressionStrategy strategy) {
+        this.strategy = strategy;
+    }
+    
+    public byte[] process(byte[] data, boolean compress) {
+        return compress ? strategy.compress(data) : strategy.decompress(data);
+    }
+    
+    // Factory method using pattern matching
+    public static CompressionService create(String algorithm) {
+        CompressionStrategy strategy = switch (algorithm.toLowerCase()) {
+            case "gzip" -> new GzipCompression();
+            case "deflate" -> new DeflateCompression();
+            case "brotli" -> new BrotliCompression();
+            case "none" -> new NoCompression();
+            default -> throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+        };
+        
+        return new CompressionService(strategy);
+    }
+}
+```
+
+### 4. Sealed Class with State Pattern
+
+```java
+public sealed interface ConnectionState permits 
+    Disconnected, 
+    Connecting, 
+    Connected, 
+    Error {
+    
+    ConnectionState connect();
+    ConnectionState disconnect();
+    ConnectionState send(byte[] data);
+    boolean isConnected();
+}
+
+public record Disconnected() implements ConnectionState {
+    @Override
+    public ConnectionState connect() {
+        return new Connecting();
+    }
+    
+    @Override
+    public ConnectionState disconnect() {
+        return this; // Already disconnected
+    }
+    
+    @Override
+    public ConnectionState send(byte[] data) {
+        throw new IllegalStateException("Cannot send data while disconnected");
+    }
+    
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+}
+
+public record Connecting() implements ConnectionState {
+    @Override
+    public ConnectionState connect() {
+        return new Connected();
+    }
+    
+    @Override
+    public ConnectionState disconnect() {
+        return new Disconnected();
+    }
+    
+    @Override
+    public ConnectionState send(byte[] data) {
+        throw new IllegalStateException("Cannot send data while connecting");
+    }
+    
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+}
+```
+
+## Common Pitfalls
+
+### 4. Not Leveraging Exhaustive Matching
+
+**Wrong**:
+```java
+public String describe(Shape shape) {
+    if (shape instanceof Circle) {
+        return "Circle";
+    } else if (shape instanceof Rectangle) {
+        return "Rectangle";
+    }
+    // Missing Triangle - will compile but loses sealed benefit
+    return "Unknown";
+}
+```
+
+**Right**:
+```java
+public String describe(Shape shape) {
+    return switch (shape) {
+        case Circle c -> "Circle";
+        case Rectangle r -> "Rectangle";
+        case Triangle t -> "Triangle";
+    };
+}
+```
+
+### 5. Overusing non-sealed
+
+**Wrong**:
+```java
+public sealed class Shape permits Circle, Rectangle, Triangle {}
+public non-sealed class Circle extends Shape {} // Breaks sealed guarantee
+public non-sealed class Rectangle extends Shape {}
+public non-sealed class Triangle extends Shape {}
+```
+
+**Right**:
+```java
+public sealed class Shape permits Circle, Rectangle, Triangle {}
+public final class Circle extends Shape {}
+public final class Rectangle extends Shape {}
+public final class Triangle extends Shape {}
+```
+
+### 6. Forgetting Module Boundaries
+
+**Wrong**:
+```java
+// Module A
+module com.example.modulea {
+    exports com.example.modulea.shapes;
+}
+
+// Module B - won't work if not in same module
+module com.example.moduleb {
+    opens com.example.moduleb.impl to com.example.modulea;
+}
+```
+
+**Right**:
+```java
+// Keep sealed hierarchy in same module
+module com.example.shapes {
+    exports com.example.shapes;
+    // All permitted classes in same module
+}
+```
+
+## Glossary
+
+| Term | Definition |
+|------|-----------|
+| **Sealed Class** | A class that restricts which other classes can extend it |
+| **Sealed Interface** | An interface that restricts which classes can implement it |
+| **permits** | Keyword listing allowed subtypes of a sealed class |
+| **final modifier** | Prevents further extension of a permitted subtype |
+| **sealed modifier** | Allows extension but with its own restrictions |
+| **non-sealed modifier** | Opens the subtype for unrestricted extension |
+| **Exhaustive matching** | Compiler ensures all cases are handled in switch |
+| **Pattern matching** | Type-based dispatch with automatic casting |
+| **Subtype** | A class that extends or implements a sealed type |
+| **Supertype** | The sealed class or interface being extended |
+| **Module boundary** | Java module that contains the sealed hierarchy |
+| **Record** | Immutable class with automatic methods |
+
+## Version History
+
+| Java Version | Feature | Description |
+|-------------|---------|-------------|
+| 15 (Preview) | Sealed Classes | First preview with `permits` keyword |
+| 16 (Preview) | Sealed Classes | Second preview with improvements |
+| 17 (Final) | Sealed Classes | Finalized feature |
+| 17 | Pattern Matching | Basic pattern matching for instanceof |
+| 18 (Preview) | Pattern Matching | Enhanced pattern matching |
+| 19 (Preview) | Pattern Matching | Third preview |
+| 20 (Preview) | Pattern Matching | Fourth preview |
+| 21 (Final) | Pattern Matching | Finalized pattern matching for switch |
+| 21 | Record Patterns | Destructuring records in patterns |
+| 21 | Sealed + Pattern | Full integration of sealed classes with pattern matching |
+
+## Migration Guide
+
+### Migrating from Enums
+
+**Before (Enum)**:
+```java
+public enum ShapeType {
+    CIRCLE, RECTANGLE, TRIANGLE
+}
+```
+
+**After (Sealed Class)**:
+```java
+public sealed interface Shape permits Circle, Rectangle, Triangle {
+    double area();
+}
+
+public record Circle(double radius) implements Shape {
+    @Override
+    public double area() { return Math.PI * radius * radius; }
+}
+
+public record Rectangle(double width, double height) implements Shape {
+    @Override
+    public double area() { return width * height; }
+}
+
+public record Triangle(double a, double b, double c) implements Shape {
+    @Override
+    public double area() {
+        double s = (a + b + c) / 2;
+        return Math.sqrt(s * (s - a) * (s - b) * (s - c));
+    }
+}
+```
+
+### Migrating from Abstract Classes
+
+**Before (Abstract Class)**:
+```java
+public abstract class Shape {
+    public abstract double area();
+}
+
+public class Circle extends Shape {
+    private final double radius;
+    public Circle(double radius) { this.radius = radius; }
+    @Override
+    public double area() { return Math.PI * radius * radius; }
+}
+```
+
+**After (Sealed Interface)**:
+```java
+public sealed interface Shape permits Circle, Rectangle {
+    double area();
+}
+
+public record Circle(double radius) implements Shape {
+    @Override
+    public double area() { return Math.PI * radius * radius; }
+}
+
+public record Rectangle(double width, double height) implements Shape {
+    @Override
+    public double area() { return width * height; }
+}
+```
+
+## Tool Support
+
+### IDE Support
+
+| IDE | Support Level | Features |
+|-----|--------------|----------|
+| IntelliJ IDEA | Full | Code completion, refactoring, inspection |
+| Eclipse | Full | Code completion, quick fixes |
+| VS Code | Full | Extension support, syntax highlighting |
+| NetBeans | Full | Code completion, hints |
+
+### Build Tool Support
+
+| Build Tool | Support | Configuration |
+|-----------|---------|---------------|
+| Maven | Full | No special config needed |
+| Gradle | Full | No special config needed |
+| Ant | Full | Requires Java 17+ compiler |
+
+### Static Analysis Tools
+
+| Tool | Support | Notes |
+|------|---------|-------|
+| SonarQube | Full | Detects sealed class violations |
+| PMD | Partial | Basic sealed class checks |
+| Checkstyle | Full | Enforces sealed class conventions |
+| SpotBugs | Full | Detects potential issues |
+
+## Community Resources
+
+### Official Documentation
+
+- [JEP 409: Sealed Classes](https://openjdk.org/jeps/409)
+- [Java Language Specification: Sealed Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.1.2)
+
+### Books
+
+- "Effective Java" by Joshua Bloch
+- "Modern Java in Action" by Urma, Fusco, and Mycroft
+- "Java: The Complete Reference" by Herbert Schildt
+
+### Online Resources
+
+- [Baeldung: Sealed Classes](https://www.baeldung.com/java-sealed-classes)
+- [InfoQ: Sealed Classes in Java](https://www.infoq.com/articles/java-sealed-classes/)
+- [Dev.to: Java Sealed Classes](https://dev.to/t/java/sealed)
+
+### Community Projects
+
+- [Sealed Classes Examples](https://github.com/sealed-classes-examples)
+- [Pattern Matching Library](https://github.com/pattern-matching-lib)
+- [State Machine Framework](https://github.com/state-machine-framework)
+
+## Anti-Patterns
+
+### 1. Using Sealed for Everything
+
+**Wrong**:
+```java
+// Don't seal classes that should be extensible
+public sealed class StringProcessor permits TrimProcessor, UpperProcessor {}
+```
+
+**Right**:
+```java
+// Only seal when you need to restrict the hierarchy
+public sealed interface Result permits Success, Failure {}
+```
+
+### 2. Overcomplicating Hierarchies
+
+**Wrong**:
+```java
+// Too many levels of sealed classes
+public sealed class A permits B {}
+public sealed class B permits C {}
+public sealed class C permits D {}
+public sealed class D permits E {}
+public final class E extends D {}
+```
+
+**Right**:
+```java
+// Keep hierarchies flat when possible
+public sealed interface A permits B, C, D, E {}
+public final class B implements A {}
+public final class C implements A {}
+public final class D implements A {}
+public final class E implements A {}
+```
+
+### 3. Mixing Sealed with Open Inheritance
+
+**Wrong**:
+```java
+public sealed class Shape permits Circle, Rectangle {}
+public non-sealed class Circle extends Shape {} // Anyone can extend Circle
+public class CustomCircle extends Circle {} // Breaks sealed guarantee
+```
+
+**Right**:
+```java
+public sealed class Shape permits Circle, Rectangle {}
+public final class Circle extends Shape {} // No further extension
+public final class Rectangle extends Shape {}
+```
+
+### 4. Ignoring Exhaustive Matching
+
+**Wrong**:
+```java
+// Using if-else chains loses sealed class benefits
+public String describe(Shape shape) {
+    if (shape instanceof Circle) {
+        return "Circle";
+    } else if (shape instanceof Rectangle) {
+        return "Rectangle";
+    }
+    return "Unknown"; // Should never reach here with sealed class
+}
+```
+
+**Right**:
+```java
+// Use exhaustive switch for maximum benefit
+public String describe(Shape shape) {
+    return switch (shape) {
+        case Circle c -> "Circle";
+        case Rectangle r -> "Rectangle";
+    };
+}
+```
+
+## Performance Considerations
+
+### Runtime Performance
+
+| Operation | Impact | Notes |
+|-----------|--------|-------|
+| Type checking | None | Same as regular classes |
+| Pattern matching | None | Compiler-generated code |
+| Method dispatch | None | Virtual dispatch unchanged |
+| Memory usage | Minimal | Small metadata overhead |
+| Serialization | None | Standard Java serialization |
+
+### Compile-Time Performance
+
+| Aspect | Impact | Notes |
+|--------|--------|-------|
+| Compilation speed | Slightly slower | Additional hierarchy checks |
+| Error detection | Better | Catches invalid hierarchies early |
+| IDE support | Minimal impact | Modern IDEs handle well |
+
+### Best Practices for Performance
+
+1. **Use records**: Immutable and memory-efficient
+2. **Keep hierarchies flat**: Reduce dispatch overhead
+3. **Avoid deep nesting**: Limits pattern matching complexity
+4. **Use exhaustive matching**: Compiler optimizes switch expressions
+
+## Code Examples Summary
+
+### Basic Sealed Class
+
+```java
+public sealed class Shape permits Circle, Rectangle, Triangle {}
+public final class Circle extends Shape {}
+public final class Rectangle extends Shape {}
+public final class Triangle extends Shape {}
+```
+
+### Sealed Interface with Records
+
+```java
+public sealed interface Result permits Success, Failure {}
+public record Success<T>(T data) implements Result {}
+public record Failure(String error) implements Result {}
+```
+
+### Exhaustive Pattern Matching
+
+```java
+public String describe(Shape shape) {
+    return switch (shape) {
+        case Circle c -> "Circle: " + c.radius();
+        case Rectangle r -> "Rectangle: " + r.width() + "x" + r.height();
+        case Triangle t -> "Triangle";
+    };
+}
+```
+
+### Generic Sealed Interface
+
+```java
+public sealed interface Container<T> permits Box, Empty {
+    T get();
+}
+
+public record Box<T>(T value) implements Container<T> {
+    @Override
+    public T get() { return value; }
+}
+
+public record Empty<T>() implements Container<T> {
+    @Override
+    public T get() { return null; }
+}
+```
