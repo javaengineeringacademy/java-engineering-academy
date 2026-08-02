@@ -10,11 +10,11 @@
 - [Java Language Specification - Records](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10)
 
 ### Oracle Tutorials
-- [Java Tutorials - OOP Concepts](https://docs.oracle.com/javase/tutorial/java/concepts/)
-- [Java Tutorials - Classes and Objects](https://docs.oracle.com/javase/tutorial/java/javaOO/)
-- [Java Tutorials - Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/)
-- [Java Tutorials - Interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/createinterface.html)
-- [Java Tutorials - Records](https://docs.oracle.com/javase/tutorial/java/dataobjects/records.html)
+- [Java Tutorials - OOP Concepts](https://docs.oracle.com/en/java/javase/21/java/concepts/)
+- [Java Tutorials - Classes and Objects](https://docs.oracle.com/en/java/javase/21/java/javaOO/)
+- [Java Tutorials - Inheritance](https://docs.oracle.com/en/java/javase/21/java/IandI/)
+- [Java Tutorials - Interfaces](https://docs.oracle.com/en/java/javase/21/java/IandI/createinterface.html)
+- [Java Tutorials - Records](https://docs.oracle.com/en/java/javase/21/java/dataobjects/records.html)
 
 ### OpenJDK 21
 - [OpenJDK 21 Release Notes](https://openjdk.org/projects/jdk/21/)

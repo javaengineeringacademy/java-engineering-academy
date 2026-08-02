@@ -884,10 +884,10 @@ In enterprise applications, enums power state machines (order status: PENDING, C
 
 ## References
 
-- [Oracle — Java Enums Tutorial](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html)
+- [Oracle — Java Enums Tutorial](https://docs.oracle.com/en/java/javase/21/java/javaOO/enum.html)
 - [Effective Java, Item 34: Use enums instead of int constants](https://books.google.com/books?id=BIoul6j2KcIC)
 - [Baeldung — Java Enums](https://www.baeldung.com/java-enum)
-- [Javadoc — java.lang.Enum](https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html)
+- [Javadoc — java.lang.Enum](https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/Enum.html)
 
 ## Summary
 

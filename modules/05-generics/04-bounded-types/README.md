@@ -851,7 +851,7 @@ Bounded types enable type-safe operations while maintaining generic flexibility.
 
 ## References
 
-- [Oracle - Bounded Type Parameters](https://docs.oracle.com/javase/tutorial/java/generics/bounded.html)
+- [Oracle - Bounded Type Parameters](https://docs.oracle.com/en/java/javase/21/java/generics/bounded.html)
 - [Java Language Specification §4.5 - Type Parameters](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.5)
 - [Effective Java - Item 30: Use bounded wildcards to increase API flexibility](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Angelika Langer - Generics FAQ](https://www.angelikalanger.com/GenericsFAQ/)

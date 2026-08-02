@@ -833,7 +833,7 @@ Enterprise applications use inner classes for callback implementations, event ha
 
 ## References
 
-- [Oracle — Nested Classes Tutorial](https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html)
+- [Oracle — Nested Classes Tutorial](https://docs.oracle.com/en/java/javase/21/java/javaOO/nested.html)
 - [Effective Java, Item 24: Favor static member classes over nonstatic](https://books.google.com/books?id=BIoul6j2KcIC)
 - [Baeldung — Java Inner Classes](https://www.baeldung.com/java-inner-class)
 - [Baeldung — Memory Leaks with Inner Classes](https://www.baeldung.com/java-memory-leaks-inner-class)

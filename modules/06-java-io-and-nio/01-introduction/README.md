@@ -558,7 +558,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Java IO Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
+1. **Official Documentation**: [Java IO Tutorial](https://docs.oracle.com/en/java/javase/21/essential/io/)
 2. **Java NIO Guide**: [NIO by Example](https://jenkov.com/tutorials/java-nio/index.html)
 3. **Books**:
    - "Java I/O, NIO and NIO.2" by Joseph Dallmeier

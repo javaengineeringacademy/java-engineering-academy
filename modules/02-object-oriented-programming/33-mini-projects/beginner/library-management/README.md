@@ -487,6 +487,6 @@ public class LibraryServiceTest {
 
 ## References
 
-- [Java Enums Tutorial](https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html)
-- [Java Collections Framework](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html)
+- [Java Enums Tutorial](https://docs.oracle.com/en/java/javase/21/java/javaOO/enum.html)
+- [Java Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Collections.html)
 - [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612)

@@ -1237,7 +1237,7 @@ public class MetricsCollector {
 
 - [JVM Specification - Memory Model](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html)
 - [Java Language Specification - Memory Model](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- [G1 GC Tuning Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc.html)
+- [G1 GC Tuning Guide](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/vm/gctuning/g1_gc.html)
 - [ZGC Documentation](https://docs.oracle.com/en/java/javase/21/gctuning/z-garbage-collector.html)
 - [Java Object Layout (JOL)](https://openjdk.org/projects/code-tools/jol/)
 - [Eclipse Memory Analyzer](https://eclipse.dev/mat/)

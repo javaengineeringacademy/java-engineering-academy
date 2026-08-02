@@ -629,7 +629,7 @@ Implement a simple cache using `Hashtable` with expiration time. Items should be
 ### Online Resources
 - [Baeldung - Hashtable vs HashMap](https://www.baeldung.com/java-hashtable-vs-hashmap)
 - [GeeksforGeeks - Hashtable in Java](https://www.geeksforgeeks.org/java-util-hashtable-class-java/)
-- [Oracle - Collections Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/)
+- [Oracle - Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/)
 
 ### Related Topics
 - [HashMap](../15-hashmap/README.md)

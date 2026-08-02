@@ -1016,8 +1016,8 @@ ArrayList is the most commonly used List implementation in Java:
 ## 27. References
 
 ### Official Documentation
-- [ArrayList JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html)
-- [List Interface](https://docs.oracle.com/javase/8/docs/api/java/util/List.html)
+- [ArrayList JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/ArrayList.html)
+- [List Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/List.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch (Item 15-17)

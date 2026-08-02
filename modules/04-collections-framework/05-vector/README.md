@@ -105,8 +105,8 @@ for (Integer num : vector) {
 
 ## References
 
-- [Vector Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/Vector.html)
-- [Thread Safety in Java](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [Vector Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Vector.html)
+- [Thread Safety in Java](https://docs.oracle.com/en/java/javase/21/essential/concurrency/)
 
 ## Summary
 

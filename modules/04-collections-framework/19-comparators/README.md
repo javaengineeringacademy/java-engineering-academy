@@ -127,8 +127,8 @@ public static <T> Comparator<T> chainComparators(Comparator<T>... comparators) {
 
 ## References
 
-- [Comparator Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html)
-- [Java Sorting Tutorial](https://docs.oracle.com/javase/tutorial/collections/algorithms/ordering.html)
+- [Comparator Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Comparator.html)
+- [Java Sorting Tutorial](https://docs.oracle.com/en/java/javase/21/collections/algorithms/ordering.html)
 
 ## Summary
 

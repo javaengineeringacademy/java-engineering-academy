@@ -965,8 +965,8 @@ Enterprise applications use functional interfaces for Stream API operations, Com
 
 ## References
 
-- [Oracle — Functional Interface Tutorial](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
-- [Javadoc — java.util.function](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)
+- [Oracle — Functional Interface Tutorial](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
+- [Javadoc — java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/function/package-summary.html)
 - [Baeldung — Java Functional Interfaces](https://www.baeldung.com/java-functional-interface)
 - [Effective Java, Item 42: Prefer lambdas to anonymous classes](https://books.google.com/books?id=BIoul6j2KcIC)
 

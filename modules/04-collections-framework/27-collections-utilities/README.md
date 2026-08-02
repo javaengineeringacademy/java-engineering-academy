@@ -778,7 +778,7 @@ Given a list of strings, use `Collections.frequency()` to count occurrences of e
 ### Online Resources
 - [Baeldung - Collections Utility Methods](https://www.baeldung.com/java-collections-utilities)
 - [GeeksforGeeks - Collections class in Java](https://www.geeksforgeeks.org/collections-class-java/)
-- [Oracle - Collections Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/)
+- [Oracle - Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/)
 
 ### Related Topics
 - [List Interface](../05-list/README.md)

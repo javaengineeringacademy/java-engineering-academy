@@ -843,7 +843,7 @@ Key takeaways from this introduction to multithreading:
 ## 27. References
 
 ### Official Documentation
-- [Oracle Threads Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [Oracle Threads Tutorial](https://docs.oracle.com/en/java/javase/21/essential/concurrency/)
 - [Thread Class API](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html)
 - [Java Memory Model](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
 

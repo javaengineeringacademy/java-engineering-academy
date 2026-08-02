@@ -1911,7 +1911,7 @@ a.speak(); // Calls Dog.speak() — dynamic dispatch uses actual type
 
 - [Java Language Specification — Polymorphism](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.12)
 - [Effective Java, 3rd Edition — Item 19: Design and document for inheritance or else prohibit it](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Java Tutorials — Polymorphism](https://docs.oracle.com/javase/tutorial/java/javaOO/polymorphism.html)
+- [Oracle Java Tutorials — Polymorphism](https://docs.oracle.com/en/java/javase/21/java/javaOO/polymorphism.html)
 - [Baeldung — Polymorphism in Java](https://www.baeldung.com/java-polymorphism)
 - [Refactoring.Guru — Polymorphism](https://refactoring.guru/design-patterns/polymorphism)
 

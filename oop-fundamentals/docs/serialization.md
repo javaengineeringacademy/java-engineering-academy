@@ -1868,7 +1868,7 @@ Build a distributed task queue system using Java serialization:
 - *Java I/O* by Elliotte Rusty Harold
 
 ### Articles
-- [Oracle: Java Serialization Specification](https://docs.oracle.com/javase/8/docs/platform/serialization/spec/serialTOC.html)
+- [Oracle: Java Serialization Specification](https://docs.oracle.com/en/java/javase/21/docs/platform/serialization/spec/serialTOC.html)
 - [Baeldung: Java Serialization](https://www.baeldung.com/java-serialization)
 - [InfoQ: Deserialization Vulnerabilities](https://www.infoq.com/articles/deserialization-vulnerabilities/)
 

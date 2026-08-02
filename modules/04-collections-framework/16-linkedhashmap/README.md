@@ -115,8 +115,8 @@ System.out.println(cache.containsKey("B"));  // false
 
 ## References
 
-- [LinkedHashMap Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html)
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/implementations/map.html)
+- [LinkedHashMap Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/LinkedHashMap.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/implementations/map.html)
 
 ## Summary
 

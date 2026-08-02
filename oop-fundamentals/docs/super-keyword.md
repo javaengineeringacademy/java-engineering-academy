@@ -509,4 +509,4 @@ Need to access parent class member?
 - [JLS - The super Keyword](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.11.2)
 - [JLS - Constructor Declarations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.8)
 - [Effective Java - Item 19: Design and document for inheritance or else prohibit it](https://books.google.com/books?id=BIpKEttKoLYC)
-- [Java Tutorials - Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html)
+- [Java Tutorials - Inheritance](https://docs.oracle.com/en/java/javase/21/java/IandI/subclasses.html)

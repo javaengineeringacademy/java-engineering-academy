@@ -1733,7 +1733,7 @@ public class Java21Features {
 
 ### Online Resources
 - [Baeldung - Java 8 Functional Interfaces](https://www.baeldung.com/java-8-functional-interface)
-- [Oracle Java Tutorials - Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
+- [Oracle Java Tutorials - Lambda Expressions](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
 
 ## Glossary
 

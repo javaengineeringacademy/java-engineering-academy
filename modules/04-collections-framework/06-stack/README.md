@@ -113,8 +113,8 @@ public String undo() {
 
 ## References
 
-- [Stack Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html)
-- [Deque Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html)
+- [Stack Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Stack.html)
+- [Deque Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Deque.html)
 
 ## Summary
 

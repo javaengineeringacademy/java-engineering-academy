@@ -873,7 +873,7 @@ Key takeaways on synchronization:
 ## 27. References
 
 ### Official Documentation
-- [Synchronized Statement](https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html)
+- [Synchronized Statement](https://docs.oracle.com/en/java/javase/21/essential/concurrency/syncmeth.html)
 - [Volatile Keyword](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.4.1)
 - [Java Memory Model](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
 
@@ -883,7 +883,7 @@ Key takeaways on synchronization:
 
 ### Online Resources
 - [Baeldung Synchronization](https://www.baeldung.com/java-synchronized)
-- [Oracle Concurrency Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [Oracle Concurrency Tutorial](https://docs.oracle.com/en/java/javase/21/essential/concurrency/)
 
 ### Related Topics
 - [Locks](../05-locks/README.md)

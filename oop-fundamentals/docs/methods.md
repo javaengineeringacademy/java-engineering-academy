@@ -454,4 +454,4 @@ Features to implement:
 - [Java Language Specification - Methods](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4)
 - [Effective Java Item 54: Return empty collections or arrays](https://www.oracle.com/java/technologies/javase/effective-java.html)
 - [Effective Java Item 55: Return Optionals judiciously](https://www.oracle.com/java/technologies/javase/effective-java.html)
-- [Oracle Docs - Defining Methods](https://docs.oracle.com/javase/tutorial/java/javaOO/methods.html)
+- [Oracle Docs - Defining Methods](https://docs.oracle.com/en/java/javase/21/java/javaOO/methods.html)

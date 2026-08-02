@@ -1007,7 +1007,7 @@ Key takeaways on locks:
 
 ### Online Resources
 - [Baeldung Lock](https://www.baeldung.com/java-concurrent-locks)
-- [Oracle Concurrency Locks](https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html)
+- [Oracle Concurrency Locks](https://docs.oracle.com/en/java/javase/21/essential/concurrency/locksync.html)
 
 ### Related Topics
 - [Synchronization](../04-synchronization/README.md)

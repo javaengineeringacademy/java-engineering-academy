@@ -79,5 +79,5 @@ Mini Project
 
 ## Module Resources
 
-- [Java Collections Official Docs](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/)
-- [Collections Framework Diagram](https://docs.oracle.com/javase/8/docs/api/java/util/package-summary.html)
+- [Java Collections Official Docs](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/)
+- [Collections Framework Diagram](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/package-summary.html)

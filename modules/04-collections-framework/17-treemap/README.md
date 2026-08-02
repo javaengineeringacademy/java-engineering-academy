@@ -902,9 +902,9 @@ TreeMap is the sorted Map implementation based on red-black trees:
 ## 27. References
 
 ### Official Documentation
-- [TreeMap JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)
-- [SortedMap Interface](https://docs.oracle.com/javase/8/docs/api/java/util/SortedMap.html)
-- [NavigableMap Interface](https://docs.oracle.com/javase/8/docs/api/java/util/NavigableMap.html)
+- [TreeMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/TreeMap.html)
+- [SortedMap Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/SortedMap.html)
+- [NavigableMap Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/NavigableMap.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

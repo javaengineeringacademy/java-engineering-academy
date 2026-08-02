@@ -804,6 +804,6 @@ Key best practices for Java generics:
 ## References
 
 - [Effective Java - Chapter 6: Generics](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Generics Tutorial](https://docs.oracle.com/javase/tutorial/java/generics/)
+- [Oracle Generics Tutorial](https://docs.oracle.com/en/java/javase/21/java/generics/)
 - [Google Java Style Guide - Generics](https://google.github.io/styleguide/javaguide.html)
 - [Angelika Langer - Generics FAQ](https://www.angelikalanger.com/GenericsFAQ/)

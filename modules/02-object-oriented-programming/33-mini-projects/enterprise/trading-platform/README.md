@@ -809,5 +809,5 @@ public class TradingServiceTest {
 ## References
 
 - [Observer Pattern](https://www.baeldung.com/java-observer-pattern)
-- [Concurrent Data Structures](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html)
+- [Concurrent Data Structures](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/concurrent/package-summary.html)
 - [BigDecimal for Finance](https://www.baeldung.com/java-bigdecimal)

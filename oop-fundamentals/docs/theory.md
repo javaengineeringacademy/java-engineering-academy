@@ -1446,7 +1446,7 @@ Classes:
 ### Official Documentation
 - [Java Language Specification — Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html)
 - [Java Language Specification — Interfaces](https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html)
-- [Java Tutorials — Object-Oriented Programming Concepts](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- [Java Tutorials — Object-Oriented Programming Concepts](https://docs.oracle.com/en/java/javase/21/java/concepts/)
 - [Effective Java, 3rd Edition — Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 
 ### Design Principles
@@ -1455,7 +1455,7 @@ Classes:
 - [Liskov Substitution Principle](https://en.wikipedia.org/wiki/Liskov_substitution_principle)
 
 ### JVM Internals
-- [Oracle JVM Documentation](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/)
+- [Oracle JVM Documentation](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/vm/)
 - [OpenJDK Internals](https://openjdk.org/groups/hotspot/)
 - [Java Memory Model (JEP 425)](https://openjdk.org/jeps/425)
 

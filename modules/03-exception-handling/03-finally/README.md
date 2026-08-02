@@ -885,8 +885,8 @@ Create a comprehensive resource management library with:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Finally](https://docs.oracle.com/javase/tutorial/essential/exceptions/finally.html)
-- [Try-With-Resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
+- [Java SE Finally](https://docs.oracle.com/en/java/javase/21/essential/exceptions/finally.html)
+- [Try-With-Resources](https://docs.oracle.com/en/java/javase/21/essential/exceptions/tryResourceClose.html)
 
 ### Books
 - "Effective Java" by Joshua Bloch - Item 9: Prefer try-with-resources to try-finally

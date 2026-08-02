@@ -745,8 +745,8 @@ HashSet is the most commonly used Set implementation:
 ## 27. References
 
 ### Official Documentation
-- [HashSet JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html)
-- [Set Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Set.html)
+- [HashSet JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/HashSet.html)
+- [Set Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Set.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

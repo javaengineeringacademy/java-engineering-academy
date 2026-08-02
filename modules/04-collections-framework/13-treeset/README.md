@@ -703,9 +703,9 @@ TreeSet is the sorted Set implementation based on red-black trees:
 ## 27. References
 
 ### Official Documentation
-- [TreeSet JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html)
-- [SortedSet Interface](https://docs.oracle.com/javase/8/docs/api/java/util/SortedSet.html)
-- [NavigableSet Interface](https://docs.oracle.com/javase/8/docs/api/java/util/NavigableSet.html)
+- [TreeSet JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/TreeSet.html)
+- [SortedSet Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/SortedSet.html)
+- [NavigableSet Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/NavigableSet.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

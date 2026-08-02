@@ -1105,7 +1105,7 @@ Understanding generic classes is essential for working with Java collections, fr
 
 ## References
 
-- [Oracle - Generic Classes and Type Parameters](https://docs.oracle.com/javase/tutorial/java/generics/types.html)
+- [Oracle - Generic Classes and Type Parameters](https://docs.oracle.com/en/java/javase/21/java/generics/types.html)
 - [Java Language Specification §8.1.2 - Generic Class Declarations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.2)
 - [Effective Java - Item 29: Use wildcards to increase API flexibility](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Java Generics Tutorial](https://www.baeldung.com/java-generics)

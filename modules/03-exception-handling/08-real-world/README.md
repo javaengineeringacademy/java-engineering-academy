@@ -1454,7 +1454,7 @@ Create a framework that:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Exception Handling](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+- [Java SE Exception Handling](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
 - [Spring Exception Handling](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-exceptionhandlers)
 
 ### Books

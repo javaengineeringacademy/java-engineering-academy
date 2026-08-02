@@ -620,5 +620,5 @@ Encapsulation is the OOP principle of bundling data with methods that operate on
 - Effective Java, 3rd Edition, Joshua Bloch - Item 15-17 (Minimize Mutability, Prefer Immutability)
 - Head First Design Patterns, 2nd Edition - Encapsulation chapters
 - Java Language Specification - Class Members (https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html)
-- Oracle Java Tutorials - Controlling Access to Members (https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html)
+- Oracle Java Tutorials - Controlling Access to Members (https://docs.oracle.com/en/java/javase/21/java/javaOO/accesscontrol.html)
 - Clean Code, Robert Martin - Chapter 6: Objects and Data Structures

@@ -950,6 +950,6 @@ Best practices ensure functional code is clean, maintainable, and performant. Ke
 ## 27. References
 
 1. [Effective Java, 3rd Edition - Items 42-44](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-2. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
+2. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
 3. [Baeldung: Java Functional Programming](https://www.baeldung.com/java-functional-programming)
 4. [Java Performance, 2nd Edition](https://www.oreilly.com/library/view/java-performance-2nd/9781492056102/)

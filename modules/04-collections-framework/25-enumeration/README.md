@@ -770,7 +770,7 @@ Implement an adapter class that converts `Enumeration` to `Iterator`. Test with 
 ### Online Resources
 - [Baeldung - Enumeration in Java](https://www.baeldung.com/java-enumeration)
 - [GeeksforGeeks - Enumeration in Java](https://www.geeksforgeeks.org/enumeration-in-java/)
-- [Oracle - Legacy Collections](https://docs.oracle.com/javase/tutorial/collections/legacy/index.html)
+- [Oracle - Legacy Collections](https://docs.oracle.com/en/java/javase/21/collections/legacy/index.html)
 
 ### Related Topics
 - [Iterator Interface](../24-iterator/README.md)

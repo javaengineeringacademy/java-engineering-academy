@@ -402,6 +402,6 @@ public class StudentManagerTest {
 
 ## References
 
-- [Java Collections Framework](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html)
-- [Object-Oriented Programming in Java](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- [Java Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Collections.html)
+- [Object-Oriented Programming in Java](https://docs.oracle.com/en/java/javase/21/java/concepts/)
 - [JUnit 5 Testing](https://junit.org/junit5/docs/current/user-guide/)

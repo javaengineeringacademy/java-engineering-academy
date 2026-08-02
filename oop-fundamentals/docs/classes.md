@@ -516,5 +516,5 @@ Build a `TaskManager` application:
 
 - [Java Language Specification - Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html)
 - [Effective Java Item 17: Minimize Mutability](https://www.oracle.com/technical-resources/articles/java/effective-java.html)
-- [Oracle Docs - Classes and Objects](https://docs.oracle.com/javase/tutorial/java/javaOO/index.html)
+- [Oracle Docs - Classes and Objects](https://docs.oracle.com/en/java/javase/21/java/javaOO/index.html)
 - [Effective Java Item 10: Obey the general contract when overriding equals](https://www.oracle.com/java/technologies/javase/effective-java.html)

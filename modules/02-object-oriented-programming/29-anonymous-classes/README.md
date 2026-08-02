@@ -976,7 +976,7 @@ Enterprise applications use anonymous classes for callback implementations, even
 
 ## References
 
-- [Oracle — Anonymous Classes](https://docs.oracle.com/javase/tutorial/java/javaOO/anonymousclasses.html)
+- [Oracle — Anonymous Classes](https://docs.oracle.com/en/java/javase/21/java/javaOO/anonymousclasses.html)
 - [Baeldung — Java Anonymous Classes](https://www.baeldung.com/java-anonymous-classes)
 - [Effective Java, Item 22: Use interfaces only for defining types](https://books.google.com/books?id=BIoul6j2KcIC)
 - [JLS — Anonymous Class Declarations](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.9.5)

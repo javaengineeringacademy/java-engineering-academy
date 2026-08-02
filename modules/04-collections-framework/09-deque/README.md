@@ -126,8 +126,8 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 ## References
 
-- [Deque Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html)
-- [ArrayDeque Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html)
+- [Deque Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Deque.html)
+- [ArrayDeque Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/ArrayDeque.html)
 
 ## Summary
 

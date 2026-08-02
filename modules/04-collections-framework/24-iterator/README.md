@@ -717,7 +717,7 @@ Implement a thread-safe list that allows safe iteration even when other threads 
 ### Online Resources
 - [Baeldung - Iterator in Java](https://www.baeldung.com/java-iterator)
 - [GeeksforGeeks - Iterator in Java](https://www.geeksforgeeks.org/iterator-in-java/)
-- [Oracle - Collections Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/)
+- [Oracle - Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/)
 
 ### Related Topics
 - [List Interface](../05-list/README.md)

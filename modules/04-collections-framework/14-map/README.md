@@ -107,8 +107,8 @@ System.out.println(wordCount);  // {apple=3, banana=2, cherry=1}
 
 ## References
 
-- [Map Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html)
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/interfaces/map.html)
+- [Map Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/interfaces/map.html)
 
 ## Summary
 

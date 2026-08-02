@@ -1269,7 +1269,7 @@ Entity classes use `this` in builder patterns for query construction. The `Crite
 
 - [Java Language Specification — The Keyword `this`](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.12)
 - [Effective Java, 3rd Edition — Item 17: Design and document for inheritance or else prohibit it](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Java Tutorials — Understanding Class Members](https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html)
+- [Oracle Java Tutorials — Understanding Class Members](https://docs.oracle.com/en/java/javase/21/java/javaOO/classvars.html)
 - [Baeldung — The `this` Keyword in Java](https://www.baeldung.com/java-this)
 - [Source Making — Builder Design Pattern](https://sourcemaking.com/design_patterns/builder)
 

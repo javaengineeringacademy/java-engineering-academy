@@ -892,7 +892,7 @@ Exception handling is not just about catching errors - it's about designing your
 ## 26. References
 
 ### Official Documentation
-- [Java SE Documentation - Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+- [Java SE Documentation - Exceptions](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
 - [Java Language Specification - Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html)
 - [Throwable Class API](https://docs.oracle.com/javase/21/docs/api/java.base/java/lang/Throwable.html)
 
@@ -902,7 +902,7 @@ Exception handling is not just about catching errors - it's about designing your
 - "Clean Code" by Robert Martin - Error Handling chapter
 
 ### Online Resources
-- [Oracle Java Tutorials - Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+- [Oracle Java Tutorials - Exceptions](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
 - [Baeldung - Java Exceptions](https://www.baeldung.com/java-exceptions)
 - [GeeksforGeeks - Exception Handling](https://www.geeksforgeeks.org/exception-handling-in-java/)
 

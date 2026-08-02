@@ -1304,8 +1304,8 @@ Functional programming in Java provides a powerful alternative to traditional im
 
 ## 27. References
 
-1. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
-2. [Oracle Java Tutorials: Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)
+1. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
+2. [Oracle Java Tutorials: Functional Interfaces](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/function/package-summary.html)
 3. [Java 21 Language Specification: Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html)
 4. [Effective Java, 3rd Edition - Item 42: Prefer lambdas to anonymous classes](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 5. [Java Performance, 2nd Edition - Chapter on Lambdas](https://www.oreilly.com/library/view/java-performance-2nd/9781492056102/)

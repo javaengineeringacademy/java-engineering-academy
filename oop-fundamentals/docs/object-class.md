@@ -590,6 +590,6 @@ The `Object` class is the root of all Java classes and provides fundamental meth
 
 - Effective Java, 3rd Edition, Joshua Bloch - Item 10-17 (equals, hashCode, toString, clone, Comparable)
 - Java Language Specification - The Class Object (https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- Oracle Java Tutorials - Object Class (https://docs.oracle.com/javase/tutorial/java/javaOO/objectclass.html)
+- Oracle Java Tutorials - Object Class (https://docs.oracle.com/en/java/javase/21/java/javaOO/objectclass.html)
 - Head First Java, 3rd Edition - Object class chapters
 - Clean Code, Robert Martin - Chapter on Meaningful Names (toString)

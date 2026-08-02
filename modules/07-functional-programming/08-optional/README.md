@@ -976,7 +976,7 @@ Optional provides explicit, null-safe handling of potentially absent values. Key
 
 ## 27. References
 
-1. [Oracle Java Tutorials: Optional](https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html)
+1. [Oracle Java Tutorials: Optional](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Optional.html)
 2. [Java Language Specification: Optional](https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html)
 3. [Effective Java, 3rd Edition - Item 54](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Java Optional](https://www.baeldung.com/java-optional)

@@ -866,7 +866,7 @@ Function composition enables building complex transformations from simple functi
 
 ## 27. References
 
-1. [Oracle Java Tutorials: Function Composition](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)
+1. [Oracle Java Tutorials: Function Composition](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/function/package-summary.html)
 2. [Java Language Specification: Function Interface](https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html)
 3. [Effective Java, 3rd Edition - Item 42](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Java Function Composition](https://www.baeldung.com/java-function-composition)

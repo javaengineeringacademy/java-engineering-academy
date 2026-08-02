@@ -1053,8 +1053,8 @@ ConcurrentHashMap is the thread-safe Map implementation for high concurrency:
 ## 27. References
 
 ### Official Documentation
-- [ConcurrentHashMap JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html)
-- [Java Concurrency Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [ConcurrentHashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/concurrent/ConcurrentHashMap.html)
+- [Java Concurrency Tutorial](https://docs.oracle.com/en/java/javase/21/essential/concurrency/)
 
 ### Books
 - *Java Concurrency in Practice* by Brian Goetz

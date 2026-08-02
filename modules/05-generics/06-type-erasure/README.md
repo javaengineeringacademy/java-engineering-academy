@@ -926,7 +926,7 @@ Understanding type erasure is essential for writing effective generic code and a
 
 ## References
 
-- [Oracle - Type Erasure](https://docs.oracle.com/javase/tutorial/java/generics/erasure.html)
+- [Oracle - Type Erasure](https://docs.oracle.com/en/java/javase/21/java/generics/erasure.html)
 - [Java Language Specification §4.6 - Type Erasure](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.6)
 - [Effective Java - Item 33: Use tokens to pass class literals at runtime](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Angelika Langer - Type Erasure FAQ](https://www.angelikalanger.com/GenericsFAQ/FAQSections/TypeErasure.html)

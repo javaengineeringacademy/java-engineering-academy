@@ -171,7 +171,7 @@ Create a Student Management System that manages students, courses, and grades us
 
 ## References
 
-- [Java Collections Framework](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/)
+- [Java Collections Framework](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/)
 - [Effective Java - Collections](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 
 ## Summary

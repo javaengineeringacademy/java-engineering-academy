@@ -847,8 +847,8 @@ PriorityQueue is a priority-based queue implementation:
 ## 27. References
 
 ### Official Documentation
-- [PriorityQueue JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html)
-- [Queue Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html)
+- [PriorityQueue JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/PriorityQueue.html)
+- [Queue Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Queue.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

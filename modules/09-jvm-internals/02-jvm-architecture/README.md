@@ -1084,7 +1084,7 @@ Create a tool that:
 ### Official Documentation
 - [JVM Specification](https://docs.oracle.com/javase/specs/)
 - [OpenJDK Documentation](https://openjdk.java.net/)
-- [Java SE Runtime Environment](https://docs.oracle.com/javase/8/docs/technotes/guides/)
+- [Java SE Runtime Environment](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/)
 
 ### Books
 - "Inside the Java Virtual Machine" by Bill Venners
@@ -1098,7 +1098,7 @@ Create a tool that:
 
 ### Tools
 - [JVisualVM](https://visualvm.java.net/)
-- [JConsole](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jconsole.html)
+- [JConsole](https://docs.oracle.com/en/java/javase/21/docs/technotes/tools/unix/jconsole.html)
 - [Java Object Layout](https://github.com/openjdk/jol)
 
 ---

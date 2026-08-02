@@ -1404,7 +1404,7 @@ Objects.requireNonNull(name, "name must not be null");
 - [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.oreilly.com/library/view/design-patterns-elements/9780134655581/) — Gang of Four
 - [Java Language Specification](https://docs.oracle.com/javase/specs/jls/se21/html/jls-21.html)
 - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
-- [Oracle Java Tutorials - Object-Oriented Programming](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- [Oracle Java Tutorials - Object-Oriented Programming](https://docs.oracle.com/en/java/javase/21/java/concepts/)
 - [OpenJDK 21 Documentation](https://openjdk.org/projects/jdk/21/)
 - [Java Records (JEP 395)](https://openjdk.org/jeps/395)
 - [Sealed Classes (JEP 409)](https://openjdk.org/jeps/409)

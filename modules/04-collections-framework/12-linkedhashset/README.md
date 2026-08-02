@@ -124,8 +124,8 @@ System.out.println(recent.getRecent());  // [Second, Third, Fourth]
 
 ## References
 
-- [LinkedHashSet Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashSet.html)
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/implementations/hashset.html)
+- [LinkedHashSet Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/LinkedHashSet.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/implementations/hashset.html)
 
 ## Summary
 

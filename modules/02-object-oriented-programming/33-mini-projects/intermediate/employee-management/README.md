@@ -465,6 +465,6 @@ public class EmployeeServiceTest {
 
 ## References
 
-- [Java Inheritance Tutorial](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html)
+- [Java Inheritance Tutorial](https://docs.oracle.com/en/java/javase/21/java/IandI/subclasses.html)
 - [Design Patterns - Strategy](https://www.baeldung.com/java-strategy-pattern)
 - [SOLID Principles](https://www.digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design)

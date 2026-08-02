@@ -806,7 +806,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Character Streams](https://docs.oracle.com/javase/tutorial/essential/io/charstreams.html)
+1. **Official Documentation**: [Character Streams](https://docs.oracle.com/en/java/javase/21/essential/io/charstreams.html)
 2. **Baeldung**: [Java Reader](https://www.baeldung.com/java-io-reader)
 3. **Books**:
    - "Java I/O" by Elliotte Rusty Harold

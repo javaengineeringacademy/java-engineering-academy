@@ -730,7 +730,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Object Serialization](https://docs.oracle.com/javase/tutorial/essential/io/objectstreams.html)
+1. **Official Documentation**: [Object Serialization](https://docs.oracle.com/en/java/javase/21/essential/io/objectstreams.html)
 2. **OWASP**: [Deserialization Security](https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html)
 3. **Books**:
    - "Effective Java" by Joshua Bloch

@@ -597,6 +597,6 @@ This mini project demonstrates how to apply functional programming concepts in a
 
 ## Resources
 
-1. [Oracle Java Tutorials: Streams](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html)
+1. [Oracle Java Tutorials: Streams](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/stream/package-summary.html)
 2. [Effective Java, 3rd Edition](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 3. [Baeldung: Java Streams](https://www.baeldung.com/java-streams)

@@ -1002,8 +1002,8 @@ Create a framework that:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Throws](https://docs.oracle.com/javase/tutorial/essential/exceptions/declaring.html)
-- [Java SE Method Overriding](https://docs.oracle.com/javase/tutorial/java/IandI/override.html)
+- [Java SE Throws](https://docs.oracle.com/en/java/javase/21/essential/exceptions/declaring.html)
+- [Java SE Method Overriding](https://docs.oracle.com/en/java/javase/21/java/IandI/override.html)
 
 ### Books
 - "Effective Java" by Joshua Bloch

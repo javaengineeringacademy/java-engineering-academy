@@ -2189,9 +2189,9 @@ public class TaskSchedulerDemo {
 
 ### Official Java Documentation
 
-- [Abstract Classes (Oracle)](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html)
-- [Interfaces (Oracle)](https://docs.oracle.com/javase/tutorial/java/IandI/createinterface.html)
-- [Default Methods (Oracle)](https://docs.oracle.com/javase/8/docs/technotes/guides/language/interfaces.html)
+- [Abstract Classes (Oracle)](https://docs.oracle.com/en/java/javase/21/java/IandI/abstract.html)
+- [Interfaces (Oracle)](https://docs.oracle.com/en/java/javase/21/java/IandI/createinterface.html)
+- [Default Methods (Oracle)](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/language/interfaces.html)
 
 ### Books
 
@@ -2203,7 +2203,7 @@ public class TaskSchedulerDemo {
 ### Online Resources
 
 - [Baeldung: Abstract Classes vs Interfaces](https://www.baeldung.com/java-abstract-class-vs-interface)
-- [Oracle Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/javase/tutorial/java/IandI/)
+- [Oracle Java Tutorials: Interfaces and Inheritance](https://docs.oracle.com/en/java/javase/21/java/IandI/)
 - [Refactoring.Guru: Template Method](https://refactoring.guru/design-patterns/template-method)
 
 ### Related Topics

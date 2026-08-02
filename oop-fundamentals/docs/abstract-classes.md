@@ -1376,7 +1376,7 @@ public abstract class PaymentProcessor {
 - **Effective Java**, 3rd Edition — Joshua Bloch, Item 20: "Prefer interfaces to abstract classes"
 - **Head First Design Patterns** — Template Method pattern
 - **Java Language Specification** — [§8.1.1.1 abstract Classes](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.1.1)
-- **Oracle Tutorials** — [Abstract Classes and Methods](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html)
+- **Oracle Tutorials** — [Abstract Classes and Methods](https://docs.oracle.com/en/java/javase/21/java/IandI/abstract.html)
 - **Design Patterns: Elements of Reusable OO Software** — GoF, Template Method pattern
 - **Clean Code** — Robert C., Chapter 10: Classes (small, focused abstractions)
 - **Java 21 JEPs** — [JEP 477: Implicitly Declared Classes](https://openjdk.org/jeps/477) (no impact on abstract classes)

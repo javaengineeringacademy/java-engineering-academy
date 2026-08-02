@@ -1015,7 +1015,7 @@ Enterprise applications use nested classes for configuration builders, event han
 
 ## References
 
-- [Oracle — Nested Classes](https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html)
+- [Oracle — Nested Classes](https://docs.oracle.com/en/java/javase/21/java/javaOO/nested.html)
 - [JLS — Nested Classes](https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.5)
 - [Baeldung — Java Nested Classes](https://www.baeldung.com/java-nested-classes)
 - [Effective Java, Item 24: Favor static member classes](https://books.google.com/books?id=BIoul6j2KcIC)

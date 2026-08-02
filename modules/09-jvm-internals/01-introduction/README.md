@@ -1016,7 +1016,7 @@ Create a JVM monitoring tool that:
 
 ### Tools
 - [JVisualVM](https://visualvm.java.net/)
-- [JConsole](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jconsole.html)
+- [JConsole](https://docs.oracle.com/en/java/javase/21/docs/technotes/tools/unix/jconsole.html)
 - [GCViewer](https://github.com/chewiebug/GCViewer)
 - [JProfiler](https://www.ej-technologies.com/products/jprofiler/overview.html)
 

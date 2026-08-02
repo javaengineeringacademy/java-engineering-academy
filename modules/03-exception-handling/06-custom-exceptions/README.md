@@ -1136,8 +1136,8 @@ Create a framework that:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Custom Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
-- [Java SE Serializable](https://docs.oracle.com/javase/tutorial/essential/io/objectstreams.html)
+- [Java SE Custom Exceptions](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
+- [Java SE Serializable](https://docs.oracle.com/en/java/javase/21/essential/io/objectstreams.html)
 
 ### Books
 - "Effective Java" by Joshua Bloch

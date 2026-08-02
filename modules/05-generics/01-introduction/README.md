@@ -847,7 +847,7 @@ Understanding generics is crucial for writing robust, maintainable Java code. Wh
 
 ## References
 
-- [Oracle Generics Tutorial](https://docs.oracle.com/javase/tutorial/java/generics/)
+- [Oracle Generics Tutorial](https://docs.oracle.com/en/java/javase/21/java/generics/)
 - [Java Language Specification §4.5 - Type Parameters](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.5)
 - [Effective Java, 3rd Edition - Chapter 26: Generic Types](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Java Generics and Collections - Maurice Naftalin](https://www.oreilly.com/library/view/java-generics-and/9780596527754/)

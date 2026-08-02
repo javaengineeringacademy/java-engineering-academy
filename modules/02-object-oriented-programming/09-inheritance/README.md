@@ -1775,7 +1775,7 @@ class Stack<T> {
 
 - [Java Language Specification — Inheritance](https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4)
 - [Effective Java, 3rd Edition — Item 18: Favor composition over inheritance](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Java Tutorials — Classes and Inheritance](https://docs.oracle.com/javase/tutorial/java/javaOO/index.html)
+- [Oracle Java Tutorials — Classes and Inheritance](https://docs.oracle.com/en/java/javase/21/java/javaOO/index.html)
 - [Baeldung — Inheritance in Java](https://www.baeldung.com/java-inheritance)
 - [Refactoring.Guru — Inheritance](https://refactoring.guru/design-patterns/inheritance)
 

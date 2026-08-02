@@ -1258,8 +1258,8 @@ Create a framework that:
 
 ### Official Documentation
 - [JVM Specification - Loading](https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-5.html)
-- [Java ClassLoader](https://docs.oracle.com/javase/8/docs/api/java/lang/ClassLoader.html)
-- [Custom Class Loading](https://docs.oracle.com/javase/tutorial/essential/environment/custom.html)
+- [Java ClassLoader](https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/ClassLoader.html)
+- [Custom Class Loading](https://docs.oracle.com/en/java/javase/21/essential/environment/custom.html)
 
 ### Books
 - "Inside the Java Virtual Machine" by Bill Venners
@@ -1273,7 +1273,7 @@ Create a framework that:
 
 ### Tools
 - [JVisualVM](https://visualvm.java.net/)
-- [JConsole](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jconsole.html)
+- [JConsole](https://docs.oracle.com/en/java/javase/21/docs/technotes/tools/unix/jconsole.html)
 - [BTrace](https://github.com/btraceio/btrace)
 
 ---

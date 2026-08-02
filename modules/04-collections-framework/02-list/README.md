@@ -784,9 +784,9 @@ List is an ordered collection that allows duplicates:
 ## 27. References
 
 ### Official Documentation
-- [List Interface](https://docs.oracle.com/javase/8/docs/api/java/util/List.html)
-- [ArrayList](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html)
-- [LinkedList](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)
+- [List Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/List.html)
+- [ArrayList](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/ArrayList.html)
+- [LinkedList](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/LinkedList.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

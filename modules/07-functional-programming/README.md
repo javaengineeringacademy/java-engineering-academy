@@ -28,10 +28,10 @@ By the end of this module, you will be able to:
 
 - Module 01: Java Fundamentals (variables, types, control flow)
 - Module 02: Object-Oriented Programming (classes, interfaces, inheritance)
-- Module 03: Generics and Collections
-- Module 04: Exception Handling and I/O
-- Module 05: Concurrency Basics (threading, synchronization)
-- Module 06: Modern Java Features (var, switch expressions, records)
+- Module 03: Exception Handling
+- Module 04: Collections Framework
+- Module 05: Generics
+- Module 06: Java I/O and NIO
 
 ## Topics
 
@@ -65,8 +65,8 @@ Build a **Functional Data Pipeline Engine** that processes real-world datasets u
 
 ## Resources
 
-- [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
-- [Oracle Java Tutorials: Streams](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html)
+- [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
+- [Oracle Java Tutorials: Streams](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/stream/package-summary.html)
 - [Effective Java, 3rd Edition - Item 42-44: Functional Programming](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - [Java 21 JEPs](https://openjdk.org/projects/jdk/21/)
 
@@ -111,4 +111,4 @@ Build a **Functional Data Pipeline Engine** that processes real-world datasets u
     └── README.md
 ```
 
-**Next Module**: Module 08: Design Patterns
+**Next Module**: Module 08: Multithreading

@@ -109,8 +109,8 @@ System.out.println(difference);  // [1, 2]
 
 ## References
 
-- [Set Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Set.html)
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/interfaces/set.html)
+- [Set Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Set.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/interfaces/set.html)
 
 ## Summary
 

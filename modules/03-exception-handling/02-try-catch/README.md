@@ -992,8 +992,8 @@ Create a comprehensive error handling library with:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Try-Catch](https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html)
-- [Multi-Catch Blocks](https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html#multiple_catch)
+- [Java SE Try-Catch](https://docs.oracle.com/en/java/javase/21/essential/exceptions/catch.html)
+- [Multi-Catch Blocks](https://docs.oracle.com/en/java/javase/21/essential/exceptions/catch.html#multiple_catch)
 
 ### Books
 - "Effective Java" by Joshua Bloch

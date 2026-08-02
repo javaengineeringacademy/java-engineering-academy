@@ -1308,7 +1308,7 @@ Functional interfaces are the foundation of Java's functional programming suppor
 
 ## 27. References
 
-1. [Oracle Java Tutorials: Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html)
+1. [Oracle Java Tutorials: Functional Interfaces](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/function/package-summary.html)
 2. [Java Language Specification: Functional Interfaces](https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.8)
 3. [Effective Java, 3rd Edition - Item 42](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Functional Interfaces](https://www.baeldung.com/java-functional-interface)

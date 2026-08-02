@@ -293,7 +293,7 @@ project/
 
 ### Official Documentation
 - [Java Language Specification](https://docs.oracle.com/javase/specs/jls/se21/html/index.html)
-- [Java Tutorials - Oracle](https://docs.oracle.com/javase/tutorial/)
+- [Java Tutorials - Oracle](https://docs.oracle.com/en/java/javase/21/)
 - [OpenJDK 21 Documentation](https://openjdk.org/projects/jdk/21/)
 
 ### Books

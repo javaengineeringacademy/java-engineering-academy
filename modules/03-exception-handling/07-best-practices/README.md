@@ -1359,8 +1359,8 @@ Create a comprehensive exception handling library with:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Exception Handling](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
-- [Java SE Try-With-Resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
+- [Java SE Exception Handling](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
+- [Java SE Try-With-Resources](https://docs.oracle.com/en/java/javase/21/essential/exceptions/tryResourceClose.html)
 
 ### Books
 - "Effective Java" by Joshua Bloch

@@ -1077,8 +1077,8 @@ LinkedList is a doubly-linked list implementation with specific use cases:
 ## 27. References
 
 ### Official Documentation
-- [LinkedList JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)
-- [Deque Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html)
+- [LinkedList JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/LinkedList.html)
+- [Deque Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Deque.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

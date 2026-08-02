@@ -1085,8 +1085,8 @@ HashMap is the most commonly used Map implementation:
 ## 27. References
 
 ### Official Documentation
-- [HashMap JavaDoc](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)
-- [Map Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html)
+- [HashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/HashMap.html)
+- [Map Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch (Item 11-12)

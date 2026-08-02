@@ -788,7 +788,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Byte Streams](https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html)
+1. **Official Documentation**: [Byte Streams](https://docs.oracle.com/en/java/javase/21/essential/io/bytestreams.html)
 2. **Baeldung**: [Java InputStream](https://www.baeldung.com/java-io-inputstream)
 3. **Books**:
    - "Java I/O" by Elliotte Rusty Harold

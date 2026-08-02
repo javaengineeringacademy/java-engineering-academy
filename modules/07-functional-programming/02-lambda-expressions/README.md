@@ -1504,7 +1504,7 @@ Lambda expressions are a fundamental feature of modern Java that enable function
 
 ## 27. References
 
-1. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
+1. [Oracle Java Tutorials: Lambda Expressions](https://docs.oracle.com/en/java/javase/21/java/javaOO/lambdaexpressions.html)
 2. [Java Language Specification: Lambda Expressions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.27)
 3. [Effective Java, 3rd Edition - Item 42](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Lambda Expressions](https://www.baeldung.com/java-lambda-expressions)

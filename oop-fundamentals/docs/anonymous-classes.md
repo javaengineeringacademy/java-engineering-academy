@@ -1474,7 +1474,7 @@ public class TaskManagementSystem {
 
 ### Official Documentation
 1. Oracle. "Java Language Specification - Anonymous Classes." https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.9.5
-2. Oracle. "Java SE Documentation - Inner Classes." https://docs.oracle.com/javase/tutorial/java/javaOO/innerclasses.html
+2. Oracle. "Java SE Documentation - Inner Classes." https://docs.oracle.com/en/java/javase/21/java/javaOO/innerclasses.html
 
 ### Books
 3. Bloch, Joshua. "Effective Java: Best Practices for the Java Platform." 3rd Edition, Addison-Wesley, 2018.

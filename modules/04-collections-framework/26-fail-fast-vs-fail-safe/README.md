@@ -817,7 +817,7 @@ Benchmark the performance of `ArrayList` vs `CopyOnWriteArrayList` for read-heav
 ### Online Resources
 - [Baeldung - ConcurrentModificationException](https://www.baeldung.com/java-concurrent-modification-exception)
 - [GeeksforGeeks - Fail-fast vs Fail-safe](https://www.geeksforgeeks.org/fail-fast-fail-safe-iterators-java/)
-- [Oracle - Concurrent Collections](https://docs.oracle.com/javase/8/docs/technotes/guides/collections/index.html)
+- [Oracle - Concurrent Collections](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/collections/index.html)
 
 ### Related Topics
 - [Iterator Interface](../24-iterator/README.md)

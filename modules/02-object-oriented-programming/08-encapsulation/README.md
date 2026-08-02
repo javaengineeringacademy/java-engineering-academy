@@ -1914,7 +1914,7 @@ public class Order {
 
 - [Java Language Specification — Access Modifiers](https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html#jls-6.6)
 - [Effective Java, 3rd Edition — Item 15: Minimize the accessibility of classes and members](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Java Tutorials — Controlling Access to Members](https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html)
+- [Oracle Java Tutorials — Controlling Access to Members](https://docs.oracle.com/en/java/javase/21/java/javaOO/accesscontrol.html)
 - [Baeldung — Encapsulation in Java](https://www.baeldung.com/java-encapsulation)
 - [JavaBeans Specification](https://www.oracle.com/java/technologies/javase/javabeans-spec.html)
 

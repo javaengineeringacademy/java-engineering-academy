@@ -890,8 +890,8 @@ Create a framework that:
 ## 26. References
 
 ### Official Documentation
-- [Java SE Throw](https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html)
-- [Java SE Exception Chaining](https://docs.oracle.com/javase/tutorial/essential/exceptions/chaining.html)
+- [Java SE Throw](https://docs.oracle.com/en/java/javase/21/essential/exceptions/throwing.html)
+- [Java SE Exception Chaining](https://docs.oracle.com/en/java/javase/21/essential/exceptions/chaining.html)
 
 ### Books
 - "Effective Java" by Joshua Bloch

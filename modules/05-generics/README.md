@@ -98,6 +98,6 @@ System.out.println(strings.getClass() == integers.getClass()); // true
 
 ## Resources
 
-- [Oracle Generics Tutorial](https://docs.oracle.com/javase/tutorial/java/generics/)
+- [Oracle Generics Tutorial](https://docs.oracle.com/en/java/javase/21/java/generics/)
 - [Effective Java - Chapter on Generics](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Java Language Specification - Generics](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html)

@@ -882,7 +882,7 @@ public abstract class AbstractList<E> {
 
 ## References
 
-- [Oracle Java Tutorials - Using the Keyword](https://docs.oracle.com/javase/tutorial/java/IandI/super.html)
+- [Oracle Java Tutorials - Using the Keyword](https://docs.oracle.com/en/java/javase/21/java/IandI/super.html)
 - [Java Language Specification - Class Instance Creation](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.9.3)
 - [Effective Java by Joshua Bloch - Item 19: Design and document for inheritance](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 

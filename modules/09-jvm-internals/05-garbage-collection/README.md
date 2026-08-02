@@ -1060,9 +1060,9 @@ Create a dashboard that:
 ## References
 
 ### Official Documentation
-- [Garbage Collection Tuning](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/index.html)
+- [Garbage Collection Tuning](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/vm/gctuning/index.html)
 - [JVM GC Options](https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html)
-- [G1 GC Documentation](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc_tuning.html)
+- [G1 GC Documentation](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/vm/gctuning/g1_gc_tuning.html)
 
 ### Books
 - "Java Performance" by Scott Oaks

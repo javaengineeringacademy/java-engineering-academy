@@ -636,6 +636,6 @@ Interfaces are a fundamental Java construct for defining contracts and enabling 
 
 - Effective Java, 3rd Edition, Joshua Bloch - Item 19 (Design and Document Interfaces)
 - Java Language Specification - Interfaces (https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html)
-- Oracle Java Tutorials - Interfaces (https://docs.oracle.com/javase/tutorial/java/IandI/)
+- Oracle Java Tutorials - Interfaces (https://docs.oracle.com/en/java/javase/21/java/IandI/)
 - Head First Design Patterns, 2nd Edition - Interface chapters
 - Clean Architecture, Robert Martin - Interface boundaries

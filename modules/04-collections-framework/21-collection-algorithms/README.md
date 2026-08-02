@@ -1,4 +1,4 @@
-# Collection Utilities
+# Collection Algorithms
 
 ## Introduction
 
@@ -125,8 +125,8 @@ Map<String, Integer> singleton = Collections.singletonMap("key", 1);
 
 ## References
 
-- [Collections Class](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html)
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/algorithms/)
+- [Collections Class](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Collections.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/algorithms/)
 
 ## Summary
 

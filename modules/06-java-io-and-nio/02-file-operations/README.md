@@ -969,7 +969,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Java NIO.2 File API](https://docs.oracle.com/javase/tutorial/essential/io/fileio.html)
+1. **Official Documentation**: [Java NIO.2 File API](https://docs.oracle.com/en/java/javase/21/essential/io/fileio.html)
 2. **Baeldung**: [Java NIO File](https://www.baeldung.com/java-nio-file)
 3. **Books**:
    - "Java I/O, NIO and NIO.2" by Joseph Dallmeier

@@ -517,4 +517,4 @@ Build a `BankAccount` system:
 - [Java Language Specification - Constructors](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.8)
 - [Effective Java Item 1: Consider Static Factory Methods](https://www.oracle.com/technical-resources/articles/java/effectivejava.html)
 - [Effective Java Item 17: Minimize Mutability](https://www.oracle.com/java/technologies/javase/effective-java.html)
-- [Oracle Docs - Constructors](https://docs.oracle.com/javase/tutorial/java/javaOO/constructors.html)
+- [Oracle Docs - Constructors](https://docs.oracle.com/en/java/javase/21/java/javaOO/constructors.html)

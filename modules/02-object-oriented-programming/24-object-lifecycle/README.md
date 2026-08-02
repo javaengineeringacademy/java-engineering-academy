@@ -1355,9 +1355,9 @@ public class NativeResource implements AutoCloseable {
 
 ## References
 
-- [Oracle Java Tutorials - Creating Objects](https://docs.oracle.com/javase/tutorial/java/javaOO/objectcreation.html)
+- [Oracle Java Tutorials - Creating Objects](https://docs.oracle.com/en/java/javase/21/java/javaOO/objectcreation.html)
 - [Java Language Specification - Class Instance Creation](https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.9.3)
 - [Effective Java by Joshua Bloch - Item 8: Avoid finalizers and cleaners](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Java SE API - Reference Classes](https://docs.oracle.com/javase/8/docs/api/java/lang/ref/package-summary.html)
+- [Java SE API - Reference Classes](https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/ref/package-summary.html)
 
 **Previous**: [07-super-keyword](../07-super-keyword/README.md)

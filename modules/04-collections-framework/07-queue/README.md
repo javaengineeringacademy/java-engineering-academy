@@ -726,9 +726,9 @@ Queue is designed for FIFO processing:
 ## 27. References
 
 ### Official Documentation
-- [Queue Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html)
-- [ArrayDeque](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html)
-- [BlockingQueue](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html)
+- [Queue Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Queue.html)
+- [ArrayDeque](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/ArrayDeque.html)
+- [BlockingQueue](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/concurrent/BlockingQueue.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch

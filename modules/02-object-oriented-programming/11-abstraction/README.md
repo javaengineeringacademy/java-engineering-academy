@@ -2060,7 +2060,7 @@ interface UserRepository {
 
 - [Java Language Specification — Abstract Classes](https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.1.1.1)
 - [Effective Java, 3rd Edition — Item 20: Prefer interfaces to abstract classes](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Oracle Java Tutorials — Abstract Classes and Methods](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html)
+- [Oracle Java Tutorials — Abstract Classes and Methods](https://docs.oracle.com/en/java/javase/21/java/IandI/abstract.html)
 - [Baeldung — Abstraction in Java](https://www.baeldung.com/java-abstraction)
 - [Refactoring.Guru — Abstraction](https://refactoring.guru/design-patterns/abstraction)
 

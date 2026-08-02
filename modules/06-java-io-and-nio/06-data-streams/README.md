@@ -745,7 +745,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Data Streams](https://docs.oracle.com/javase/tutorial/essential/io/datastreams.html)
+1. **Official Documentation**: [Data Streams](https://docs.oracle.com/en/java/javase/21/essential/io/datastreams.html)
 2. **Baeldung**: [Java DataInputStream](https://www.baeldung.com/java-data-input-stream)
 3. **Books**:
    - "Java I/O" by Elliotte Rusty Harold

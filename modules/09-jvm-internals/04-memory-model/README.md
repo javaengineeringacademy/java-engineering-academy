@@ -1148,7 +1148,7 @@ Create a library that:
 ### Official Documentation
 - [JSR 133: Java Memory Model](https://www.jcp.org/en/jsr/detail?id=133)
 - [Java Memory Model](https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-17.html)
-- [Volatile Variable](https://docs.oracle.com/javase/tutorial/essential/concurrency/atomicvars.html)
+- [Volatile Variable](https://docs.oracle.com/en/java/javase/21/essential/concurrency/atomicvars.html)
 
 ### Books
 - "Java Concurrency in Practice" by Brian Goetz

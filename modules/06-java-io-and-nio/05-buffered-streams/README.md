@@ -716,7 +716,7 @@ Requirements:
 
 ## 26. References
 
-1. **Official Documentation**: [Buffered Streams](https://docs.oracle.com/javase/tutorial/essential/io/buffers.html)
+1. **Official Documentation**: [Buffered Streams](https://docs.oracle.com/en/java/javase/21/essential/io/buffers.html)
 2. **Baeldung**: [Java BufferedInputStream](https://www.baeldung.com/java-buffered-input-stream)
 3. **Books**:
    - "Java I/O" by Elliotte Rusty Harold

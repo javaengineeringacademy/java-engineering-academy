@@ -938,9 +938,9 @@ The Java Collections Framework is the backbone of Java programming. Key takeaway
 ## 27. References
 
 ### Official Documentation
-- [Java Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
-- [Collection Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html)
-- [Map Interface](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html)
+- [Java Collections Tutorial](https://docs.oracle.com/en/java/javase/21/collections/)
+- [Collection Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Collection.html)
+- [Map Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Map.html)
 
 ### Books
 - *Effective Java* by Joshua Bloch (Item 15-19, 54-56)

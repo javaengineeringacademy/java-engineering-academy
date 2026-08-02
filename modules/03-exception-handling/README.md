@@ -151,7 +151,7 @@ src/main/java/academy/javaengineering/exceptionhandling/
 
 ## Module Resources
 
-- [Java Exception Handling Official Docs](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+- [Java Exception Handling Official Docs](https://docs.oracle.com/en/java/javase/21/essential/exceptions/)
 - [Java SE Throwable Class API](https://docs.oracle.com/javase/21/docs/api/java.base/java/lang/Throwable.html)
 - [Effective Java - Item 69: Use exceptions only for exceptional conditions](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - [Baeldung - Java Exceptions](https://www.baeldung.com/java-exceptions)

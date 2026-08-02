@@ -618,4 +618,4 @@ Need to reference current object?
 - [JLS - The this Keyword](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.8.3)
 - [JLS - Constructor Declarations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.8)
 - [Effective Java - Item 2: Consider a builder when faced with many constructor parameters](https://books.google.com/books?id=BIpKEttKoLYC)
-- [Java Tutorials - Using the this Keyword](https://docs.oracle.com/javase/tutorial/java/javaOO/thiskey.html)
+- [Java Tutorials - Using the this Keyword](https://docs.oracle.com/en/java/javase/21/java/javaOO/thiskey.html)

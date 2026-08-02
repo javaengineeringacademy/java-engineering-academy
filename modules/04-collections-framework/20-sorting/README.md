@@ -118,8 +118,8 @@ Arrays.parallelSort(largeArray);  // Uses multiple threads
 
 ## References
 
-- [Collections.sort()](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#sort-java.util.List-)
-- [Arrays.sort()](https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#sort-int:A-)
+- [Collections.sort()](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Collections.html#sort-java.util.List-)
+- [Arrays.sort()](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Arrays.html#sort-int:A-)
 
 ## Summary
 

@@ -1135,7 +1135,7 @@ Create a tool that:
 ## References
 
 ### Official Documentation
-- [G1 GC Documentation](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc_tuning.html)
+- [G1 GC Documentation](https://docs.oracle.com/en/java/javase/21/docs/technotes/guides/vm/gctuning/g1_gc_tuning.html)
 - [ZGC Documentation](https://wiki.openjdk.java.net/zgc)
 - [Shenandoah GC](https://wiki.openjdk.java.net/shenandoah)
 
