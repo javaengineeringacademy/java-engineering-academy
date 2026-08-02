@@ -1,69 +1,374 @@
-# Module 13: JDBC/Database
+# Module 13: JDBC & Database Access
 
 ## Overview
-
-This module covers Java Database Connectivity (JDBC), Hibernate ORM, JPA, Spring Data JPA, database design principles, and migration strategies. Students will master database operations from low-level JDBC to high-level ORM frameworks.
-
-## Status
-
-✅ **Complete**
+JDBC (Java Database Connectivity) provides a standard API for connecting to relational databases. It enables executing SQL queries, processing results, and managing database transactions.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- [ ] Connect to databases using JDBC and manage connections efficiently
-- [ ] Execute SQL queries using Statement and PreparedStatement
-- [ ] Handle transactions with ACID properties and savepoints
-- [ ] Implement connection pooling with HikariCP
-- [ ] Map Java objects to database tables using Hibernate and JPA
-- [ ] Optimize database performance with indexing and query tuning
-- [ ] Manage database schema changes with Flyway and Liquibase
+- Understand JDBC architecture
+- Execute SQL statements
+- Handle result sets
+- Manage transactions
+- Apply connection pooling
 
 ## Prerequisites
+- SQL basics
+- Java fundamentals
+- Exception handling
 
-- Module 01-06: Core Java fundamentals
-- Module 07-08: Collections and Generics
-- Basic SQL knowledge
+## Why This Concept Exists
+Applications need data persistence. JDBC provides:
+- Database connectivity
+- SQL execution
+- Transaction management
+- Result processing
 
-## Topics
+## Problem Statement
+How do you connect Java applications to relational databases?
 
-| # | Topic | Est. Time |
-|---|-------|-----------|
-| 01 | [JDBC Fundamentals](01-jdbc-fundamentals/) | 3 hours |
-| 02 | [JDBC PreparedStatement](02-jdbc-prepared-statement/) | 3 hours |
-| 03 | [JDBC Transactions](03-jdbc-transactions/) | 2 hours |
-| 04 | [JDBC Connection Pooling](04-jdbc-connection-pooling/) | 3 hours |
-| 05 | [JDBC Metadata](05-jdbc-metadata/) | 2 hours |
-| 06 | [JDBC RowSet](06-jdbc-rowset/) | 2 hours |
-| 07 | [Hibernate Fundamentals](07-hibernate-fundamentals/) | 4 hours |
-| 08 | [Hibernate Mapping](08-hibernate-mapping/) | 4 hours |
-| 09 | [Hibernate Advanced](09-hibernate-advanced/) | 3 hours |
-| 10 | [JPA Fundamentals](10-jpa-fundamentals/) | 3 hours |
-| 11 | [JPA Advanced](11-jpa-advanced/) | 3 hours |
-| 12 | [Spring Data JPA](12-spring-data-jpa/) | 3 hours |
-| 13 | [Database Design](13-database-design/) | 3 hours |
-| 14 | [Database Migration](14-migration/) | 2 hours |
+## Theory
 
-## Estimated Total Time
+### JDBC Components
 
-**40 hours**
+| Component | Description |
+|-----------|-------------|
+| Driver | Database-specific connector |
+| Connection | Database session |
+| Statement | SQL execution |
+| ResultSet | Query results |
+| PreparedStatement | Pre-compiled SQL |
+| CallableStatement | Stored procedures |
 
-## Module Project
+### Connection Properties
 
-Build a complete CRUD application with:
-- JDBC implementation with connection pooling
-- Hibernate/JPA ORM layer
-- Spring Data JPA repository pattern
-- Database migration scripts
-- Unit and integration tests
+| Property | Description |
+|----------|-------------|
+| URL | Database location |
+| Username | Authentication |
+| Password | Authentication |
+| Driver | JDBC driver class |
 
-## Resources
+## Internal Working
 
-- [JDBC API Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.sql/java/sql/package-summary.html)
-- [Hibernate Documentation](https://hibernate.org/orm/documentation/)
-- [JPA Specification](https://jakarta.ee/specifications/persistence/3.1/)
-- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-- [Flyway Documentation](https://flywaydb.org/documentation/)
+### JDBC Process
+1. Load driver
+2. Establish connection
+3. Create statement
+4. Execute query
+5. Process results
+6. Close resources
 
-**Next Module**: [Module 14: Spring Framework](../14-spring-framework/)
+### Connection Pooling
+```
+Application → Pool → Database
+           ← Available connections
+```
+
+## JVM Perspective
+
+### JDBC Driver Types
+1. Type 1: JDBC-ODBC bridge
+2. Type 2: Native API
+3. Type 3: Network protocol
+4. Type 4: Thin driver (pure Java)
+
+### Memory Management
+- ResultSet is memory-intensive
+- Use fetch size for large results
+- Close resources properly
+- Use try-with-resources
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Java Application] --> B[JDBC API]
+    B --> C[JDBC Driver]
+    C --> D[Database]
+    
+    B --> E[Connection]
+    B --> F[Statement]
+    B --> G[ResultSet]
+    
+    E --> H[Transaction]
+    E --> I[MetaData]
+```
+
+## Syntax
+
+### Basic Connection
+```java
+// Connection
+String url = "jdbc:postgresql://localhost:5432/mydb";
+Connection conn = DriverManager.getConnection(url, "user", "pass");
+
+// Statement
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+
+while (rs.next()) {
+    String name = rs.getString("name");
+    int age = rs.getInt("age");
+    System.out.println(name + ": " + age);
+}
+
+// Close
+rs.close();
+stmt.close();
+conn.close();
+```
+
+### PreparedStatement
+```java
+String sql = "SELECT * FROM users WHERE age > ?";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+pstmt.setInt(1, 18);
+
+ResultSet rs = pstmt.executeQuery();
+while (rs.next()) {
+    System.out.println(rs.getString("name"));
+}
+```
+
+### Transaction
+```java
+try {
+    conn.setAutoCommit(false);
+    
+    // Execute statements
+    stmt.executeUpdate("UPDATE accounts SET balance = balance - 100 WHERE id = 1");
+    stmt.executeUpdate("UPDATE accounts SET balance = balance + 100 WHERE id = 2");
+    
+    conn.commit();
+} catch (Exception e) {
+    conn.rollback();
+} finally {
+    conn.setAutoCommit(true);
+}
+```
+
+## Easy Example
+```java
+import java.sql.*;
+
+public class EasyExample {
+    public static void main(String[] args) throws Exception {
+        String url = "jdbc:h2:mem:testdb";
+        
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+            
+            // Create table
+            stmt.executeUpdate("CREATE TABLE users (id INT, name VARCHAR(50))");
+            
+            // Insert data
+            stmt.executeUpdate("INSERT INTO users VALUES (1, 'John')");
+            stmt.executeUpdate("INSERT INTO users VALUES (2, 'Jane')");
+            
+            // Query
+            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + ": " + rs.getString("name"));
+            }
+        }
+    }
+}
+```
+
+## Medium Example
+```java
+import java.sql.*;
+
+public class MediumExample {
+    // PreparedStatement example
+    public static void createUser(Connection conn, String name, int age) 
+            throws SQLException {
+        String sql = "INSERT INTO users (name, age) VALUES (?, ?)";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, 
+                Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, name);
+            pstmt.setInt(2, age);
+            pstmt.executeUpdate();
+            
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    System.out.println("Created user with ID: " + keys.getInt(1));
+                }
+            }
+        }
+    }
+    
+    // Transaction example
+    public static void transfer(Connection conn, int from, int to, double amount) 
+            throws SQLException {
+        try {
+            conn.setAutoCommit(false);
+            
+            deductBalance(conn, from, amount);
+            addBalance(conn, to, amount);
+            
+            conn.commit();
+            System.out.println("Transfer successful");
+        } catch (SQLException e) {
+            conn.rollback();
+            throw e;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+}
+```
+
+## Hard Example
+```java
+import java.sql.*;
+import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+public class HardExample {
+    // Connection pooling
+    public static DataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
+        config.setUsername("user");
+        config.setPassword("pass");
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(5);
+        
+        return new HikariDataSource(config);
+    }
+    
+    // Batch processing
+    public static void batchInsert(Connection conn, List<User> users) 
+            throws SQLException {
+        String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            
+            for (User user : users) {
+                pstmt.setString(1, user.getName());
+                pstmt.setString(2, user.getEmail());
+                pstmt.addBatch();
+            }
+            
+            pstmt.executeBatch();
+            conn.commit();
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+}
+```
+
+## Enterprise Example
+```java
+import java.sql.*;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+public class EnterpriseExample {
+    // Spring JdbcTemplate
+    @Repository
+    public class UserRepository {
+        private final JdbcTemplate jdbcTemplate;
+        
+        public UserRepository(DataSource dataSource) {
+            this.jdbcTemplate = new JdbcTemplate(dataSource);
+        }
+        
+        public List<User> findAll() {
+            return jdbcTemplate.query(
+                "SELECT * FROM users",
+                (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("name"))
+            );
+        }
+        
+        public User findById(Long id) {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM users WHERE id = ?",
+                (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("name")),
+                id
+            );
+        }
+        
+        public int save(User user) {
+            return jdbcTemplate.update(
+                "INSERT INTO users (name, email) VALUES (?, ?)",
+                user.getName(), user.getEmail()
+            );
+        }
+    }
+}
+```
+
+## Performance Considerations
+- Use connection pooling
+- Batch inserts/updates
+- Use PreparedStatement
+- Set fetch size for large results
+- Close resources properly
+
+## Time & Space Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| Connect | O(1) | O(1) |
+| Query | O(n) | O(n) |
+| Insert | O(1) | O(1) |
+| Update | O(1) | O(1) |
+
+## Thread Safety
+- Connections are not thread-safe
+- Use connection pooling
+- One connection per thread
+- Close after use
+
+## Best Practices
+1. Use try-with-resources
+2. Use PreparedStatement
+3. Use connection pooling
+4. Handle exceptions properly
+5. Use transactions appropriately
+
+## Common Mistakes
+1. SQL injection
+2. Not closing resources
+3. Connection leaks
+4. Not using transactions
+
+## Comparison Table
+
+| Feature | Raw JDBC | Spring JdbcTemplate | JPA/Hibernate |
+|---------|----------|---------------------|---------------|
+| Control | Full | High | Medium |
+| Boilerplate | High | Medium | Low |
+| SQL | Manual | Manual | Generated |
+| Performance | Best | Good | Good |
+
+## Interview Questions
+
+### Q1: What is the difference between Statement and PreparedStatement?
+**Answer:** PreparedStatement is pre-compiled and prevents SQL injection.
+
+### Q2: What is connection pooling?
+**Answer:** Reusing database connections for better performance.
+
+### Q3: What is the difference between executeQuery and executeUpdate?
+**Answer:** executeQuery returns ResultSet, executeUpdate returns affected rows.
+
+### Q4: What is a transaction?
+**Answer:** Group of operations executed as a single unit.
+
+### Q5: What is ACID?
+**Answer:** Atomicity, Consistency, Isolation, Durability.
+
+## Summary
+JDBC provides the foundation for database access in Java. Use connection pooling and PreparedStatement for production.
+
+## References
+- Oracle JDBC Documentation
+- Spring JdbcTemplate Guide
+- Baeldung JDBC Tutorial

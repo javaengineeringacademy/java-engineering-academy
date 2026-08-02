@@ -1,71 +1,348 @@
-# Module 12: Build Tools
+# Module 12: Build Tools (Maven & Gradle)
 
 ## Overview
-
-This module covers modern Java build tools and build automation. Students will learn to manage project dependencies, configure build lifecycles, optimize builds, and integrate build processes with CI/CD pipelines using Maven and Gradle.
+Build tools automate compilation, testing, packaging, and dependency management. Maven and Gradle are the primary Java build tools, with Maven using XML and Gradle using Groovy/Kotlin DSL.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Create and manage Maven projects with POM files
-- Configure Gradle builds using Groovy/Kotlin DSL
-- Implement dependency management and resolution
-- Create custom build plugins and tasks
-- Optimize build performance and caching
-- Integrate builds with continuous integration systems
-- Handle multi-module project structures
+- Understand build automation
+- Master Maven POM configuration
+- Use Gradle build scripts
+- Manage dependencies
+- Create custom build processes
 
 ## Prerequisites
+- Java fundamentals
+- Command line basics
+- XML/Groovy syntax
 
-- [Module 11: Testing](../11-testing/)
+## Why This Concept Exists
+Manual builds are:
+- Error-prone
+- Time-consuming
+- Inconsistent
+- Hard to replicate
 
-## Topics
+Build tools provide:
+- Automated builds
+- Dependency management
+- Reproducible builds
+- Plugin ecosystem
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [Maven Fundamentals](01-maven-fundamentals/) | 3 hours | POM, coordinates, repositories, lifecycle |
-| 02 | [Maven Advanced](02-maven-advanced/) | 3 hours | Profiles, plugins, multi-module builds |
-| 03 | [Gradle Fundamentals](03-gradle-fundamentals/) | 3 hours | Build scripts, tasks, dependencies |
-| 04 | [Gradle Advanced](04-gradle-advanced/) | 3 hours | Custom tasks, plugins, buildSrc |
-| 05 | [Dependency Management](05-dependency-management/) | 2 hours | Version conflicts, exclusions, BOM |
-| 06 | [Maven Plugins](06-maven-plugins/) | 2 hours | Plugin development, lifecycle extensions |
-| 07 | [Gradle Plugins](07-gradle-plugins/) | 2 hours | Plugin creation, convention plugins |
-| 08 | [Build Lifecycle](08-build-lifecycle/) | 2 hours | Phases, goals, execution ordering |
-| 09 | [Repositories](09-repositories/) | 1 hour | Central, local, mirror configuration |
-| 10 | [Version Management](10-version-management/) | 2 hours | Semantic versioning, release strategies |
-| 11 | [Build Optimization](11-build-optimization/) | 2 hours | Caching, incremental builds, parallel execution |
-| 12 | [CI/CD Integration](12-ci-cd-integration/) | 2 hours | Jenkins, GitHub Actions, GitLab CI |
+## Problem Statement
+How do you automate and standardize Java project builds?
 
-## Key Concepts
+## Theory
 
-- Declarative vs. imperative build configuration
-- Dependency scopes and transitive dependencies
-- Build caching and incremental compilation
-- Artifact signing and publishing
-- Build reproducibility
+### Build Lifecycle (Maven)
 
-## Enterprise Applications
+| Phase | Description |
+|-------|-------------|
+| validate | Check project structure |
+| compile | Compile source code |
+| test | Run unit tests |
+| package | Create JAR/WAR |
+| verify | Run integration tests |
+| install | Install to local repo |
+| deploy | Deploy to remote repo |
 
-Build tools are the backbone of enterprise Java development, ensuring consistent builds, dependency management, and integration with deployment pipelines across large development teams and complex project structures.
+### Dependency Management
 
-## Estimated Total Time
+| Concept | Description |
+|---------|-------------|
+| Group ID | Organization identifier |
+| Artifact ID | Project identifier |
+| Version | Specific version |
+| Scope | Dependency scope |
 
-**27 hours**
+### Dependency Scopes
 
-## Module Project
+| Scope | Description |
+|-------|-------------|
+| compile | Available everywhere |
+| provided | Provided by container |
+| runtime | Runtime only |
+| test | Test only |
+| system | System path |
 
-Build a **Multi-Module Maven/Gradle Project** that:
-- Implements a multi-module project structure
-- Customizes build lifecycle with plugins
-- Manages dependencies and version conflicts
-- Integrates with CI/CD pipelines
-- Demonstrates build optimization techniques
+## Internal Working
 
-## Resources
+### Maven Resolution
+1. Read POM
+2. Resolve dependencies
+3. Build dependency tree
+4. Download artifacts
+5. Execute phases
 
-- [Maven Documentation](https://maven.apache.org/guides/)
-- [Gradle User Guide](https://docs.gradle.org/current/userguide/userguide.html)
+### Gradle Resolution
+1. Read build script
+2. Configure project
+3. Resolve dependencies
+4. Execute tasks
+5. Generate outputs
 
-**Previous Module**: [Module 11: Testing](../11-testing/)
-**Next Module**: [Module 13: JDBC & Database](../13-jdbc-database/)
+## JVM Perspective
+
+### Build Memory
+- Maven runs in JVM
+- Gradle daemon improves performance
+- Build caching speeds up
+- Parallel builds utilize cores
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Build Tool] --> B[Maven]
+    A --> C[Gradle]
+    
+    B --> D[POM XML]
+    B --> E[Maven Plugins]
+    B --> F[Maven Repository]
+    
+    C --> G[Build Script]
+    C --> H[Gradle Plugins]
+    C --> I[Gradle Cache]
+    
+    D --> J[Dependencies]
+    D --> K[Build Config]
+    
+    G --> L[Tasks]
+    G --> M[Dependencies]
+```
+
+## Syntax
+
+### Maven POM
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.example</groupId>
+    <artifactId>my-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+### Gradle Build Script
+```groovy
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = '21'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    archiveFileName = 'my-app.jar'
+}
+```
+
+## Easy Example
+```bash
+# Maven commands
+mvn clean install          # Clean and install
+mvn clean package          # Create JAR
+mvn test                   # Run tests
+mvn dependency:tree        # Show dependencies
+
+# Gradle commands
+./gradlew clean build      # Clean and build
+./gradlew test             # Run tests
+./gradlew dependencies     # Show dependencies
+./gradlew bootRun          # Run Spring Boot
+```
+
+## Medium Example
+```xml
+<!-- Maven profiles -->
+<profiles>
+    <profile>
+        <id>dev</id>
+        <properties>
+            <spring.profiles.active>dev</spring.profiles.active>
+        </properties>
+    </profile>
+    <profile>
+        <id>prod</id>
+        <properties>
+            <spring.profiles.active>prod</spring.profiles.active>
+        </properties>
+    </profile>
+</profiles>
+```
+
+```groovy
+// Gradle tasks
+task runProd {
+    doLast {
+        exec {
+            commandLine 'java', '-jar', 'build/libs/my-app.jar'
+        }
+    }
+}
+```
+
+## Hard Example
+```xml
+<!-- Maven multi-module -->
+<modules>
+    <module>core</module>
+    <module>web</module>
+    <module>api</module>
+</modules>
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+## Enterprise Example
+```groovy
+// Gradle with custom plugins
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            
+            pom {
+                name = 'My Library'
+                description = 'A useful library'
+                url = 'https://github.com/example/my-library'
+            }
+        }
+    }
+    
+    repositories {
+        maven {
+            url = 'https://repo.example.com'
+        }
+    }
+}
+```
+
+## Performance Considerations
+- Use Gradle daemon
+- Enable build caching
+- Use parallel builds
+- Skip tests when needed
+
+## Time & Space Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| Compile | O(n) | O(n) |
+| Test | O(t) | O(t) |
+| Package | O(n) | O(n) |
+| Install | O(n) | O(repo) |
+
+## Thread Safety
+- Builds can run in parallel
+- Use separate output directories
+- Avoid shared resources
+- Use build isolation
+
+## Best Practices
+1. Use version ranges carefully
+2. Pin dependency versions
+3. Use BOM for versions
+4. Keep POM clean
+5. Use profiles for environments
+
+## Common Mistakes
+1. Version conflicts
+2. Transitive dependencies
+3. Missing dependencies
+4. Wrong scope
+
+## Comparison Table
+
+| Feature | Maven | Gradle |
+|---------|-------|--------|
+| Configuration | XML | Groovy/Kotlin |
+| Performance | Good | Better |
+| Flexibility | Medium | High |
+| Learning Curve | Easy | Medium |
+
+## Interview Questions
+
+### Q1: What is the difference between Maven and Gradle?
+**Answer:** Maven uses XML, Gradle uses Groovy/Kotlin. Gradle is generally faster.
+
+### Q2: What is a POM?
+**Answer:** Project Object Model - Maven configuration file.
+
+### Q3: What is dependency management?
+**Answer:** Centralized control of dependency versions.
+
+### Q4: What is a transitive dependency?
+**Answer:** Dependencies of your dependencies.
+
+### Q5: What is a BOM?
+**Answer:** Bill of Materials - manages versions for multiple dependencies.
+
+## Summary
+Build tools automate Java project builds and dependency management.
+
+## References
+- Maven Documentation
+- Gradle Documentation
+- Baeldung Build Tools Guide
