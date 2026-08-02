@@ -2,7 +2,20 @@ package academy.javaengineering.concurrency;
 
 /**
  * Demonstrates various thread creation patterns in Java 21.
- * Shows Thread class, Runnable, and Callable approaches.
+ *
+ * <p>This class shows different approaches to creating threads including
+ * Runnable, lambda expressions, daemon threads, and Callable with Future.</p>
+ *
+ * <h3>Key Concepts:</h3>
+ * <ul>
+ *   <li>Thread creation with Runnable interface</li>
+ *   <li>Lambda-based thread creation</li>
+ *   <li>Daemon threads for background tasks</li>
+ *   <li>Callable with Future for result-returning tasks</li>
+ * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class ThreadCreationExamples {
 

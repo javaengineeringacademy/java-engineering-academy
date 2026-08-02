@@ -3,12 +3,36 @@ package academy.javaengineering.patterns.prototype;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Demonstrates the Prototype design pattern for cloning objects.
+ *
+ * <p>The Prototype pattern creates new objects by cloning an existing instance
+ * (the prototype). It avoids costly object creation by copying existing objects.</p>
+ *
+ * <h3>Key Concepts:</h3>
+ * <ul>
+ *   <li>Cloneable interface for prototype objects</li>
+ *   <li>Deep copy of mutable fields</li>
+ *   <li>Creating variations from a template</li>
+ * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
+ */
 public class PrototypeExample {
 
+    /**
+     * Document class that supports cloning as a prototype.
+     */
     public static class Document implements Cloneable {
         private String title;
         private List<String> paragraphs;
 
+        /**
+         * Creates a document with the specified title.
+         *
+         * @param title the document title
+         */
         public Document(String title) {
             this.title = title;
             this.paragraphs = new ArrayList<>();
@@ -25,10 +49,21 @@ public class PrototypeExample {
             }
         }
 
+        /**
+         * Adds a paragraph to the document.
+         *
+         * @param text the paragraph text
+         */
         public void addParagraph(String text) {
             paragraphs.add(text);
         }
 
+        /**
+         * Creates a copy with a new title.
+         *
+         * @param newTitle the new title
+         * @return a cloned document with the new title
+         */
         public Document copyWithTitle(String newTitle) {
             Document copy = this.clone();
             copy.title = newTitle;
@@ -41,6 +76,11 @@ public class PrototypeExample {
         }
     }
 
+    /**
+     * Demonstrates prototype pattern usage.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         Document template = new Document("Template");
         template.addParagraph("Header");

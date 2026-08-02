@@ -123,6 +123,33 @@ public static <T extends Comparable<T>> T max(T a, T b) {
 }
 ```
 
+### Bounds Hierarchy Diagram
+
+```mermaid
+graph TD
+    A[Type Parameter Bounds] --> B[Unbounded T]
+    A --> C[Upper Bounded T extends X]
+    A --> D[Multiple Bounds T extends A and B]
+    
+    B --> E[Object methods only]
+    C --> F[X methods available]
+    D --> G[A methods + B methods]
+    
+    F --> H{X is class or interface?}
+    H -->|Class| I[Class methods]
+    H -->|Interface| J[Interface methods]
+    
+    G --> K{A is class, B is interface?}
+    K -->|Yes| L[A class methods + B interface methods]
+    K -->|No| M[Compiler Error]
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#51cf66,color:#fff
+    style C fill:#ffd43b,color:#333
+    style D fill:#ff922b,color:#fff
+    style M fill:#ff6b6b,color:#fff
+```
+
 ### Multiple Bounds
 
 Use `&` to specify multiple bounds:

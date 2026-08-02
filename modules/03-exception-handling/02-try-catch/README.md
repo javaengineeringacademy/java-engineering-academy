@@ -91,6 +91,30 @@ The catch block follows a try block and contains code to handle a specific type 
 
 A multi-catch block allows you to catch multiple exception types in a single catch block using the pipe (|) operator.
 
+### Exception Propagation Flow Diagram
+
+```mermaid
+graph TD
+    A[Exception Thrown] --> B{Catch Block Found?}
+    B -->|Yes| C[Execute Catch Block]
+    B -->|No| D{Finally Block?}
+    C --> E{Exception in Catch?}
+    E -->|Yes| F[New Exception Thrown]
+    E -->|No| G[Continue Execution]
+    D -->|Yes| H[Execute Finally Block]
+    D -->|No| I[Propagate to Caller]
+    H --> I
+    F --> I
+    I --> J{Reaches main?}
+    J -->|Yes| K[Default Handler]
+    J -->|No| L[Search Caller's Stack]
+    L --> B
+    
+    style A fill:#ff6b6b,color:#fff
+    style C fill:#51cf66,color:#fff
+    style K fill:#ff6b6b,color:#fff
+```
+
 ### Exception Propagation
 
 When an exception is thrown in a try block, Java searches for the appropriate catch block in the following order:

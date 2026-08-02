@@ -102,6 +102,45 @@ Factory pattern supports OCP:
 
 ## 7. Internal Working
 
+### Factory Pattern Diagram
+
+```mermaid
+graph TD
+    A[Client] --> B[Factory]
+    B --> C{Product Type?}
+    C -->|Type A| D[ProductA]
+    C -->|Type B| E[ProductB]
+    C -->|Type C| F[ProductC]
+    
+    D --> G[Product Interface]
+    E --> G
+    F --> G
+    
+    subgraph "Simple Factory"
+        B
+    end
+    
+    subgraph "Factory Method"
+        H[Creator] --> I[ConcreteCreator1]
+        H --> J[ConcreteCreator2]
+        I --> K[Product1]
+        J --> L[Product2]
+    end
+    
+    subgraph "Abstract Factory"
+        M[AbstractFactory] --> N[Factory1]
+        M --> O[Factory2]
+        N --> P[ProductA1]
+        N --> Q[ProductB1]
+        O --> R[ProductA2]
+        O --> S[ProductB2]
+    end
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#ffd43b,color:#333
+    style G fill:#51cf66,color:#fff
+```
+
 ### 7.1 Simple Factory Flow
 
 ```

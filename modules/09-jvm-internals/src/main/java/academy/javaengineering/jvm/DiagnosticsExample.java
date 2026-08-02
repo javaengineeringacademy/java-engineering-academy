@@ -1,11 +1,30 @@
 package academy.javaengineering.jvm;
 
 /**
- * JVM Diagnostics - Thread Dumps, Heap Dumps, Flight Recordings.
+ * Demonstrates JVM diagnostics tools and techniques.
+ *
+ * <p>This class provides examples of thread dumps, heap dumps, and JVM monitoring
+ * for diagnosing application issues.</p>
+ *
+ * <h3>Key Concepts:</h3>
+ * <ul>
+ *   <li>Thread dump analysis</li>
+ *   <li>Heap dump inspection</li>
+ *   <li>JVM diagnostic commands</li>
+ * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class DiagnosticsExample {
 
+    /**
+     * Demonstrates thread dump information retrieval.
+     */
     public static class ThreadDumpExample {
+        /**
+         * Prints information about the current thread.
+         */
         public void demonstrateThreads() {
             Thread mainThread = Thread.currentThread();
             System.out.println("Main Thread: " + mainThread.getName());
@@ -15,11 +34,23 @@ public class DiagnosticsExample {
         }
     }
 
+    /**
+     * Demonstrates heap dump information retrieval.
+     */
     public static class HeapDumpExample {
         private java.util.Map<String, Object> data = new java.util.HashMap<>();
 
+        /**
+         * Adds data to the heap for demonstration.
+         *
+         * @param key the data key
+         * @param value the data value
+         */
         public void addData(String key, Object value) { data.put(key, value); }
 
+        /**
+         * Prints current heap memory information.
+         */
         public void printHeapInfo() {
             Runtime runtime = Runtime.getRuntime();
             System.out.println("Heap Size: " + runtime.totalMemory() / 1024 + " KB");
@@ -27,6 +58,11 @@ public class DiagnosticsExample {
         }
     }
 
+    /**
+     * Demonstrates JVM diagnostics concepts.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         System.out.println("=== JVM Diagnostics Demo ===");
         new ThreadDumpExample().demonstrateThreads();

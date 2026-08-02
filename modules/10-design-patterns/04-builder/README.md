@@ -105,6 +105,39 @@ Builder pattern naturally supports immutability:
 
 ## 7. Internal Working
 
+### Builder Flow Diagram
+
+```mermaid
+graph LR
+    A[Client] --> B[Create Builder]
+    B --> C[Set Required Params]
+    C --> D[Chain Optional Params]
+    D --> E[Call build]
+    E --> F[Validate State]
+    F -->|Valid| G[Create Product]
+    F -->|Invalid| H[Throw Exception]
+    G --> I[Return Immutable Product]
+    
+    subgraph "Builder Pattern"
+        B
+        C
+        D
+        E
+        F
+    end
+    
+    subgraph "Product"
+        I
+    end
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#ffd43b,color:#333
+    style E fill:#ff922b,color:#fff
+    style G fill:#51cf66,color:#fff
+    style I fill:#51cf66,color:#fff
+    style H fill:#ff6b6b,color:#fff
+```
+
 ### 7.1 Builder Flow
 
 ```

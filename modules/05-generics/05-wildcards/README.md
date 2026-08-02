@@ -194,6 +194,32 @@ public static <T> void copy(List<? super T> dest, List<? extends T> src) {
 }
 ```
 
+### Wildcard Decision Tree
+
+```mermaid
+graph TD
+    A[Need to use Wildcard?] --> B{Reading from Collection?}
+    B -->|No| C{Writing to Collection?}
+    B -->|Yes| D{Writing to Collection?}
+    
+    C -->|Yes| E["? super T"]
+    C -->|No| F["? (unbounded)"]
+    
+    D -->|Yes| G["Use Type Parameter T"]
+    D -->|No| H["? extends T"]
+    
+    E --> I[Consumer Super]
+    F --> J[Object Methods Only]
+    G --> K[Read and Write]
+    H --> L[Producer Extends]
+    
+    style A fill:#4a90d9,color:#fff
+    style E fill:#51cf66,color:#fff
+    style H fill:#ffd43b,color:#333
+    style F fill:#999,color:#fff
+    style G fill:#ff922b,color:#fff
+```
+
 ### Wildcard Capture
 
 ```java

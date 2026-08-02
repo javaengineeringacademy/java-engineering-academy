@@ -3,13 +3,19 @@ package academy.javaengineering.exceptionhandling;
 /**
  * Demonstrates basic try-catch-finally exception handling in Java.
  *
- * <p>Key concepts covered:
+ * <p>This class covers fundamental exception handling concepts including
+ * try-catch blocks, multiple catch blocks, and the finally block.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>try-catch blocks</li>
  *   <li>Multiple catch blocks</li>
  *   <li>finally block execution</li>
  *   <li>Exception message and stack trace</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class ExceptionBasics {
 

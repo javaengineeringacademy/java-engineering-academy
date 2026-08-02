@@ -145,6 +145,34 @@ repo.save("not a user"); // String accepted silently
 
 ## Theory
 
+### Type Parameter Diagram
+
+```mermaid
+graph TD
+    A[Generic Class Declaration] --> B[Type Parameter T]
+    B --> C[Instantiation]
+    
+    C --> D[Box String]
+    C --> E[Box Integer]
+    C --> F[Box User]
+    
+    D --> G[Compile Time: String]
+    E --> H[Compile Time: Integer]
+    F --> I[Compile Time: User]
+    
+    G --> J[Bytecode: Object + Cast]
+    H --> K[Bytecode: Object + Cast]
+    I --> L[Bytecode: Object + Cast]
+    
+    J --> M[Runtime: Type Erased]
+    K --> M
+    L --> M
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#ffd43b,color:#333
+    style M fill:#ff6b6b,color:#fff
+```
+
 ### Type Parameters
 
 A **type parameter** is a name that acts as a placeholder for an actual type:

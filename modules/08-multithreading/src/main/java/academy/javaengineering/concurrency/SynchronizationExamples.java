@@ -2,7 +2,19 @@ package academy.javaengineering.concurrency;
 
 /**
  * Demonstrates synchronized keyword usage for thread safety.
- * Shows synchronized methods and blocks.
+ *
+ * <p>This class shows how to use synchronized methods and blocks to protect
+ * shared resources from concurrent access issues in multithreaded applications.</p>
+ *
+ * <h3>Key Concepts:</h3>
+ * <ul>
+ *   <li>Synchronized methods for thread-safe operations</li>
+ *   <li>Synchronized blocks with explicit lock objects</li>
+ *   <li>wait/notify mechanism for thread coordination</li>
+ * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class SynchronizationExamples {
 

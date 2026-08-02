@@ -7,7 +7,21 @@ import java.util.Optional;
 
 /**
  * Demonstrates ArrayList operations and performance characteristics.
- * ArrayList uses a dynamic array internally for O(1) random access.
+ *
+ * <p>ArrayList uses a dynamic array internally for O(1) random access.
+ * This class covers basic operations, advanced patterns, and performance
+ * comparisons with LinkedList.</p>
+ *
+ * <h3>Key Concepts:</h3>
+ * <ul>
+ *   <li>Dynamic array implementation</li>
+ *   <li>O(1) random access performance</li>
+ *   <li>Capacity optimization</li>
+ *   <li>Performance comparison with LinkedList</li>
+ * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class ArrayListDemo {
 

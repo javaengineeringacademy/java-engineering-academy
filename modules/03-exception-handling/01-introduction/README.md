@@ -144,6 +144,39 @@ Throwable
 - Represent programming errors
 - Examples: NullPointerException, ArrayIndexOutOfBoundsException
 
+### Exception Hierarchy Diagram
+
+```mermaid
+graph TD
+    TO[Throwable]
+    TO --> E[Error]
+    TO --> EX[Exception]
+    
+    E --> OOM[OutOfMemoryError]
+    E --> SOF[StackOverflowError]
+    E --> NCD[NoclassDefFoundError]
+    E --> VME[VirtualMachineError]
+    
+    EX --> IO[IOException]
+    EX --> RTE[RuntimeException]
+    EX --> SQL[SQLException]
+    
+    IO --> FNF[FileNotFoundException]
+    IO --> SE[SocketException]
+    
+    RTE --> NPE[NullPointerException]
+    RTE --> AIOOBE[ArrayIndexOutOfBoundsException]
+    RTE --> AE[ArithmeticException]
+    RTE --> IAE[IllegalArgumentException]
+    
+    style TO fill:#f9f,stroke:#333,stroke-width:2px
+    style E fill:#ff9999,stroke:#333,stroke-width:2px
+    style EX fill:#99ff99,stroke:#333,stroke-width:2px
+    style RTE fill:#ffff99,stroke:#333,stroke-width:2px
+    style IO fill:#99ccff,stroke:#333,stroke-width:2px
+    style SQL fill:#99ccff,stroke:#333,stroke-width:2px
+```
+
 ### Exception Propagation
 
 When an exception is thrown, it propagates up the call stack until:

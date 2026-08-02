@@ -5,13 +5,19 @@ import java.io.IOException;
 /**
  * Demonstrates the exception hierarchy and checked vs unchecked exceptions.
  *
- * <p>Key concepts covered:
+ * <p>This class explains the Throwable hierarchy, including checked exceptions,
+ * unchecked exceptions, and error types.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>Throwable hierarchy</li>
  *   <li>Checked exceptions (Exception)</li>
  *   <li>Unchecked exceptions (RuntimeException)</li>
  *   <li>Error types</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class ExceptionHierarchy {
 

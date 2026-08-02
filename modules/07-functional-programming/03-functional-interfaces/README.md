@@ -48,6 +48,68 @@ Java 8 introduced the `@FunctionalInterface` annotation, which provides compile-
 | **Default Methods Allowed** | Can have any number of default methods |
 | **Static Methods Allowed** | Can have any number of static methods |
 
+### Functional Interface Hierarchy
+
+```mermaid
+graph TD
+    FI[Functional Interface] --> P[Predicate]
+    FI --> FN[Function]
+    FI --> C[Consumer]
+    FI --> S[Supplier]
+    FI --> UO[UnaryOperator]
+    FI --> BO[BinaryOperator]
+    
+    P --> IP[IntPredicate]
+    P --> LP[LongPredicate]
+    P --> DP[DoublePredicate]
+    
+    FN --> IF[IntFunction]
+    FN --> LF[LongFunction]
+    FN --> DF[DoubleFunction]
+    
+    C --> IC[IntConsumer]
+    C --> LC[LongConsumer]
+    C --> DC[DoubleConsumer]
+    
+    S --> IS[IntSupplier]
+    S --> LS[LongSupplier]
+    S --> DS[DoubleSupplier]
+    
+    UO --> IUO[IntUnaryOperator]
+    UO --> LUO[LongUnaryOperator]
+    UO --> DUO[DoubleUnaryOperator]
+    
+    BO --> IBO[IntBinaryOperator]
+    BO --> LBO[LongBinaryOperator]
+    BO --> DBO[DoubleBinaryOperator]
+    
+    style FI fill:#4a90d9,color:#fff
+    style P fill:#51cf66,color:#fff
+    style FN fill:#51cf66,color:#fff
+    style C fill:#51cf66,color:#fff
+    style S fill:#51cf66,color:#fff
+    style UO fill:#51cf66,color:#fff
+    style BO fill:#51cf66,color:#fff
+    style IP fill:#ffd43b,color:#333
+    style LP fill:#ffd43b,color:#333
+    style DP fill:#ffd43b,color:#333
+    style IF fill:#ffd43b,color:#333
+    style LF fill:#ffd43b,color:#333
+    style DF fill:#ffd43b,color:#333
+    style IC fill:#ffd43b,color:#333
+    style LC fill:#ffd43b,color:#333
+    style DC fill:#ffd43b,color:#333
+    style IS fill:#ffd43b,color:#333
+    style LS fill:#ffd43b,color:#333
+    style DS fill:#ffd43b,color:#333
+    style IUO fill:#ffd43b,color:#333
+    style LUO fill:#ffd43b,color:#333
+    style DUO fill:#ffd43b,color:#333
+    style IBO fill:#ffd43b,color:#333
+    style LBO fill:#ffd43b,color:#333
+    style DBO fill:#ffd43b,color:#333
+```
+
 ### Built-in Functional Interface Catalog
 
 | Interface | Method | Description | Example Use Case |

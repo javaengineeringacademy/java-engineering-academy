@@ -135,6 +135,29 @@ An application needs to register event handlers for user interactions. The curre
 
 ## 6. Theory
 
+### Lambda Syntax Diagram
+
+```mermaid
+graph LR
+    A[Lambda Expression] --> B[Parameters]
+    A --> C[Arrow Token]
+    A --> D[Body]
+    
+    B --> B1["No params: ()"]
+    B --> B2["One param: x"]
+    B --> B3["Multiple: x, y"]
+    
+    C --> C1["->"]
+    
+    D --> D1["Expression: x + 1"]
+    D --> D2["Block: { return x+1; }"]
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#51cf66,color:#fff
+    style C fill:#ffd43b,color:#333
+    style D fill:#ff922b,color:#fff
+```
+
 ### 6.1 Lambda Anatomy
 
 A lambda expression consists of three parts:

@@ -85,6 +85,38 @@ How do you create exceptions consistently with proper context?
 - Don't need declaration
 - Use for programming errors
 
+### Custom Exception Creation Flow
+
+```mermaid
+graph TD
+    A[Identify Error Condition] --> B{Recoverable?}
+    B -->|Yes| C[Checked Exception]
+    B -->|No| D{Programming Error?}
+    D -->|Yes| E[Unchecked Exception]
+    D -->|No| F[Error - Don't Catch]
+    
+    C --> G[Extend Exception]
+    C --> H[Add Error Code]
+    C --> I[Add Context Fields]
+    
+    E --> J[Extend RuntimeException]
+    E --> K[Add Field Info]
+    
+    G --> L[Override toString]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+    
+    L --> M[Create Static Factory Methods]
+    M --> N[Document with Javadoc]
+    
+    style A fill:#4a90d9,color:#fff
+    style C fill:#51cf66,color:#fff
+    style E fill:#ffd43b,color:#333
+    style F fill:#ff6b6b,color:#fff
+```
+
 ### Exception Hierarchy Design
 
 ```

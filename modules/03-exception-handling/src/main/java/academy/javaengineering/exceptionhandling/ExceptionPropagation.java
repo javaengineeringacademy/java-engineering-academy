@@ -3,13 +3,19 @@ package academy.javaengineering.exceptionhandling;
 /**
  * Demonstrates exception propagation with throw and throws keywords.
  *
- * <p>Key concepts covered:
+ * <p>This class shows how exceptions propagate up the call stack and the
+ * difference between throw and throws keywords.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>throw keyword for throwing exceptions</li>
  *   <li>throws keyword for declaring exceptions</li>
  *   <li>Exception propagation up the call stack</li>
  *   <li>Chaining exceptions</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class ExceptionPropagation {
 

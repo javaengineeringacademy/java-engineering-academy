@@ -10,13 +10,19 @@ import java.sql.SQLException;
 /**
  * Demonstrates try-with-resources and AutoCloseable interface.
  *
- * <p>Key concepts covered:
+ * <p>This class shows how to use try-with-resources for automatic resource
+ * management, including multiple resources and suppressed exceptions.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>AutoCloseable interface</li>
  *   <li>Try-with-resources syntax</li>
  *   <li>Multiple resources</li>
  *   <li>Suppressed exceptions</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class TryWithResources {
 

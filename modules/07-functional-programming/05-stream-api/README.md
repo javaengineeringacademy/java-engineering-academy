@@ -48,6 +48,37 @@ A Stream is not a data structure; it's a view over a data source that supports a
 | **Parallelizable** | Can easily switch to parallel processing |
 | **Unbounded** | Can represent infinite sequences |
 
+### Stream Pipeline Diagram
+
+```mermaid
+graph LR
+    S[Source] --> IO1[filter]
+    IO1 --> IO2[map]
+    IO2 --> IO3[sorted]
+    IO3 --> IO4[distinct]
+    IO4 --> TO[Terminal]
+    TO --> R[Result]
+    
+    subgraph "Intermediate Operations - Lazy"
+        IO1
+        IO2
+        IO3
+        IO4
+    end
+    
+    subgraph "Terminal Operation - Triggers Processing"
+        TO
+    end
+    
+    style S fill:#4a90d9,color:#fff
+    style IO1 fill:#ffd43b,color:#333
+    style IO2 fill:#ffd43b,color:#333
+    style IO3 fill:#ffd43b,color:#333
+    style IO4 fill:#ffd43b,color:#333
+    style TO fill:#ff922b,color:#fff
+    style R fill:#51cf66,color:#fff
+```
+
 ### Stream Pipeline Components
 
 ```

@@ -7,7 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Real-world enterprise exception handling examples.
  *
- * <p>Key concepts covered:
+ * <p>This class demonstrates enterprise-grade exception handling patterns
+ * including service layer, repository pattern, and Result pattern.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>Service layer exception handling</li>
  *   <li>Repository pattern exceptions</li>
@@ -15,6 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Global exception handling</li>
  *   <li>Result pattern</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class RealWorldExamples {
 

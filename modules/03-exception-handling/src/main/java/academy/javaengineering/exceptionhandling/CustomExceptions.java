@@ -3,13 +3,19 @@ package academy.javaengineering.exceptionhandling;
 /**
  * Demonstrates creating and using custom exception classes.
  *
- * <p>Key concepts covered:
+ * <p>This class shows how to create custom checked and unchecked exceptions,
+ * including exception chaining and proper constructor patterns.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>Custom checked exceptions</li>
  *   <li>Custom unchecked exceptions</li>
  *   <li>Exception chaining</li>
  *   <li>Exception constructors</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class CustomExceptions {
 

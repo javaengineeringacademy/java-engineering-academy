@@ -7,7 +7,10 @@ import java.util.logging.Logger;
 /**
  * Demonstrates exception handling best practices.
  *
- * <p>Key concepts covered:
+ * <p>This class covers industry-standard practices for exception handling
+ * including specific exception handling, logging, and recovery patterns.</p>
+ *
+ * <h3>Key Concepts:</h3>
  * <ul>
  *   <li>Specific exception handling</li>
  *   <li>Exception logging</li>
@@ -15,6 +18,9 @@ import java.util.logging.Logger;
  *   <li>Fail-fast patterns</li>
  *   <li>Exception recovery</li>
  * </ul>
+ *
+ * @author Java Engineering Academy
+ * @since 1.0
  */
 public class BestPractices {
 

@@ -103,6 +103,33 @@ for (int i = 0; i < 1000; i++) {
 
 ## 7. Internal Working
 
+### Singleton Implementation Diagram
+
+```mermaid
+graph TD
+    A[Client Request] --> B{Instance Exists?}
+    B -->|No| C{Thread Safe?}
+    B -->|Yes| D[Return Existing Instance]
+    
+    C -->|Synchronized| E[Synchronized Block]
+    C -->|DCL| F[Double-Checked Lock]
+    C -->|Enum| G[Enum Singleton]
+    C -->|Bill Pugh| H[Static Inner Class]
+    
+    E --> I[Create Instance]
+    F --> I
+    G --> I
+    H --> I
+    
+    I --> J[Store in Static Field]
+    J --> D
+    
+    style A fill:#4a90d9,color:#fff
+    style B fill:#ffd43b,color:#333
+    style D fill:#51cf66,color:#fff
+    style I fill:#ff922b,color:#fff
+```
+
 ### 7.1 Lazy Initialization Flow
 
 ```
