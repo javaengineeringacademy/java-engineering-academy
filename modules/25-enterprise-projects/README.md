@@ -1,44 +1,66 @@
-# Module 25: enterprise projects
+# Module 25: Enterprise Projects
 
 ## Overview
 
-[Brief description of this module and what students will learn.]
-
-## Status
-
-🔲 **Scaffolded** — Content pending implementation
+This module provides hands-on experience building complete enterprise applications. Students will apply all concepts learned throughout the course to develop real-world projects including e-commerce platforms, chat applications, and enterprise systems with proper architecture and best practices.
 
 ## Learning Objectives
 
 By the end of this module, you will be able to:
 
-- [ ] [Learning objective 1]
-- [ ] [Learning objective 2]
-- [ ] [Learning objective 3]
+- Design and implement complete enterprise applications
+- Apply architectural patterns and best practices
+- Integrate multiple technologies and frameworks
+- Implement comprehensive testing strategies
+- Deploy applications to production environments
+- Handle real-world challenges and edge cases
+- Work effectively in development teams
 
 ## Prerequisites
 
-- [Previous module]
+- [Module 24: System Design](../24-system-design/)
 
 ## Topics
 
-| # | Topic | Est. Time |
-|---|-------|-----------|
-| 01 | [Topic 1](01-topic-1/) | X hours |
-| 02 | [Topic 2](02-topic-2/) | X hours |
-| 03 | [Topic 3](03-topic-3/) | X hours |
+| # | Topic | Duration | Description |
+|---|-------|----------|-------------|
+| 01 | [Project Architecture](01-project-architecture/) | 2 hours | Project structure, technology selection |
+| 02 | [E-Commerce Platform](02-e-commerce-platform/) | 8 hours | Full-stack e-commerce implementation |
+| 03 | [Chat Application](03-chat-application/) | 6 hours | Real-time messaging system |
+| 04 | [Order Management](04-order-management/) | 5 hours | Order processing workflow |
+| 05 | [Reporting System](05-reporting-system/) | 4 hours | Analytics and reporting dashboard |
+| 06 | [CI/CD Pipeline](06-ci-cd-pipeline/) | 3 hours | Automated build and deployment |
+
+## Key Concepts
+
+- Domain-driven design
+- Clean architecture
+- Microservices decomposition
+- Event sourcing and CQRS
+- DevOps and deployment strategies
+
+## Enterprise Applications
+
+Building enterprise projects provides practical experience with the full software development lifecycle, from requirements gathering and design to implementation, testing, and deployment in production environments.
 
 ## Estimated Total Time
 
-**X hours**
+**28 hours**
 
 ## Module Project
 
-[Description of the module project]
+Build a complete **Enterprise E-Commerce Platform** with:
+- User authentication and authorization
+- Product catalog and search
+- Shopping cart and checkout
+- Order management and tracking
+- Admin dashboard and analytics
+- CI/CD pipeline and deployment
 
 ## Resources
 
-- [Resource 1]
-- [Resource 2]
+- [Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
+- [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/)
 
-**Next Module**: [Next Module](../next-module/)
+**Previous Module**: [Module 24: System Design](../24-system-design/)
+**Next Module**: [Module 26: Interview Preparation](../26-interview-preparation/)
