@@ -1,74 +1,344 @@
 # Module 06: Java I/O and NIO
 
 ## Overview
-
-This module covers Java's comprehensive Input/Output system, from traditional stream-based I/O to the modern New I/O (NIO) API. Students will learn to handle file operations, data streams, serialization, and asynchronous channel-based I/O for building efficient, scalable applications.
+Java I/O provides classes for reading and writing data through streams, readers, and writers. NIO (New I/O) adds channels, buffers, and selectors for non-blocking I/O operations.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Read and write files using byte and character streams
-- Implement buffered I/O for improved performance
-- Work with Java NIO buffers, channels, and selectors
-- Serialize and deserialize Java objects
-- Process XML and JSON data formats
-- Handle file system operations using NIO.2 API
-- Apply best practices for resource management
+- Master stream-based I/O
+- Understand byte and character streams
+- Use NIO channels and buffers
+- Implement file operations
+- Handle serialization
 
 ## Prerequisites
+- Basic Java knowledge
+- Exception handling
+- File system concepts
 
-- [Module 05: Generics](../05-generics/)
+## Why This Concept Exists
+File and network operations require:
+- Data reading/writing
+- Stream processing
+- Buffer management
+- Resource handling
 
-## Topics
+I/O provides:
+- Stream abstraction
+- Buffer management
+- Character encoding
+- Resource management
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [Introduction](01-introduction/) | 1 hour | I/O concepts, stream types, and overview |
-| 02 | [File Operations](02-file-operations/) | 2 hours | File class, path manipulation, file attributes |
-| 03 | [Byte Streams](03-byte-streams/) | 2 hours | InputStream, OutputStream, file I/O |
-| 04 | [Character Streams](04-character-streams/) | 2 hours | Reader, Writer, encoding/decoding |
-| 05 | [Buffered Streams](05-buffered-streams/) | 1 hour | BufferedInputStream, BufferedReader |
-| 06 | [Data Streams](06-data-streams/) | 2 hours | DataInputStream, DataOutputStream |
-| 07 | [Object Streams](07-object-streams/) | 2 hours | Serialization, ObjectOutputStream |
-| 08 | [Try-with-resources](08-try-with-resources/) | 1 hour | AutoCloseable, resource management |
-| 09 | [Random Access File](09-random-access-file/) | 2 hours | RandomAccessFile, file positioning |
-| 10 | [NIO Buffers](10-nio-buffers/) | 3 hours | Buffer operations, memory mapping |
-| 11 | [NIO Channels](11-nio-channels/) | 3 hours | FileChannel, SocketChannel, Selectors |
-| 12 | [NIO.2 FileSystem](12-nio2-filesystem/) | 2 hours | Files, Paths, directory streams |
-| 13 | [Properties and Config](11-properties-config/) | 2 hours | Properties class, configuration files |
-| 14 | [XML Processing](12-xml-processing/) | 3 hours | DOM, SAX, StAX parsers |
-| 15 | [Jackson JSON](13-jackson-json/) | 3 hours | JSON serialization/deserialization |
+## Problem Statement
+How do you efficiently read, write, and transfer data in Java?
 
-## Key Concepts
+## Theory
 
-- Stream-based vs. channel-based I/O
-- Character encoding and Unicode support
-- File locking and memory-mapped files
-- Asynchronous I/O operations
-- Serialization versioning and security
+### I/O Types
 
-## Enterprise Applications
+| Type | Description | Use Case |
+|------|-------------|----------|
+| Byte Stream | Raw bytes | Binary files |
+| Character Stream | Characters | Text files |
+| Buffered | Performance | Large files |
+| NIO Channels | Non-blocking | Network I/O |
 
-Java I/O is fundamental to enterprise applications for file processing, data import/export, logging systems, and integration with external systems. NIO provides non-blocking capabilities essential for high-performance networking and real-time data processing in microservices architectures.
+### Stream Classes
 
-## Estimated Total Time
+| Byte Stream | Character Stream |
+|-------------|------------------|
+| InputStream | Reader |
+| OutputStream | Writer |
+| FileInputStream | FileReader |
+| FileOutputStream | FileWriter |
+| BufferedInputStream | BufferedReader |
+| BufferedOutputStream | BufferedWriter |
 
-**30 hours**
+### NIO Components
 
-## Module Project
+| Component | Purpose |
+|-----------|---------|
+| Channel | I/O connection |
+| Buffer | Data container |
+| Selector | Multiplexer |
 
-Build a **File Processing System** that:
-- Reads CSV/JSON data files using streams
-- Processes and transforms data
-- Writes results to multiple output formats
-- Implements file monitoring and watching
-- Demonstrates NIO channel operations
+## Internal Working
 
-## Resources
+### Stream Processing
+```
+Source → Buffer → Process → Buffer → Destination
+```
 
-- [Java I/O Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
-- [Java NIO Documentation](https://docs.oracle.com/javase/8/docs/api/java/nio/package-summary.html)
+### Buffer Operations
+```
+Write: clear → put → flip
+Read: flip → get → clear
+```
 
-**Previous Module**: [Module 05: Generics](../05-generics/)
-**Next Module**: [Module 07: Functional Programming](../07-functional-programming/)
+## JVM Perspective
+
+### Resource Management
+- File descriptors are limited
+- Streams must be closed
+- Try-with-resources ensures cleanup
+- NIO channels are non-blocking
+
+### Memory Mapping
+- MappedByteBuffer for large files
+- OS manages memory
+- Faster than stream I/O
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    A[Java I/O] --> B[Byte Streams]
+    A --> C[Character Streams]
+    A --> D[NIO]
+    
+    B --> E[InputStream]
+    B --> F[OutputStream]
+    
+    C --> G[Reader]
+    C --> H[Writer]
+    
+    D --> I[Channel]
+    D --> J[Buffer]
+    D --> K[Selector]
+```
+
+## Syntax
+
+### Byte Streams
+```java
+// FileInputStream
+try (FileInputStream fis = new FileInputStream("file.txt")) {
+    byte[] buffer = new byte[1024];
+    int bytesRead;
+    while ((bytesRead = fis.read(buffer)) != -1) {
+        // Process bytes
+    }
+}
+
+// FileOutputStream
+try (FileOutputStream fos = new FileOutputStream("file.txt")) {
+    fos.write("Hello".getBytes());
+}
+```
+
+### Character Streams
+```java
+// BufferedReader
+try (BufferedReader br = new BufferedReader(new FileReader("file.txt"))) {
+    String line;
+    while ((line = br.readLine()) != null) {
+        System.out.println(line);
+    }
+}
+
+// BufferedWriter
+try (BufferedWriter bw = new BufferedWriter(new FileWriter("file.txt"))) {
+    bw.write("Hello");
+    bw.newLine();
+}
+```
+
+### NIO
+```java
+// FileChannel
+try (FileChannel channel = FileChannel.open(Path.of("file.txt"), 
+        StandardOpenOption.READ)) {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    channel.read(buffer);
+}
+
+// Path
+Path path = Path.of("file.txt");
+Files.readString(path);
+Files.writeString(path, "Hello");
+Files.copy(source, target);
+```
+
+## Easy Example
+```java
+import java.nio.file.*;
+import java.io.*;
+
+public class EasyExample {
+    public static void main(String[] args) throws IOException {
+        // Write file
+        Files.writeString(Path.of("test.txt"), "Hello World");
+        
+        // Read file
+        String content = Files.readString(Path.of("test.txt"));
+        System.out.println(content);
+        
+        // Copy file
+        Files.copy(Path.of("test.txt"), Path.of("copy.txt"));
+    }
+}
+```
+
+## Medium Example
+```java
+import java.io.*;
+import java.nio.file.*;
+
+public class MediumExample {
+    // Process file line by line
+    public static long countLines(String filename) throws IOException {
+        try (Stream<String> lines = Files.lines(Path.of(filename))) {
+            return lines.count();
+        }
+    }
+    
+    // Copy directory
+    public static void copyDir(Path source, Path target) throws IOException {
+        Files.walk(source).forEach(path -> {
+            try {
+                Path dest = target.resolve(source.relativize(path));
+                if (Files.isDirectory(path)) {
+                    Files.createDirectories(dest);
+                } else {
+                    Files.copy(path, dest);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    
+    public static void main(String[] args) throws IOException {
+        long lines = countLines("test.txt");
+        System.out.println("Lines: " + lines);
+    }
+}
+```
+
+## Hard Example
+```java
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+
+public class HardExample {
+    // Memory-mapped file
+    public static String readMapped(String filename) throws IOException {
+        try (FileChannel channel = FileChannel.open(Path.of(filename), 
+                StandardOpenOption.READ)) {
+            MappedByteBuffer buffer = channel.map(
+                FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            
+            StringBuilder sb = new StringBuilder();
+            while (buffer.hasRemaining()) {
+                sb.append((char) buffer.get());
+            }
+            return sb.toString();
+        }
+    }
+    
+    // Async file operations
+    public static void main(String[] args) throws Exception {
+        String content = readMapped("large-file.txt");
+        System.out.println("Read " + content.length() + " characters");
+    }
+}
+```
+
+## Enterprise Example
+```java
+import java.io.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
+
+public class EnterpriseExample {
+    // Parallel file processing
+    public static void processFiles(Path dir) throws IOException {
+        try (Stream<Path> files = Files.walk(dir)) {
+            files.parallel()
+                .filter(Files::isRegularFile)
+                .filter(p -> p.toString().endsWith(".java"))
+                .forEach(p -> {
+                    try {
+                        long lines = Files.lines(p).count();
+                        System.out.println(p.getFileName() + ": " + lines + " lines");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+        }
+    }
+    
+    public static void main(String[] args) throws IOException {
+        processFiles(Path.of("."));
+    }
+}
+```
+
+## Performance Considerations
+- Use buffered streams for large files
+- NIO is faster for large files
+- Memory mapping for very large files
+- Try-with-resources for cleanup
+
+## Time & Space Complexity
+
+| Operation | Time | Space |
+|-----------|------|-------|
+| Read file | O(n) | O(buffer) |
+| Write file | O(n) | O(1) |
+| Copy | O(n) | O(buffer) |
+| Line count | O(n) | O(1) |
+
+## Thread Safety
+- Streams are not thread-safe
+- Files can be shared read-only
+- Use synchronization for writes
+- NIO channels are thread-safe
+
+## Best Practices
+1. Use try-with-resources
+2. Use NIO.2 for modern code
+3. Buffer large operations
+4. Handle exceptions properly
+5. Use appropriate stream type
+
+## Common Mistakes
+1. Not closing streams
+2. Using wrong encoding
+3. Not buffering large files
+4. Ignoring exceptions
+
+## Comparison Table
+
+| Feature | I/O Streams | NIO |
+|---------|-------------|-----|
+| Blocking | Yes | No |
+| Buffer | Manual | Built-in |
+| Channels | No | Yes |
+| Performance | Good | Better |
+
+## Interview Questions
+
+### Q1: What is the difference between InputStream and Reader?
+**Answer:** InputStream handles bytes, Reader handles characters.
+
+### Q2: What is try-with-resources?
+**Answer:** Auto-closes resources implementing AutoCloseable.
+
+### Q3: What is the difference between File and Path?
+**Answer:** Path is modern NIO.2, File is legacy.
+
+### Q4: What is buffering?
+**Answer:** Storing data in memory to reduce I/O operations.
+
+### Q5: What is NIO?
+**Answer:** New I/O with channels, buffers, and selectors.
+
+## Summary
+Java I/O and NIO provide comprehensive data handling capabilities. Use NIO for modern applications.
+
+## References
+- Oracle Java Documentation: I/O
+- Java NIO Tutorial
+- Baeldung I/O Guide
