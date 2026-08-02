@@ -1,66 +1,288 @@
 # Module 25: Enterprise Projects
 
 ## Overview
-
-This module provides hands-on experience building complete enterprise applications. Students will apply all concepts learned throughout the course to develop real-world projects including e-commerce platforms, chat applications, and enterprise systems with proper architecture and best practices.
+Enterprise projects demonstrate real-world application of Java concepts. This module covers project ideas, architecture patterns, and implementation strategies.
 
 ## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Design and implement complete enterprise applications
-- Apply architectural patterns and best practices
-- Integrate multiple technologies and frameworks
-- Implement comprehensive testing strategies
-- Deploy applications to production environments
-- Handle real-world challenges and edge cases
-- Work effectively in development teams
+- Design enterprise applications
+- Apply architectural patterns
+- Implement business logic
+- Handle cross-cutting concerns
+- Deploy to production
 
 ## Prerequisites
+- Java fundamentals
+- Spring Boot
+- Database knowledge
 
-- [Module 24: System Design](../24-system-design/)
+## Why This Concept Exists
+Enterprise projects need:
+- Scalable architecture
+- Business logic implementation
+- Integration with systems
+- Production readiness
 
-## Topics
+This module provides:
+- Project templates
+- Architecture patterns
+- Implementation guidance
+- Best practices
 
-| # | Topic | Duration | Description |
-|---|-------|----------|-------------|
-| 01 | [Project Architecture](01-project-architecture/) | 2 hours | Project structure, technology selection |
-| 02 | [E-Commerce Platform](02-e-commerce-platform/) | 8 hours | Full-stack e-commerce implementation |
-| 03 | [Chat Application](03-chat-application/) | 6 hours | Real-time messaging system |
-| 04 | [Order Management](04-order-management/) | 5 hours | Order processing workflow |
-| 05 | [Reporting System](05-reporting-system/) | 4 hours | Analytics and reporting dashboard |
-| 06 | [CI/CD Pipeline](06-ci-cd-pipeline/) | 3 hours | Automated build and deployment |
+## Problem Statement
+How do you build production-ready enterprise applications?
 
-## Key Concepts
+## Theory
 
-- Domain-driven design
-- Clean architecture
-- Microservices decomposition
-- Event sourcing and CQRS
-- DevOps and deployment strategies
+### Project Types
 
-## Enterprise Applications
+| Type | Description |
+|------|-------------|
+| Web Application | Browser-based |
+| REST API | Service layer |
+| Microservices | Distributed system |
+| Batch Processing | Scheduled jobs |
+| Real-time | Streaming data |
 
-Building enterprise projects provides practical experience with the full software development lifecycle, from requirements gathering and design to implementation, testing, and deployment in production environments.
+### Architecture Patterns
 
-## Estimated Total Time
+| Pattern | Use Case |
+|---------|----------|
+| MVC | Web applications |
+| Microservices | Distributed systems |
+| Event-Driven | Real-time processing |
+| CQRS | Read/write separation |
 
-**28 hours**
+## Project Ideas
 
-## Module Project
+### 1. E-commerce Platform
 
-Build a complete **Enterprise E-Commerce Platform** with:
-- User authentication and authorization
-- Product catalog and search
-- Shopping cart and checkout
-- Order management and tracking
-- Admin dashboard and analytics
-- CI/CD pipeline and deployment
+| Component | Technologies |
+|-----------|-------------|
+| Backend | Spring Boot, JPA |
+| Database | PostgreSQL, Redis |
+| Messaging | Kafka |
+| Frontend | React/Angular |
+| Deployment | Docker, Kubernetes |
 
-## Resources
+### 2. Banking System
 
-- [Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
-- [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/)
+| Component | Technologies |
+|-----------|-------------|
+| Backend | Spring Boot, JPA |
+| Database | Oracle, PostgreSQL |
+| Security | Spring Security, OAuth2 |
+| Messaging | RabbitMQ |
+| Monitoring | Prometheus, Grafana |
 
-**Previous Module**: [Module 24: System Design](../24-system-design/)
-**Next Module**: [Module 26: Interview Preparation](../26-interview-preparation/)
+### 3. Social Media Platform
+
+| Component | Technologies |
+|-----------|-------------|
+| Backend | Spring Boot, WebFlux |
+| Database | MongoDB, Redis |
+| Search | Elasticsearch |
+| Messaging | Kafka |
+| Storage | S3 |
+
+## Enterprise Example
+
+```java
+// Complete e-commerce order service
+@Service
+@Transactional
+public class OrderService {
+    
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final PaymentService paymentService;
+    private final InventoryService inventoryService;
+    private final EventPublisher eventPublisher;
+    
+    public OrderService(OrderRepository orderRepository,
+                       ProductRepository productRepository,
+                       PaymentService paymentService,
+                       InventoryService inventoryService,
+                       EventPublisher eventPublisher) {
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.paymentService = paymentService;
+        this.inventoryService = inventoryService;
+        this.eventPublisher = eventPublisher;
+    }
+    
+    public OrderDTO createOrder(CreateOrderRequest request) {
+        // Validate products
+        List<OrderItem> items = validateAndCreateItems(request.getItems());
+        
+        // Check inventory
+        items.forEach(item -> 
+            inventoryService.reserve(item.getProductId(), item.getQuantity()));
+        
+        // Calculate total
+        BigDecimal total = items.stream()
+            .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        // Create order
+        Order order = Order.builder()
+            .userId(request.getUserId())
+            .items(items)
+            .total(total)
+            .status(OrderStatus.PENDING)
+            .createdAt(LocalDateTime.now())
+            .build();
+        
+        Order saved = orderRepository.save(order);
+        
+        // Process payment
+        try {
+            paymentService.charge(saved.getId(), total);
+            saved.setStatus(OrderStatus.PAID);
+            orderRepository.save(saved);
+            
+            // Publish event
+            eventPublisher.publish(new OrderCreatedEvent(saved.getId()));
+        } catch (PaymentException e) {
+            saved.setStatus(OrderStatus.PAYMENT_FAILED);
+            orderRepository.save(saved);
+            
+            // Release inventory
+            items.forEach(item -> 
+                inventoryService.release(item.getProductId(), item.getQuantity()));
+            
+            throw e;
+        }
+        
+        return OrderMapper.toDTO(saved);
+    }
+    
+    private List<OrderItem> validateAndCreateItems(List<OrderItemRequest> itemRequests) {
+        return itemRequests.stream()
+            .map(request -> {
+                Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new ProductNotFoundException(request.getProductId()));
+                
+                if (product.getStock() < request.getQuantity()) {
+                    throw new InsufficientStockException(product.getId());
+                }
+                
+                return OrderItem.builder()
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .price(product.getPrice())
+                    .quantity(request.getQuantity())
+                    .build();
+            })
+            .toList();
+    }
+}
+
+// REST Controller
+@RestController
+@RequestMapping("/api/orders")
+@Tag(name = "Order Management", description = "Order operations")
+public class OrderController {
+    
+    private final OrderService orderService;
+    
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+    
+    @PostMapping
+    @Operation(summary = "Create order")
+    public ResponseEntity<OrderDTO> createOrder(
+            @RequestBody @Valid CreateOrderRequest request,
+            @AuthenticationPrincipal UserDetails user) {
+        
+        OrderDTO order = orderService.createOrder(request);
+        URI location = URI.create("/api/orders/" + order.getId());
+        return ResponseEntity.created(location).body(order);
+    }
+    
+    @GetMapping("/{id}")
+    @Operation(summary = "Get order by ID")
+    public ResponseEntity<OrderDTO> getOrder(@PathVariable Long id) {
+        return orderService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping
+    @Operation(summary = "List orders")
+    public ResponseEntity<Page<OrderDTO>> listOrders(
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) 
+            Pageable pageable) {
+        return ResponseEntity.ok(orderService.findAll(pageable));
+    }
+}
+
+// Event handler
+@Component
+public class OrderEventHandler {
+    
+    private final NotificationService notificationService;
+    
+    public OrderEventHandler(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+    
+    @EventListener
+    public void handleOrderCreated(OrderCreatedEvent event) {
+        notificationService.sendOrderConfirmation(event.getOrderId());
+    }
+}
+```
+
+## Performance Considerations
+- Use caching for frequent queries
+- Implement pagination
+- Use async processing
+- Optimize database queries
+
+## Best Practices
+1. Use clean architecture
+2. Implement proper error handling
+3. Add logging and monitoring
+4. Write tests
+5. Document API
+
+## Common Mistakes
+1. Over-engineering
+2. Ignoring cross-cutting concerns
+3. Poor error handling
+4. Not testing
+
+## Comparison Table
+
+| Aspect | Monolith | Microservices |
+|--------|----------|---------------|
+| Complexity | Low | High |
+| Deployment | Simple | Complex |
+| Scaling | Vertical | Horizontal |
+| Team Size | Small | Large |
+
+## Interview Questions
+
+### Q1: How do you design an enterprise application?
+**Answer:** Use clean architecture, separate concerns, and apply SOLID principles.
+
+### Q2: What is the difference between service and repository?
+**Answer:** Service contains business logic, repository handles data access.
+
+### Q3: How do you handle transactions?
+**Answer:** Use @Transactional annotation and proper isolation.
+
+### Q4: How do you implement caching?
+**Answer:** Use Redis or in-memory cache with appropriate TTL.
+
+### Q5: How do you handle errors?
+**Answer:** Use exception handlers and provide meaningful error messages.
+
+## Summary
+Enterprise projects require proper architecture, patterns, and best practices.
+
+## References
+- Clean Architecture by Robert Martin
+- Domain-Driven Design
+- Spring Boot Reference
