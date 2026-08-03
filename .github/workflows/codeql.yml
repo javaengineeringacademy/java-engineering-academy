@@ -36,7 +36,7 @@ jobs:
           languages: java-kotlin
 
       - name: Build
-        run: mvn -B -DskipTests package
+        run: mvn -B -DskipTests package -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

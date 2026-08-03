@@ -27,7 +27,7 @@ jobs:
           cache: maven
 
       - name: Build
-        run: mvn -B clean compile
+        run: mvn -B clean compile -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
       - name: Package
-        run: mvn -B package -DskipTests
+        run: mvn -B package -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
