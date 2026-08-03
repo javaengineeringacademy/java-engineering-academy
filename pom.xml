@@ -119,6 +119,10 @@
         <module>languages/java/spring/spring-security</module>
         <module>languages/java/spring/spring-boot</module>
         <module>languages/java/spring/spring-integration</module>
+        
+        <!-- JPA & Hibernate -->
+        <module>languages/java/spring/jpa/01-fundamentals</module>
+        <module>languages/java/spring/hibernate/01-fundamentals</module>
     </modules>
 
     <build>
