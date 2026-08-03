@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`13-design-principles`;
+package academy.javaengineering.oop.designprinciples;
 
 import java.util.ArrayList;
 import java.util.List;

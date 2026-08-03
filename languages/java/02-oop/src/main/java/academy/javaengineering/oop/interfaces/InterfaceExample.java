@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`06-interfaces`;
+package academy.javaengineering.oop.interfaces;
 
 import java.util.List;
 import java.util.Objects;

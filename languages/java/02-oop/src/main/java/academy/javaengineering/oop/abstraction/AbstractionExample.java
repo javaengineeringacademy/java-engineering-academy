@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`05-abstraction`;
+package academy.javaengineering.oop.abstraction;
 
 import java.util.ArrayList;
 import java.util.List;

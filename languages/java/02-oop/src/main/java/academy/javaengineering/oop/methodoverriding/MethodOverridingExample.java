@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`08-method-overriding`;
+package academy.javaengineering.oop.methodoverriding;
 
 /**
  * Demonstrates method overriding, {@code @Override}, and covariant return types.

@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`10-final-keyword`;
+package academy.javaengineering.oop.finalkeyword;
 
 import java.util.Objects;
 

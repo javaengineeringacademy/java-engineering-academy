@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`04-polymorphism`;
+package academy.javaengineering.oop.polymorphism;
 
 /**
  * Demonstrates compile-time (static) and runtime (dynamic) polymorphism.

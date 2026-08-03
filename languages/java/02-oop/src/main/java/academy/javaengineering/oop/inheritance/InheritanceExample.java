@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`02-inheritance`;
+package academy.javaengineering.oop.inheritance;
 
 /**
  * Demonstrates Java inheritance with {@code extends}, {@code super},

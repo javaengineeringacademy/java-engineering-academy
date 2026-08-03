@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`01-classes-and-objects`;
+package academy.javaengineering.oop.classesandobjects;
 
 /**
  * Demonstrates Java class definitions, object creation, and constructors.

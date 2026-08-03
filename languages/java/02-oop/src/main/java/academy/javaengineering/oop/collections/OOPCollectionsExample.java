@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`12-collections`;
+package academy.javaengineering.oop.collections;
 
 import java.util.*;
 import java.util.stream.Collectors;

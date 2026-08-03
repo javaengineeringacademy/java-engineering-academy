@@ -8,7 +8,7 @@ public class AdvancedDIExamples {
     // 1. Method Injection - Using abstract methods
     public static abstract class AbstractNotificationSender {
         // Spring will override this method to provide the dependency
-        public abstract NotificationService getNotificationService();
+        public abstract DIExamples.NotificationService getNotificationService();
         
         public void send(String message) {
             getNotificationService().sendNotification(message);
@@ -17,14 +17,14 @@ public class AdvancedDIExamples {
 
     // 2. Interface Injection - Interface defines injection point
     public interface InjectDependency {
-        void inject(NotificationService service);
+        void inject(DIExamples.NotificationService service);
     }
 
     public static class ReportingService implements InjectDependency {
-        private NotificationService notificationService;
+        private DIExamples.NotificationService notificationService;
         
         @Override
-        public void inject(NotificationService service) {
+        public void inject(DIExamples.NotificationService service) {
             this.notificationService = service;
         }
         

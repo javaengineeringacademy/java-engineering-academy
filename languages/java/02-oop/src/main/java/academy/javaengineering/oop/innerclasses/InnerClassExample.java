@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`11-inner-classes`;
+package academy.javaengineering.oop.innerclasses;
 
 import java.util.ArrayList;
 import java.util.List;

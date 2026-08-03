@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`15-composition`;
+package academy.javaengineering.oop.composition;
 
 import java.util.ArrayList;
 import java.util.List;

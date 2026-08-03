@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`09-static-keyword`;
+package academy.javaengineering.oop.statickeyword;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`03-encapsulation`;
+package academy.javaengineering.oop.encapsulation;
 
 import java.util.Objects;
 

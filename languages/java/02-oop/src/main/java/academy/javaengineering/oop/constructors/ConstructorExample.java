@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`07-constructors`;
+package academy.javaengineering.oop.constructors;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package academy.javaengineering.oop.`14-solid-principles`;
+package academy.javaengineering.oop.solidprinciples;
 
 import java.util.ArrayList;
 import java.util.List;
