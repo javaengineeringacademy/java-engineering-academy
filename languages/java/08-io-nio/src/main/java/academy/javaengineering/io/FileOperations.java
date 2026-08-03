@@ -235,7 +235,11 @@ public final class FileOperations {
     public static List<Path> listDirectory(Path dir) throws IOException {
         try (DirectoryStream<Path> stream =
                 Files.newDirectoryStream(dir)) {
-            return stream.collect(Collectors.toList());
+            List<Path> result = new ArrayList<>();
+            for (Path entry : stream) {
+                result.add(entry);
+            }
+            return result;
         }
     }
 
@@ -251,7 +255,11 @@ public final class FileOperations {
             throws IOException {
         try (DirectoryStream<Path> stream =
                 Files.newDirectoryStream(dir, glob)) {
-            return stream.collect(Collectors.toList());
+            List<Path> result = new ArrayList<>();
+            for (Path entry : stream) {
+                result.add(entry);
+            }
+            return result;
         }
     }
 
