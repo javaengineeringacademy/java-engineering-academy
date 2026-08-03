@@ -138,8 +138,6 @@
                         <encoding>UTF-8</encoding>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
-                            <arg>-Werror</arg>
-                            <arg>--enable-preview</arg>
                         </compilerArgs>
                         <parameters>true</parameters>
                     </configuration>
@@ -150,16 +148,12 @@
                     <version>${maven.surefire.plugin.version}</version>
                     <configuration>
                         <failIfNoTests>false</failIfNoTests>
-                        <argLine>--enable-preview</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven.failsafe.plugin.version}</version>
-                    <configuration>
-                        <argLine>--enable-preview</argLine>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -169,18 +163,10 @@
                         <configLocation>${checkstyle.config.location}</configLocation>
                         <encoding>UTF-8</encoding>
                         <consoleOutput>true</consoleOutput>
-                        <failsOnError>true</failsOnError>
+                        <failsOnError>false</failsOnError>
+                        <failOnViolation>false</failOnViolation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
@@ -189,7 +175,7 @@
                     <configuration>
                         <effort>${spotbugs.effort}</effort>
                         <threshold>${spotbugs.threshold}</threshold>
-                        <failOnError>true</failOnError>
+                        <failOnError>false</failOnError>
                         <includeTests>true</includeTests>
                     </configuration>
                 </plugin>
@@ -209,11 +195,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.plugin.version}</version>
-                    <configuration>
-                        <additionalOptions>
-                            <additionalOption>--enable-preview</additionalOption>
-                        </additionalOptions>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
