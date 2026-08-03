@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.javaengineering</groupId>
+        <groupId>academy.javaengineering</groupId>
         <artifactId>java-engineering-academy</artifactId>
         <version>1.0.0</version>
     </parent>
