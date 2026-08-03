@@ -39,10 +39,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Compile
-        run: mvn compile -B --no-transfer-progress -Dmaven.compiler.failOnWarning=false
+        run: mvn compile -B --no-transfer-progress
 
-      - name: Run tests
-        run: mvn test -B --no-transfer-progress -Dmaven.test.failure.ignore=true
+      - name: Run tests with JaCoCo
+        run: mvn test jacoco:report -B --no-transfer-progress
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
@@ -52,13 +52,23 @@ jobs:
           path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
 
-  dependency-check:
-    name: Dependency Vulnerability Scan
+      - name: Upload JaCoCo coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-report
+          path: '**/target/site/jacoco/jacoco.xml'
+
+  quality-gates:
+    name: Code Quality Gates
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    needs: build-and-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -67,29 +77,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
-        id: depcheck
-        with:
-          project: 'Java Engineering Academy'
-          path: '.'
-          format: 'HTML'
-          out: 'reports'
-          args: >
-            --failOnCVSS 7
-            --suppression './.github/dependency-check-suppression.xml'
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -B --no-transfer-progress || true
 
-      - name: Upload Dependency Check Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: dependency-check-report
-          path: reports/
+      - name: Run SpotBugs
+        run: mvn spotbugs:check -B --no-transfer-progress || true
+
+      - name: Run PMD
+        run: mvn pmd:check -B --no-transfer-progress || true
 
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    needs: build-and-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -121,14 +122,84 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=javaengineeringacademy_java-engineering-academy -Dmaven.compiler.failOnWarning=false -Dmaven.test.failure.ignore=true
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=javaengineeringacademy_java-engineering-academy \
+            -Dsonar.organization=javaengineeringacademy \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dmaven.test.failure.ignore=true
+
+  dependency-check:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-and-test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        id: depcheck
+        with:
+          project: 'Java Engineering Academy'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --failOnCVSS 7
+
+      - name: Upload Dependency Check Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-check-report
+          path: reports/
+
+  codeql:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: build-and-test
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+
+      - name: Build
+        run: mvn -B -DskipTests package
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
   release:
     name: Create Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-    needs: [build-and-test]
+    needs: [build-and-test, quality-gates, sonarcloud, dependency-check, codeql]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
