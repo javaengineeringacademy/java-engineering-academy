@@ -165,8 +165,8 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            java-fundamentals/target/*.jar
-            oop-fundamentals/target/*.jar
+            languages/java/01-fundamentals/target/*.jar
+            languages/java/02-oop/target/*.jar
 
   deploy-github-pages:
     name: Deploy Documentation
