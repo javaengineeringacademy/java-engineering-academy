@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.javaacademy</groupId>
+    <groupId>academy.javaengineering</groupId>
     <artifactId>java-engineering-academy</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -96,8 +96,55 @@
     </dependencies>
 
     <modules>
-        <module>java-fundamentals</module>
-        <module>oop-fundamentals</module>
+        <!-- Java Core -->
+        <module>java-core/01-fundamentals</module>
+        <module>java-core/02-oop</module>
+        <module>java-core/03-exception-handling</module>
+        <module>java-core/04-collections</module>
+        <module>java-core/05-generics</module>
+        <module>java-core/06-strings</module>
+        <module>java-core/07-functional-programming</module>
+        <module>java-core/08-io-nio</module>
+        <module>java-core/09-multithreading</module>
+        <module>java-core/10-jvm-internals</module>
+        <module>java-core/11-design-patterns</module>
+        <module>java-core/12-testing</module>
+        <module>java-core/13-reflection-annotations</module>
+        <module>java-core/14-logging</module>
+        
+        <!-- Spring -->
+        <module>spring/spring-core</module>
+        <module>spring/spring-mvc</module>
+        <module>spring/spring-data</module>
+        <module>spring/spring-security</module>
+        <module>spring/spring-boot</module>
+        <module>spring/spring-integration</module>
+        
+        <!-- Enterprise -->
+        <module>enterprise/microservices</module>
+        <module>enterprise/api-design</module>
+        <module>enterprise/caching</module>
+        <module>enterprise/messaging</module>
+        <module>enterprise/system-design</module>
+        
+        <!-- DevOps -->
+        <module>devops/docker</module>
+        <module>devops/kubernetes</module>
+        <module>devops/ci-cd</module>
+        <module>devops/monitoring</module>
+        <module>devops/tools</module>
+        
+        <!-- Interview -->
+        <module>interview/java-interview</module>
+        <module>interview/system-design</module>
+        <module>interview/coding-challenges</module>
+        <module>interview/company-specific</module>
+        
+        <!-- Reference -->
+        <module>reference/cheat-sheets</module>
+        <module>reference/best-practices</module>
+        <module>reference/certification</module>
+        <module>reference/migration</module>
     </modules>
 
     <build>
