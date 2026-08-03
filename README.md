@@ -167,6 +167,9 @@ mvn test -pl modules/02-object-oriented-programming
 | [72 — Reference Material](modules/72-reference-material/) | 🔄 In Progress | 1 | 0 | 0 |
 | [73 — XML](modules/73-xml/) | ✅ Complete | 1 | 1 | 1 |
 | [74 — JSON](modules/74-json/) | ✅ Complete | 1 | 1 | 1 |
+| [75 — Spring MVC](modules/75-spring-mvc/) | ✅ Complete | 9 | 8 | 1 |
+| [76 — Spring + Hibernate](modules/76-spring-hibernate/) | ✅ Complete | 9 | 7 | 1 |
+| [77 — Spring JMS](modules/77-spring-jms/) | ✅ Complete | 9 | 7 | 1 |
 
 ---
 
