@@ -1,6 +1,6 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`03-encapsulation`.EncapsulationExample.*;
+import academy.javaengineering.oop.encapsulation.EncapsulationExample.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 

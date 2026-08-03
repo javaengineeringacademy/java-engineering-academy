@@ -1,8 +1,8 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`01-classes-and-objects`.ClassesAndObjects;
-import academy.javaengineering.oop.`01-classes-and-objects`.ClassesAndObjects.Customer;
-import academy.javaengineering.oop.`01-classes-and-objects`.ClassesAndObjects.OrderItem;
+import academy.javaengineering.oop.classesandobjects.ClassesAndObjects;
+import academy.javaengineering.oop.classesandobjects.ClassesAndObjects.Customer;
+import academy.javaengineering.oop.classesandobjects.ClassesAndObjects.OrderItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 

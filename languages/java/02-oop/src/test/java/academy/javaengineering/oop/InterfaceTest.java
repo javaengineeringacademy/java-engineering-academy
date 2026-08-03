@@ -1,6 +1,6 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`06-interfaces`.InterfaceExample.*;
+import academy.javaengineering.oop.interfaces.InterfaceExample.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 

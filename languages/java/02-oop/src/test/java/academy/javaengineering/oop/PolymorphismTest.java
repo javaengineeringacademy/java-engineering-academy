@@ -1,6 +1,6 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`04-polymorphism`.PolymorphismExample.*;
+import academy.javaengineering.oop.polymorphism.PolymorphismExample.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 

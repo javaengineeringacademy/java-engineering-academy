@@ -1,6 +1,6 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`05-abstraction`.AbstractionExample.*;
+import academy.javaengineering.oop.abstraction.AbstractionExample.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 

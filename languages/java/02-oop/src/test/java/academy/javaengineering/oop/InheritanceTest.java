@@ -1,6 +1,6 @@
 package academy.javaengineering.oop;
 
-import academy.javaengineering.oop.`02-inheritance`.InheritanceExample.*;
+import academy.javaengineering.oop.inheritance.InheritanceExample.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 
