@@ -1,28 +1,23 @@
-# Java Engineering Academy
+# Software Engineering Academy
 
 <p align="center">
-  <img src="docs/images/java-engineering-academy-logo.svg" alt="Java Engineering Academy logo" width="160" />
+  <img src="docs/images/software-engineering-academy-logo.svg" alt="Software Engineering Academy logo" width="160" />
 </p>
 
 <p align="center">
-  <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/ci.yml">
-    <img alt="CI/CD" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/ci.yml/badge.svg" />
+  <a href="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/ci.yml">
+    <img alt="CI/CD" src="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/ci.yml/badge.svg" />
   </a>
-  <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/build.yml">
-    <img alt="Build" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/build.yml/badge.svg" />
+  <a href="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/build.yml">
+    <img alt="Build" src="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/build.yml/badge.svg" />
   </a>
-  <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/test.yml">
-    <img alt="Tests" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/test.yml/badge.svg" />
+  <a href="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/test.yml">
+    <img alt="Tests" src="https://github.com/javaengineeringacademy/software-engineering-academy/actions/workflows/test.yml/badge.svg" />
   </a>
-  <a href="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/codeql.yml">
-    <img alt="CodeQL" src="https://github.com/javaengineeringacademy/java-engineering-academy/actions/workflows/codeql.yml/badge.svg" />
-  </a>
-  <img alt="Java 21" src="https://img.shields.io/badge/Java-21-red" />
   <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" />
-  <img alt="Code Style: Google" src="https://img.shields.io/badge/Code%20Style-Google-blueviolet" />
 </p>
 
-**The world's best open-source Java Engineering curriculum.**
+**The world's best open-source Software Engineering curriculum.**
 
 Production-grade. Interview-focused. Community-driven. Built the way senior engineers learn inside enterprise software companies.
 
@@ -34,7 +29,7 @@ Production-grade. Interview-focused. Community-driven. Built the way senior engi
 |----------|---------------|
 | **Beginners** | Start from zero, build strong fundamentals with progressive difficulty |
 | **Intermediate developers** | Fill gaps, learn enterprise patterns, prepare for senior roles |
-| **Senior engineers** | Refresh knowledge, learn modern Java 21 features, ace interviews |
+| **Senior engineers** | Refresh knowledge, learn modern features, ace interviews |
 | **Career changers** | Structured path from fundamentals to job-ready in 6 months |
 | **Bootcamp graduates** | Deepen understanding beyond surface-level tutorials |
 | **Self-taught developers** | Fill knowledge gaps with enterprise-grade explanations |
@@ -44,161 +39,547 @@ Production-grade. Interview-focused. Community-driven. Built the way senior engi
 
 ---
 
+## Technology Coverage
+
+### Languages
+| Language | Focus | Modules |
+|----------|-------|---------|
+| [Java](languages/java/) | Enterprise, Backend, Spring | 14 modules, 200+ files |
+| [Go](languages/go/) | Cloud, Microservices, DevOps | 3 modules |
+| [Rust](languages/rust/) | Systems, Performance, Safety | 3 modules |
+| [Python](languages/python/) | Data Science, AI/ML, Backend | 3 modules |
+| [JavaScript](languages/javascript/) | Web, Full Stack, Node.js | 3 modules |
+| [TypeScript](languages/typescript/) | Type-safe, Enterprise JS | 3 modules |
+| [Kotlin](languages/kotlin/) | Android, Spring, JVM | 3 modules |
+| [Scala](languages/scala/) | Functional, Big Data, Akka | 3 modules |
+| [C#](languages/csharp/) | .NET, Enterprise, Game Dev | 3 modules |
+| [C++](languages/cpp/) | Systems, Games, Embedded | 3 modules |
+| [PHP](languages/php/) | Web, Laravel, WordPress | 3 modules |
+
+### Spring Framework
+| Module | Focus | Modules |
+|--------|-------|---------|
+| [Spring Core](languages/java/spring/01-spring-core/) | IoC, DI, AOP | 3 modules |
+| [Spring Boot](languages/java/spring/02-spring-boot/) | Auto-config, Starters | 3 modules |
+| [Spring Cloud](languages/java/spring/03-spring-cloud/) | Microservices, Distributed | 3 modules |
+| [Spring Security](languages/java/spring/04-spring-security/) | Auth, OAuth2, JWT | 3 modules |
+| [Spring Data](languages/java/spring/05-spring-data/) | Repositories, JPA, MongoDB | 3 modules |
+| [Spring WebFlux](languages/java/spring/06-spring-webflux/) | Reactive, Non-blocking | 3 modules |
+
+### Frontend
+| Framework | Focus | Modules |
+|-----------|-------|---------|
+| [HTML](frontend/html/) | Markup, Semantic Elements, Forms | 3 modules |
+| [CSS](frontend/css/) | Styling, Flexbox, Grid, Responsive | 3 modules |
+| [React](frontend/react/) | Modern UI, Hooks, State Management | 3 modules |
+| [Angular](frontend/angular/) | Enterprise Apps, TypeScript | 3 modules |
+| [Vue.js](frontend/vue/) | Progressive Framework, Composition API | 3 modules |
+
+### Backend
+| Technology | Focus | Modules |
+|------------|-------|---------|
+| [Node.js](backend/nodejs/) | Server-side JavaScript, APIs | 3 modules |
+
+### Scripting
+| Language | Focus | Modules |
+|----------|-------|---------|
+| [Bash](languages/scripting/01-bash/) | Unix Shell, Automation, System Admin | 3 modules |
+| [Python Scripting](languages/scripting/02-python-scripting/) | Automation, CLI Tools, File Processing | 3 modules |
+| [PowerShell](languages/scripting/03-powershell/) | Windows Admin, Azure, Automation | 3 modules |
+
+### DevOps & Tools
+| Technology | Focus | Modules |
+|------------|-------|---------|
+| [Docker](devops/docker/) | Containerization, Images | 3 modules |
+| [Kubernetes](devops/kubernetes/) | Orchestration, Scaling | 3 modules |
+| [Helm](devops/helm/) | Package Manager, Charts | 3 modules |
+| [Terraform](devops/terraform/) | Infrastructure as Code | 3 modules |
+| [Pulumi](devops/pulumi/) | IaC with Programming Languages | 3 modules |
+| [Jenkins](tools/jenkins/) | CI/CD, Pipelines | 3 modules |
+| [Ansible](tools/ansible/) | Configuration Management | 3 modules |
+| [ArgoCD](devops/argocd/) | GitOps, Kubernetes CD | 3 modules |
+| [GitLab CI](devops/gitlab-ci/) | CI/CD in GitLab | 3 modules |
+| [Prometheus](tools/prometheus/) | Monitoring, Alerting | 3 modules |
+| [Grafana](tools/grafana/) | Visualization, Dashboards | 3 modules |
+| [HashiCorp](devops/hashiicorp/) | Vault, Consul, Nomad | 3 modules |
+
+### Cloud
+| Provider | Focus | Modules |
+|----------|-------|---------|
+| [AWS](cloud/aws/) | EC2, S3, Lambda, RDS | 3 modules |
+| [Azure](cloud/azure/) | VMs, Azure SQL, Functions | 3 modules |
+| [GCP](cloud/gcp/) | Compute Engine, BigQuery | 3 modules |
+
+### Databases
+| Technology | Focus | Modules |
+|------------|-------|---------|
+| [Redis](data/redis/) | Caching, Pub/Sub, Structures | 3 modules |
+| [PostgreSQL](data/postgresql/) | Advanced SQL, JSONB, Full Text | 3 modules |
+| [MySQL](data/mysql/) | Relational, Replication, Optimization | 3 modules |
+| [MongoDB](data/mongodb/) | Document DB, Aggregation, Sharding | 3 modules |
+| [Cassandra](data/cassandra/) | Distributed NoSQL, High Availability | 3 modules |
+| [Elasticsearch](data/elasticsearch/) | Search, Analytics, Full Text | 3 modules |
+| [Data Engineering](data/data-engineering/) | ETL, Pipelines, Spark | 3 modules |
+| [Apache Spark](data/spark/) | Big Data Processing, ML | 3 modules |
+
+### Messaging
+| Technology | Focus | Modules |
+|------------|-------|---------|
+| [Kafka](messaging/kafka/) | Event Streaming, Streams | 3 modules |
+| [RabbitMQ](messaging/rabbitmq/) | Message Broker, AMQP | 3 modules |
+| [GraphQL](messaging/graphql/) | Query Language, APIs | 3 modules |
+| [SOAP](messaging/soap/) | Web Services, WSDL, XML | 3 modules |
+
+### Architecture
+| Topic | Focus | Modules |
+|-------|-------|---------|
+| [Microservices](architecture/microservices/) | Distributed Systems, Patterns | 3 modules |
+| [System Design](architecture/system-design/) | Scalability, Architecture | 3 modules |
+
+### AI/ML
+| Topic | Focus | Modules |
+|-------|-------|---------|
+| [AI Engineering](ai-ml/ai-engineering/) | ML Integration, LLM APIs | 3 modules |
+| [Prompt Engineering](ai-ml/prompt-engineering/) | AI Communication, Optimization | 3 modules |
+| [LLM Applications](ai-ml/llm-applications/) | RAG, Vector DBs, Chatbots | 3 modules |
+| [Machine Learning](ai-ml/machine-learning/) | Algorithms, Models, Evaluation | 3 modules |
+
+### Security
+| Topic | Focus | Modules |
+|-------|-------|---------|
+| [Cyber Security](security/cyber-security/) | OWASP, Encryption, Auth | 3 modules |
+
+### Mobile
+| Technology | Focus | Modules |
+|------------|-------|---------|
+| [Flutter](mobile/flutter/) | Cross-platform, Dart, UI | 3 modules |
+| [React Native](mobile/react-native/) | JavaScript Mobile, Native APIs | 3 modules |
+
+### Career
+| Topic | Focus | Modules |
+|-------|-------|---------|
+| [Interview Preparation](career/interview-preparation/) | Coding, Design, Behavioral | 3 modules |
+| [Career Roadmaps](career/career-roadmaps/) | Growth Paths, Planning | 3 modules |
+| [Open Source](career/open-source/) | Contributing, Community | 3 modules |
+| [Real Projects](career/real-projects/) | Enterprise Applications | 3 modules |
+
+---
+
 ## Quick Start
 
 ### Prerequisites
 
-- JDK 21 (or later)
-- Maven 3.8.6+ (or use the included Maven wrapper)
-- Git
+- **Java**: JDK 21+ (for Java modules)
+- **Node.js**: v18+ (for JavaScript/TypeScript modules)
+- **Python**: 3.10+ (for Python modules)
+- **Go**: 1.21+ (for Go modules)
+- **Rust**: Latest stable (for Rust modules)
+- **Docker**: Latest (for DevOps modules)
+- **Git**: Latest
 
 ### Get Up and Running
 
 ```bash
 # Clone the repository
-git clone https://github.com/javaengineeringacademy/java-engineering-academy.git
-cd java-engineering-academy
+git clone https://github.com/javaengineeringacademy/software-engineering-academy.git
+cd software-engineering-academy
 
-# Build and verify everything compiles
+# Build Java modules
 mvn clean verify
 
-# Run a specific module
-mvn clean compile -pl modules/01-java-fundamentals
-
-# Run tests for a module
-mvn test -pl modules/02-object-oriented-programming
+# Navigate to any technology
+cd languages/java/01-fundamentals
+cd languages/go/01-fundamentals
+cd frontend/react/01-fundamentals
+cd devops/docker/01-fundamentals
 ```
 
 ### Recommended First Steps
 
-1. Start with [Module 01: Java Fundamentals](modules/01-java-fundamentals/)
-2. Complete all exercises before moving to the next topic
-3. Build the mini-projects at the end of each module
-4. Review interview questions for each topic
-5. Move to the next module
+1. Choose your learning path below
+2. Start with Module 01 of your chosen technology
+3. Complete all exercises before moving to the next topic
+4. Build the mini-projects at the end of each module
+5. Review interview questions for each topic
 
 ---
 
-## Current Implementation Status
+## Learning Paths
 
-### Core Java (Modules 00-27)
-| Module | Status | Topics | Java Files | Tests |
-|--------|--------|--------|------------|-------|
-| [00 — Learning Roadmaps](modules/00-learning-roadmaps/) | ✅ Complete | 1 | 0 | 0 |
-| [01 — Java Fundamentals](modules/01-java-fundamentals/) | ✅ Complete | 7 | 37 | — |
-| [02 — Object-Oriented Programming](oop-fundamentals/) | ✅ Complete | 35 | 240+ | 25+ |
-| [03 — Exception Handling](modules/03-exception-handling/) | ✅ Complete | 10 | 7 | 3 |
-| [04 — Collections Framework](modules/04-collections-framework/) | ✅ Complete | 28 | 13 | 6 |
-| [05 — Generics](modules/05-generics/) | ✅ Complete | 10 | 7 | 3 |
-| [06 — Strings](modules/06-strings/) | ✅ Complete | 1 | 1 | 1 |
-| [07 — Functional Programming](modules/07-functional-programming/) | ✅ Complete | 13 | 11 | 5 |
-| [08 — Multithreading](modules/08-multithreading/) | ✅ Complete | 14 | 8 | 4 |
-| [09 — Stream API](modules/09-stream-api/) | ✅ Complete | 1 | 1 | 1 |
-| [10 — Design Patterns](modules/10-design-patterns/) | ✅ Complete | 14 | 11 | 11 |
-| [11 — Testing](modules/11-testing/) | ✅ Complete | 14 | 8 | 6 |
-| [12 — Memory Management](modules/12-memory-management/) | ✅ Complete | 1 | 1 | 1 |
-| [13 — JDBC/Database](modules/13-jdbc-database/) | ✅ Complete | 14 | 7 | 6 |
-| [14 — Spring Framework](modules/14-spring-framework/) | ✅ Complete | 14 | 8 | 8 |
-| [15 — Spring Boot](modules/15-spring-boot/) | ✅ Complete | 12 | 8 | 8 |
-| [16 — Spring Security](modules/16-spring-security/) | ✅ Complete | 5 | 4 | 4 |
-| [17 — REST API](modules/17-rest-api/) | ✅ Complete | 7 | 5 | 4 |
-| [18 — Microservices](modules/18-microservices/) | ✅ Complete | 7 | 4 | 4 |
-| [19 — Apache Kafka](modules/19-apache-kafka/) | ✅ Complete | 6 | 5 | 4 |
-| [20 — Redis](modules/20-redis/) | ✅ Complete | 6 | 5 | 5 |
-| [21 — Docker](modules/21-docker/) | ✅ Complete | 6 | 4 | 3 |
-| [22 — Kubernetes](modules/22-kubernetes/) | ✅ Complete | 6 | 4 | 4 |
-| [23 — AWS](modules/23-aws/) | ✅ Complete | 7 | 6 | 6 |
-| [24 — System Design](modules/24-system-design/) | ✅ Complete | 8 | 6 | 6 |
-| [25 — Enterprise Projects](modules/25-enterprise-projects/) | ✅ Complete | 6 | 5 | 5 |
-| [26 — Interview Preparation](modules/26-interview-preparation/) | ✅ Complete | 8 | 5 | 5 |
-| [27 — Logging](modules/27-logging/) | ✅ Complete | 1 | 1 | 1 |
+### Full Stack Developer Path
 
-### Enterprise & Cloud (Modules 28-47)
-| Module | Status | Topics | Java Files | Tests |
-|--------|--------|--------|------------|-------|
-| [28 — Java I/O and NIO](modules/28-java-io-and-nio/) | ✅ Complete | 14 | 21 | 0 |
-| [29 — Date/Time API](modules/29-date-time-api/) | ✅ Complete | 1 | 1 | 1 |
-| [30 — SOLID Principles](modules/30-solid-principles/) | ✅ Complete | 1 | 1 | 1 |
-| [31 — Clean Code](modules/31-clean-code/) | 🔄 In Progress | 1 | 0 | 0 |
-| [32 — JVM Internals](modules/32-jvm-internals/) | ✅ Complete | 12 | 8 | 4 |
-| [33 — Spring Core](modules/33-spring-core/) | 🔄 In Progress | 1 | 0 | 0 |
-| [34 — Build Tools](modules/34-build-tools/) | ✅ Complete | 12 | 4 | 4 |
-| [35 — Spring Data JPA](modules/35-spring-data-jpa/) | 🔄 In Progress | 1 | 0 | 0 |
-| [36 — Hibernate](modules/36-hibernate/) | 🔄 In Progress | 1 | 0 | 0 |
-| [37 — Garbage Collection](modules/37-garbage-collection/) | ✅ Complete | 1 | 1 | 1 |
-| [38 — Reflection](modules/38-reflection/) | ✅ Complete | 1 | 1 | 1 |
-| [39 — GraphQL](modules/39-graphql/) | ✅ Complete | 1 | 1 | 1 |
-| [40 — Annotations](modules/40-annotations/) | ✅ Complete | 1 | 1 | 1 |
-| [41 — RabbitMQ](modules/41-rabbitmq/) | ✅ Complete | 1 | 1 | 1 |
-| [42 — Redpanda](modules/42-redpanda/) | 🔄 In Progress | 1 | 0 | 0 |
-| [43 — Serialization](modules/43-serialization/) | ✅ Complete | 1 | 1 | 1 |
-| [44 — Elasticsearch](modules/44-elasticsearch/) | 🔄 In Progress | 1 | 0 | 0 |
-| [45 — Object Copying](modules/45-object-copying/) | ✅ Complete | 1 | 1 | 1 |
-| [46 — File I/O](modules/46-file-io/) | ✅ Complete | 1 | 1 | 1 |
-| [47 — NIO](modules/47-nio/) | ✅ Complete | 1 | 1 | 1 |
+```
+Duration: 6-12 months (full-time)
 
-### DevOps & Tools (Modules 48-74)
-| Module | Status | Topics | Java Files | Tests |
-|--------|--------|--------|------------|-------|
-| [48 — Linux](modules/48-linux/) | 🔄 In Progress | 1 | 0 | 0 |
-| [49 — Git](modules/49-git/) | 🔄 In Progress | 1 | 0 | 0 |
-| [50 — DevOps](modules/50-devops/) | 🔄 In Progress | 1 | 0 | 0 |
-| [51 — Performance Engineering](modules/51-performance-engineering/) | 🔄 In Progress | 1 | 0 | 0 |
-| [52 — Debugging](modules/52-debugging/) | 🔄 In Progress | 1 | 0 | 0 |
-| [53 — Java Interview](modules/53-java-interview/) | ✅ Complete | 1 | 1 | 1 |
-| [54 — Company Interviews](modules/54-company-interviews/) | ✅ Complete | 1 | 1 | 1 |
-| [55 — Projects](modules/55-projects/) | 🔄 In Progress | 1 | 0 | 0 |
-| [56 — Case Studies](modules/56-case-studies/) | 🔄 In Progress | 1 | 0 | 0 |
-| [57 — Cheat Sheets](modules/57-cheat-sheets/) | 🔄 In Progress | 1 | 0 | 0 |
-| [58 — Best Practices](modules/58-best-practices/) | 🔄 In Progress | 1 | 0 | 0 |
-| [59 — Migration Guides](modules/59-migration-guides/) | 🔄 In Progress | 1 | 0 | 0 |
-| [60 — YAML](modules/60-yaml/) | 🔄 In Progress | 1 | 0 | 0 |
-| [61 — Properties](modules/61-properties/) | 🔄 In Progress | 1 | 0 | 0 |
-| [62 — Networking](modules/62-networking/) | ✅ Complete | 1 | 1 | 1 |
-| [63 — CI/CD](modules/63-ci-cd/) | 🔄 In Progress | 1 | 0 | 0 |
-| [64 — OpenAPI/Swagger](modules/64-openapi-swagger/) | 🔄 In Progress | 1 | 0 | 0 |
-| [65 — SQL](modules/65-sql/) | ✅ Complete | 1 | 1 | 1 |
-| [66 — Cloud Design](modules/66-cloud-design/) | 🔄 In Progress | 1 | 0 | 0 |
-| [67 — Observability](modules/67-observability/) | 🔄 In Progress | 1 | 0 | 0 |
-| [68 — Security](modules/68-security/) | 🔄 In Progress | 1 | 0 | 0 |
-| [69 — Reactive Programming](modules/69-reactive-programming/) | 🔄 In Progress | 1 | 0 | 0 |
-| [70 — Java Version History](modules/70-java-version-history/) | 🔄 In Progress | 1 | 0 | 0 |
-| [71 — Certification Guide](modules/71-certification-guide/) | 🔄 In Progress | 1 | 0 | 0 |
-| [72 — Reference Material](modules/72-reference-material/) | 🔄 In Progress | 1 | 0 | 0 |
-| [73 — XML](modules/73-xml/) | ✅ Complete | 1 | 1 | 1 |
-| [74 — JSON](modules/74-json/) | ✅ Complete | 1 | 1 | 1 |
-| [75 — Spring MVC](modules/75-spring-mvc/) | ✅ Complete | 9 | 8 | 1 |
-| [76 — Spring + Hibernate](modules/76-spring-hibernate/) | ✅ Complete | 9 | 7 | 1 |
-| [77 — Spring JMS](modules/77-spring-jms/) | ✅ Complete | 9 | 7 | 1 |
+Phase 1: Foundations (4 weeks)
+├── Java Fundamentals
+├── JavaScript Fundamentals
+├── TypeScript Fundamentals
+└── Git Basics
+
+Phase 2: Frontend (6 weeks)
+├── React Fundamentals
+├── Angular Fundamentals
+└── CSS/HTML Review
+
+Phase 3: Backend (6 weeks)
+├── Node.js Fundamentals
+├── Java Spring Boot
+└── REST API Design
+
+Phase 4: DevOps (4 weeks)
+├── Docker
+├── Kubernetes
+└── CI/CD
+
+Phase 5: Cloud (4 weeks)
+├── AWS/Azure/GCP Basics
+├── Cloud Architecture
+└── Monitoring
+
+Phase 6: Advanced (6 weeks)
+├── Microservices
+├── System Design
+└── Interview Prep
+```
+
+### Backend Engineer Path
+
+```
+Duration: 4-8 months (full-time)
+
+Phase 1: Languages (6 weeks)
+├── Java Advanced
+├── Go Fundamentals
+└── Python Basics
+
+Phase 2: Frameworks (6 weeks)
+├── Spring Boot
+├── Spring Security
+├── Spring Data JPA
+└── Hibernate
+
+Phase 3: Databases (4 weeks)
+├── SQL Mastery
+├── Redis
+└── Data Engineering
+
+Phase 4: Messaging (4 weeks)
+├── Kafka
+├── RabbitMQ
+└── GraphQL
+
+Phase 5: Architecture (6 weeks)
+├── Microservices
+├── System Design
+└── Design Patterns
+
+Phase 6: Career (4 weeks)
+├── Interview Preparation
+└── Real Projects
+```
+
+### DevOps Engineer Path
+
+```
+Duration: 4-6 months (full-time)
+
+Phase 1: Containers (4 weeks)
+├── Docker
+├── Docker Compose
+└── Multi-stage Builds
+
+Phase 2: Orchestration (4 weeks)
+├── Kubernetes
+├── Helm Charts
+└── Service Mesh
+
+Phase 3: Infrastructure (4 weeks)
+├── Terraform
+├── AWS/Azure/GCP
+└── Cloud Architecture
+
+Phase 4: CI/CD (4 weeks)
+├── GitHub Actions
+├── Jenkins
+└── GitOps
+
+Phase 5: Monitoring (4 weeks)
+├── Prometheus
+├── Grafana
+└── ELK Stack
+
+Phase 6: Security (4 weeks)
+├── Container Security
+├── Cloud Security
+└── Cyber Security Basics
+```
+
+### AI/ML Engineer Path
+
+```
+Duration: 6-12 months (full-time)
+
+Phase 1: Foundations (6 weeks)
+├── Python Advanced
+├── Statistics
+└── Linear Algebra
+
+Phase 2: Machine Learning (8 weeks)
+├── ML Fundamentals
+├── Supervised Learning
+├── Unsupervised Learning
+└── Deep Learning Basics
+
+Phase 3: AI Engineering (6 weeks)
+├── AI Engineering
+├── LLM Applications
+└── Prompt Engineering
+
+Phase 4: Data (4 weeks)
+├── Data Engineering
+├── Spark
+└── Data Pipelines
+
+Phase 5: Deployment (4 weeks)
+├── Model Deployment
+├── MLOps
+└── Monitoring
+
+Phase 6: Projects (4 weeks)
+├── Real Projects
+└── Portfolio Building
+```
+
+### Cloud Architect Path
+
+```
+Duration: 6-8 months (full-time)
+
+Phase 1: Cloud Basics (4 weeks)
+├── AWS Fundamentals
+├── Azure Fundamentals
+└── GCP Fundamentals
+
+Phase 2: Advanced Services (6 weeks)
+├── AWS Advanced
+├── Azure Advanced
+└── GCP Advanced
+
+Phase 3: Architecture (6 weeks)
+├── System Design
+├── Microservices
+└── Cloud Design Patterns
+
+Phase 4: DevOps (4 weeks)
+├── Docker
+├── Kubernetes
+└── Terraform
+
+Phase 5: Security (4 weeks)
+├── Cloud Security
+├── IAM
+└── Compliance
+
+Phase 6: Certification (4 weeks)
+├── AWS Solutions Architect
+├── Azure Architect
+└── GCP Architect
+```
 
 ---
 
-## Curriculum Overview
-
-### Learning Philosophy
-
-> "Teach Java exactly the way senior engineers learn inside enterprise software companies."
-
-- **Why before How**: Understand the problem before the solution
-- **Production-grade**: Every example compiles, runs, and passes quality gates
-- **Progressive difficulty**: Easy → Medium → Hard → Enterprise
-- **Interview-focused**: Every topic includes questions by difficulty level
-- **Project-based**: Learn by building real applications
-- **Community-driven**: Contributions welcome with clear guidelines
-
-### Learning Methodology
+## Repository Architecture
 
 ```
-Read Theory → Run Examples → Solve Exercises → Build Projects → Ace Interviews
+software-engineering-academy/
+├── languages/
+│   ├── java/                    # 14 Java modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-oop/
+│   │   ├── 03-exception-handling/
+│   │   ├── 04-collections/
+│   │   ├── 05-generics/
+│   │   ├── 06-strings/
+│   │   ├── 07-functional-programming/
+│   │   ├── 08-io-nio/
+│   │   ├── 09-multithreading/
+│   │   ├── 10-jvm-internals/
+│   │   ├── 11-design-patterns/
+│   │   ├── 12-testing/
+│   │   ├── 13-reflection-annotations/
+│   │   ├── 14-logging/
+│   │   └── spring/              # Spring modules
+│   │       ├── spring-core/
+│   │       ├── spring-mvc/
+│   │       ├── spring-data/
+│   │       ├── spring-security/
+│   │       ├── spring-boot/
+│   │       └── spring-integration/
+│   ├── go/                      # Go modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-concurrency/
+│   │   └── 03-advanced/
+│   ├── rust/                    # Rust modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-ownership/
+│   │   └── 03-async/
+│   ├── python/                  # Python modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-oop/
+│   │   └── 03-advanced/
+│   ├── javascript/              # JavaScript modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-dom/
+│   │   └── 03-async/
+│   └── typescript/              # TypeScript modules
+│       ├── 01-fundamentals/
+│       ├── 02-generics/
+│       └── 03-advanced/
+├── frontend/
+│   ├── react/                   # React modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-hooks/
+│   │   └── 03-advanced/
+│   └── angular/                 # Angular modules
+│       ├── 01-fundamentals/
+│       ├── 02-components/
+│       └── 03-advanced/
+├── backend/
+│   └── nodejs/                  # Node.js modules
+│       ├── 01-fundamentals/
+│       ├── 02-express/
+│       └── 03-advanced/
+├── devops/
+│   ├── docker/                  # Docker modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-compose/
+│   │   └── 03-advanced/
+│   ├── kubernetes/              # Kubernetes modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-services/
+│   │   └── 03-advanced/
+│   └── terraform/               # Terraform modules
+│       ├── 01-fundamentals/
+│       ├── 02-modules/
+│       └── 03-advanced/
+├── cloud/
+│   ├── aws/                     # AWS modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-ec2-s3/
+│   │   └── 03-advanced/
+│   ├── azure/                   # Azure modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-compute/
+│   │   └── 03-advanced/
+│   └── gcp/                     # GCP modules
+│       ├── 01-fundamentals/
+│       ├── 02-compute/
+│       └── 03-advanced/
+├── data/
+│   ├── redis/                   # Redis modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-data-structures/
+│   │   └── 03-advanced/
+│   └── data-engineering/        # Data Engineering modules
+│       ├── 01-fundamentals/
+│       ├── 02-etl/
+│       └── 03-advanced/
+├── messaging/
+│   ├── kafka/                   # Kafka modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-streams/
+│   │   └── 03-advanced/
+│   ├── rabbitmq/                # RabbitMQ modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-patterns/
+│   │   └── 03-advanced/
+│   └── graphql/                 # GraphQL modules
+│       ├── 01-fundamentals/
+│       ├── 02-schema/
+│       └── 03-advanced/
+├── architecture/
+│   ├── microservices/           # Microservices modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-patterns/
+│   │   └── 03-advanced/
+│   └── system-design/           # System Design modules
+│       ├── 01-fundamentals/
+│       ├── 02-patterns/
+│       └── 03-advanced/
+├── ai-ml/
+│   ├── ai-engineering/          # AI Engineering modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-integration/
+│   │   └── 03-advanced/
+│   ├── prompt-engineering/      # Prompt Engineering modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-techniques/
+│   │   └── 03-advanced/
+│   ├── llm-applications/        # LLM Applications modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-rag/
+│   │   └── 03-advanced/
+│   └── machine-learning/        # Machine Learning modules
+│       ├── 01-fundamentals/
+│       ├── 02-algorithms/
+│       └── 03-advanced/
+├── security/
+│   └── cyber-security/          # Cyber Security modules
+│       ├── 01-fundamentals/
+│       ├── 02-web-security/
+│       └── 03-advanced/
+├── career/
+│   ├── interview-preparation/   # Interview modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-dsa/
+│   │   └── 03-advanced/
+│   ├── career-roadmaps/         # Career modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-paths/
+│   │   └── 03-advanced/
+│   ├── open-source/             # Open Source modules
+│   │   ├── 01-fundamentals/
+│   │   ├── 02-contributing/
+│   │   └── 03-advanced/
+│   └── real-projects/           # Real Projects modules
+│       ├── 01-fundamentals/
+│       ├── 02-projects/
+│       └── 03-advanced/
+├── .github/                     # GitHub workflows
+├── docs/                        # Documentation
+├── templates/                   # Content templates
+├── pom.xml                      # Maven parent build
+├── README.md                    # This file
+├── CONTRIBUTING.md              # Contribution guidelines
+├── CODE_OF_CONDUCT.md           # Community standards
+└── CHANGELOG.md                 # Version history
 ```
 
-Each topic follows this exact structure:
+---
+
+## Learning Methodology
+
+> "Teach software engineering the way senior engineers learn inside enterprise software companies."
+
+### Core Principles
+
+1. **Why before How**: Understand the problem before the solution
+2. **Production-grade**: Every example compiles, runs, and passes quality gates
+3. **Progressive difficulty**: Easy → Medium → Hard → Enterprise
+4. **Interview-focused**: Every topic includes questions by difficulty level
+5. **Project-based**: Learn by building real applications
+6. **Community-driven**: Contributions welcome with clear guidelines
+
+### Topic Structure
+
+Every topic follows this exact structure:
 
 ```
 topic-name/
 ├── README.md              # The lesson
 ├── theory/                # Deep explanation
-├── diagrams/              # Visual learning
+├── diagrams/              # Visual learning (Mermaid)
 ├── examples/
 │   ├── easy/              # Syntax & basics
 │   ├── medium/            # Combined concepts
@@ -207,291 +588,121 @@ topic-name/
 │   ├── easy/
 │   ├── medium/
 │   └── hard/
-├── assignments/           # Graded work
-├── quiz/                  # Knowledge check
-├── interview/             # Interview questions
+├── quiz/                  # Knowledge check (25 questions)
+├── interview/             # Interview questions (15+)
 ├── pitfalls/              # Common mistakes
 ├── best-practices/        # Industry standards
-├── real-world/            # Framework usage
-├── references/            # External resources
-└── solutions/             # Answer key
+└── references/            # External resources
+```
+
+### Learning Flow
+
+```
+Read Theory → Run Examples → Solve Exercises → Build Projects → Ace Interviews
 ```
 
 ---
 
 ## Module Navigation
 
-### Foundations (Modules 01-07)
+### Languages
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 01 | [Java Fundamentals](modules/01-java-fundamentals/) | 7 | Variables, types, control flow, methods, arrays, strings |
-| 02 | [Object-Oriented Programming](modules/02-object-oriented-programming/) | 35 | Classes, inheritance, polymorphism, SOLID, design principles |
-| 03 | [Exception Handling](modules/03-exception-handling/) | 9 | Try-catch, custom exceptions, best practices |
-| 04 | [Collections Framework](modules/04-collections-framework/) | 22 | Lists, maps, sets, queues, algorithms |
-| 05 | [Generics](modules/05-generics/) | 9 | Type parameters, bounds, wildcards |
-| 06 | [Strings](modules/06-strings/) | 1 | String immutability, pooling, StringBuilder, patterns |
-| 07 | [Functional Programming](modules/07-functional-programming/) | 13 | Lambdas, streams, optional, functional interfaces |
+| Language | Module | Difficulty | Focus |
+|----------|--------|------------|-------|
+| Java | [01 — Fundamentals](languages/java/01-fundamentals/) | Beginner | Variables, types, control flow |
+| Java | [02 — OOP](languages/java/02-oop/) | Beginner | Classes, inheritance, polymorphism |
+| Java | [03 — Exception Handling](languages/java/03-exception-handling/) | Intermediate | Try-catch, custom exceptions |
+| Java | [04 — Collections](languages/java/04-collections/) | Intermediate | Lists, maps, sets, queues |
+| Java | [05 — Generics](languages/java/05-generics/) | Intermediate | Type parameters, bounds |
+| Java | [06 — Strings](languages/java/06-strings/) | Beginner | String manipulation |
+| Java | [07 — Functional Programming](languages/java/07-functional-programming/) | Intermediate | Lambdas, streams, optional |
+| Java | [08 — I/O & NIO](languages/java/08-io-nio/) | Intermediate | File operations, channels |
+| Java | [09 — Multithreading](languages/java/09-multithreading/) | Advanced | Concurrency, virtual threads |
+| Java | [10 — JVM Internals](languages/java/10-jvm-internals/) | Advanced | Memory model, GC |
+| Java | [11 — Design Patterns](languages/java/11-design-patterns/) | Advanced | Creational, structural, behavioral |
+| Java | [12 — Testing](languages/java/12-testing/) | Intermediate | JUnit 5, Mockito, AssertJ |
+| Java | [13 — Reflection & Annotations](languages/java/13-reflection-annotations/) | Advanced | Dynamic proxies, meta-annotations |
+| Java | [14 — Logging](languages/java/14-logging/) | Intermediate | Log4j, SLF4J, patterns |
+| Go | [01 — Fundamentals](languages/go/01-fundamentals/) | Beginner | Syntax, types, concurrency |
+| Rust | [01 — Fundamentals](languages/rust/01-fundamentals/) | Beginner | Ownership, borrowing, lifetimes |
+| Python | [01 — Fundamentals](languages/python/01-fundamentals/) | Beginner | Syntax, data structures |
+| JavaScript | [01 — Fundamentals](languages/javascript/01-fundamentals/) | Beginner | DOM, async, ES6+ |
+| TypeScript | [01 — Fundamentals](languages/typescript/01-fundamentals/) | Intermediate | Types, generics, utility types |
 
-### Core Java (Modules 08-13)
+### Frontend
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 08 | [Multithreading](modules/08-multithreading/) | 14 | Threads, executors, virtual threads, synchronization |
-| 09 | [Stream API](modules/09-stream-api/) | 1 | Stream operations, collectors, parallel streams |
-| 10 | [Design Patterns](modules/10-design-patterns/) | 14 | Creational, structural, behavioral patterns |
-| 11 | [Testing](modules/11-testing/) | 14 | JUnit 5, Mockito, AssertJ, test design |
-| 12 | [Memory Management](modules/12-memory-management/) | 1 | Heap, stack, garbage collection basics |
-| 13 | [JDBC & Database](modules/13-jdbc-database/) | 14 | Connections, transactions, connection pooling |
+| Framework | Module | Difficulty | Focus |
+|-----------|--------|------------|-------|
+| React | [01 — Fundamentals](frontend/react/01-fundamentals/) | Intermediate | Components, hooks, state |
+| Angular | [01 — Fundamentals](frontend/angular/01-fundamentals/) | Intermediate | Components, services, DI |
 
-### Enterprise (Modules 14-19)
+### Backend
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 14 | [Spring Framework](modules/14-spring-framework/) | 14 | IoC, DI, AOP, data access |
-| 15 | [Spring Boot](modules/15-spring-boot/) | 12 | Auto-configuration, starters, actuator |
-| 16 | [Spring Security](modules/16-spring-security/) | 5 | Authentication, authorization, OAuth2 |
-| 17 | [REST API](modules/17-rest-api/) | 7 | Controllers, validation, error handling |
-| 18 | [Microservices](modules/18-microservices/) | 7 | Service discovery, API gateway, circuit breaker |
-| 19 | [Apache Kafka](modules/19-apache-kafka/) | 6 | Producers, consumers, streams |
+| Technology | Module | Difficulty | Focus |
+|------------|--------|------------|-------|
+| Node.js | [01 — Fundamentals](backend/nodejs/01-fundamentals/) | Intermediate | Express, middleware, APIs |
 
-### Infrastructure (Modules 20-27)
+### DevOps
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 20 | [Redis](modules/20-redis/) | 6 | Caching, pub/sub, data structures |
-| 21 | [Docker](modules/21-docker/) | 6 | Containers, images, compose |
-| 22 | [Kubernetes](modules/22-kubernetes/) | 6 | Pods, services, deployments |
-| 23 | [AWS](modules/23-aws/) | 7 | EC2, S3, RDS, Lambda |
-| 24 | [System Design](modules/24-system-design/) | 8 | Scalability, resilience, architecture |
-| 25 | [Enterprise Projects](modules/25-enterprise-projects/) | 6 | End-to-end applications |
-| 26 | [Interview Preparation](modules/26-interview-preparation/) | 8 | Coding, design, behavioral |
-| 27 | [Logging](modules/27-logging/) | 1 | Log4j, SLF4J, logging patterns |
+| Technology | Module | Difficulty | Focus |
+|------------|--------|------------|-------|
+| Docker | [01 — Fundamentals](devops/docker/01-fundamentals/) | Intermediate | Containers, Dockerfile |
+| Kubernetes | [01 — Fundamentals](devops/kubernetes/01-fundamentals/) | Advanced | Pods, services, deployments |
+| Terraform | [01 — Fundamentals](devops/terraform/01-fundamentals/) | Advanced | IaC, providers, modules |
 
-### Advanced Topics (Modules 28-47)
+### Cloud
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 28 | [Java I/O and NIO](modules/28-java-io-and-nio/) | 14 | Streams, channels, buffers, file operations |
-| 29 | [Date/Time API](modules/29-date-time-api/) | 1 | LocalDate, LocalDateTime, ZoneId, formatting |
-| 30 | [SOLID Principles](modules/30-solid-principles/) | 1 | Single responsibility, open-closed, Liskov substitution |
-| 31 | [Clean Code](modules/31-clean-code/) | 1 | Naming, functions, comments, formatting |
-| 32 | [JVM Internals](modules/32-jvm-internals/) | 12 | Memory model, garbage collection, class loaders |
-| 33 | [Spring Core](modules/33-spring-core/) | 1 | Bean lifecycle, profiles, validation |
-| 34 | [Build Tools](modules/34-build-tools/) | 12 | Maven, Gradle, dependency management |
-| 35 | [Spring Data JPA](modules/35-spring-data-jpa/) | 1 | Repositories, queries, auditing |
-| 36 | [Hibernate](modules/36-hibernate/) | 1 | ORM, mappings, caching, queries |
-| 37 | [Garbage Collection](modules/37-garbage-collection/) | 1 | GC algorithms, tuning, monitoring |
-| 38 | [Reflection](modules/38-reflection/) | 1 | Dynamic proxies, introspection, annotations |
-| 39 | [GraphQL](modules/39-graphql/) | 1 | Schema, resolvers, subscriptions |
-| 40 | [Annotations](modules/40-annotations/) | 1 | Meta-annotations, custom annotations, processing |
-| 41 | [RabbitMQ](modules/41-rabbitmq/) | 1 | Message broker, exchanges, queues |
-| 42 | [Redpanda](modules/42-redpanda/) | 1 | Kafka-compatible streaming platform |
-| 43 | [Serialization](modules/43-serialization/) | 1 | Java serialization, JSON, Protocol Buffers |
-| 44 | [Elasticsearch](modules/44-elasticsearch/) | 1 | Search engine, indexing, queries |
-| 45 | [Object Copying](modules/45-object-copying/) | 1 | Clone, copy constructors, serialization |
-| 46 | [File I/O](modules/46-file-io/) | 1 | NIO.2, Files API, Path operations |
-| 47 | [NIO](modules/47-nio/) | 1 | Non-blocking I/O, selectors, channels |
+| Provider | Module | Difficulty | Focus |
+|----------|--------|------------|-------|
+| AWS | [01 — Fundamentals](cloud/aws/01-fundamentals/) | Intermediate | EC2, S3, Lambda |
+| Azure | [01 — Fundamentals](cloud/azure/01-fundamentals/) | Intermediate | VMs, Azure SQL, Functions |
+| GCP | [01 — Fundamentals](cloud/gcp/01-fundamentals/) | Intermediate | Compute Engine, BigQuery |
 
-### DevOps & Tools (Modules 48-74)
+### Data
 
-| # | Module | Topics | Focus |
-|---|--------|--------|-------|
-| 48 | [Linux](modules/48-linux/) | 1 | Commands, shell scripting, system admin |
-| 49 | [Git](modules/49-git/) | 1 | Version control, branching, workflows |
-| 50 | [DevOps](modules/50-devops/) | 1 | CI/CD, automation, infrastructure |
-| 51 | [Performance Engineering](modules/51-performance-engineering/) | 1 | Profiling, optimization, monitoring |
-| 52 | [Debugging](modules/52-debugging/) | 1 | Debuggers, logging, troubleshooting |
-| 53 | [Java Interview](modules/53-java-interview/) | 1 | Common questions, coding challenges |
-| 54 | [Company Interviews](modules/54-company-interviews/) | 1 | Company-specific questions, patterns |
-| 55 | [Projects](modules/55-projects/) | 1 | Portfolio projects, real-world apps |
-| 56 | [Case Studies](modules/56-case-studies/) | 1 | Architecture decisions, trade-offs |
-| 57 | [Cheat Sheets](modules/57-cheat-sheets/) | 1 | Quick reference guides |
-| 58 | [Best Practices](modules/58-best-practices/) | 1 | Code conventions, patterns |
-| 59 | [Migration Guides](modules/59-migration-guides/) | 1 | Java version upgrades, framework migrations |
-| 60 | [YAML](modules/60-yaml/) | 1 | Configuration, Kubernetes manifests |
-| 61 | [Properties](modules/61-properties/) | 1 | Application config, profiles |
-| 62 | [Networking](modules/62-networking/) | 1 | TCP/IP, HTTP, sockets |
-| 63 | [CI/CD](modules/63-ci-cd/) | 1 | Jenkins, GitHub Actions, pipelines |
-| 64 | [OpenAPI/Swagger](modules/64-openapi-swagger/) | 1 | API documentation, specs |
-| 65 | [SQL](modules/65-sql/) | 1 | Queries, joins, optimization |
-| 66 | [Cloud Design](modules/66-cloud-design/) | 1 | Cloud patterns, 12-factor apps |
-| 67 | [Observability](modules/67-observability/) | 1 | Metrics, tracing, logging |
-| 68 | [Security](modules/68-security/) | 1 | OWASP, encryption, authentication |
-| 69 | [Reactive Programming](modules/69-reactive-programming/) | 1 | Reactor, RxJava, backpressure |
-| 70 | [Java Version History](modules/70-java-version-history/) | 1 | Features from Java 8 to 21 |
-| 71 | [Certification Guide](modules/71-certification-guide/) | 1 | OCA, OCP, preparation |
-| 72 | [Reference Material](modules/72-reference-material/) | 1 | Books, courses, websites |
-| 73 | [XML](modules/73-xml/) | 1 | Parsing, transformation, validation |
-| 74 | [JSON](modules/74-json/) | 1 | Processing, Jackson, Gson |
+| Technology | Module | Difficulty | Focus |
+|------------|--------|------------|-------|
+| Redis | [01 — Fundamentals](data/redis/01-fundamentals/) | Intermediate | Caching, pub/sub, structures |
+| Data Engineering | [01 — Fundamentals](data/data-engineering/01-fundamentals/) | Advanced | ETL, pipelines, Spark |
 
----
+### Messaging
 
-## Mini Projects
+| Technology | Module | Difficulty | Focus |
+|------------|--------|------------|-------|
+| Kafka | [01 — Fundamentals](messaging/kafka/01-fundamentals/) | Advanced | Event streaming, streams |
+| RabbitMQ | [01 — Fundamentals](messaging/rabbitmq/01-fundamentals/) | Intermediate | Message broker, AMQP |
+| GraphQL | [01 — Fundamentals](messaging/graphql/01-fundamentals/) | Intermediate | Schema, resolvers, subscriptions |
 
-The curriculum includes 14 progressive mini-projects to solidify your learning:
+### Architecture
 
-| # | Project | Module | Difficulty | Concepts Covered |
-|---|---------|--------|------------|------------------|
-| 1 | Calculator | 01 — Java Fundamentals | Easy | Variables, operators, control flow |
-| 2 | Number guessing game | 01 — Java Fundamentals | Easy | Loops, random, user input |
-| 3 | Student grade tracker | 01 — Java Fundamentals | Medium | Arrays, methods, formatting |
-| 4 | Contact book | 01 — Java Fundamentals | Medium | Strings, arrays, menu-driven |
-| 5 | ATM simulator | 02 — OOP | Easy | Classes, objects, encapsulation |
-| 6 | Library system | 02 — OOP | Medium | Inheritance, polymorphism |
-| 7 | Bank management system | 02 — OOP | Hard | All OOP principles |
-| 8 | Shape hierarchy | 02 — OOP | Medium | Abstract classes, interfaces |
-| 9 | Custom exception framework | 03 — Exception Handling | Medium | Exception hierarchy, chaining |
-| 10 | File processor with error recovery | 03 — Exception Handling | Hard | Try-catch, resources, logging |
-| 11 | Sort algorithm visualizer | 04 — Collections | Medium | Comparable, Comparator, sorting |
-| 12 | Custom collection library | 04 — Collections | Hard | Generics, iterators, builders |
-| 13 | Type-safe data store | 05 — Generics | Medium | Generic classes, bounds, wildcards |
-| 14 | Expression parser | 05 — Generics | Hard | Type erasure, generic algorithms |
+| Topic | Module | Difficulty | Focus |
+|-------|--------|------------|-------|
+| Microservices | [01 — Fundamentals](architecture/microservices/01-fundamentals/) | Advanced | Service decomposition, patterns |
+| System Design | [01 — Fundamentals](architecture/system-design/01-fundamentals/) | Advanced | Scalability, trade-offs |
 
----
+### AI/ML
 
-## Diagrams & Visual Learning
+| Topic | Module | Difficulty | Focus |
+|-------|--------|------------|-------|
+| AI Engineering | [01 — Fundamentals](ai-ml/ai-engineering/01-fundamentals/) | Advanced | ML integration, LLM APIs |
+| Prompt Engineering | [01 — Fundamentals](ai-ml/prompt-engineering/01-fundamentals/) | Intermediate | AI communication, optimization |
+| LLM Applications | [01 — Fundamentals](ai-ml/llm-applications/01-fundamentals/) | Advanced | RAG, vector DBs, chatbots |
+| Machine Learning | [01 — Fundamentals](ai-ml/machine-learning/01-fundamentals/) | Advanced | Algorithms, models, evaluation |
 
-Every module includes Mermaid diagrams for visual learners:
+### Security
 
-- **Class diagrams** — UML-style inheritance and composition trees
-- **Sequence diagrams** — Object interaction flows
-- **Memory diagrams** — Stack vs. heap visualization
-- **Architecture diagrams** — Module dependency graphs
-- **Flowcharts** — Decision-making and algorithm walkthroughs
+| Topic | Module | Difficulty | Focus |
+|-------|--------|------------|-------|
+| Cyber Security | [01 — Fundamentals](security/cyber-security/01-fundamentals/) | Intermediate | OWASP, encryption, auth |
 
-Example topics with diagrams:
+### Career
 
-- [OOP Concepts Overview](modules/02-object-oriented-programming/diagrams/oop-concepts.md)
-- [Class Hierarchy](modules/02-object-oriented-programming/diagrams/class-hierarchy.md)
-- [System Design Patterns](modules/24-system-design/diagrams/)
-
----
-
-## Learning Paths
-
-Choose the path that matches your experience level:
-
-### Beginner Path (0-6 months experience)
-
-```
-Duration: 14 weeks (part-time) | 4 weeks (full-time)
-
-Week 1-2:  Module 01 — Java Fundamentals
-Week 3-6:  Module 02 — Object-Oriented Programming (35 topics)
-Week 7-8:  Module 03 — Exception Handling
-Week 9-10: Module 04 — Collections Framework
-Week 11:   Module 05 — Generics
-Week 12:   Module 11 — Testing (JUnit & Mockito)
-Week 13-14: Mini Projects + Review
-```
-
-### Intermediate Path (6-18 months experience)
-
-```
-Duration: 16 weeks (part-time) | 6 weeks (full-time)
-
-Week 1-2:   Module 02 — OOP Review (focus on SOLID, design principles)
-Week 3-4:   Module 07 — Functional Programming & Streams
-Week 5-7:   Module 08 — Multithreading & Concurrency
-Week 8-10:  Module 10 — Design Patterns
-Week 11-12: Module 13 — JDBC & Database
-Week 13-16: Module 14 — Spring Framework
-```
-
-### Advanced Path (18+ months experience)
-
-```
-Duration: 20 weeks (part-time) | 8 weeks (full-time)
-
-Week 1-3:   Module 08 — Multithreading (deep dive)
-Week 4-5:   Module 09 — JVM Internals
-Week 6-8:   Module 10 — Design Patterns
-Week 9-10:  Module 16 — Spring Security
-Week 11-13: Module 18 — Microservices
-Week 14-16: Module 24 — System Design
-Week 17-20: Module 25 — Enterprise Projects
-```
-
-### Enterprise Learning Path (Targeting Senior/Lead Roles)
-
-```
-Week 1-4:   Java Fundamentals + OOP
-Week 5-8:   Collections + Generics + Exception Handling
-Week 9-12:  Functional Programming + Streams
-Week 13-16: Multithreading + JVM Internals
-Week 17-20: Design Patterns + Testing
-Week 21-24: JDBC + Spring Framework
-Week 25-28: Spring Boot + REST APIs
-Week 29-32: Spring Security + Microservices
-Week 33-36: Docker + Kubernetes
-Week 37-40: AWS + System Design
-Week 41-44: Enterprise Projects
-Week 45-48: Interview Preparation
-```
-
----
-
-## Repository Architecture
-
-```
-java-engineering-academy/
-├── .github/
-│   ├── ISSUE_TEMPLATE/        Bug reports, feature requests, content improvements
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/             CI/CD, Build, Test, CodeQL
-├── config/
-│   └── checkstyle/            Google Java Style configuration
-├── docs/
-│   ├── architecture/          System design documentation
-│   ├── images/                Logos and diagrams
-│   ├── interview/             General interview prep
-│   └── roadmap/               Curriculum roadmap
-├── modules/
-│   ├── 01-java-fundamentals/
-│   │   ├── src/main/java/     Example code
-│   │   ├── src/test/java/     Unit tests
-│   │   ├── docs/              Topic documentation
-│   │   ├── exercises/         Practice problems
-│   │   ├── solutions/         Answer key
-│   │   └── README.md
-│   ├── 02-object-oriented-programming/
-│   │   ├── 01-introduction/
-│   │   ├── 02-classes/
-│   │   ├── ...
-│   │   ├── 35-mini-projects/
-│   │   └── README.md
-│   └── ... (26 modules total)
-├── projects/                  Portfolio projects
-├── resources/                 Curated references
-├── templates/                 Topic, exercise, interview, quiz templates
-├── pom.xml                    Maven parent build
-├── REVIEW.md                  Repository review findings
-├── LEARNING_PATH.md           Sprint schedule & milestones
-├── ROADMAP.md                 Long-term curriculum plan
-├── CONTRIBUTING.md            Contribution guidelines
-├── CODE_OF_CONDUCT.md         Community standards
-└── CHANGELOG.md               Version history
-```
-
----
-
-## Sprint Progress
-
-| Sprint | Focus | Status | Completion |
-|--------|-------|--------|------------|
-| Sprint 1 | Java Fundamentals | ✅ Complete | 100% |
-| Sprint 2 | Object-Oriented Programming | ✅ Complete | 100% |
-| Sprint 3 | Exception Handling | 🔄 In Progress | 30% |
-| Sprint 4 | Collections Framework | 🔄 In Progress | 20% |
-| Sprint 5 | Generics | 🔄 In Progress | 15% |
-| Sprint 6 | Functional Programming | 🔲 Planned | 0% |
-| Sprint 7 | Multithreading & Concurrency | 🔲 Planned | 0% |
-| Sprint 8 | JVM Internals | 🔲 Planned | 0% |
-| Sprint 9 | Design Patterns | 🔲 Planned | 0% |
-| Sprint 10 | Testing | 🔲 Planned | 0% |
-| Sprint 11 | Spring Framework | 🔲 Planned | 0% |
-| Sprint 12 | Cloud & DevOps | 🔲 Planned | 0% |
+| Topic | Module | Difficulty | Focus |
+|-------|--------|------------|-------|
+| Interview Prep | [01 — Fundamentals](career/interview-preparation/01-fundamentals/) | All Levels | Coding, design, behavioral |
+| Career Roadmaps | [01 — Fundamentals](career/career-roadmaps/01-fundamentals/) | All Levels | Growth paths, planning |
+| Open Source | [01 — Fundamentals](career/open-source/01-fundamentals/) | All Levels | Contributing, community |
+| Real Projects | [01 — Fundamentals](career/real-projects/01-fundamentals/) | Advanced | Enterprise applications |
 
 ---
 
@@ -525,50 +736,54 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 | Category | Technology |
 |----------|-----------|
-| Language | Java 21 |
-| Build | Maven 3.8.6+ |
-| Testing | JUnit 5, Mockito, AssertJ |
-| Code Style | Google Java Style Guide |
-| Static Analysis | Checkstyle, PMD, SpotBugs |
-| Coverage | JaCoCo |
-| CI/CD | GitHub Actions |
-| Security | CodeQL |
-| Documentation | Markdown, Mermaid |
+| Languages | Java 21, Go 1.21, Rust, Python 3.10+, Node.js 18+, TypeScript 5+ |
+| Frontend | React 18, Angular 17, HTML5, CSS3 |
+| Backend | Spring Boot, Express.js, FastAPI, Gin |
+| DevOps | Docker, Kubernetes, Terraform, GitHub Actions |
+| Cloud | AWS, Azure, GCP |
+| Databases | PostgreSQL, MongoDB, Redis, Elasticsearch |
+| Messaging | Kafka, RabbitMQ, GraphQL |
+| AI/ML | OpenAI, LangChain, TensorFlow, PyTorch |
+| Testing | JUnit 5, Jest, Pytest, Go testing, cargo test |
+| Code Style | Google Java Style, Prettier, Black, rustfmt |
+| CI/CD | GitHub Actions, Jenkins, GitLab CI |
 
 ---
 
 ## FAQ
 
 **Q: How long does it take to complete the curriculum?**
-A: Approximately 6-12 months for the full curriculum, depending on your pace and background. See [LEARNING_PATH.md](LEARNING_PATH.md) for detailed time estimates.
+A: Approximately 6-12 months for the full curriculum, depending on your pace and background. See [Learning Paths](#learning-paths) for detailed time estimates.
 
 **Q: Do I need prior programming experience?**
-A: No. Module 01 starts from zero. However, basic computer literacy is assumed.
+A: No. Module 01 of each technology starts from zero. However, basic computer literacy is assumed.
 
-**Q: Is this enough to get a Java developer job?**
-A: The curriculum covers technical skills. Combine with portfolio projects from Module 25 and interview prep from Module 26.
+**Q: Is this enough to get a software engineering job?**
+A: The curriculum covers technical skills. Combine with portfolio projects from Career/Real Projects and interview prep from Career/Interview Preparation.
 
 **Q: Can I contribute?**
 A: Yes! See [CONTRIBUTING.md](CONTRIBUTING.md). We welcome improvements to any topic.
 
-**Q: How is this different from Baeldung or Java Brains?**
-A: This is a complete curriculum (not individual articles), with progressive difficulty, exercises, tests, and enterprise-grade code quality.
+**Q: How is this different from other learning platforms?**
+A: This is a complete curriculum (not individual articles), with progressive difficulty, exercises, tests, and enterprise-grade code quality across multiple technologies.
 
 **Q: What IDE should I use?**
-A: IntelliJ IDEA (Community or Ultimate) is recommended. VS Code with Java extensions also works.
+A: 
+- **Java**: IntelliJ IDEA
+- **JavaScript/TypeScript**: VS Code
+- **Python**: VS Code or PyCharm
+- **Go**: GoLand or VS Code
+- **Rust**: RustRover or VS Code
 
 **Q: Where are the templates for creating new topics?**
 A: See [templates/](templates/README.md) for topic, exercise, interview, quiz, and assignment templates.
-
-**Q: How are the mini-projects structured?**
-A: Each mini-project includes requirements, starter code, tests, and solutions. See the [Mini Projects](#mini-projects) section for the full list.
 
 ---
 
 ## Community
 
-- **Discussions**: [GitHub Discussions](https://github.com/javaengineeringacademy/java-engineering-academy/discussions)
-- **Issues**: [Report Issues](https://github.com/javaengineeringacademy/java-engineering-academy/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/javaengineeringacademy/software-engineering-academy/discussions)
+- **Issues**: [Report Issues](https://github.com/javaengineeringacademy/software-engineering-academy/issues)
 - **Contributions**: See [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Code of Conduct**: See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 - **Templates**: See [templates/](templates/README.md)

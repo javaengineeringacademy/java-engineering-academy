@@ -1,0 +1,60 @@
+// Elasticsearch Queries
+
+// Index a document
+PUT /users/_doc/1
+{
+  "name": "Alice",
+  "email": "alice@example.com",
+  "age": 30,
+  "skills": ["java", "python", "kubernetes"]
+}
+
+// Search with query DSL
+GET /users/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "name": "Alice" } }
+      ],
+      "filter": [
+        { "range": { "age": { "gte": 25 } } }
+      ]
+    }
+  }
+}
+
+// Full text search
+GET /users/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "java developer",
+      "fields": ["name", "skills"]
+    }
+  }
+}
+
+// Aggregations
+GET /users/_search
+{
+  "size": 0,
+  "aggs": {
+    "age_groups": {
+      "range": {
+        "field": "age",
+        "ranges": [
+          { "from": 0, "to": 25 },
+          { "from": 25, "to": 35 },
+          { "from": 35 }
+        ]
+      }
+    },
+    "skill_counts": {
+      "terms": {
+        "field": "skills.keyword",
+        "size": 10
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope 
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:web="http://www.example.com/webservice">
+    <soap:Header>
+        <web:AuthToken>abc123</web:AuthToken>
+    </soap:Header>
+    <soap:Body>
+        <web:GetUser>
+            <web:UserId>123</web:UserId>
+        </web:GetUser>
+    </soap:Body>
+</soap:Envelope>

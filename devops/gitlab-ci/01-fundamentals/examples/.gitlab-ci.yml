@@ -1,0 +1,46 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+test:
+  stage: test
+  image: maven:3.8-openjdk-17
+  script:
+    - mvn test
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+deploy-staging:
+  stage: deploy
+  image: alpine/k8s
+  script:
+    - kubectl set image deployment/my-app my-app=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  environment:
+    name: staging
+  only:
+    - develop
+
+deploy-production:
+  stage: deploy
+  image: alpine/k8s
+  script:
+    - kubectl set image deployment/my-app my-app=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  environment:
+    name: production
+  when: manual
+  only:
+    - main

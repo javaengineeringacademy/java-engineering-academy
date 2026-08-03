@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope 
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:web="http://www.example.com/webservice">
+    <soap:Body>
+        <web:GetUserResponse>
+            <web:User>
+                <web:Id>123</web:Id>
+                <web:Name>Alice</web:Name>
+                <web:Email>alice@example.com</web:Email>
+            </web:User>
+        </web:GetUserResponse>
+    </soap:Body>
+</soap:Envelope>
