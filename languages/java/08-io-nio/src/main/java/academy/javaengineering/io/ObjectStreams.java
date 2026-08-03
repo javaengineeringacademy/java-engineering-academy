@@ -12,9 +12,9 @@ import java.util.*;
  * @author JavaEngineering Academy
  * @version 1.0
  */
-public final class ObjectStreamsDemo {
+public final class ObjectStreams {
 
-    private ObjectStreamsDemo() {
+    private ObjectStreams() {
         // Utility class
     }
 

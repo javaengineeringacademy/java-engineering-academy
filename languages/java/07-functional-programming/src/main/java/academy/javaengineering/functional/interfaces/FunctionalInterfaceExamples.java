@@ -249,8 +249,8 @@ public final class FunctionalInterfaceExamples {
         interface OrderTransformer<T> {
             T transform(Order order);
 
-            default <R> OrderTransformer<R> andThen(OrderTransformer<T> after) {
-                return order -> after.transform(this.transform(order));
+            default <V> OrderTransformer<V> andThen(java.util.function.Function<? super T, ? extends V> after) {
+                return order -> after.apply(this.transform(order));
             }
         }
 

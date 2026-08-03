@@ -1,6 +1,8 @@
 package academy.javaengineering.springmvc.config;
 
+import academy.javaengineering.springmvc.interceptor.LoggingInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.*;
 
 /**

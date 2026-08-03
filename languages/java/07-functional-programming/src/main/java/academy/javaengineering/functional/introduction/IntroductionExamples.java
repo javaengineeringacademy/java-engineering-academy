@@ -175,7 +175,7 @@ public final class IntroductionExamples {
         record Point(double x, double y) {}
 
         Point p1 = new Point(3.0, 4.0);
-        Point p2 = p1.withX(10.0);  // Records don't have withX by default in Java 21
+        Point p2 = new Point(10.0, p1.y());
 
         // Custom with method
         record Person(String name, int age) {
@@ -202,8 +202,8 @@ public final class IntroductionExamples {
 
         // Pure function: same input always gives same output, no side effects
         java.util.function.BinaryOperator<Integer> add = Integer::sum;
-        System.out.println("2 + 3 = " + add.applyAsInt(2, 3));
-        System.out.println("2 + 3 = " + add.applyAsInt(2, 3)); // Same result
+        System.out.println("2 + 3 = " + add.apply(2, 3));
+        System.out.println("2 + 3 = " + add.apply(2, 3)); // Same result
 
         // Impure function (simulated with mutable state)
         // NOT RECOMMENDED - just for demonstration

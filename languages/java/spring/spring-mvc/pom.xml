@@ -8,6 +8,7 @@
         <groupId>academy.javaengineering</groupId>
         <artifactId>java-engineering-academy</artifactId>
         <version>1.0.0</version>
+        <relativePath>../../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>spring-mvc</artifactId>
@@ -19,6 +20,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>6.1.10</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

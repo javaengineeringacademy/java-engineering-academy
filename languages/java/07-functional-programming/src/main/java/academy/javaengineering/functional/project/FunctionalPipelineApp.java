@@ -67,7 +67,7 @@ public final class FunctionalPipelineApp {
     public interface Transformer<T, R> {
         R transform(T input);
 
-        default <V> Transformer<T, R> andThen(Transformer<R, V> after) {
+        default <V> Transformer<T, V> andThen(Transformer<R, V> after) {
             return input -> after.transform(this.transform(input));
         }
 
@@ -168,10 +168,10 @@ public final class FunctionalPipelineApp {
         }
 
         public BigDecimal calculateAverageOrderValue(List<Order> orders) {
-            return orders.stream()
+            return BigDecimal.valueOf(orders.stream()
                 .mapToDouble(o -> o.totalAmount().doubleValue())
                 .average()
-                .orElse(0.0);
+                .orElse(0.0));
         }
 
         public List<Order> getRecentOrders(List<Order> orders, int days) {

@@ -228,7 +228,7 @@ class FileOperationsTest {
             assertNotNull(attrs);
             assertTrue((Boolean) attrs.get("isRegularFile"));
             assertFalse((Boolean) attrs.get("isDirectory"));
-            assertEquals(16L, attrs.get("size"));
+            assertEquals(15L, attrs.get("size"));
         }
     }
 

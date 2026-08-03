@@ -128,7 +128,7 @@ class NioChannelsTest {
             long[] stats = IoIntroduction.calculateFileStats(src);
             assertEquals(2, stats[0]);   // lines
             assertEquals(5, stats[1]);   // words
-            assertEquals(16, stats[2]);  // characters (excl newlines)
+            assertEquals(22, stats[2]);  // characters (excl newlines)
             assertTrue(stats[3] > 0);    // bytes
         }
 

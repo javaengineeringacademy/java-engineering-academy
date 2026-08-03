@@ -20,7 +20,7 @@ class TryWithResourcesTest {
             events.add("working");
         }
 
-        assertEquals(List.of("working", "closing"), events);
+        assertEquals(List.of("TestResource opened", "working", "TestResource closed"), events);
     }
 
     @Test

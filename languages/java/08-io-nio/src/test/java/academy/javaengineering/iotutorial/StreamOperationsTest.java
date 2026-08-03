@@ -257,7 +257,7 @@ class StreamOperationsTest {
         void shouldParallelGrouping() {
             Map<String, Long> counts = IntStream.range(0, 100).parallel()
                 .boxed()
-                .collect(Collectors.groupingConcurrent(
+                .collect(Collectors.groupingByConcurrent(
                     n -> n % 2 == 0 ? "even" : "odd",
                     Collectors.counting()
                 ));

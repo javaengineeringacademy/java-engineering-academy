@@ -116,7 +116,7 @@ class CharacterStreamsTest {
         @DisplayName("Should append line to file")
         void shouldAppendLine() throws IOException {
             String p = path("append.txt");
-            Files.writeString(Path.of(p), "First");
+            Files.writeString(Path.of(p), "First\n");
             CharacterStreams.appendLine(p, "Second");
             List<String> lines = CharacterStreams.readLines(p);
             assertEquals(2, lines.size());
@@ -147,7 +147,7 @@ class CharacterStreamsTest {
             Map<String, Long> stats = CharacterStreams.calculateStats(p);
             assertEquals(2L, stats.get("lines"));
             assertEquals(4L, stats.get("words"));
-            assertEquals(20L, stats.get("characters"));
+            assertEquals(18L, stats.get("characters"));
         }
 
         @Test

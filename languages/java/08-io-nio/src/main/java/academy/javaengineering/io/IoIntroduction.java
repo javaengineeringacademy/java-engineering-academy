@@ -1,6 +1,7 @@
 package academy.javaengineering.io;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -163,7 +164,7 @@ public final class IoIntroduction {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                     new BufferedInputStream(
-                        Files.newInputStream(inputFile)))));
+                        Files.newInputStream(inputFile))));
             BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new BufferedOutputStream(

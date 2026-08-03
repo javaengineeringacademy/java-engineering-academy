@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
+import java.util.NavigableMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -163,7 +164,7 @@ class TreeMapTest {
         treeMap.put("A", 1);
         Map.Entry<String, Integer> polled = treeMap.pollFirstEntry();
         assertEquals("A", polled.getKey());
-        assertEquals(2, treeMap.size());
+        assertEquals(1, treeMap.size());
     }
 
     @Test
@@ -312,7 +313,7 @@ class TreeMapTest {
         treeMap.put("A", 1);
         treeMap.put("B", 2);
         treeMap.put("C", 3);
-        TreeMap<String, Integer> desc = treeMap.descendingMap();
+        NavigableMap<String, Integer> desc = treeMap.descendingMap();
         assertEquals("C", desc.firstKey());
         assertEquals("A", desc.lastKey());
     }

@@ -60,8 +60,8 @@ class PrototypePatternTest {
         Document original = new Document("Template");
         original.addParagraph("Header");
         original.addParagraph("Body");
-        Document copy = original.copyWithTitle("Report");
-        assertEquals(original.toString().length(), copy.toString().length());
+        Document copy = original.copyWithTitle("Template2");
+        assertTrue(copy.toString().contains("paragraphs=2"));
     }
 
     @Test

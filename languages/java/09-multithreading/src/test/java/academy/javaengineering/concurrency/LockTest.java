@@ -94,9 +94,10 @@ class LockTest {
         assertTrue(lock.tryLock());
         assertTrue(lock.isHeldByCurrentThread());
 
-        // Second tryLock should fail since lock is already held
-        assertFalse(lock.tryLock());
+        // ReentrantLock allows re-entrant locking by the same thread
+        assertTrue(lock.tryLock());
 
+        lock.unlock();
         lock.unlock();
     }
 }

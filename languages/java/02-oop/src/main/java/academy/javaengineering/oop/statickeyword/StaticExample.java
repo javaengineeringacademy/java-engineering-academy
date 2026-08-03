@@ -204,7 +204,7 @@ public class StaticExample {
         System.out.println("\n--- Static Blocks ---");
         System.out.println("Loading class...");
         @SuppressWarnings("unused")
-        int _ = ConnectionPool.getTotalInstances(); // Triggers class loading
+        int temp = ConnectionPool.getTotalInstances(); // Triggers class loading
 
         // Static singleton
         System.out.println("\n--- Singleton with Static ---");

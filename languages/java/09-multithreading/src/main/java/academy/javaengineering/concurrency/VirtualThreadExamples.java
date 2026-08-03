@@ -2,10 +2,9 @@ package academy.javaengineering.concurrency;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.StructuredTaskScope;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Demonstrates Java 21 virtual threads for lightweight concurrency.
@@ -85,26 +84,34 @@ public class VirtualThreadExamples {
     }
 
     /**
-     * Demonstrates structured concurrency (preview feature in Java 21).
+     * Demonstrates structured-style concurrency using CompletableFuture with virtual threads.
      */
     public static void demonstrateStructuredConcurrency() throws Exception {
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            List<Future<String>> tasks = new ArrayList<>();
+        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
-            for (int i = 0; i < 3; i++) {
-                final int taskId = i;
-                tasks.add(scope.fork(() -> {
-                    Thread.sleep(50);
-                    return "Result " + taskId;
-                }));
-            }
+        List<CompletableFuture<String>> tasks = List.of(
+            CompletableFuture.supplyAsync(() -> {
+                try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                return "Result 0";
+            }, executor),
+            CompletableFuture.supplyAsync(() -> {
+                try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                return "Result 1";
+            }, executor),
+            CompletableFuture.supplyAsync(() -> {
+                try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                return "Result 2";
+            }, executor)
+        );
 
-            scope.join();
+        CompletableFuture.allOf(tasks.toArray(new CompletableFuture[0])).join();
 
-            for (Future<String> task : tasks) {
-                System.out.println("Structured task result: " + task.resultNow());
-            }
+        for (CompletableFuture<String> task : tasks) {
+            System.out.println("Structured task result: " + task.join());
         }
+
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
         // Expected output:
         // Structured task result: Result 0
         // Structured task result: Result 1

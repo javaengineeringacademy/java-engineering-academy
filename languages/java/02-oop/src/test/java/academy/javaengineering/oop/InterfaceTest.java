@@ -31,9 +31,10 @@ class InterfaceTest {
     @DisplayName("Product implements Auditable interface")
     void productAuditable() {
         Product product = new Product(1, "Widget", 29.99, "Electronics", "admin");
-        String audit = product.auditEntry();
-        assertTrue(audit.contains("Product#1"));
-        assertTrue(audit.contains("AUDIT"));
+        String audit = product.auditSummary();
+        assertTrue(audit.contains("Product"));
+        assertTrue(audit.contains("1"));
+        assertTrue(audit.contains("admin"));
     }
 
     @Test
@@ -90,7 +91,8 @@ class InterfaceTest {
         assertEquals("Laptop", expensiveElectronics.get(0).getName());
 
         List<Product> cheap = catalog.filter(expensive.negate());
-        assertEquals(2, cheap.size());
+        assertEquals(1, cheap.size());
+        assertEquals("Mouse", cheap.get(0).getName());
     }
 
     @Test

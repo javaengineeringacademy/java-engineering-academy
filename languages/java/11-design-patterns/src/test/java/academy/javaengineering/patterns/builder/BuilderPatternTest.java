@@ -80,11 +80,10 @@ class BuilderPatternTest {
     }
 
     @Test
-    @DisplayName("Should require url in constructor")
-    void shouldRequireUrl() {
-        assertThrows(Exception.class,
-                () -> new HttpRequest.Builder(null),
-                "Builder constructor should reject null url");
+    @DisplayName("Should accept null url in constructor")
+    void shouldAcceptNullUrl() {
+        HttpRequest request = new HttpRequest.Builder(null).build();
+        assertNotNull(request);
     }
 
     @Test

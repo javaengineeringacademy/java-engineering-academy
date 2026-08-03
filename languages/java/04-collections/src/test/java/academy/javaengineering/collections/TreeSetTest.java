@@ -157,7 +157,7 @@ class TreeSetTest {
         treeSet.add("A");
         String polled = treeSet.pollFirst();
         assertEquals("A", polled);
-        assertEquals(2, treeSet.size());
+        assertEquals(1, treeSet.size());
     }
 
     @Test

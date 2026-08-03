@@ -163,7 +163,7 @@ public final class CollectorExamples {
         List<Integer> numbers = Arrays.asList(5, 3, 1, 4, 2, 8, 7, 6);
 
         // Custom sorted list collector
-        Collector<Integer, ?, List<Integer>> toSortedList = Collector.of(
+        Collector<Integer, ArrayList<Integer>, List<Integer>> toSortedList = Collector.of(
             ArrayList::new,
             List::add,
             (list1, list2) -> {

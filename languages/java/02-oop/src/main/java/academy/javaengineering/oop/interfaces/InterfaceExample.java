@@ -37,7 +37,7 @@ public class InterfaceExample {
 
         /** Static factory method for creating validation results. */
         static Validatable alwaysValid() {
-            return List::isEmpty;
+            return () -> List.of();
         }
     }
 

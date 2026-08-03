@@ -52,14 +52,16 @@ public class RealWorldExamples {
 
         try {
             service.createUser(null, "test@example.com");
-        } catch (ValidationException e) {
+        } catch (ValidationException | DuplicateEmailException e) {
             System.out.println("Service validation: " + e.getMessage());
-            System.out.println("Field: " + e.getFieldName());
+            if (e instanceof ValidationException ve) {
+                System.out.println("Field: " + ve.getFieldName());
+            }
         }
 
         try {
             service.createUser("John", "duplicate@example.com");
-        } catch (DuplicateEmailException e) {
+        } catch (ValidationException | DuplicateEmailException e) {
             System.out.println("Duplicate email: " + e.getMessage());
         }
         // Expected output:

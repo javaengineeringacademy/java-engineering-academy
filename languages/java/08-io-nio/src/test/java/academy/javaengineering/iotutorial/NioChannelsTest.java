@@ -218,8 +218,8 @@ class NioChannelsTest {
         @DisplayName("Should throw on closed channel")
         void shouldThrowOnClosedChannel() throws Exception {
             Path file = tempDir.resolve("closed.txt");
+            Files.writeString(file, "test data");
             FileChannel channel = FileChannel.open(file,
-                StandardOpenOption.CREATE,
                 StandardOpenOption.READ);
             channel.close();
 

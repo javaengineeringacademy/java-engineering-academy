@@ -42,7 +42,7 @@ public final class StreamExamples {
         // From Array
         int[] array = {1, 2, 3, 4, 5};
         IntStream arrayStream = Arrays.stream(array);
-        System.out.println("From array: " + arrayStream.toList());
+        System.out.println("From array: " + arrayStream.boxed().toList());
 
         // From Values
         Stream<String> valueStream = Stream.of("x", "y", "z");
@@ -50,10 +50,10 @@ public final class StreamExamples {
 
         // From Range
         IntStream rangeStream = IntStream.range(0, 5);
-        System.out.println("Range: " + rangeStream.toList());
+        System.out.println("Range: " + rangeStream.boxed().toList());
 
         IntStream rangeClosedStream = IntStream.rangeClosed(1, 5);
-        System.out.println("Range closed: " + rangeClosedStream.toList());
+        System.out.println("Range closed: " + rangeClosedStream.boxed().toList());
 
         // From Generator
         Stream<Double> generatorStream = Stream.generate(Math::random).limit(3);

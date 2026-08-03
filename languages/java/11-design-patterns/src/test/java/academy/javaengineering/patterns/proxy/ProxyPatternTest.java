@@ -1,8 +1,11 @@
 package academy.javaengineering.patterns.proxy;
 
-import academy.javaengineering.patterns.proxy.ProxyExample.Image;
-import academy.javaengineering.patterns.proxy.ProxyExample.ImageProxy;
-import academy.javaengineering.patterns.proxy.ProxyExample.RealImage;
+import academy.javaengineering.patterns.proxy.ProxyExample.Database;
+import academy.javaengineering.patterns.proxy.ProxyExample.VirtualProxy;
+import academy.javaengineering.patterns.proxy.ProxyExample.RealDatabase;
+import academy.javaengineering.patterns.proxy.ProxyExample.ProtectionProxy;
+import academy.javaengineering.patterns.proxy.ProxyExample.CachingProxy;
+import academy.javaengineering.patterns.proxy.ProxyExample.LoggingProxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,74 +14,112 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProxyPatternTest {
 
     @Test
-    @DisplayName("Proxy should implement Image interface")
-    void proxyShouldImplementImageInterface() {
-        Image proxy = new ImageProxy("test.jpg");
-        assertInstanceOf(Image.class, proxy);
+    @DisplayName("VirtualProxy should implement Database interface")
+    void proxyShouldImplementDatabaseInterface() {
+        Database proxy = new VirtualProxy("test.db");
+        assertInstanceOf(Database.class, proxy);
     }
 
     @Test
-    @DisplayName("RealImage should implement Image interface")
-    void realImageShouldImplementImageInterface() {
-        Image real = new RealImage("test.jpg");
-        assertInstanceOf(Image.class, real);
+    @DisplayName("RealDatabase should implement Database interface")
+    void realDatabaseShouldImplementDatabaseInterface() {
+        RealDatabase real = new RealDatabase("test.db");
+        assertInstanceOf(Database.class, real);
     }
 
     @Test
-    @DisplayName("Proxy should not load image on construction")
+    @DisplayName("VirtualProxy should not load database on construction")
     void proxyShouldNotLoadOnConstruction() {
-        ImageProxy proxy = new ImageProxy("photo.jpg");
-        assertNull(getRealImageField(proxy),
-                "Proxy should not create RealImage until display() is called");
+        VirtualProxy proxy = new VirtualProxy("test.db");
+        assertNull(getRealDatabaseField(proxy),
+                "VirtualProxy should not create RealDatabase until query() is called");
     }
 
     @Test
-    @DisplayName("Proxy should load image on first display")
-    void proxyShouldLoadOnFirstDisplay() {
-        ImageProxy proxy = new ImageProxy("photo.jpg");
-        proxy.display();
-        assertNotNull(getRealImageField(proxy),
-                "After display(), RealImage should be created");
+    @DisplayName("VirtualProxy should load database on first query")
+    void proxyShouldLoadOnFirstQuery() {
+        VirtualProxy proxy = new VirtualProxy("test.db");
+        proxy.query("SELECT 1");
+        assertNotNull(getRealDatabaseField(proxy),
+                "After query(), RealDatabase should be created");
     }
 
     @Test
-    @DisplayName("Proxy should not reload on subsequent displays")
-    void proxyShouldNotReloadOnSubsequentDisplay() {
-        ImageProxy proxy = new ImageProxy("photo.jpg");
-        proxy.display();
-        Object first = getRealImageField(proxy);
-        proxy.display();
-        Object second = getRealImageField(proxy);
+    @DisplayName("VirtualProxy should not reload on subsequent queries")
+    void proxyShouldNotReloadOnSubsequentQuery() {
+        VirtualProxy proxy = new VirtualProxy("test.db");
+        proxy.query("SELECT 1");
+        Object first = getRealDatabaseField(proxy);
+        proxy.query("SELECT 2");
+        Object second = getRealDatabaseField(proxy);
         assertSame(first, second,
-                "Proxy should reuse the same RealImage instance");
+                "VirtualProxy should reuse the same RealDatabase instance");
     }
 
     @Test
-    @DisplayName("Should not throw on display")
-    void shouldNotThrowOnDisplay() {
-        Image proxy = new ImageProxy("image.png");
-        assertDoesNotThrow(proxy::display);
+    @DisplayName("Should not throw on query")
+    void shouldNotThrowOnQuery() {
+        Database proxy = new VirtualProxy("test.db");
+        assertDoesNotThrow(() -> proxy.query("SELECT 1"));
     }
 
     @Test
-    @DisplayName("RealImage should not throw on display")
-    void realImageShouldNotThrowOnDisplay() {
-        Image real = new RealImage("image.png");
-        assertDoesNotThrow(real::display);
+    @DisplayName("RealDatabase should not throw on query")
+    void realDatabaseShouldNotThrowOnQuery() {
+        RealDatabase real = new RealDatabase("test.db");
+        assertDoesNotThrow(() -> real.query("SELECT 1"));
     }
 
     @Test
-    @DisplayName("Proxy and RealImage should both be usable through Image interface")
+    @DisplayName("VirtualProxy and RealDatabase should both be usable through Database interface")
     void bothShouldBeUsableThroughInterface() {
-        Image proxy = new ImageProxy("photo.jpg");
-        Image real = new RealImage("photo.jpg");
-        assertDoesNotThrow(proxy::display);
-        assertDoesNotThrow(real::display);
+        Database proxy = new VirtualProxy("test.db");
+        Database real = new RealDatabase("test.db");
+        assertDoesNotThrow(() -> proxy.query("SELECT 1"));
+        assertDoesNotThrow(() -> real.query("SELECT 1"));
     }
 
-    private Object getRealImageField(ImageProxy proxy) {
+    @Test
+    @DisplayName("ProtectionProxy should deny non-admin DELETE")
+    void protectionProxyShouldDenyNonAdmin() {
+        RealDatabase real = new RealDatabase("secure.db");
+        Database userProxy = new ProtectionProxy(real, "user");
+        String result = userProxy.query("DELETE FROM users WHERE id=1");
+        assertEquals("ACCESS DENIED", result);
+    }
+
+    @Test
+    @DisplayName("ProtectionProxy should allow admin DELETE")
+    void protectionProxyShouldAllowAdmin() {
+        RealDatabase real = new RealDatabase("secure.db");
+        Database adminProxy = new ProtectionProxy(real, "admin");
+        String result = adminProxy.query("DELETE FROM users WHERE id=1");
+        assertEquals("Result for: DELETE FROM users WHERE id=1", result);
+    }
+
+    @Test
+    @DisplayName("CachingProxy should return cached result on second call")
+    void cachingProxyShouldCache() {
+        RealDatabase real = new RealDatabase("cache.db");
+        Database cachingProxy = new CachingProxy(real);
+        String first = cachingProxy.query("SELECT * FROM users");
+        String second = cachingProxy.query("SELECT * FROM users");
+        assertEquals(first, second);
+    }
+
+    @Test
+    @DisplayName("CachingProxy should return different results for different queries")
+    void cachingProxyShouldReturnDifferentForDifferentQueries() {
+        RealDatabase real = new RealDatabase("cache.db");
+        Database cachingProxy = new CachingProxy(real);
+        String first = cachingProxy.query("SELECT * FROM users");
+        String second = cachingProxy.query("SELECT * FROM orders");
+        assertNotEquals(first, second);
+    }
+
+    private Object getRealDatabaseField(VirtualProxy proxy) {
         try {
-            var field = ImageProxy.class.getDeclaredField("realImage");
+            var field = VirtualProxy.class.getDeclaredField("realDatabase");
             field.setAccessible(true);
             return field.get(proxy);
         } catch (Exception e) {

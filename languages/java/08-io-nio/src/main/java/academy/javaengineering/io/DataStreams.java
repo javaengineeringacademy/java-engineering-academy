@@ -13,9 +13,9 @@ import java.util.*;
  * @author JavaEngineering Academy
  * @version 1.0
  */
-public final class DataStreamsDemo {
+public final class DataStreams {
 
-    private DataStreamsDemo() {
+    private DataStreams() {
         // Utility class
     }
 

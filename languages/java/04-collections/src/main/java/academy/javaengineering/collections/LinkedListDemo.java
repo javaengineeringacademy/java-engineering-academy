@@ -2,6 +2,7 @@ package academy.javaengineering.collections;
 
 import java.util.LinkedList;
 import java.util.Deque;
+import java.util.List;
 import java.util.ListIterator;
 
 /**

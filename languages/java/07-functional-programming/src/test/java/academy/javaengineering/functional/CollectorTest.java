@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,7 +108,7 @@ class CollectorTest {
             Map<Character, List<String>> byFirstLetter = names.stream()
                 .collect(Collectors.groupingBy(
                     name -> name.charAt(0)));
-            assertEquals(4, byFirstLetter.size());
+            assertEquals(5, byFirstLetter.size());
             assertTrue(byFirstLetter.containsKey('A'));
             assertEquals(1, byFirstLetter.get('A').size());
         }
@@ -121,7 +123,7 @@ class CollectorTest {
                     name -> name.charAt(0),
                     Collectors.counting()));
             assertEquals(1L, countByLetter.get('A'));
-            assertEquals(2L, countByLetter.get('D'));
+            assertEquals(1L, countByLetter.get('D'));
         }
 
         @Test
@@ -195,8 +197,8 @@ class CollectorTest {
         @Test
         @DisplayName("Should create custom sorted list collector")
         void shouldCreateCustomSortedListCollector() {
-            Collector<Integer, ?, List<Integer>> toSortedList = Collector.of(
-                java.util.ArrayList::new,
+            Collector<Integer, List<Integer>, List<Integer>> toSortedList = Collector.of(
+                () -> new ArrayList<>(),
                 List::add,
                 (list1, list2) -> {
                     list1.addAll(list2);

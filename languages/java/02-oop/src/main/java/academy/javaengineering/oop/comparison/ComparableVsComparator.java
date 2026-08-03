@@ -48,8 +48,7 @@ public class ComparableVsComparator {
 
         // By salary range
         public static Comparator<Employee> bySalaryRange(double min, double max) {
-            return Comparator.comparingDouble(Employee::getSalary)
-                            .filter(e -> e.getSalary() >= min && e.getSalary() <= max);
+            return Comparator.comparingDouble(e -> Math.abs(e.getSalary() - (min + max) / 2));
         }
     }
 

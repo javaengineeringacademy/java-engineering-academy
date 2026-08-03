@@ -167,7 +167,7 @@ class FunctionalInterfaceTest {
         void shouldComposeUnaryOperators() {
             UnaryOperator<String> trim = String::trim;
             UnaryOperator<String> upper = String::toUpperCase;
-            UnaryOperator<String> pipeline = trim.andThen(upper);
+            Function<String, String> pipeline = trim.andThen(upper);
             assertEquals("HELLO", pipeline.apply("  hello  "));
         }
     }

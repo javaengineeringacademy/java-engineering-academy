@@ -21,7 +21,7 @@ class ExceptionBasicsTest {
     void testMultipleCatchBlocks() {
         // Test NullPointerException is caught first
         String nullString = null;
-        assertThrows(NullPointerException.class, nullString::length);
+        assertThrows(NullPointerException.class, () -> nullString.length());
     }
 
     @Test
@@ -29,7 +29,7 @@ class ExceptionBasicsTest {
         boolean finallyExecuted = false;
         try {
             int[] arr = {1, 2, 3};
-            arr[5]; // This will throw
+            int val = arr[5]; // This will throw
         } catch (ArrayIndexOutOfBoundsException e) {
             // Expected
         } finally {
