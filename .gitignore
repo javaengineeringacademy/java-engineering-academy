@@ -9,10 +9,10 @@
 target/
 *.class
 
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
+# Maven (keep wrapper, ignore user-specific)
+.mvn/jvm.config
+.mvn/maven.config
+.mvn/wrapper/maven-wrapper.jar
 
 # Logs
 *.log

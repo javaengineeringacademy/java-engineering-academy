@@ -5,27 +5,23 @@
     <property name="charset" value="UTF-8"/>
     <property name="fileExtensions" value="java"/>
 
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
     <module name="TreeWalker">
-        <module name="FileTabCharacter">
-            <property name="eachLine" value="true"/>
-        </module>
-
-        <module name="FileLength">
-            <property name="max" value="2000"/>
-        </module>
-
-        <module name="LineLength">
-            <property name="max" value="120"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-        </module>
-
-        <module name="FileContentsHolder"/>
-
         <module name="OuterTypeFilename"/>
 
-        <module name="IllegalImport">
-            <property name="excludedClasses" value="java.util.*,java.io.*,java.lang.*,java.time.*,java.util.stream.*,java.util.function.*"/>
-        </module>
+        <module name="IllegalImport"/>
 
         <module name="RedundantImport"/>
 
@@ -39,27 +35,14 @@
 
         <module name="TypeName">
             <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
-            <property name="applyToClassNames" value="true"/>
-            <property name="applyToInterfaceNames" value="true"/>
-            <property name="applyToEnumNames" value="true"/>
-            <property name="applyToRecordNames" value="true"/>
-            <property name="applyToAnnotationNames" value="true"/>
         </module>
 
         <module name="MemberName">
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic" value="true"/>
-            <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage" value="true"/>
-            <property name="applyToPrivate" value="true"/>
         </module>
 
         <module name="ConstantName">
             <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
-            <property name="applyToPublic" value="true"/>
-            <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage" value="true"/>
-            <property name="applyToPrivate" value="true"/>
         </module>
 
         <module name="LocalVariableName">
@@ -90,9 +73,7 @@
             <property name="max" value="80"/>
         </module>
 
-        <module name="ParameterAssignment">
-            <property name="allowConditionalModifier" value="true"/>
-        </module>
+        <module name="ParameterAssignment"/>
 
         <module name="NestedTryDepth">
             <property name="max" value="3"/>
@@ -129,7 +110,6 @@
         <module name="MagicNumber">
             <property name="ignoreNumbers" value="-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000"/>
             <property name="ignoreAnnotation" value="true"/>
-            <property name="ignoreAnnotationElementDefaults" value="true"/>
             <property name="ignoreFieldAssignments" value="true"/>
             <property name="ignoreMethodArguments" value="true"/>
         </module>
@@ -147,9 +127,7 @@
 
         <module name="EmptyStatement"/>
 
-        <module name="EqualsHashCode">
-            <property name="warnOnNoEqualsHashCode" value="true"/>
-        </module>
+        <module name="EqualsHashCode"/>
 
         <module name="HiddenField">
             <property name="ignoreConstructorParameter" value="true"/>
@@ -157,13 +135,9 @@
             <property name="setterCanReturnItsClass" value="true"/>
         </module>
 
-        <module name="IllegalInstantiation">
-            <property name="classes" value="java.lang.Boolean,java.lang.Byte,java.lang.Character,java.lang.Double,java.lang.Float,java.lang.Integer,java.lang.Long,java.lang.Short,java.lang.String,java.math.BigDecimal,java.math.BigInteger"/>
-        </module>
+        <module name="IllegalInstantiation"/>
 
-        <module name="FinalClass">
-            <property name="excludeClassNames" value=".*Test"/>
-        </module>
+        <module name="FinalClass"/>
 
         <module name="InterfaceIsType">
             <property name="allowMarkerInterfaces" value="true"/>
@@ -197,21 +171,11 @@
             <property name="option" value="NL"/>
         </module>
 
-        <module name="OuterTypeFilename"/>
-
-        <module name="PackageAnnotation">
-            <property name="allowLegacy" value="true"/>
-        </module>
-
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
         </module>
 
-        <module name="ParameterAssignment"/>
-
         <module name="RedundantModifier"/>
-
-        <module name="RedundantThrows"/>
 
         <module name="ReturnCount">
             <property name="max" value="7"/>
@@ -223,10 +187,6 @@
         <module name="SimplifyBooleanReturn"/>
 
         <module name="StringLiteralEquality"/>
-
-        <module name="SuperClone"/>
-
-        <module name="SuperFinalize"/>
 
         <module name="TodoComment">
             <property name="format" value="(TODO|FIXME|XXX|TBD)"/>
@@ -246,8 +206,6 @@
             <property name="max" value="20"/>
         </module>
 
-        <module name="JavadocPackage"/>
-
         <module name="JavadocType">
             <property name="scope" value="public"/>
         </module>
@@ -265,9 +223,5 @@
         </module>
     </module>
 
-    <module name="RegexpHeader">
-        <property name="headerFile" value="${project.basedir}/HEADER"/>
-        <property name="fileExtensions" value="java"/>
-    </module>
     <module name="NewlineAtEndOfFile"/>
 </module>
