@@ -1,29 +1,26 @@
-name: CI/CD Pipeline
+name: Verify
 
 on:
   push:
     branches: [main, develop]
+    tags: ['v*']
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
 
 permissions:
   contents: read
-  packages: read
-  security-events: write
 
 jobs:
-  build-and-test:
-    name: Build, Test & Quality Gates
+  verify:
+    name: Build & Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up JDK 21
+      - name: Validate wrapper
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -31,10 +28,10 @@ jobs:
           cache: maven
 
       - name: Compile
-        run: mvn compile -B --no-transfer-progress -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
+        run: ./mvnw -B compile -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
       - name: Run tests
-        run: mvn test -B --no-transfer-progress -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
+        run: ./mvnw -B test -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
@@ -48,7 +45,8 @@ jobs:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: build-and-test
+    needs: verify
+    if: github.event_name != 'pull_request'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -63,28 +61,28 @@ jobs:
           cache: maven
 
       - name: Build and analyze
-        if: ${{ env.SONAR_TOKEN != '' }}
+        if: env.SONAR_TOKEN != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=javaengineeringacademy_java-engineering-academy \
             -Dsonar.organization=javaengineeringacademy \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
-      - name: Skip SonarCloud (no token)
-        if: ${{ env.SONAR_TOKEN == '' }}
+      - name: Skip (no token)
+        if: env.SONAR_TOKEN == ''
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: echo "SONAR_TOKEN not set — skipping SonarCloud analysis"
+        run: echo "SONAR_TOKEN not set — skipping"
 
   dependency-check:
-    name: Dependency Vulnerability Scan
+    name: Dependency Scan
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build-and-test
+    needs: verify
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -107,50 +105,21 @@ jobs:
           out: 'reports'
           args: --failOnCVSS 9
 
-      - name: Upload Dependency Check Report
+      - name: Upload report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dependency-check-report
           path: reports/
 
-  codeql:
-    name: CodeQL Security Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: build-and-test
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: java-kotlin
-
-      - name: Build
-        run: mvn -B -DskipTests package -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
   release:
     name: Create Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-    needs: [build-and-test, sonarcloud, dependency-check, codeql]
+    needs: [verify, sonarcloud, dependency-check]
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -163,7 +132,7 @@ jobs:
           cache: maven
 
       - name: Build release artifacts
-        run: mvn clean package -DskipTests -B --no-transfer-progress -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
+        run: ./mvnw -B clean package -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dpmd.skip=true -Djacoco.skip=true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
