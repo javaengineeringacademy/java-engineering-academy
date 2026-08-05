@@ -9,7 +9,7 @@ This module provides chronological perspectives on the evolution of software eng
 | Timeline | Focus Area |
 |----------|------------|
 | [Software Engineering Evolution](software-engineering-evolution.md) | Methodologies and practices from 1960s to present |
-| [Programming Languages](programming-languages-evolution.md) | Major language paradigms and innovations |
+| [Programming Languages](programming-languages-evolution.md) | Major language approachs and innovations |
 | [Web Evolution](web-evolution.md) | From static pages to modern web applications |
 | [Architecture Evolution](architecture-evolution.md) | System design patterns and approaches |
 | [DevOps Evolution](devops-evolution.md) | Culture, practices, and toolchain development |

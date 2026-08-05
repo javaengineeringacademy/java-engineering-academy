@@ -40,4 +40,4 @@ Organizations typically evolve from traditional deployment toward containers and
 
 ## Selection Criteria
 
-Choose deployment models based on application requirements, team skills, compliance needs, and budget. Not all applications benefit from the latest deployment paradigm.
+Choose deployment models based on application requirements, team skills, compliance needs, and budget. Not all applications benefit from the latest deployment approach.

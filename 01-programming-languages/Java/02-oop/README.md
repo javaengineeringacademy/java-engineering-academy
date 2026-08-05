@@ -1,7 +1,7 @@
 # Module 02: Object-Oriented Programming
 
 ## Overview
-Object-Oriented Programming (OOP) is a programming paradigm based on objects that contain data and code. Java is a pure OOP language supporting encapsulation, inheritance, polymorphism, and abstraction.
+Object-Oriented Programming (OOP) is a programming approach based on objects that contain data and code. Java is a pure OOP language supporting encapsulation, inheritance, polymorphism, and abstraction.
 
 ## Learning Objectives
 - Master OOP principles

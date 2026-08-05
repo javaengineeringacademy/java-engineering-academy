@@ -21,7 +21,7 @@
 
 PySpark is the Python API for Apache Spark, providing an interface for
 interacting with Spark using Python. It allows Python developers to write
-Spark applications and leverage the distributed computing capabilities
+Spark applications and use the distributed computing capabilities
 of Spark.
 
 ### Key Characteristics

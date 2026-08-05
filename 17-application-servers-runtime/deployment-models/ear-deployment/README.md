@@ -34,7 +34,7 @@ EAR deployments use a parent-first class loading model. The EAR class loader loa
 
 ## Transaction Management
 
-EAR deployments leverage container-managed transactions for EJB modules. Transaction boundaries are configured declaratively or programmatically for enterprise operations.
+EAR deployments use container-managed transactions for EJB modules. Transaction boundaries are configured declaratively or programmatically for enterprise operations.
 
 ## Security
 

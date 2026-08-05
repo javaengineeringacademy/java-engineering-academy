@@ -1,6 +1,6 @@
 # Scala Design Patterns
 
-Scala blends object-oriented and functional programming, enabling patterns that leverage both paradigms. Immutability, pattern matching, and higher-order functions create elegant solutions.
+Scala blends object-oriented and functional programming, enabling patterns that use both approachs. Immutability, pattern matching, and higher-order functions create elegant solutions.
 
 ## Core Scala Concepts
 

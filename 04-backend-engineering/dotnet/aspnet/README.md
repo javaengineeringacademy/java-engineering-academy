@@ -10,7 +10,7 @@ The ASP.NET ecosystem includes multiple frameworks for different web development
 
 - Cross-platform web development on .NET
 - High-performance web frameworks
-- Multiple paradigms for different use cases
+- Multiple approachs for different use cases
 - Excellent tooling and developer experience
 - Large ecosystem of middleware and libraries
 

@@ -7,7 +7,7 @@ The Iterator pattern provides a way to access elements of a collection sequentia
 - Traversing collections
 - Lazy evaluation of sequences
 - Custom data structure traversal
-- Filtering and transforming collections
+- Filtering and changing collections
 - Implementing range-based operations
 
 ## Implementation

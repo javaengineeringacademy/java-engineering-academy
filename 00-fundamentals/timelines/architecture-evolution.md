@@ -2,7 +2,7 @@
 
 ## Overview
 
-Software architecture evolves in response to changing requirements, scale demands, and technological capabilities. Each paradigm addresses limitations of its predecessors.
+Software architecture evolves in response to changing requirements, scale demands, and technological capabilities. Each approach addresses limitations of its predecessors.
 
 ---
 

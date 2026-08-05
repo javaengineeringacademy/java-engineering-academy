@@ -50,7 +50,7 @@
 
 ## AOP (Aspect-Oriented Programming)
 
-**Definition**: A programming paradigm that separates cross-cutting concerns (logging, security, transactions) from business logic.
+**Definition**: A programming approach that separates cross-cutting concerns (logging, security, transactions) from business logic.
 
 **Context**: Used to reduce code duplication and improve modularity by extracting concerns that span multiple modules.
 

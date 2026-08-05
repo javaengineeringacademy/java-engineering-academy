@@ -2,7 +2,7 @@
 
 ## Overview
 
-Visual Basic revolutionized Windows application development when Microsoft released it in 1991. Its drag-and-drop interface design and event-driven programming model made rapid application development accessible to millions of programmers.
+Visual Basic changed Windows application development when Microsoft released it in 1991. Its drag-and-drop interface design and event-driven programming model made rapid application development accessible to millions of programmers.
 
 ## VB6 (Visual Basic 6)
 

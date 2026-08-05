@@ -100,7 +100,7 @@ A comprehensive guide to software design principles, patterns, and architecture 
 ## How to Use This Guide
 
 1. Start with OOP fundamentals for object-oriented design foundations
-2. Explore functional programming for alternative paradigms
+2. Explore functional programming for alternative approachs
 3. Study design patterns for reusable solutions to common problems
 4. Review architecture styles for system-level design decisions
 

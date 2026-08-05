@@ -52,7 +52,7 @@
 - **Removed:** N/A
 - **Performance:** Iterators provide memory-efficient iteration, __slots__ reduce memory usage
 - **Security:** Type unification improved type safety
-- **Why Introduced:** Major object model overhaul bringing Python closer to modern OOP paradigms
+- **Why Introduced:** Major object model overhaul bringing Python closer to modern OOP approachs
 
 ## Python 2.3
 - **Release Date:** July 29, 2003

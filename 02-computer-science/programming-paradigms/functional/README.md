@@ -26,7 +26,7 @@
 
 ## Overview
 
-Functional Programming is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing state and mutable data.
+Functional Programming is a programming approach that treats computation as the evaluation of mathematical functions and avoids changing state and mutable data.
 
 ### Core Principles
 
@@ -1008,7 +1008,7 @@ class User {
 
 ### Hybrid Approach
 
-Many modern languages support both paradigms. Use the right tool for each problem:
+Many modern languages support both approachs. Use the right tool for each problem:
 
 ```python
 # OOP for structure

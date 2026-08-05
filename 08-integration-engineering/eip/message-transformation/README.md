@@ -26,7 +26,7 @@ Two systems use different data formats or protocols. A message from one system c
 
 ### Solution
 
-Implement a Message Translator that converts messages from one format to another. The translator acts as a bridge between incompatible systems by transforming message payloads while preserving semantic meaning.
+Implement a Message Translator that converts messages from one format to another. The translator acts as a bridge between incompatible systems by changing message payloads while preserving semantic meaning.
 
 ### Implementation
 

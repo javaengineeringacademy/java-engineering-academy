@@ -2,7 +2,7 @@
 
 ## Overview
 
-Cloud computing evolved from mainframe time-sharing to on-demand global infrastructure, fundamentally transforming how software is built, deployed, and scaled.
+Cloud computing evolved from mainframe time-sharing to on-demand global infrastructure, fundamentally changing how software is built, deployed, and scaled.
 
 ---
 

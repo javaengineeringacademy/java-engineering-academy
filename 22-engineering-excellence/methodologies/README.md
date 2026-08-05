@@ -1,6 +1,6 @@
 # Software Development Methodologies
 
-A comprehensive guide to software development methodologies, their phases, use cases, and trade-offs.
+A full guide to software development methodologies, their phases, use cases, and trade-offs.
 
 ## Overview
 
@@ -9,7 +9,7 @@ Software development methodologies are structured frameworks that guide teams th
 ## Methodology Categories
 
 ### Traditional (Plan-Driven)
-- **Waterfall** - Sequential phases, comprehensive documentation
+- **Waterfall** - Sequential phases, full documentation
 - **V-Model** - Verification and validation at each phase
 - **Spiral** - Risk-driven iterative cycles
 

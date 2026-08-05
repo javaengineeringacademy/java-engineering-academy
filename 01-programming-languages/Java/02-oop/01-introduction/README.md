@@ -1,11 +1,11 @@
 # Introduction to Object-Oriented Programming
 
-Object-Oriented Programming (OOP) is a programming paradigm that organizes software design around objects rather than functions and logic. An object is a data field that has unique attributes and behavior. OOP focuses on binding data and the methods that operate on that data into a single unit, and restricting direct access to some of the object's components. This approach models real-world entities as objects, making complex systems more manageable, reusable, and easier to understand.
+Object-Oriented Programming (OOP) is a programming approach that organizes software design around objects rather than functions and logic. An object is a data field that has unique attributes and behavior. OOP focuses on binding data and the methods that operate on that data into a single unit, and restricting direct access to some of the object's components. This approach models real-world entities as objects, making complex systems more manageable, reusable, and easier to understand.
 
 ## Learning Objectives
 By the end of this topic, you will be able to:
 - Understand the fundamental concepts of Object-Oriented Programming
-- Differentiate between procedural and object-oriented programming paradigms
+- Differentiate between procedural and object-oriented programming approachs
 - Identify the four pillars of OOP: Encapsulation, Inheritance, Polymorphism, and Abstraction
 - Recognize the benefits of using OOP in software development
 
@@ -770,7 +770,7 @@ class LibraryServiceTest {
 
 ### Easy
 1. **Q:** What is Object-Oriented Programming?
-   **A:** OOP is a programming paradigm that organizes code around objects, which are instances of classes. It focuses on binding data and methods that operate on that data into single units, promoting encapsulation, inheritance, polymorphism, and abstraction.
+   **A:** OOP is a programming approach that organizes code around objects, which are instances of classes. It focuses on binding data and methods that operate on that data into single units, promoting encapsulation, inheritance, polymorphism, and abstraction.
 
 2. **Q:** What are the four pillars of OOP?
    **A:** The four pillars are:
@@ -975,7 +975,7 @@ Spring uses OOP extensively:
 - **MVC Pattern**: Controllers, services, and repositories are separate classes with distinct responsibilities
 
 ### Hibernate
-Hibernate leverages OOP for ORM:
+Hibernate uses OOP for ORM:
 - **Entity Classes**: Java objects map to database tables
 - **Inheritance Mapping**: Supports table-per-hierarchy, table-per-subclass strategies
 - **Lazy Loading**: Uses proxy objects to load data on demand

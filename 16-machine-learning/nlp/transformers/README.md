@@ -171,7 +171,7 @@ from transformers import (
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertModel.from_pretrained('bert-base-uncased')
 
-text = "The transformer architecture revolutionized NLP"
+text = "The transformer architecture changed NLP"
 inputs = tokenizer(text, return_tensors='pt')
 outputs = model(**inputs)
 

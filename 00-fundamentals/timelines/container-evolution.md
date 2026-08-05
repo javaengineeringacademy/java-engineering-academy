@@ -2,7 +2,7 @@
 
 ## Overview
 
-Container technology evolved from simple process isolation to sophisticated orchestration platforms, transforming how applications are packaged, deployed, and scaled.
+Container technology evolved from simple process isolation to sophisticated orchestration platforms, changing how applications are packaged, deployed, and scaled.
 
 ---
 

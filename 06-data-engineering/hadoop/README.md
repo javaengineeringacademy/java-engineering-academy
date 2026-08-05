@@ -398,7 +398,7 @@ YARN separates resource management from job scheduling/monitoring in Hadoop 2.x+
 
 1. **Hadoop** pioneered distributed storage and processing for big data
 2. **HDFS** provides fault-tolerant distributed storage with replication
-3. **MapReduce** introduced the map-shuffle-reduce paradigm but has been superseded by Spark
+3. **MapReduce** introduced the map-shuffle-reduce approach but has been superseded by Spark
 4. **YARN** separated resource management from processing, enabling multiple frameworks
 5. **The ecosystem** includes Hive, Pig, HBase, Sqoop, Flume, and many more tools
 6. **Hadoop 3.x** added erasure coding, YARN improvements, and better scalability

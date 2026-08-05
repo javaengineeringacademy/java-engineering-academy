@@ -19,7 +19,7 @@
 
 ## Overview
 
-Scala is a modern multi-paradigm programming language designed to express
+Scala is a modern multi-approach programming language designed to express
 common programming patterns in a concise, elegant, and type-safe way.
 It is the primary language for Apache Spark, providing seamless integration
 with Spark's APIs.

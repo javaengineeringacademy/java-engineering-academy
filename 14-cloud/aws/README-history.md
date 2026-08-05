@@ -6,7 +6,7 @@ Amazon Web Services (AWS) was launched by Amazon in 2006. It started with the Si
 
 ## Motivation
 
-Amazon wanted to leverage its existing infrastructure to provide cloud services to other businesses. The goal was to create a platform that would allow developers to build and deploy applications without having to manage physical infrastructure. AWS was designed to be a pay-as-you-go service that could scale with demand.
+Amazon wanted to use its existing infrastructure to provide cloud services to other businesses. The goal was to create a platform that would allow developers to build and deploy applications without having to manage physical infrastructure. AWS was designed to be a pay-as-you-go service that could scale with demand.
 
 ## Key Milestones
 

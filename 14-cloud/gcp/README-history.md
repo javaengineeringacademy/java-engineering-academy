@@ -2,7 +2,7 @@
 
 ## Origin Story
 
-Google Cloud Platform (GCP) was launched by Google in 2008. It started with the Google App Engine and has since grown to become one of the major cloud computing platforms. GCP was created to provide cloud computing services that leverage Google's infrastructure and expertise in large-scale computing.
+Google Cloud Platform (GCP) was launched by Google in 2008. It started with the Google App Engine and has since grown to become one of the major cloud computing platforms. GCP was created to provide cloud computing services that use Google's infrastructure and expertise in large-scale computing.
 
 ## Motivation
 

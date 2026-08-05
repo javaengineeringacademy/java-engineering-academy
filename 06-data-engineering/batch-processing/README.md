@@ -15,7 +15,7 @@
 
 ## Overview
 
-Batch processing is a data processing paradigm that processes data in large
+Batch processing is a data processing approach that processes data in large
 groups at scheduled intervals. It is designed to handle high volumes of data
 that don't require immediate processing.
 

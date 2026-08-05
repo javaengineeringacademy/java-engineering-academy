@@ -1,7 +1,7 @@
 # Decision Tree: When to Use MongoDB vs PostgreSQL vs Others
 
 ## Overview
-MongoDB and PostgreSQL serve different data modeling paradigms. This guide helps you choose the right database for your use case.
+MongoDB and PostgreSQL serve different data modeling approachs. This guide helps you choose the right database for your use case.
 
 ## Decision Flow
 

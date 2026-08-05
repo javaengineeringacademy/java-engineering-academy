@@ -675,7 +675,7 @@ Drawing yellow circle with radius 3.0
 
 ### Example 1: Strategy Pattern with Dynamic Binding
 
-**Problem Statement**: Implement a sorting system that uses dynamic binding to select different sorting algorithms at runtime, demonstrating how strategy pattern leverages polymorphic behavior.
+**Problem Statement**: Implement a sorting system that uses dynamic binding to select different sorting algorithms at runtime, demonstrating how strategy pattern uses polymorphic behavior.
 
 **Requirements**:
 

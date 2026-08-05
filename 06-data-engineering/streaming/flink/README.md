@@ -15,7 +15,7 @@ Apache Flink is a distributed stream processing framework for stateful computati
 
 ## Overview
 
-Flink is designed for stream processing as its core paradigm, with batch processing as a special case of stream processing (bounded streams).
+Flink is designed for stream processing as its core approach, with batch processing as a special case of stream processing (bounded streams).
 
 ### Key Features
 

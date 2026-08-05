@@ -4,7 +4,7 @@ Strategies and patterns for modernizing legacy .NET applications to modern .NET 
 
 ## Overview
 
-Modernization involves upgrading legacy .NET applications to leverage modern .NET features, performance, and cross-platform capabilities. Different strategies apply based on application type and constraints.
+Modernization involves upgrading legacy .NET applications to use modern .NET features, performance, and cross-platform capabilities. Different strategies apply based on application type and constraints.
 
 ## Why It Matters
 

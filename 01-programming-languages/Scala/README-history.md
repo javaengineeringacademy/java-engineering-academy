@@ -6,7 +6,7 @@ Scala was created by Martin Odersky at EPFL (École Polytechnique Fédérale de 
 
 ## Motivation
 
-Martin Odersky wanted to create a language that combined object-oriented and functional programming paradigms on the Java Virtual Machine (JVM). The goal was to address some of Java's shortcomings while maintaining full interoperability with existing Java code. Scala was designed to be more concise and expressive than Java while providing the same performance characteristics.
+Martin Odersky wanted to create a language that combined object-oriented and functional programming approachs on the Java Virtual Machine (JVM). The goal was to address some of Java's shortcomings while maintaining full interoperability with existing Java code. Scala was designed to be more concise and expressive than Java while providing the same performance characteristics.
 
 ## Key Milestones
 

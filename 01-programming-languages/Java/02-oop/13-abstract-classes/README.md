@@ -1839,7 +1839,7 @@ In enterprise applications, abstract classes are commonly used for:
 - Abstract classes cannot be instantiated and serve as templates for other classes
 - They can contain both abstract methods (no implementation) and concrete methods (with implementation)
 - Abstract classes enforce design contracts while allowing code reuse through inheritance
-- The Template Method pattern leverages abstract classes to define algorithm skeletons
+- The Template Method pattern uses abstract classes to define algorithm skeletons
 - Use abstract classes when related classes share common state and behavior
 - Consider interfaces when you need multiple inheritance of type without shared state
 

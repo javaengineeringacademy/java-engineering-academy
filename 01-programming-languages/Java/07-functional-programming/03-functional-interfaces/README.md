@@ -1305,7 +1305,7 @@ Build a type-safe configuration system:
 Design an event system using functional interfaces:
 1. `EventListener<T>` for handling events
 2. `EventFilter<T>` for filtering events
-3. `EventTransformer<T, R>` for transforming events
+3. `EventTransformer<T, R>` for changing events
 4. Support event chaining and composition
 
 ---

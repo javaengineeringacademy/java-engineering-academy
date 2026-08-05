@@ -17,7 +17,7 @@
 
 ELT (Extract, Load, Transform) is a data integration process that loads raw
 data directly into the target system before transformation. Unlike ETL, ELT
-leverages the processing power of modern data warehouses to transform data
+uses the processing power of modern data warehouses to transform data
 in-place.
 
 ### Key Characteristics
@@ -25,7 +25,7 @@ in-place.
 - **Extract**: Retrieve data from source systems
 - **Load**: Load raw data directly to target warehouse
 - **Transform**: Transform data within the warehouse
-- **Leverage warehouse**: Use warehouse compute for transformations
+- **Use warehouse**: Use warehouse compute for transformations
 - **Flexible**: Handle schema changes more easily
 
 ### When to Use ELT
@@ -39,7 +39,7 @@ in-place.
 ### ELT Benefits
 
 1. **Flexibility**: Transform data as needed without re-extracting
-2. **Performance**: Leverage warehouse compute for transformations
+2. **Performance**: Use warehouse compute for transformations
 3. **Cost**: Use existing warehouse infrastructure
 4. **Agility**: Quick iteration on transformations
 5. **Scalability**: Scale transformations with warehouse
@@ -106,7 +106,7 @@ in-place.
 | Data Volume | Better for large data | Better for small data |
 | Schema Changes | Easier to handle | Requires re-extraction |
 | Data Exploration | Better | Limited |
-| Performance | Leverages warehouse | Limited by staging |
+| Performance | Uses warehouse | Limited by staging |
 
 ### When to Choose ELT
 

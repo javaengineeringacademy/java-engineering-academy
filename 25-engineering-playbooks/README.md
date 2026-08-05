@@ -22,7 +22,7 @@ Company playbooks document how leading technology companies solve engineering pr
 
 ## Modernization Playbooks
 
-Modernization playbooks provide step-by-step strategies for transforming legacy systems. Each playbook covers migration patterns, tooling, risk mitigation, and measurable outcomes from real migration projects.
+Modernization playbooks provide step-by-step strategies for changing legacy systems. Each playbook covers migration patterns, tooling, risk mitigation, and measurable outcomes from real migration projects.
 
 ### Key Migrations Covered
 

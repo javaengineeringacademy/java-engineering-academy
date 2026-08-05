@@ -2,7 +2,7 @@
 
 ## Overview
 
-Programming languages evolve to address new computing paradigms, improve developer productivity, and adapt to changing hardware and software requirements.
+Programming languages evolve to address new computing approachs, improve developer productivity, and adapt to changing hardware and software requirements.
 
 ---
 
@@ -51,7 +51,7 @@ Programming languages evolve to address new computing paradigms, improve develop
 
 ---
 
-## 1980s: Object-Oriented Paradigm
+## 1980s: Object-Oriented Approach
 
 ### C++ (1983)
 - **Motivation**: Object-oriented systems programming

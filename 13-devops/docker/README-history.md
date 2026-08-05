@@ -2,7 +2,7 @@
 
 ## Origin Story
 
-Docker was created by Solomon Hykes at DotCloud in 2013. It was originally developed as an internal tool for the DotCloud platform and was released as open-source in March 2013. Docker quickly became the standard for container technology and revolutionized how applications are deployed and managed.
+Docker was created by Solomon Hykes at DotCloud in 2013. It was originally developed as an internal tool for the DotCloud platform and was released as open-source in March 2013. Docker quickly became the standard for container technology and changed how applications are deployed and managed.
 
 ## Motivation
 

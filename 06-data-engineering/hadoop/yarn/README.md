@@ -25,7 +25,7 @@ YARN is Hadoop's resource management layer, introduced in Hadoop 2.x to separate
 - **Multi-tenancy**: Multiple frameworks share cluster resources
 - **Scalability**: Support clusters with thousands of nodes
 - **Efficiency**: Better resource utilization than Hadoop 1.x
-- **Flexibility**: Support different processing paradigms
+- **Flexibility**: Support different processing approachs
 
 ### Before YARN (Hadoop 1.x)
 

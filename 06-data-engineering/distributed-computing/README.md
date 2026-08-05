@@ -10,7 +10,7 @@
 6. [Fault Tolerance](#fault-tolerance)
 7. [Consensus Algorithms](#consensus-algorithms)
 8. [Distributed Transactions](#distributed-transactions)
-9. [MapReduce Paradigm](#mapreduce-paradigm)
+9. [MapReduce Approach](#mapreduce-approach)
 10. [Key Takeaways](#key-takeaways)
 
 ---
@@ -555,7 +555,7 @@ Current State: balance = 50
 
 ---
 
-## MapReduce Paradigm
+## MapReduce Approach
 
 MapReduce is a programming model for processing large datasets in parallel across a distributed cluster.
 

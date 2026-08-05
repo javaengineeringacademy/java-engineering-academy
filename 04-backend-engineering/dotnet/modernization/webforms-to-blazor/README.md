@@ -4,7 +4,7 @@ Migrating ASP.NET Web Forms applications to Blazor for modern, interactive web d
 
 ## Overview
 
-Web Forms applications can be migrated to Blazor to leverage C#-based UI development without JavaScript. Blazor provides a similar component-based model with modern capabilities.
+Web Forms applications can be migrated to Blazor to use C#-based UI development without JavaScript. Blazor provides a similar component-based model with modern capabilities.
 
 ## Why It Matters
 

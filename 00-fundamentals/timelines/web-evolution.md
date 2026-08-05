@@ -114,7 +114,7 @@ The World Wide Web transformed from simple document sharing to a platform for co
 
 ### React (2013)
 - **Innovation**: Component-based UI with virtual DOM
-- **Impact**: Changed frontend development paradigm
+- **Impact**: Changed frontend development approach
 - **Characteristics**: Declarative, unidirectional data flow
 
 ### Node.js (2009)

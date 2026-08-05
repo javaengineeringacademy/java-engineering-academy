@@ -2,7 +2,7 @@
 
 ## Overview
 
-Data management has evolved from simple hierarchical storage to sophisticated AI-native systems, each paradigm addressing new scale, complexity, and access pattern requirements.
+Data management has evolved from simple hierarchical storage to sophisticated AI-native systems, each approach addressing new scale, complexity, and access pattern requirements.
 
 ---
 

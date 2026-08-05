@@ -69,7 +69,7 @@ SOAP defines a strict message structure with an envelope, header, and body, and 
 
 ### REST Protocol Stack
 
-REST leverages HTTP/HTTPS as its primary transport protocol, using standard HTTP methods:
+REST uses HTTP/HTTPS as its primary transport protocol, using standard HTTP methods:
 
 ```
 ┌─────────────────────────────────────────────┐

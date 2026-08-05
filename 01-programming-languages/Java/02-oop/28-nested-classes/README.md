@@ -706,7 +706,7 @@ class ExpressionTest {
 **Best Practices**:
 - Use static nested classes for AST nodes — they don't need outer references
 - Implement `toString()` for debugging
-- Use enums for operators to leverage type safety and switch expressions
+- Use enums for operators to use type safety and switch expressions
 
 ### Example 2: Nested Class Chain for Configuration Hierarchy
 

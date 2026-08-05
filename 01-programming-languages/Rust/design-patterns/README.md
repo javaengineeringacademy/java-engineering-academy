@@ -1,6 +1,6 @@
 # Rust Design Patterns
 
-Rust's unique ownership model, trait system, and enum algebra make it suitable for patterns that differ from traditional OOP implementations. Many patterns map naturally to Rust's type system, while others leverage compile-time guarantees.
+Rust's unique ownership model, trait system, and enum algebra make it suitable for patterns that differ from traditional OOP implementations. Many patterns map naturally to Rust's type system, while others use compile-time guarantees.
 
 ## Core Rust Concepts
 

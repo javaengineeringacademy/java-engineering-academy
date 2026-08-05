@@ -497,7 +497,7 @@ Active channels:
 
 **Best Practices:**
 - Use interfaces for cross-cutting concerns (logging, notification, validation)
-- Leverage default methods for optional behavior
+- Use default methods for optional behavior
 - Keep interfaces focused (Interface Segregation Principle)
 
 ---
@@ -572,7 +572,7 @@ class JsonExporter extends DataExporter {
 
     @Override
     protected String processData(String data) {
-        System.out.println("[JSON] Parsing and transforming...");
+        System.out.println("[JSON] Parsing and changing...");
         return data.trim();
     }
 
@@ -624,7 +624,7 @@ Export completed
 
 === JSON Export ===
 [JSON] Validating JSON structure...
-[JSON] Parsing and transforming...
+[JSON] Parsing and changing...
 [JSON] Formatting as JSON...
 [JSON] Saving to file.json
 Content: { "data": "Alice,30,Engineer\nBob,25,Designer" }

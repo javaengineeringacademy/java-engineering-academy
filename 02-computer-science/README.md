@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Programming Paradigms](#programming-paradigms)
+- [Programming Approachs](#programming-approachs)
 - [Data Structures](#data-structures)
 - [Algorithms](#algorithms)
 - [Operating Systems](#operating-systems)
@@ -15,12 +15,12 @@
 
 ---
 
-## Programming Paradigms
+## Programming Approachs
 
 | Topic | Description |
 |-------|-------------|
-| [OOP](./programming-paradigms/oop/README.md) | Classes, objects, inheritance, polymorphism, SOLID principles |
-| [Functional Programming](./programming-paradigms/functional/README.md) | Pure functions, immutability, higher-order functions, monads |
+| [OOP](./programming-approachs/oop/README.md) | Classes, objects, inheritance, polymorphism, SOLID principles |
+| [Functional Programming](./programming-approachs/functional/README.md) | Pure functions, immutability, higher-order functions, monads |
 
 ## Data Structures
 
@@ -81,7 +81,7 @@
 | [Consensus](./distributed-systems/consensus/README.md) | Paxos, Raft, ZAB, leader election |
 | [Consistency](./distributed-systems/consistency/README.md) | CAP, eventual consistency, CRDTs |
 | [CAP Theorem](./distributed-systems/cap-theorem/README.md) | CAP proof, PACELC, trade-offs |
-| [MapReduce](./distributed-systems/map-reduce/README.md) | MapReduce paradigm, Hadoop, Spark |
+| [MapReduce](./distributed-systems/map-reduce/README.md) | MapReduce approach, Hadoop, Spark |
 
 ## Compiler Design
 
@@ -118,7 +118,7 @@
 
 ## How to Use This Module
 
-1. Start with **Programming Paradigms** to understand code organization
+1. Start with **Programming Approachs** to understand code organization
 2. Move to **Data Structures** - the building blocks of all software
 3. Study **Algorithms** to learn problem-solving techniques
 4. Explore **Operating Systems** for system-level understanding

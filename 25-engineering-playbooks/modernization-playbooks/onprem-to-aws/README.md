@@ -64,7 +64,7 @@ Move applications to managed services that reduce operational overhead. Examples
 
 ### Refactoring
 
-Re-architect applications to leverage cloud-native services. Examples include:
+Re-architect applications to use cloud-native services. Examples include:
 
 - Monoliths to microservices on ECS or EKS
 - Batch processing to AWS Lambda or Step Functions
@@ -109,7 +109,7 @@ Manual migration does not scale. Automate infrastructure provisioning, applicati
 
 ### Optimize for Cloud
 
-Lift-and-shift provides quick migration but does not realize cloud benefits. Plan for post-migration optimization to leverage managed services and cloud-native patterns.
+Lift-and-shift provides quick migration but does not realize cloud benefits. Plan for post-migration optimization to use managed services and cloud-native patterns.
 
 ### Monitor Cost
 

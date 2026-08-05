@@ -2,7 +2,7 @@
 
 ## Overview
 
-XSLT is a declarative language for transforming XML documents into other formats including HTML, plain text, XML, or any structured format. It uses XPath expressions to select and navigate XML nodes, applying templates that define how source content maps to the output structure.
+XSLT is a declarative language for changing XML documents into other formats including HTML, plain text, XML, or any structured format. It uses XPath expressions to select and navigate XML nodes, applying templates that define how source content maps to the output structure.
 
 ## History
 
@@ -27,7 +27,7 @@ XSLT was widely used from 2000 to 2015 for XML document transformation. Enterpri
 
 ## Why It Was Replaced
 
-REST APIs returning JSON eliminated the primary use case of transforming XML responses. Modern template engines (Thymeleaf, Handlebars, Mustache) handle server-side rendering more simply. JavaScript frameworks process data on the client side without server transformation. JSON processing libraries are simpler and faster than XML transformation pipelines.
+REST APIs returning JSON eliminated the primary use case of changing XML responses. Modern template engines (Thymeleaf, Handlebars, Mustache) handle server-side rendering more simply. JavaScript frameworks process data on the client side without server transformation. JSON processing libraries are simpler and faster than XML transformation pipelines.
 
 ## Migration Path
 

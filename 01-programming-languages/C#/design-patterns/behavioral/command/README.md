@@ -4,7 +4,7 @@
 
 The Command pattern encapsulates a request as an object, letting you parameterize
 clients with different requests, queue requests, and support undo operations. C#
-leverages interfaces and delegates for command implementations.
+uses interfaces and delegates for command implementations.
 
 ## When to Use
 

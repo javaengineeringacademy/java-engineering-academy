@@ -116,7 +116,7 @@ Trade-off: Traversal queries are extremely fast, but aggregation queries are not
 - You understand that different data stores serve different purposes
 - You can identify the access patterns that determine the right choice
 - You know the CAP implications of each choice
-- You understand data modeling for both paradigms
+- You understand data modeling for both approachs
 
 **Red flags**:
 - Choosing NoSQL because "it scales better" without understanding why

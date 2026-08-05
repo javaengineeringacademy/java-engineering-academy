@@ -288,7 +288,7 @@ ENTRYPOINT ["java", \
 - Use smaller base images (Alpine, JRE vs JDK)
 - Order Dockerfile commands by change frequency
 - Use `.dockerignore` to exclude unnecessary files
-- Leverage multi-stage builds
+- Use multi-stage builds
 
 # 18. Time & Space Complexity
 
@@ -448,7 +448,7 @@ Need to package application?
 
 # 28. Summary
 
-Docker revolutionizes application deployment by providing consistent, lightweight, and portable containers. Understanding Docker fundamentals is essential for modern Java developers, enabling easier development, testing, and deployment workflows. Key takeaways: use multi-stage builds, follow security best practices, and understand container networking for effective microservices architecture.
+Docker changes application deployment by providing consistent, lightweight, and portable containers. Understanding Docker fundamentals is essential for modern Java developers, enabling easier development, testing, and deployment workflows. Key takeaways: use multi-stage builds, follow security best practices, and understand container networking for effective microservices architecture.
 
 # 29. References
 

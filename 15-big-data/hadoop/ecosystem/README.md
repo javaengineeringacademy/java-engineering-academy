@@ -26,7 +26,7 @@ The Hadoop ecosystem follows several key design principles:
 - **Modularity**: Each component handles a specific aspect of the data pipeline
 - **Scalability**: Components scale horizontally across commodity hardware
 - **Fault Tolerance**: Built-in replication and recovery mechanisms
-- **Flexibility**: Support for diverse data types and processing paradigms
+- **Flexibility**: Support for diverse data types and processing approachs
 - **Community-Driven**: Open-source development with active contributions
 
 ### Component Categories

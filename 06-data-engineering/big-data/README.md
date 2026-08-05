@@ -284,9 +284,9 @@ Formula: `W + R > N` guarantees strong consistency where W=write replicas, R=rea
 
 ## Distributed Processing
 
-### MapReduce Paradigm
+### MapReduce Approach
 
-The foundational paradigm for distributed data processing:
+The foundational approach for distributed data processing:
 
 ```
 Input → Split → Map → Shuffle/Sort → Reduce → Output

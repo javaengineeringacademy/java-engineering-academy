@@ -15,7 +15,7 @@
 
 ## Overview
 
-Stream processing is a data processing paradigm that processes data in real-time
+Stream processing is a data processing approach that processes data in real-time
 as it arrives, enabling immediate insights and actions. It is designed for
 applications requiring low-latency processing of continuous data streams.
 

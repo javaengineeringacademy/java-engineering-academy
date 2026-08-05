@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>The world's most comprehensive open-source software engineering knowledge base.</strong><br>
+  <strong>The largest open-source software engineering knowledge base.</strong><br>
   31 modules | 1,600+ topics | Every technology, every concept, every question answered.
 </p>
 
@@ -267,5 +267,5 @@ Apache License 2.0
 ---
 
 <p align="center">
-  <strong>Built with the belief that software engineering education should be free, comprehensive, and industry-aligned.</strong>
+  <strong>Built by engineers, for engineers. Free and open source.</strong>
 </p>

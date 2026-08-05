@@ -4,7 +4,7 @@ C# provides full support for OOP with classes, interfaces, inheritance, polymorp
 
 ## Overview
 
-OOP is the paradigm underlying most .NET applications. C# supports single inheritance for classes, multiple interface implementation, abstract classes, virtual methods, and sealed types.
+OOP is the approach underlying most .NET applications. C# supports single inheritance for classes, multiple interface implementation, abstract classes, virtual methods, and sealed types.
 
 ## Why It Matters
 

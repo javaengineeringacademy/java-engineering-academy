@@ -1,7 +1,7 @@
 # Scala Fundamentals
 
 ## Overview
-Scala is a modern multi-paradigm language designed for brief, elegant, and type-safe code. Combines OO and functional programming.
+Scala is a modern multi-approach language designed for brief, elegant, and type-safe code. Combines OO and functional programming.
 
 ## Topics
 - Variables and Types

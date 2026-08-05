@@ -19,7 +19,7 @@
 
 ## Overview
 
-Object-Oriented Programming is a programming paradigm based on the concept of "objects", which can contain data (attributes) and code (methods). OOP models real-world entities as software objects that have state and behavior.
+Object-Oriented Programming is a programming approach based on the concept of "objects", which can contain data (attributes) and code (methods). OOP models real-world entities as software objects that have state and behavior.
 
 ### Key Benefits
 
@@ -28,7 +28,7 @@ Object-Oriented Programming is a programming paradigm based on the concept of "o
 - **Maintainability**: Changes are localized to specific objects
 - **Scalability**: Systems can grow through object composition
 
-### OOP vs Other Paradigms
+### OOP vs Other Approachs
 
 | Feature | OOP | Functional | Procedural |
 |---------|-----|------------|------------|

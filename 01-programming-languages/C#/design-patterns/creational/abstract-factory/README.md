@@ -3,7 +3,7 @@
 ## Overview
 
 The Abstract Factory pattern provides an interface for creating families of related
-or dependent objects without specifying their concrete classes. C# leverages interfaces
+or dependent objects without specifying their concrete classes. C# uses interfaces
 and dependency injection for clean implementations.
 
 ## When to Use

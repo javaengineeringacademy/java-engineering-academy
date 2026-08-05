@@ -2,7 +2,7 @@
 
 ## Overview
 
-Modernization playbooks provide strategies and patterns for transforming legacy systems into modern architectures. Each playbook documents a specific migration scenario, covering the approach, tools, patterns, and lessons learned from real-world transformations.
+Modernization playbooks provide strategies and patterns for changing legacy systems into modern architectures. Each playbook documents a specific migration scenario, covering the approach, tools, patterns, and lessons learned from real-world transformations.
 
 ## Migration Categories
 
@@ -38,7 +38,7 @@ Integration migrations update how systems communicate with each other. These mig
 
 ### Platform Migrations
 
-Platform migrations move systems from one infrastructure to another. These migrations involve re-platforming or re-architecting to leverage cloud services and modern deployment models.
+Platform migrations move systems from one infrastructure to another. These migrations involve re-platforming or re-architecting to use cloud services and modern deployment models.
 
 - On-premises to AWS
 - Kafka to Redpanda

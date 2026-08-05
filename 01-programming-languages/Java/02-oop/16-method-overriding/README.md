@@ -2050,6 +2050,6 @@ In enterprise applications, overriding is used for:
 - @Override annotation helps catch errors and improves code clarity
 - Overridden methods must follow specific rules (same signature, compatible return type, etc.)
 - Method overriding supports the Liskov Substitution Principle
-- Template Method pattern leverages overriding to define customizable algorithms
+- Template Method pattern uses overriding to define customizable algorithms
 
 **Next Steps**: [17-dynamic-binding](../17-dynamic-binding/README.md)

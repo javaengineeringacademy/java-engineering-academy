@@ -3,7 +3,7 @@
 ## Basic Concepts
 
 ### 1. What is Python?
-Python is a high-level, interpreted, general-purpose programming language. It emphasizes code readability with its significant indentation and supports multiple programming paradigms including procedural, object-oriented, and functional programming.
+Python is a high-level, interpreted, general-purpose programming language. It emphasizes code readability with its significant indentation and supports multiple programming approachs including procedural, object-oriented, and functional programming.
 
 ### 2. What is the difference between a list and a tuple?
 - **List**: Mutable, can be modified after creation, uses square brackets `[]`

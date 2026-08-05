@@ -43,7 +43,7 @@ The four DORA metrics are the gold standard for measuring software delivery perf
 
 ## SPACE Framework
 
-The SPACE framework provides a more holistic view by measuring five dimensions:
+The SPACE framework provides a more complete view by measuring five dimensions:
 
 - **Satisfaction**: Developer satisfaction and well-being
 - **Performance**: System and team performance

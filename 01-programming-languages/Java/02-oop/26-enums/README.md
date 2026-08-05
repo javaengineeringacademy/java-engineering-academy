@@ -10,7 +10,7 @@ By the end of this topic, you will be able to:
 
 - [ ] Define and use Java enums with fields, constructors, and methods
 - [ ] Compare enums using `==` and understand why `equals()` should be avoided
-- [ ] Leverage built-in enum methods like `values()`, `valueOf()`, and `ordinal()`
+- [ ] Use built-in enum methods like `values()`, `valueOf()`, and `ordinal()`
 - [ ] Apply enums in `switch` statements and implement the Strategy pattern using enum constants
 
 ## Prerequisites
@@ -349,7 +349,7 @@ public class CalculatorDemo {
 
 **Code Walkthrough**: Each enum constant overrides the abstract `apply` method. This is the Strategy pattern implemented cleanly with enums — each constant IS a strategy. The loop demonstrates polymorphic dispatch on enum constants.
 
-**Alternative Solution**: You could use a `Map<CalculatorOperation, BinaryOperator<Double>>` with lambda expressions, but the enum approach is more self-contained and leverages the type system.
+**Alternative Solution**: You could use a `Map<CalculatorOperation, BinaryOperator<Double>>` with lambda expressions, but the enum approach is more self-contained and uses the type system.
 
 ### Example 2: Enum Implementing an Interface
 

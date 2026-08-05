@@ -34,7 +34,7 @@
 
 ## 1. Introduction
 
-Functional Programming (FP) is a programming paradigm that treats computation as the evaluation of mathematical functions. Unlike Object-Oriented Programming (OOP), which organizes code around objects and their mutable state, FP emphasizes immutability, pure functions, and declarative code.
+Functional Programming (FP) is a programming approach that treats computation as the evaluation of mathematical functions. Unlike Object-Oriented Programming (OOP), which organizes code around objects and their mutable state, FP emphasizes immutability, pure functions, and declarative code.
 
 Java 8 introduced first-class support for functional programming with lambda expressions and the Stream API. Java 21 continues this evolution with pattern matching for `switch` expressions, record patterns, and enhanced string templates that further reduce boilerplate code.
 
@@ -138,7 +138,7 @@ An e-commerce platform needs to process millions of daily orders. The current im
 
 - **Bug-prone code**: Mutable state leads to race conditions
 - **Difficult maintenance**: Complex nested loops and conditionals
-- **Poor performance**: Sequential processing cannot leverage multi-core CPUs
+- **Poor performance**: Sequential processing cannot use multi-core CPUs
 - **Testing challenges**: Side effects make unit testing difficult
 
 ### Requirements
