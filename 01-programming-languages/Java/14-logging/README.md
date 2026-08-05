@@ -1,0 +1,50 @@
+# Logging Module
+
+## Overview
+This module covers Java logging frameworks including SLF4J, Logback, and Log4j2 for application logging and monitoring.
+
+## Key Concepts
+
+### 1. SLF4J (Simple Logging Facade for Java)
+- Logging abstraction layer
+- Backend-agnostic logging API
+- Common methods: `trace()`, `debug()`, `info()`, `warn()`, `error()`
+
+### 2. Logback
+- Native SLF4J implementation
+- High performance
+- Advanced configuration options
+
+### 3. Log4j2
+- High-performance logging framework
+- Asynchronous logging support
+- Plugin architecture
+
+### 4. Logging Best Practices
+- Use appropriate log levels
+- Include context in log messages
+- Avoid logging sensitive information
+- Use structured logging
+
+## Module Structure
+- `Slf4jBasics.java` - SLF4J API usage
+- `LogbackConfiguration.java` - Logback setup and configuration
+- `StructuredLogging.java` - Structured logging patterns
+- `PerformanceLogging.java` - Performance-optimized logging
+- `LoggingBestPractices.java` - Best practices and patterns
+
+## Code References
+- `Slf4jBasics.java` - Comprehensive SLF4J examples
+
+## Common Mistakes
+1. Using wrong log level for messages
+2. Not including context in log messages
+3. Logging sensitive information
+4. Not configuring log rotation
+
+## Interview Questions
+1. What is the difference between SLF4J and Log4j?
+2. How do you configure log levels?
+3. What is structured logging?
+4. How do you handle log rotation?
+5. What are the performance implications of logging?
