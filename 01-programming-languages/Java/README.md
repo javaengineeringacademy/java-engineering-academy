@@ -51,6 +51,39 @@ mvn test -pl java-fundamentals -Dtest=BasicsTest
 - [Java Language Specification](https://docs.oracle.com/javase/specs/jls/se21/html/index.html)
 - [Java Tutorials - Oracle](https://docs.oracle.com/en/java/javase/21/)
 
+## Architecture
+
+```mermaid
+graph TD
+    A[Java Core] --> B[Collections Framework]
+    A --> C[Concurrency Utilities]
+    B --> D[Spring Ecosystem]
+    C --> D
+    D --> E[Microservices]
+    E --> F[Cloud Deployment]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style F fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+## When to Use
+
+```mermaid
+graph TD
+    Start{Project Requirements} -->|Enterprise| Java[Choose Java]
+    Start -->|Quick Scripts| Python[Choose Python]
+    Start -->|Performance| Cpp[Choose C++]
+    Start -->|Mobile| Kotlin[Choose Kotlin]
+
+    Java -->|Web Backend| Spring[Spring Boot]
+    Java -->|Desktop| JavaFX[JavaFX]
+    Java -->|Android| Android[Android SDK]
+
+    style Java fill:#f96,stroke:#333,stroke-width:2px
+    style Spring fill:#6cf,stroke:#333,stroke-width:2px
+```
+
 ## Status
 ✅ Complete — All topics, examples, exercises, and tests ready
 
