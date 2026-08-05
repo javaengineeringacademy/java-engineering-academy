@@ -9,6 +9,8 @@ The Java Collections Framework provides interfaces, implementations, and algorit
 - Use appropriate collections
 - Apply algorithms and utilities
 - Handle thread-safe collections
+- Master all iteration methods
+- Use Lambda expressions and Stream API
 
 ## Prerequisites
 - OOP concepts
@@ -69,47 +71,240 @@ Map (key-value)
 | HashMap | O(1) | O(1) | O(1) | No |
 | TreeMap | O(log n) | O(log n) | O(log n) | No |
 
-## Internal Working
+## Iteration Methods
 
-### ArrayList Internals
+### Comparison Table
+
+| Method | Index Access | Can Break | Can Modify | Best For |
+|--------|-------------|-----------|------------|----------|
+| Traditional for | Yes | break/continue | Yes (set, add, remove) | Index-based operations |
+| Enhanced for-each | No | break/continue | No | Simple iteration |
+| forEach lambda | No | No | No | Functional style |
+| Method reference | No | No | No | Calling single method |
+| Iterator | No | Iterator.remove() | Yes (remove, add, set) | Safe removal during iteration |
+| Stream forEach | No | findFirst/limit | No | Chained transformations |
+| Recursion | N/A | Return | Yes | Tree/graph traversal |
+
+### Traditional For Loop
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+// Index-based access
+for (int i = 0; i < names.size(); i++) {
+    System.out.println(i + ": " + names.get(i));
+}
+
+// Reverse iteration
+for (int i = names.size() - 1; i >= 0; i--) {
+    System.out.println(names.get(i));
+}
 ```
-ArrayList:
-┌─────────────────────────────────────┐
-│ Object[] elementData                │
-│  ├─ [0] → "A"                      │
-│  ├─ [1] → "B"                      │
-│  ├─ [2] → null (empty)             │
-│  └─ [3] → null (empty)             │
-│ size: 2, capacity: 4               │
-└─────────────────────────────────────┘
+
+### Enhanced For-Each Loop
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+for (String name : names) {
+    System.out.println(name);
+}
 ```
 
-### HashMap Internals
+### forEach with Lambda
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+names.forEach(name -> System.out.println(name));
+
+// Multi-line body
+names.forEach(name -> {
+    String upper = name.toUpperCase();
+    System.out.println(upper);
+});
 ```
-HashMap:
-┌─────────────────────────────────────┐
-│ Table (Node[] table)                │
-│  ├─ [0] → Node → Node              │
-│  ├─ [1] → null                      │
-│  ├─ [2] → Node                     │
-│  └─ [3] → null                      │
-│ loadFactor: 0.75, threshold: 12    │
-└─────────────────────────────────────┘
+
+### forEach with Method Reference
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+names.forEach(System.out::println);
 ```
 
-## JVM Perspective
+### Iterator Pattern
+```java
+List<String> names = new ArrayList<>(List.of("Alice", "Bob", "Charlie"));
 
-### Memory Usage
-- ArrayList: O(capacity) array
-- LinkedList: O(n) nodes with pointers
-- HashMap: O(capacity) buckets + entries
-- TreeMap: O(n) tree nodes
+// Forward iteration
+Iterator<String> it = names.iterator();
+while (it.hasNext()) {
+    System.out.println(it.next());
+}
 
-### Generics
-- Type erasure at runtime
-- No primitive generics
-- Bounded type parameters
-- Wildcard capture
+// Safe removal
+Iterator<String> removeIt = names.iterator();
+while (removeIt.hasNext()) {
+    if (removeIt.next().startsWith("A")) {
+        removeIt.remove();
+    }
+}
+
+// Bidirectional with ListIterator
+ListIterator<String> listIt = names.listIterator(names.size());
+while (listIt.hasPrevious()) {
+    System.out.println(listIt.previous());
+}
+```
+
+### Stream forEach
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+// Sequential
+names.stream()
+    .filter(name -> name.length() > 3)
+    .forEach(System.out::println);
+
+// Parallel
+names.parallelStream()
+    .forEach(System.out::println);
+```
+
+### Recursion
+```java
+// Factorial
+long factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+// Tree traversal
+void traverse(TreeNode node) {
+    if (node == null) return;
+    process(node);
+    traverse(node.left);
+    traverse(node.right);
+}
+```
+
+## Lambda Expressions in Collections
+
+### Lambda Syntax
+```java
+// Full syntax
+(parameters) -> expression
+
+// With body
+(parameters) -> { statements; }
+
+// No parameters
+() -> expression
+
+// Single parameter (parentheses optional)
+param -> expression
+```
+
+### Common Functional Interfaces
+```java
+// Predicate - takes T, returns boolean
+Predicate<String> isLong = s -> s.length() > 5;
+
+// Function - takes T, returns R
+Function<String, Integer> toLength = String::length;
+
+// Consumer - takes T, returns void
+Consumer<String> print = System.out::println;
+
+// Supplier - takes nothing, returns T
+Supplier<List<String>> listFactory = ArrayList::new;
+
+// BiFunction - takes T and U, returns R
+BiFunction<String, Integer, String> repeat = (s, n) -> s.repeat(n);
+```
+
+## Stream API Operations
+
+### Intermediate Operations (lazy)
+```java
+.filter(predicate)    // Filter elements
+.map(function)        // Transform elements
+.flatMap(function)    // Flatten nested structures
+.sorted(comparator)   // Sort elements
+.distinct()           // Remove duplicates
+.limit(n)             // Take first n elements
+.skip(n)              // Skip first n elements
+.peek(consumer)       // Debug/inspect elements
+```
+
+### Terminal Operations
+```java
+.forEach(consumer)         // Iterate
+.collect(collector)       // Collect to collection
+.reduce(binaryOperator)   // Reduce to single value
+.count()                  // Count elements
+.findFirst()              // Find first element
+.findAny()                // Find any element
+.anyMatch(predicate)      // Check if any match
+.allMatch(predicate)      // Check if all match
+.noneMatch(predicate)     // Check if none match
+.min(comparator)          // Find minimum
+.max(comparator)          // Find maximum
+.toArray()                // Convert to array
+```
+
+### Collectors
+```java
+Collectors.toList()              // Collect to List
+Collectors.toSet()               // Collect to Set
+Collectors.toMap(keyFn, valFn)   // Collect to Map
+Collectors.joining(", ")         // Join strings
+Collectors.counting()            // Count elements
+Collectors.summingInt(fn)        // Sum integers
+Collectors.averagingInt(fn)      // Average integers
+Collectors.groupingBy(fn)        // Group by classifier
+Collectors.partitioningBy(pred)  // Partition into two groups
+Collectors.summarizingInt(fn)    // Summary statistics
+```
+
+## When to Use Which Approach
+
+| Scenario | Recommended Approach |
+|----------|---------------------|
+| Need index access | Traditional for loop |
+| Simple iteration (no modification) | Enhanced for-each |
+| Functional pipeline | Stream API |
+| Safe removal during iteration | Iterator pattern |
+| Tree/graph traversal | Recursion |
+| Calling single method | Method reference |
+| Parallel processing | ParallelStream |
+| Complex transformations | Stream with collectors |
+
+## Performance Considerations
+
+### Iteration Performance
+- **For loop**: Fastest for ArrayList (direct index access)
+- **For-each**: Slightly slower (uses Iterator internally)
+- **Iterator**: Similar to for-each
+- **Stream**: Adds overhead from stream pipeline setup
+- **ParallelStream**: Faster for large datasets (>10,000 elements)
+
+### Stream vs For Loop
+```java
+// For loop - fastest for simple operations
+for (int i = 0; i < list.size(); i++) {
+    sum += list.get(i);
+}
+
+// Stream - better for complex pipelines
+int sum = list.stream()
+    .filter(n -> n > 0)
+    .mapToInt(Integer::intValue)
+    .sum();
+```
+
+### Memory Considerations
+- Streams create intermediate objects
+- Collectors allocate new collections
+- Parallel streams use ForkJoinPool
+- Recursion uses stack frames (risk of StackOverflowError)
 
 ## Architecture Diagram
 
@@ -201,25 +396,6 @@ sorted.put("apple", 1);
 // sorted by key
 ```
 
-### Iteration
-```java
-// For-each
-for (String item : list) {
-    System.out.println(item);
-}
-
-// Iterator
-Iterator<String> it = list.iterator();
-while (it.hasNext()) {
-    System.out.println(it.next());
-}
-
-// Stream
-list.stream()
-    .filter(s -> s.startsWith("A"))
-    .forEach(System.out::println);
-```
-
 ## Easy Example
 ```java
 import java.util.*;
@@ -253,29 +429,27 @@ public class CollectionsEasyExample {
 ## Medium Example
 ```java
 import java.util.*;
+import java.util.stream.*;
 
 public class CollectionsMediumExample {
     public static void main(String[] args) {
-        // Sort list
         List<String> names = Arrays.asList("Charlie", "Alice", "Bob");
+        
+        // Sort
         Collections.sort(names);
         System.out.println("Sorted: " + names);
         
-        // Find in sorted list
-        int index = Collections.binarySearch(names, "Bob");
-        System.out.println("Found at: " + index);
+        // Stream operations
+        List<String> longNames = names.stream()
+            .filter(name -> name.length() > 3)
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+        System.out.println("Long names: " + longNames);
         
-        // Synchronized list
-        List<String> syncList = Collections.synchronizedList(new ArrayList<>());
-        
-        // Unmodifiable list
-        List<String> unmodifiable = List.of("A", "B", "C");
-        
-        // Map operations
-        Map<String, List<String>> grouped = new HashMap<>();
-        grouped.computeIfAbsent("fruits", k -> new ArrayList<>()).add("apple");
-        grouped.computeIfAbsent("fruits", k -> new ArrayList<>()).add("banana");
-        System.out.println("Grouped: " + grouped);
+        // Grouping
+        Map<Integer, List<String>> byLength = names.stream()
+            .collect(Collectors.groupingBy(String::length));
+        System.out.println("By length: " + byLength);
     }
 }
 ```
@@ -286,54 +460,38 @@ import java.util.*;
 import java.util.stream.*;
 
 public class CollectionsHardExample {
-    // Custom comparator
-    public static void sortStudents() {
-        List<Student> students = Arrays.asList(
-            new Student("Alice", 90),
-            new Student("Bob", 85),
-            new Student("Charlie", 95)
+    public static void main(String[] args) {
+        List<Employee> employees = List.of(
+            new Employee("Alice", "Engineering", 95000),
+            new Employee("Bob", "Engineering", 85000),
+            new Employee("Charlie", "Marketing", 75000),
+            new Employee("Diana", "Marketing", 80000),
+            new Employee("Eve", "HR", 70000)
         );
         
-        students.sort(Comparator.comparingInt(Student::getGrade).reversed());
-        students.forEach(s -> System.out.println(s.getName() + ": " + s.getGrade()));
-    }
-    
-    // Frequency counting
-    public static Map<String, Long> countWords(String text) {
-        return Arrays.stream(text.split("\\s+"))
+        // Group by department, find average salary
+        Map<String, Double> avgSalaryByDept = employees.stream()
             .collect(Collectors.groupingBy(
-                word -> word.toLowerCase(),
-                Collectors.counting()
+                Employee::getDepartment,
+                Collectors.averagingDouble(Employee::getSalary)
             ));
-    }
-    
-    public static void main(String[] args) {
-        sortStudents();
+        System.out.println("Avg salary: " + avgSalaryByDept);
         
-        String text = "the cat sat on the mat the cat";
-        Map<String, Long> wordCount = countWords(text);
-        System.out.println("Word count: " + wordCount);
+        // Partition by salary threshold
+        Map<Boolean, List<Employee>> partitioned = employees.stream()
+            .collect(Collectors.partitioningBy(e -> e.getSalary() > 80000));
+        System.out.println("High earners: " + partitioned.get(true));
     }
 }
 
-class Student {
-    private String name;
-    private int grade;
-    
-    public Student(String name, int grade) {
-        this.name = name;
-        this.grade = grade;
-    }
-    
-    public String getName() { return name; }
-    public int getGrade() { return grade; }
-}
+record Employee(String name, String department, double salary) {}
 ```
 
 ## Enterprise Example
 ```java
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 public class CollectionsEnterpriseExample {
     // Thread-safe cache
@@ -359,19 +517,6 @@ public class CollectionsEnterpriseExample {
         }
     }
     
-    public static class Task {
-        private final String name;
-        private final int priority;
-        
-        public Task(String name, int priority) {
-            this.name = name;
-            this.priority = priority;
-        }
-        
-        public String getName() { return name; }
-        public int getPriority() { return priority; }
-    }
-    
     public static void main(String[] args) {
         TaskScheduler scheduler = new TaskScheduler();
         scheduler.schedule(new Task("High", 1));
@@ -390,6 +535,8 @@ public class CollectionsEnterpriseExample {
 - HashSet for fast lookup
 - HashMap for key-value pairs
 - TreeMap for sorted keys
+- Use parallel streams for large datasets
+- Avoid recursion for deep structures (use iterative approach)
 
 ## Time & Space Complexity
 
@@ -412,12 +559,17 @@ public class CollectionsEnterpriseExample {
 3. Use generics for type safety
 4. Prefer immutable collections
 5. Use streams for complex operations
+6. Avoid parallel streams for small datasets
+7. Use method references when possible
+8. Prefer Iterator.remove() for safe removal
 
 ## Common Mistakes
 1. ConcurrentModificationException
 2. Using wrong collection type
 3. Not handling null values
 4. Forgetting to check contains()
+5. Using parallel streams on small datasets
+6. Not considering thread safety
 
 ## Comparison Table
 
@@ -495,7 +647,7 @@ public class CollectionsEnterpriseExample {
 3. Design a routing table
 
 ## Summary
-Collections are fundamental to Java development. Choose the right collection for your use case.
+Collections are fundamental to Java development. Choose the right collection for your use case. Master iteration methods and Stream API for efficient data processing.
 
 ## References
 - Oracle Java Documentation: Collections
