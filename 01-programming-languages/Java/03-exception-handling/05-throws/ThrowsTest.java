@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 import java.io.FileNotFoundException;
 
 import org.junit.jupiter.api.Test;

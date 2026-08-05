@@ -14,6 +14,8 @@ By the end of this module, you'll be able to:
 - Write methods to organize your code
 - Work with arrays to store collections of data
 - Manipulate strings (text) in your programs
+- Organize code using Java packages and understand project structure
+- Manage builds and dependencies with Maven
 
 ---
 
@@ -35,8 +37,10 @@ By the end of this module, you'll be able to:
 | 4 | [Methods](04-methods/) | Writing reusable blocks of code | 3-4 hours |
 | 5 | [Arrays](05-arrays/) | Storing lists of things | 2-3 hours |
 | 6 | [Strings](06-strings/) | Working with text | 2-3 hours |
+| 7 | [Project Structure & Packages](07-project-structure/) | Organizing code with packages | 2-3 hours |
+| 8 | [Maven](08-maven/) | Build tool and dependency management | 3-4 hours |
 
-**Total time:** 14-20 hours (learn at your own pace)
+**Total time:** 19-27 hours (learn at your own pace)
 
 ---
 

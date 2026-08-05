@@ -1,5 +1,3 @@
-package academy.javaengineering.generics;
-
 public class GenericIntro {
 
     public static void main(String[] args) {

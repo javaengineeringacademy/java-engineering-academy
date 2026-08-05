@@ -1,4 +1,4 @@
-package academy.javaengineering.generics;
+import java.util.Objects;
 
 public class Box<T> {
     private T content;
@@ -32,11 +32,11 @@ public class Box<T> {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Box<?> other = (Box<?>) obj;
-        return java.util.Objects.equals(content, other.content);
+        return Objects.equals(content, other.content);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(content);
+        return Objects.hash(content);
     }
 }

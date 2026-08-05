@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 public class InvalidAgeException extends Exception {
 
     private final int age;

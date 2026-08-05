@@ -1,4 +1,4 @@
-package academy.javaengineering.generics;
+import java.util.Objects;
 
 public class Pair<K, V> {
     private final K key;
@@ -31,12 +31,12 @@ public class Pair<K, V> {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Pair<?, ?> other = (Pair<?, ?>) obj;
-        return java.util.Objects.equals(key, other.key) &&
-               java.util.Objects.equals(value, other.value);
+        return Objects.equals(key, other.key) &&
+               Objects.equals(value, other.value);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(key, value);
+        return Objects.hash(key, value);
     }
 }

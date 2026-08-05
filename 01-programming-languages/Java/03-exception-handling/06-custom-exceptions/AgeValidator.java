@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 public class AgeValidator {
 
     private static final int MIN_AGE = 0;

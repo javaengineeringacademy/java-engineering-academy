@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 public class BestPractices {
 
     public static void main(String[] args) {

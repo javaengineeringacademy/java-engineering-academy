@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 public class FinallyDemo {
 
     public static void main(String[] args) {

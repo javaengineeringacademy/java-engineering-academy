@@ -1,5 +1,3 @@
-package academy.javaengineering.exceptionhandling;
-
 public class ThrowDemo {
 
     public static void main(String[] args) {

@@ -1,5 +1,3 @@
-package academy.javaengineering.generics;
-
 import java.util.Arrays;
 import java.util.List;
 
