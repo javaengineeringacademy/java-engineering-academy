@@ -1,91 +1,52 @@
-# Module 01: Java Fundamentals
+# Java
 
-## Overview
-Master the foundation of Java programming — from variables to methods, everything you need to write your first production-quality Java code.
+Java is a class-based, object-oriented programming language designed for portability and reliability. Used by millions of developers worldwide.
 
-## Learning Objectives
-By the end of this module, you will be able to:
-- Understand Java program structure and execution model
-- Declare variables with appropriate data types
-- Apply operators and expressions effectively
-- Control program flow with conditionals and loops
-- Work with arrays and strings efficiently
-- Design and implement reusable methods
-- Write clean, documented, and tested Java code
+---
 
-## Topics Covered
-| Topic | Theory | Examples | Exercises | Solutions |
-|-------|--------|----------|-----------|-----------|
-| Java Basics | [✓](docs/basics.md) | [Code](src/main/java/com/javaacademy/sprint1/basics) | [Exercises](exercises/basics.md) | [Solutions](solutions/basics.md) |
-| Data Types | [✓](docs/datatypes.md) | [Code](src/main/java/com/javaacademy/sprint1/datatypes) | [Exercises](exercises/datatypes.md) | [Solutions](solutions/datatypes.md) |
-| Operators | [✓](docs/operators.md) | [Code](src/main/java/com/javaacademy/sprint1/operators) | [Exercises](exercises/operators.md) | [Solutions](solutions/operators.md) |
-| Control Flow | [✓](docs/controlflow.md) | [Code](src/main/java/com/javaacademy/sprint1/controlflow) | [Exercises](exercises/controlflow.md) | [Solutions](solutions/controlflow.md) |
-| Arrays | [✓](docs/arrays.md) | [Code](src/main/java/com/javaacademy/sprint1/arrays) | [Exercises](exercises/arrays.md) | [Solutions](solutions/arrays.md) |
-| Strings | [✓](docs/strings.md) | [Code](src/main/java/com/javaacademy/sprint1/strings) | [Exercises](exercises/strings.md) | [Solutions](solutions/strings.md) |
-| Methods | [✓](docs/methods.md) | [Code](src/main/java/com/javaacademy/sprint1/methods) | [Exercises](exercises/methods.md) | [Solutions](solutions/methods.md) |
+## Modules
+
+| # | Module | What You'll Learn |
+|---|--------|-------------------|
+| 01 | [Fundamentals](01-fundamentals/) | Variables, types, operators, control flow, methods, arrays, strings |
+| 02 | [OOP](02-oop/) | Classes, objects, inheritance, polymorphism, encapsulation |
+| 03 | [Exception Handling](03-exception-handling/) | Try-catch, custom exceptions, best practices |
+| 04 | [Collections](04-collections/) | List, Set, Map, Queue, iterators |
+| 05 | [Generics](05-generics/) | Generic classes, methods, wildcards |
+| 06 | [Strings](06-strings/) | String, StringBuilder, formatting, patterns |
+| 07 | [Functional Programming](07-functional-programming/) | Lambdas, streams, optional, method references |
+| 08 | [IO/NIO](08-io-nio/) | Files, streams, buffers, channels |
+| 09 | [Multithreading](09-multithreading/) | Threads, synchronization, locks, concurrency |
+| 10 | [JVM Internals](10-jvm-internals/) | Classloading, memory model, GC, JIT |
+| 11 | [Design Patterns](11-design-patterns/) | Creational, structural, behavioral patterns |
+| 12 | [Testing](12-testing/) | JUnit 5, Mockito, integration testing |
+| 13 | [Reflection & Annotations](13-reflection-annotations/) | Runtime type info, custom annotations |
+| 14 | [Logging](14-logging/) | SLF4J, Logback, Log4j2 |
+
+---
+
+## Quick Start
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+Save as `HelloWorld.java`, compile with `javac HelloWorld.java`, run with `java HelloWorld`.
+
+---
 
 ## Prerequisites
-- JDK 21 or later
-- Maven 3.8.6+
-- Basic text editor or IDE (IntelliJ IDEA recommended)
 
-## How to Use This Module
-1. Start with the theory documents in `docs/`
-2. Run the example code in `src/main/java/`
-3. Complete the exercises in `exercises/`
-4. Check your solutions in `solutions/`
-5. Take the quizzes in `quiz/`
-6. Review interview questions in `interview/`
+- Java 21+ installed
+- A code editor (IntelliJ IDEA recommended)
+- Basic command line knowledge
 
-## Build & Test
-```bash
-# From repository root
-mvn clean compile test -pl java-fundamentals
+---
 
-# Run specific test class
-mvn test -pl java-fundamentals -Dtest=BasicsTest
-```
+## What's Next
 
-## Additional Resources
-- [Full Module Documentation](../java-fundamentals/README.md)
-- [Java Language Specification](https://docs.oracle.com/javase/specs/jls/se21/html/index.html)
-- [Java Tutorials - Oracle](https://docs.oracle.com/en/java/javase/21/)
-
-## Architecture
-
-```mermaid
-graph TD
-    A[Java Core] --> B[Collections Framework]
-    A --> C[Concurrency Utilities]
-    B --> D[Spring Ecosystem]
-    C --> D
-    D --> E[Microservices]
-    E --> F[Cloud Deployment]
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-## When to Use
-
-```mermaid
-graph TD
-    Start{Project Requirements} -->|Enterprise| Java[Choose Java]
-    Start -->|Quick Scripts| Python[Choose Python]
-    Start -->|Performance| Cpp[Choose C++]
-    Start -->|Mobile| Kotlin[Choose Kotlin]
-
-    Java -->|Web Backend| Spring[Spring Boot]
-    Java -->|Desktop| JavaFX[JavaFX]
-    Java -->|Android| Android[Android SDK]
-
-    style Java fill:#f96,stroke:#333,stroke-width:2px
-    style Spring fill:#6cf,stroke:#333,stroke-width:2px
-```
-
-## Status
-✅ Complete — All topics, examples, exercises, and tests ready
-
-## Next Module
-[Module 02: Object-Oriented Programming](../02-object-oriented-programming/)
+After Java fundamentals, move to [04-Backend Engineering](../../04-backend-engineering/) to learn Spring, or [11-Architecture](../../11-architecture/) for system design.
