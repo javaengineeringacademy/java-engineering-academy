@@ -1,7 +1,24 @@
-# Interview Preparation
+# Interview Preparation Fundamentals
 
-This directory will contain interview practice material, including coding prompts, Java depth questions, object
-modeling exercises, system design prompts, and review rubrics.
+## Overview
+Comprehensive guide to technical interview preparation for software engineering roles.
 
-Interview content should help learners explain their reasoning, not only produce final answers.
+## Topics
+- Data Structures
+- Algorithms
+- System Design
+- Behavioral Questions
+- Coding Challenges
+- Resume Building
+- Salary Negotiation
+- Company Research
+- Mock Interviews
+- Follow-up Strategies
 
+## Learning Objectives
+- Ace technical interviews
+- Solve coding problems efficiently
+- Communicate effectively
+
+## Prerequisites
+- Programming basics
