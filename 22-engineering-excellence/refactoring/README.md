@@ -1,421 +1,309 @@
 # Refactoring
 
-## Overview
-
-Refactoring is the process of restructuring existing code without changing its external behavior. It improves code readability, reduces complexity, and makes the codebase easier to maintain and extend.
-
-## Why Refactor?
-
-### Improve Code Quality
-- Make code more readable
-- Reduce complexity
-- Improve maintainability
-- Enhance testability
-
-### Enable Features
-- Make new features easier to add
-- Reduce development time
-- Lower risk of bugs
-- Improve developer productivity
-
-### Reduce Technical Debt
-- Eliminate code smells
-- Apply design patterns
-- Improve architecture
-- Reduce maintenance costs
-
-## Code Smells
-
-### Bloaters
-```markdown
-## Long Method
-- Method does too many things
-- Hard to understand and test
-- Solution: Extract Method
-
-## Large Class
-- Class has too many responsibilities
-- God object anti-pattern
-- Solution: Extract Class
-
-## Data Clumps
-- Same data structures together everywhere
-- Sign of poor abstraction
-- Solution: Extract Class or Introduce Parameter Object
-
-## Primitive Obsession
-- Using primitives instead of small objects
-- Missing domain modeling
-- Solution: Replace Type Code with Subclass
-```
-
-### Object-Orientation Abusers
-```markdown
-## Switch Statements
-- Complex conditional logic
-- Duplicated type checking
-- Solution: Replace with Polymorphism
-
-## Parallel Inheritance Hierarchies
-- Duplicate class hierarchies
-- Solution: Move Method
-
-## Temporary Field
-- Fields used only in certain cases
-- Solution: Extract Class
-
-## Alternative Classes with Different Interfaces
-- Similar classes with different APIs
-- Solution: Unify Interface
-```
-
-### Change Preventers
-```markdown
-## Divergent Change
-- One class modified for different reasons
-- Solution: Extract Class
-
-## Shotgun Surgery
-- One change requires many small edits
-- Solution: Move Method/Field
-
-## Feature Envy
-- Method uses more data from another class
-- Solution: Move Method
-
-## Data泥clumps
-- Groups of data items that travel together
-- Solution: Introduce Parameter Object
-```
-
-### Dispensables
-```markdown
-## Comments
-- Comment explains what code does
-- Solution: Remove comment, improve code
-
-## Duplicate Code
-- Same code in multiple places
-- Solution: Extract Method
-
-## Lazy Class
-- Class that does too little
-- Solution: Inline Class
-
-## Speculative Generality
-- Unused code for "future needs"
-- Solution: Remove or simplify
-```
+Improving code structure without changing behavior.
 
 ## Refactoring Techniques
 
-### Composing Methods
+### Extract Method
+**When**: Method is too long or does too many things.
+
 ```java
-// Extract Method
-public class OrderService {
-    // Before
-    public void processOrder(Order order) {
-        // Validate order
-        if (order == null) {
-            throw new IllegalArgumentException("Order cannot be null");
-        }
-        if (order.getItems().isEmpty()) {
-            throw new IllegalArgumentException("Order must have items");
-        }
-        
-        // Calculate total
-        double total = 0;
-        for (OrderItem item : order.getItems()) {
-            total += item.getPrice() * item.getQuantity();
-        }
-        
-        // Apply discount
-        if (order.getCustomer().isPremium()) {
-            total *= 0.9;
-        }
-        
-        // Process payment
-        paymentService.charge(order.getCustomer(), total);
-    }
-    
-    // After
-    public void processOrder(Order order) {
-        validateOrder(order);
-        double total = calculateTotal(order);
-        total = applyDiscount(order, total);
-        paymentService.charge(order.getCustomer(), total);
-    }
-    
-    private void validateOrder(Order order) {
-        if (order == null) {
-            throw new IllegalArgumentException("Order cannot be null");
-        }
-        if (order.getItems().isEmpty()) {
-            throw new IllegalArgumentException("Order must have items");
-        }
-    }
-    
-    private double calculateTotal(Order order) {
-        return order.getItems().stream()
-            .mapToDouble(item -> item.getPrice() * item.getQuantity())
-            .sum();
-    }
-    
-    private double applyDiscount(Order order, double total) {
-        if (order.getCustomer().isPremium()) {
-            return total * 0.9;
-        }
-        return total;
-    }
+// Before
+public void printOwing() {
+    // 10 lines of printing logic
+}
+
+// After
+public void printOwing() {
+    printBanner();
+    printDetails();
+}
+
+private void printBanner() {
+    // banner logic
+}
+
+private void printDetails() {
+    // details logic
 }
 ```
 
-### Moving Features Between Objects
+### Extract Class
+**When**: Class does too many things.
+
 ```java
-// Move Method
-public class Customer {
-    // Before
-    public double calculateDiscount() {
-        double discount = 0;
-        if (getOrders().size() > 10) {
-            discount += 0.1;
-        }
-        if (getTotalSpent() > 1000) {
-            discount += 0.05;
-        }
-        return discount;
+// Before
+class Person {
+    private String name;
+    private String street;
+    private String city;
+    private String phoneNumber;
+}
+
+// After
+class Person {
+    private String name;
+    private Address address;
+    private PhoneNumber phoneNumber;
+}
+```
+
+### Extract Interface
+**When**: Multiple clients use only part of a class.
+
+```java
+// Before
+class Ticket {
+    public double getPrice() { }
+    public String getVenue() { }
+}
+
+// After
+interface Priceable {
+    double getPrice();
+}
+
+class Ticket implements Priceable {
+    public double getPrice() { }
+    public String getVenue() { }
+}
+```
+
+## Move Method/Field
+
+### Move Method
+**When**: Method is used more in another class.
+
+```java
+// Before
+class Account {
+    private AccountType type;
+    
+    double overdraftCharge() {
+        return type.overdraftCharge();
     }
 }
 
 // After
-public class Customer {
-    private DiscountCalculator discountCalculator;
-    
-    public double calculateDiscount() {
-        return discountCalculator.calculate(this);
-    }
+class Account {
+    private AccountType type;
 }
 
-public class DiscountCalculator {
-    public double calculate(Customer customer) {
-        double discount = 0;
-        if (customer.getOrders().size() > 10) {
-            discount += 0.1;
-        }
-        if (customer.getTotalSpent() > 1000) {
-            discount += 0.05;
-        }
-        return discount;
-    }
+class AccountType {
+    double overdraftCharge() { }
 }
 ```
 
-### Organizing Data
+### Move Field
+**When**: Field is used more in another class.
+
 ```java
-// Replace Type Code with Subclass
 // Before
-public class Employee {
-    private int type;
-    static final int ENGINEER = 0;
-    static final int SALESMAN = 1;
-    static final int MANAGER = 2;
-    
-    public double calculateSalary() {
+class Customer {
+    private Address address;
+}
+
+// After
+class Customer {
+    private CustomerData data;
+}
+
+class CustomerData {
+    private Address address;
+}
+```
+
+## Replace Conditional with Polymorphism
+
+### Before
+```java
+class Shape {
+    double area() {
         switch (type) {
-            case ENGINEER:
-                return baseSalary;
-            case SALESMAN:
-                return baseSalary + commission;
-            case MANAGER:
-                return baseSalary + bonus;
-            default:
-                throw new IllegalArgumentException();
+            case CIRCLE: return Math.PI * r * r;
+            case RECTANGLE: return width * height;
+            case TRIANGLE: return 0.5 * base * height;
         }
     }
 }
-
-// After
-public abstract class Employee {
-    public abstract double calculateSalary();
-}
-
-public class Engineer extends Employee {
-    @Override
-    public double calculateSalary() {
-        return baseSalary;
-    }
-}
-
-public class Salesman extends Employee {
-    @Override
-    public double calculateSalary() {
-        return baseSalary + commission;
-    }
-}
-
-public class Manager extends Employee {
-    @Override
-    public double calculateSalary() {
-        return baseSalary + bonus;
-    }
-}
 ```
 
-### Simplifying Conditional Expressions
+### After
 ```java
-// Consolidate Conditional Expression
-// Before
-public double calculateInsuranceAmount() {
-    if (age < 18) {
-        return 0;
-    }
-    if (age >= 18 && !isMember) {
-        return 100;
-    }
-    if (age >= 18 && isMember) {
-        return 50;
-    }
-    return 0;
+interface Shape {
+    double area();
 }
 
-// After
-public double calculateInsuranceAmount() {
-    if (isNotEligibleForInsurance()) {
-        return 0;
-    }
-    return isMember ? 50 : 100;
+class Circle implements Shape {
+    public double area() { return Math.PI * r * r; }
 }
 
-private boolean isNotEligibleForInsurance() {
-    return age < 18;
+class Rectangle implements Shape {
+    public double area() { return width * height; }
+}
+
+class Triangle implements Shape {
+    public double area() { return 0.5 * base * height; }
 }
 ```
 
-### Simplifying Method Calls
+## Martin Fowler's Catalog
+
+### Organizing Tools
+- **Composing Methods**: Extract, Inline, Extract Method
+- **Moving Features Between Objects**: Move Method, Move Field
+- **Organizing Data**: Replace Type Code with Subclasses
+- **Simplifying Conditional Expressions**: Consolidate Conditional
+- **Simplifying Method Calls**: Rename Method, Introduce Parameter Object
+- **Dealing with Generalization**: Extract Subclass, Extract Superclass
+
+### Key Refactorings
+1. **Extract Method**: Most common
+2. **Inline Method**: When method body is clearer
+3. **Move Method**: When method belongs elsewhere
+4. **Replace Temp with Query**: Eliminate temporary variables
+5. **Introduce Explaining Variable**: Name complex expressions
+6. **Decompose Conditional**: Simplify if/else logic
+7. **Replace Conditional with Polymorphism**: Use inheritance
+8. **Extract Class**: When class has multiple responsibilities
+9. **Inline Class**: When class does too little
+10. **Hide Delegate**: Reduce coupling
+
+## Refactoring Patterns
+
+### Code Smell to Refactoring
+| Code Smell | Refactoring |
+|------------|-------------|
+| Long Method | Extract Method |
+| Large Class | Extract Class |
+| Divergent Change | Extract Class |
+| Shotgun Surgery | Move Method |
+| Feature Envy | Move Method |
+| Data Clumps | Extract Class |
+| Primitive Obsession | Replace with Object |
+| Switch Statements | Replace with Polymorphism |
+| Parallel Inheritance | Move Method |
+| Lazy Class | Inline Class |
+| Speculative Generality | Remove Parameter |
+| Temporary Field | Extract Class |
+| Message Chains | Hide Delegate |
+| Middle Man | Remove Middle Man |
+| Alternate Classes | Merge Classes |
+| Incomplete Library Class | Introduce Foreign Method |
+
+## Safe Refactoring Practices
+
+### Before Refactoring
+1. **Ensure Tests Exist**: Have comprehensive tests
+2. **Establish Baseline**: Measure current behavior
+3. **Understand Code**: Know what it does
+
+### During Refactoring
+1. **Small Steps**: Make incremental changes
+2. **Commit Often**: Save progress frequently
+3. **Run Tests**: Verify behavior unchanged
+4. **Pair Program**: Get second opinion
+
+### After Refactoring
+1. **Run Full Test Suite**: Ensure no regressions
+2. **Review Changes**: Check for missed issues
+3. **Document**: Update documentation
+4. **Measure**: Compare before/after metrics
+
+## Refactoring Tools
+
+### IDE Support
+- **IntelliJ IDEA**: Built-in refactoring
+- **Eclipse**: Refactoring tools
+- **VS Code**: Java refactorings
+
+### Command Line
+```bash
+# jscodeshift (JavaScript)
+npx jscodeshift -t transform.js src/
+
+# GumTree (Java)
+gumtree diff file1.java file2.java
+```
+
+## Common Refactoring Scenarios
+
+### Legacy Code
 ```java
-// Introduce Parameter Object
-// Before
-public void createMeeting(Date start, Date end, List<Attendee> attendees) {
-    // ...
+// 1. Sprout Method
+public void process() {
+    // Existing code...
+    sproutMethod();
+    // More existing code...
 }
 
-// After
-public void createMeeting(MeetingRequest request) {
-    // ...
+// 2. Wrap Method
+public void process() {
+    try {
+        processWithLogging();
+    } catch (Exception e) {
+        log(e);
+    }
 }
 
-public class MeetingRequest {
-    private Date start;
-    private Date end;
-    private List<Attendee> attendees;
-    // ...
+// 3. Characterization Tests
+@Test
+void testExistingBehavior() {
+    // Document current behavior
+    assertEquals(expected, system.process(input));
 }
 ```
 
-### Dealing with Generalization
+### Performance Refactoring
 ```java
-// Pull Up Method
 // Before
-class ChildA {
-    public void method() {
-        // implementation A
+List<String> result = list.stream()
+    .filter(x -> expensiveOperation(x))
+    .collect(Collectors.toList());
+
+// After
+List<String> result = new ArrayList<>();
+for (String s : list) {
+    if (cheapCheck(s)) {
+        if (expensiveOperation(s)) {
+            result.add(s);
+        }
     }
 }
+```
 
-class ChildB {
-    public void method() {
-        // implementation B (same as A)
-    }
+### Thread Safety Refactoring
+```java
+// Before
+class Counter {
+    private int count = 0;
+    public void increment() { count++; }
 }
 
 // After
-class Parent {
-    public void method() {
-        // common implementation
-    }
-}
-
-class ChildA extends Parent {
-    // inherits method
-}
-
-class ChildB extends Parent {
-    // inherits method
+class Counter {
+    private final AtomicInteger count = new AtomicInteger(0);
+    public void increment() { count.incrementAndGet(); }
 }
 ```
 
-## Refactoring Process
+## Measuring Refactoring Impact
 
-### Safe Refactoring Steps
-```markdown
-## Refactoring Checklist
+### Metrics to Track
+- **Cyclomatic Complexity**: Should decrease
+- **Lines of Code**: Should decrease
+- **Coupling**: Should decrease
+- **Cohesion**: Should increase
+- **Test Coverage**: Should maintain/increase
 
-1. **Ensure Tests Exist**
-   - Write tests for current behavior
-   - Verify tests pass
-   - Commit current state
+### Tools
+```bash
+# PMD CPD (Copy-Paste Detector)
+pmd cpd --minimum-tokens 50 --language java --dir src/
 
-2. **Make Small Changes**
-   - One refactoring at a time
-   - Keep changes atomic
-   - Run tests after each change
+# SonarQube
+mvn sonar:sonar
 
-3. **Verify Behavior**
-   - All tests pass
-   - No new warnings
-   - Code coverage maintained
-
-4. **Commit Frequently**
-   - Small, focused commits
-   - Clear commit messages
-   - Easy to revert
+# Checkstyle
+mvn checkstyle:check
 ```
-
-### Refactoring Workflow
-```mermaid
-graph TD
-    A[Identify Code Smell] --> B[Write Characterization Tests]
-    B --> C[Plan Refactoring]
-    C --> D[Make Small Changes]
-    D --> E[Run Tests]
-    E --> F{Tests Pass?}
-    F -->|Yes| G[Commit]
-    F -->|No| H[Revert and Analyze]
-    H --> D
-    G --> I[Next Refactoring]
-```
-
-## Best Practices
-
-### Do's
-```markdown
-## Do
-
-- Refactor under test coverage
-- Make one change at a time
-- Commit frequently
-- Use version control
-- Communicate with team
-- Refactor with purpose
-- Keep refactoring small
-```
-
-### Don'ts
-```markdown
-## Don't
-
-- Refactor without tests
-- Refactor and add features
-- Refactor large codebases at once
-- Skip code review
-- Refactor production code without backup
-- Forget to update documentation
-```
-
-## Related Topics
-
-- [Refactoring Techniques](techniques/README.md)
-- [Refactoring to Patterns](patterns/README.md)
-- [Technical Debt](../tech-debt/README.md)
-- [Clean Code](../craftsmanship/clean-code/README.md)
-- [Code Reviews](../code-reviews/README.md)
