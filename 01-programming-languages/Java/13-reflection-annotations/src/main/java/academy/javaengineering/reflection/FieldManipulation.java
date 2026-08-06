@@ -88,8 +88,8 @@ public class FieldManipulation {
             System.out.println("Before: " + privateField.get(obj));
             privateField.set(obj, "modified_via_reflection");
             System.out.println("After: " + privateField.get(obj));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.err.println("Cannot modify privateField: " + e.getMessage());
         }
 
         // Modify numberField
@@ -99,8 +99,8 @@ public class FieldManipulation {
             System.out.println("\nBefore: " + numberField.get(obj));
             numberField.setInt(obj, 999);
             System.out.println("After: " + numberField.get(obj));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.err.println("Cannot modify numberField: " + e.getMessage());
         }
     }
 
@@ -132,8 +132,8 @@ public class FieldManipulation {
             System.out.println("staticNumber before: " + staticNumber.getInt(null));
             staticNumber.setInt(null, 999);
             System.out.println("staticNumber after: " + staticNumber.getInt(null));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.err.println("Static field manipulation error: " + e.getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ public class FieldManipulation {
             System.out.println("Before: " + finalField.get(obj));
             finalField.set(obj, "changed_final");
             System.out.println("After: " + finalField.get(obj));
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             // On some JVMs/configurations, final field modification may throw
             System.out.println("Final field modification result: " + e.getMessage());
             System.out.println("Note: Final field modification may be restricted by JVM security.");
@@ -264,8 +264,8 @@ public class FieldManipulation {
             System.out.println("publicField: " + target.publicField);
             System.out.println("privateField: " + (String) readField(target, "privateField"));
             System.out.println("numberField: " + target.numberField);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException e) {
+            System.err.println("Field manipulation error: " + e.getMessage());
         }
     }
 }

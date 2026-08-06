@@ -6,6 +6,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 
@@ -62,7 +63,7 @@ public class TlsDemo {
                 if (line != null) System.out.println("...");
             }
             connection.disconnect();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Connection error: " + e.getMessage());
         }
 

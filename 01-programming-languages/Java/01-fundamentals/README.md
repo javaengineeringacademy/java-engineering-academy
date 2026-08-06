@@ -1,65 +1,104 @@
 # Java Fundamentals
 
-This is where your Java journey starts. No prior programming experience needed — just a willingness to learn and a computer with Java installed.
+## Overview
+This module covers the essential building blocks of Java programming — data types, operators, control flow, methods, arrays, strings, packages, build tools, and reserved keywords. These are the foundation every Java developer must master before moving to object-oriented programming.
 
----
+## Why This Concept Exists
+Every programming language needs a way to store data, make decisions, repeat tasks, and organize code. Java fundamentals provide these building blocks in a strongly-typed, platform-independent manner. Without understanding these concepts, you cannot write reliable, maintainable Java programs.
 
-## What You'll Learn
+## History
+- **1995** — Java 1.0 released by Sun Microsystems with basic syntax, Applets, and core libraries
+- **1997** — Java 1.1 added inner classes, JDBC, and reflection
+- **2000** — Java 1.3 brought HotSpot JVM for better performance
+- **2004** — Java 5 introduced generics, enums, annotations, and autoboxing
+- **2011** — Java 7 added try-with-resources, diamond operator, and switch on Strings
+- **2014** — Java 8 brought lambdas and Stream API
+- **2017** — Java 9 introduced modules (JPMS)
+- **2021** — Java 17 LTS added text blocks, sealed classes, and pattern matching
+- **2023** — Java 21 LTS added virtual threads, record patterns, and sequenced collections
 
-By the end of this module, you'll be able to:
+## Core Concepts
 
-- Declare variables and work with different data types
-- Use operators to perform calculations and comparisons
-- Control program flow with conditionals and loops
-- Write methods to organize your code
-- Work with arrays to store collections of data
-- Manipulate strings (text) in your programs
-- Organize code using Java packages and understand project structure
-- Manage builds and dependencies with Maven
-- Know all 67 Java reserved keywords and when to use each
+### Data Types
+| Category | Types |
+|----------|-------|
+| Primitive | byte, short, int, long, float, double, boolean, char |
+| Reference | Class, Interface, Array, Enum, Annotation |
 
----
+### Operators
+| Category | Operators |
+|----------|-----------|
+| Arithmetic | +, -, *, /, % |
+| Relational | ==, !=, <, >, <=, >= |
+| Logical | &&, \|\|, ! |
+| Bitwise | &, \|, ^, ~, <<, >> |
+| Assignment | =, +=, -=, *=, /= |
 
-## Prerequisites
+### Control Flow
+| Statement | Purpose |
+|-----------|---------|
+| if/else | Conditional branching |
+| switch | Multi-way branching |
+| for | Counted loop |
+| while | Conditional loop |
+| do-while | Post-test loop |
+| break/continue | Loop control |
 
-- Java 21 or later installed ([Installation Guide](../../01-programming-languages/Java/installation.md))
-- A code editor (IntelliJ IDEA, VS Code, or Eclipse)
-- Basic command line knowledge (optional but helpful)
+### Methods
+- Method signature: access modifier, return type, name, parameters
+- Method overloading: same name, different parameter list
+- `static` methods belong to the class, not instances
+- `varargs` (`Type...`) for variable-length parameter lists
 
----
+### Arrays
+- Fixed-size, zero-indexed containers
+- `int[] arr = new int[10];` or `int[] arr = {1, 2, 3};`
+- `Arrays.sort()`, `Arrays.copyOf()`, `Arrays.fill()`
 
-## Topics
+### Strings
+- Immutable objects stored in the string pool
+- `String`, `StringBuilder` (mutable), `StringBuffer` (thread-safe mutable)
 
-| # | Topic | What It Covers | Time |
-|---|-------|----------------|------|
-| 1 | [Variables & Types](01-variables/) | Storing data — numbers, text, true/false | 2-3 hours |
-| 2 | [Operators](02-operators/) | Math, comparisons, logic | 2-3 hours |
-| 3 | [Control Flow](03-control-flow/) | Making decisions, repeating things | 3-4 hours |
-| 4 | [Methods](04-methods/) | Writing reusable blocks of code | 3-4 hours |
-| 5 | [Arrays](05-arrays/) | Storing lists of things | 2-3 hours |
-| 6 | [Strings](06-strings/) | Working with text | 2-3 hours |
-| 7 | [Project Structure & Packages](07-project-structure/) | Organizing code with packages | 2-3 hours |
-| 8 | [Maven](08-maven/) | Build tool and dependency management | 3-4 hours |
-| 9 | [Keywords](10-keywords/) | All 67 Java reserved keywords | 2-3 hours |
+### Packages and Project Structure
+- Packages group related classes: `com.company.project.module`
+- Naming convention: reversed domain name
+- `import` statement for using classes from other packages
 
-**Total time:** 21-30 hours (learn at your own pace)
+### Maven
+- Build automation and dependency management
+- `pom.xml` defines project configuration
+- Lifecycle: validate → compile → test → package → install → deploy
 
----
+### Java Keywords
+Java has 67 reserved keywords including `abstract`, `assert`, `boolean`, `break`, `byte`, `case`, `catch`, `char`, `class`, `const`, `continue`, `default`, `do`, `double`, `else`, `enum`, `extends`, `final`, `finally`, `float`, `for`, `goto`, `if`, `implements`, `import`, `instanceof`, `int`, `interface`, `long`, `native`, `new`, `package`, `private`, `protected`, `public`, `return`, `short`, `static`, `strictfp`, `super`, `switch`, `synchronized`, `this`, `throw`, `throws`, `transient`, `try`, `void`, `volatile`, `while`.
 
-## How to Use This Module
+## Internal Working
 
-1. **Read the topic README** — understand the concept
-2. **Look at the examples** — see how it works in code
-3. **Run the examples yourself** — type them out, don't copy-paste
-4. **Try the exercises** — practice is where learning happens
-5. **Move to the next topic** — don't rush, build a solid foundation
+### Compilation Process
+```
+Source (.java) → javac → Bytecode (.class) → JVM → Machine Code
+```
 
----
+1. **Lexical Analysis** — Tokenizes source code
+2. **Parsing** — Builds Abstract Syntax Tree (AST)
+3. **Semantic Analysis** — Type checking, scope resolution
+4. **Code Generation** — Produces JVM bytecode
+5. **Verification** — Bytecode verifier ensures safety
 
-## Your First Java Program
+### JVM Execution
+```
+Class Loading → Bytecode Verification → Interpretation → JIT Compilation → Native Code
+```
 
-Every Java program starts with a class and a `main` method. Here's the simplest program you can write:
+### Memory Allocation
+- **Stack** — Local variables, method parameters, return addresses
+- **Heap** — Objects and instance variables
+- **String Pool** — Interned string literals
+- **Constant Pool** — Compile-time constants
 
+## Examples
+
+### Hello World
 ```java
 public class HelloWorld {
     public static void main(String[] args) {
@@ -68,22 +107,112 @@ public class HelloWorld {
 }
 ```
 
-Save this as `HelloWorld.java`, compile it with `javac HelloWorld.java`, and run it with `java HelloWorld`. You should see `Hello, World!` printed on your screen.
+### Variables and Types
+```java
+public class Variables {
+    public static void main(String[] args) {
+        int age = 25;
+        double salary = 75000.50;
+        char grade = 'A';
+        boolean active = true;
+        String name = "Java";
+        
+        System.out.println(name + " developer, age " + age);
+    }
+}
+```
 
-Don't worry about understanding every word yet. We'll break it all down in the upcoming topics.
+### Control Flow
+```java
+public class ControlFlow {
+    public static void main(String[] args) {
+        int score = 85;
+        
+        if (score >= 90) {
+            System.out.println("Grade: A");
+        } else if (score >= 80) {
+            System.out.println("Grade: B");
+        } else {
+            System.out.println("Grade: C");
+        }
+        
+        for (int i = 1; i <= 5; i++) {
+            System.out.println("Count: " + i);
+        }
+    }
+}
+```
 
----
+## Performance
 
-## What's Next
+| Operation | Time | Space |
+|-----------|------|-------|
+| Primitive access | O(1) | Fixed (4-8 bytes) |
+| String concatenation | O(n) | O(n) |
+| Array access | O(1) | O(n) |
+| Method call | O(1) | O(stack frame) |
 
-After completing this module, move to [02-OOP](../02-oop/) where you'll learn how to model real-world things using objects and classes.
+- Primitives are faster than wrapper classes (no boxing/unboxing)
+- `StringBuilder` is faster than `+` concatenation in loops
+- String pool reduces memory for repeated literals
 
----
+## Best Practices
 
-## Common Mistakes Beginners Make
+**Do's:**
+- Use `StringBuilder` for string concatenation in loops
+- Declare variables close to first use
+- Use meaningful variable and method names
+- Prefer `final` for constants and parameters
+- Use `enhanced for` when index is not needed
 
-- **Skipping the basics** — every advanced topic builds on these fundamentals
-- **Not typing the examples** — typing code builds muscle memory
-- **Moving too fast** — understand each concept before moving on
-- **Not experimenting** — change the examples, break them, fix them
-- **Ignoring error messages** — Java's error messages are actually helpful once you learn to read them
+**Don'ts:**
+- Don't use magic numbers — use named constants
+- Don't use `==` for String comparison
+- Don't ignore compiler warnings
+- Don't use `System.out.println` for production logging
+- Don't write overly long methods
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| `==` vs `.equals()` | Reference vs value comparison | Use `.equals()` for strings |
+| Array index out of bounds | Accessing non-existent index | Check `length - 1` |
+| Integer overflow | Wraps around silently | Use `long` for large values |
+| NullPointerException | Uninitialized reference | Check for null before use |
+| String immutability confusion | `.replace()` returns new string | Reassign: `s = s.replace(...)` |
+
+## Interview Questions
+
+### Q1: What are the differences between `==` and `.equals()`?
+**Answer:** `==` compares references (memory addresses). `.equals()` compares values. For String, `.equals()` checks content.
+
+### Q2: Why is String immutable in Java?
+**Answer:** Strings are stored in the string pool. Immutability enables string interning, security, and thread safety. It also allows class loading and network connections to be safe.
+
+### Q3: What is the difference between `StringBuilder` and `StringBuffer`?
+**Answer:** `StringBuilder` is not thread-safe but faster. `StringBuffer` is synchronized. Use `StringBuilder` for single-threaded scenarios.
+
+### Q4: What happens when you use `null` in a switch statement?
+**Answer:** A `NullPointerException` is thrown at runtime if the switch expression is `null`.
+
+### Q5: What is the diamond operator (`<>`)?
+**Answer:** Introduced in Java 7, it allows the compiler to infer type arguments: `List<String> list = new ArrayList<>();`.
+
+### Q6: What are wrapper classes and autoboxing?
+**Answer:** Wrapper classes (`Integer`, `Double`, etc.) wrap primitives as objects. Autoboxing automatically converts between them: `int i = Integer.valueOf(5);`.
+
+### Q7: What is the difference between `finalize()` and `try-with-resources`?
+**Answer:** `finalize()` is unreliable and deprecated. `try-with-resources` automatically closes `AutoCloseable` resources and is the preferred approach.
+
+### Q8: What is the `var` keyword in Java 10+?
+**Answer:** Local variable type inference. The compiler infers the type from the initializer: `var list = new ArrayList<String>();`.
+
+## Cross-References
+
+- **Next Module:** [02 - Object-Oriented Programming](../02-oop/)
+- **Related:** [06 - Generics](../06-generics/) — type safety and parameterized types
+- **Related:** [05 - Text Processing](../05-text-processing/) — deeper String and text handling
+- **Related:** [04 - Collections](../04-collections/) — dynamic data structures beyond arrays
+- **External:** [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
+- **External:** [Java Language Specification](https://docs.oracle.com/javase/specs/)

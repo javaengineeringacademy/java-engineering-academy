@@ -42,3 +42,8 @@ JWT consists of three parts separated by dots:
 - Implement token refresh mechanism
 - Use asymmetric keys for distributed systems
 - Validate all claims on server
+
+## See Also
+- [Encryption](../encryption/) — Underlying crypto for JWT signing
+- [SSL/TLS](../ssl/) — Transport security for token delivery
+- [Circuit Breaker](../../production/production-patterns/circuit-breaker/) — Resilience when auth service is down

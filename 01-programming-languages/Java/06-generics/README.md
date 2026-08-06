@@ -50,6 +50,16 @@ By the end of this module, you will be able to:
 - Familiarity with collections framework
 - Basic understanding of interfaces and abstract classes
 
+## History
+- **1995** — Java 1.0 used raw collections (no type safety)
+- **1998** — Java 1.2 introduced Collections Framework with `Object`-based types
+- **2004** — Java 5 introduced generics, enabling compile-time type safety
+- **2004** — Java 5 added generic interfaces, methods, and bounded types
+- **2011** — Java 7 added diamond operator (`<>`) for type inference
+- **2014** — Java 8 improved type inference in lambdas and method references
+- **2016** — Java 9 added `var` for local variable type inference (indirectly related)
+- **2021** — Java 17 continued type system refinements
+
 ## Learning Path
 
 ```
@@ -66,7 +76,7 @@ Best Practices → Real-World → Mini Project
 - **Intermediate** (Topics 03-07): Advanced features and patterns
 - **Advanced** (Topics 08-09): Real-world applications and projects
 
-## Key Concepts
+## Core Concepts
 
 ### Type Safety at Compile Time
 
@@ -131,6 +141,25 @@ List<Integer> integers = new ArrayList<>();
 // At runtime: both are ArrayList (raw type)
 System.out.println(strings.getClass() == integers.getClass()); // true
 ```
+
+## Internal Working
+
+### Type Erasure Process
+1. **Compile time** — Compiler checks all generic type constraints
+2. **Erasure** — Generic type parameters are replaced with their bounds (or `Object` if unbounded)
+3. **Bridge methods** — Compiler generates bridge methods to preserve polymorphism
+4. **Cast insertion** — Compiler inserts necessary casts in bytecode
+
+### What Gets Erased
+- Type parameters → `Object` or upper bound
+- Generic type in `instanceof` → compile-time error (not reifiable)
+- Generic array creation → compile-time error
+- Exception type parameters → compile-time error
+
+### What's Preserved
+- `extends` bound in bytecode
+- Generic signatures for reflection (`getGenericSuperclass()`)
+- Bridge methods for covariant return types
 
 ## Architecture Diagram
 
@@ -200,7 +229,7 @@ System.out.println(strings.getClass() == integers.getClass()); // true
 | Wildcard capture | O(1) | None | Compile-time only |
 | Generic method call | O(1) | Type inference | Compile-time only |
 
-## Common Patterns
+## Examples
 
 ### 1. Builder Pattern with Generics
 ```java
@@ -259,6 +288,42 @@ public class TypeSafeContainer {
 
 ### Q5: What is a reified type?
 **Answer:** A type whose type information is available at runtime. Generics are not reified (erased), but arrays and primitives are.
+
+## Best Practices
+
+**Do's:**
+- Use bounded types (`<T extends Comparable<T>>`) to constrain generic types
+- Prefer `List<? extends T>` for read-only access (Producer Extends)
+- Prefer `List<? super T>` for write access (Consumer Super)
+- Use type wildcards for flexibility in method parameters
+- Reuse compiled `Pattern` objects for regex
+
+**Don'ts:**
+- Don't use raw types — always parameterize
+- Don't create `new T()` or `new T[]` — type erasure prevents this
+- Don't use `List<Object>` when you mean `List<?>` or `List<String>`
+- Don't ignore unchecked cast warnings — suppress with `@SuppressWarnings` only when justified
+- Don't use wildcards in return types — use concrete generic types
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Using raw types | Loses type safety | Always use `List<String>` not `List` |
+| `new T()` | Compile error — type erasure | Pass `Class<T>` and use `clazz.getDeclaredConstructor()` |
+| `List<String>` not assignable to `List<Object>` | Generics are invariant | Use wildcards: `List<?>` |
+| Unchecked cast warning | Potential `ClassCastException` | Use `@SuppressWarnings("unchecked")` only when safe |
+| `instanceof List<String>` | Compile error — type erasure | Use `instanceof List<?>` |
+
+## Cross-References
+
+- **Previous Module:** [05 - Text Processing](../05-text-processing/)
+- **Next Module:** [07 - Functional Programming](../07-functional-programming/)
+- **Related:** [02 - OOP](../02-oop/) — inheritance and polymorphism
+- **Related:** [04 - Collections](../04-collections/) — parameterized collection types
+- **Related:** [07 - Functional Programming](../07-functional-programming/) — generic functional interfaces
+- **External:** [Oracle Generics Tutorial](https://docs.oracle.com/en/java/javase/21/java/generics/)
+- **External:** [Effective Java - Chapter on Generics](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 
 ---
 

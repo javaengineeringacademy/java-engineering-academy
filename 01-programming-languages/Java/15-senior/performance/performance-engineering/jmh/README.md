@@ -200,6 +200,11 @@ java -jar benchmarks.jar -prof gc StringConcatBenchmark
 4. **Benchmarking too much**: Keep benchmarks focused on a single operation
 5. **Ignoring JIT optimizations**: Use Blackhole, @CompilerControl, or return values
 
+## See Also
+- [JFR (Java Flight Recorder)](../jfr/) — Production profiling companion to JMH
+- [Profiling](../profiling/) — When and how to profile beyond microbenchmarks
+- [Performance Patterns](../performance-patterns/) — Broader optimization strategies
+
 ## References
 
 - [JMH Official Samples](https://hg.openjdk.java.net/jdk/sandbox/file/tip/test/micro/org/openjdk/jmh/samples/)

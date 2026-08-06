@@ -181,7 +181,7 @@ public class CustomAnnotations {
                         valid = false;
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    System.err.println("Cannot access field: " + e.getMessage());
                 }
             }
 
@@ -199,7 +199,7 @@ public class CustomAnnotations {
                         }
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    System.err.println("Cannot access field: " + e.getMessage());
                 }
             }
         }

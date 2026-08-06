@@ -36,7 +36,7 @@ public class CircuitBreakerDemo {
                 T result = action.get();
                 onSuccess();
                 return result;
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 onFailure(e);
                 return fallback.get();
             }

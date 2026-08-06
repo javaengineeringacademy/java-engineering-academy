@@ -15,6 +15,19 @@ Debugging is the process of finding and resolving defects in software. Effective
 - IDE experience
 - Basic JVM knowledge
 
+## History
+- **1995** — Java 1.0 had only manual debugging with `System.out.println`
+- **1998** — Java 1.2 added `assert` keyword for pre/post conditions
+- **2001** — Java 1.4 added `java.util.logging` for standard logging
+- **2004** — Java 5 improved stack traces and debugging support
+- **2006** — Java 6 added `jstack`, `jmap`, `jhat` tools
+- **2011** — Java 7 added `jdeps` for dependency analysis
+- **2014** — Java 8 improved `Optional` for null-safe debugging
+- **2017** — Java 9 added `jshell` for interactive debugging and REPL
+- **2018** — Java 11 added Flight Recorder as a production profiling tool
+- **2021** — Java 17 enhanced `NullPointerException` messages with variable names
+- **2023** — Java 21 added structured concurrency and scoped values (preview)
+
 ## Why This Concept Exists
 Bugs lead to:
 - System failures
@@ -31,7 +44,7 @@ Effective debugging:
 ## Problem Statement
 How do you efficiently find and fix software defects?
 
-## Theory
+## Core Concepts
 
 ### Debugging Techniques
 
@@ -450,3 +463,14 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 - Debugging by David Agans
 - Java Debugging Guide
 - Effective Debugging
+
+## Cross-References
+
+- **Previous Module:** [10 - JVM Internals](../10-jvm-internals/)
+- **Related:** [01 - Fundamentals](../01-fundamentals/) — basic syntax for reading stack traces
+- **Related:** [02 - OOP](../02-oop/) — object lifecycle and memory
+- **Related:** [03 - Exception Handling](../03-exception-handling/) — exception analysis and debugging
+- **Related:** [09 - Multithreading](../09-multithreading/) — thread dumps and deadlock detection
+- **Related:** [10 - JVM Internals](../10-jvm-internals/) — heap dumps, GC logs, JFR
+- **External:** [Oracle Java Debugging Guide](https://docs.oracle.com/javase/tutorial/essential/io/)
+- **External:** [Effective Debugging by Diomidis Spinellis](https://www.oreilly.com/library/view/effective-debugging/9780134685809/)

@@ -67,6 +67,11 @@ Netflix Hystrix popularized this pattern but is now in maintenance mode. Migrate
 4. Tune thresholds based on actual failure patterns
 5. Combine with retry for transient failures
 
+## See Also
+- [Rate Limiting](../rate-limiting/) — Complementary pattern for traffic control
+- [Retry](../retry/) — Handling transient failures alongside circuit breakers
+- [JWT](../../advanced/security/jwt/) — Auth token handling when services degrade
+
 ## References
 
 - [Resilience4j Documentation](https://resilience4j.readme.io/)

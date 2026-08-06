@@ -431,5 +431,11 @@ IntStream stream = IntStream.range(0, 100);
 
 ---
 
+## See Also
+- [Lambda Expressions](../02-lambda-expressions/) — Core syntax powering stream operations
+- [Functional Interfaces](../03-functional-interfaces/) — Predicate, Function, Consumer used in streams
+- [Method References](../04-method-references/) — Shorthand for stream lambdas
+- [Collections Framework](../../04-collections/) — Data sources streams operate on
+
 [📖 Continue to Part 2](README-part2.md)
 ```

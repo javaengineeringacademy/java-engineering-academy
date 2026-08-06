@@ -17,6 +17,18 @@ The Java Collections Framework provides interfaces, implementations, and algorit
 - Generics basics
 - Exception handling
 
+## History
+- **1996** — Java 1.0 introduced Vector, Hashtable, and Enumeration
+- **1998** — Java 1.2 added the Collections Framework (List, Set, Map, Iterator)
+- **2001** — Java 1.3 added Collections.unmodifiable* wrappers
+- **2004** — Java 5 introduced generics, making collections type-safe
+- **2004** — Java 5 added `for-each` loop and `autoboxing`
+- **2011** — Java 7 introduced `diamond operator` and `NavigableMap`/`NavigableSet`
+- **2014** — Java 8 added `stream()` and `forEach()` to collections
+- **2017** — Java 9 added factory methods: `List.of()`, `Set.of()`, `Map.of()`
+- **2021** — Java 16 added `toList()` to Stream, making `stream().collect(Collectors.toList())` unnecessary
+- **2021** — Java 17 added `SequencedCollection` interface for ordered access
+
 ## Why This Concept Exists
 Arrays are limited:
 - Fixed size
@@ -33,7 +45,7 @@ Collections provide:
 ## Problem Statement
 How do you store, retrieve, and manipulate groups of objects efficiently?
 
-## Theory
+## Core Concepts
 
 ### Collection Hierarchy
 
@@ -222,6 +234,164 @@ graph TD
     H -->|No| J[Set]
 ```
 
+## Examples
+
+### ArrayList Basics
+```java
+List<String> names = new ArrayList<>();
+names.add("Alice");
+names.add("Bob");
+names.add("Charlie");
+System.out.println(names.get(0));     // Alice
+System.out.println(names.size());     // 3
+names.remove("Bob");
+System.out.println(names.contains("Alice")); // true
+```
+
+### HashMap Usage
+```java
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Alice", 95);
+scores.put("Bob", 87);
+scores.put("Charlie", 92);
+System.out.println(scores.get("Alice"));          // 95
+scores.putIfAbsent("Alice", 100);                 // no overwrite
+scores.forEach((name, score) -> System.out.println(name + ": " + score));
+```
+
+### Stream Operations
+```java
+List<String> words = List.of("apple", "banana", "avocado", "blueberry");
+List<String> aWords = words.stream()
+    .filter(w -> w.startsWith("a"))
+    .sorted()
+    .collect(Collectors.toList());
+System.out.println(aWords); // [apple, avocado]
+```
+
+> See [Part 2](README-part2.md) for more syntax, examples, and reference material.
+
 ---
 
-**[Continue to Part 2: Syntax, Examples & Reference →](README-part2.md)**
+## Internal Working
+
+### ArrayList Internals
+- Backed by a `Object[]` array
+- Default initial capacity: 10
+- Growth factor: 1.5x (`newCapacity = oldCapacity + (oldCapacity >> 1)`)
+- `add()` at end: amortized O(1), worst O(n) on resize
+- `add(index)` / `remove(index)`: O(n) due to element shifting
+
+### HashMap Internals
+- Array of `Node<K,V>` buckets (default capacity 16, load factor 0.75)
+- Key's `hashCode()` determines bucket: `hash(key) & (n-1)`
+- Collisions handled by linked list (Java 8+: treeifies at 8 entries)
+- Resize when `size > capacity * loadFactor`
+
+### LinkedList Internals
+- Doubly-linked list: each node has `prev` and `next` pointers
+- No random access — O(n) traversal to index
+- O(1) insert/delete at head/tail (if node reference is known)
+
+### TreeMap Internals
+- Red-black tree (self-balancing BST)
+- Keys must be `Comparable` or provided `Comparator`
+- All operations O(log n)
+
+### ConcurrentHashMap Internals
+- Segment-based locking (Java 7) / CAS + synchronized bins (Java 8+)
+- Read operations are lock-free
+- Write operations lock only the affected bucket
+
+## Performance
+
+### Choosing the Right Collection
+
+| Use Case | Best Choice | Why |
+|----------|-------------|-----|
+| Random access by index | ArrayList | O(1) index access |
+| Frequent insert/delete at head | LinkedList | O(1) at ends |
+| Unique elements, unordered | HashSet | O(1) add/contains |
+| Unique elements, sorted | TreeSet | O(log n) with ordering |
+| Key-value pairs, unordered | HashMap | O(1) get/put |
+| Key-value pairs, sorted by key | TreeMap | O(log n) with ordering |
+| Thread-safe map | ConcurrentHashMap | High concurrency |
+| FIFO queue | ArrayDeque | Faster than LinkedList |
+| Priority ordering | PriorityQueue | O(log n) add/poll |
+
+### Memory Overhead
+
+| Collection | Overhead per Element |
+|------------|---------------------|
+| ArrayList | 4-8 bytes (reference) + array slots |
+| LinkedList | 24-32 bytes (node + two pointers) |
+| HashSet | 32-48 bytes (HashMap entry) |
+| HashMap | 32-48 bytes (Entry + hash + next) |
+
+## Best Practices
+
+**Do's:**
+- Use `List.of()`, `Set.of()`, `Map.of()` for immutable collections (Java 9+)
+- Prefer `ArrayList` over `LinkedList` for most use cases
+- Use `interface` types for declarations: `List<String>` not `ArrayList<String>`
+- Use `ConcurrentHashMap` for concurrent access, not `Collections.synchronizedMap()`
+- Use `entrySet()` when you need both key and value from a Map
+
+**Don'ts:**
+- Don't modify a collection during for-each iteration (use `Iterator.remove()`)
+- Don't use `Vector` or `Hashtable` — use modern equivalents
+- Don't rely on `hashCode()` and `equals()` being consistent without implementing both
+- Don't use `size() == 0` when `isEmpty()` is clearer
+- Don't create unnecessary intermediate collections in stream pipelines
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Modifying during iteration | `ConcurrentModificationException` | Use `Iterator.remove()` or `removeIf()` |
+| Using raw types | Loss of type safety | Always use parameterized types |
+| Incorrect `hashCode`/`equals` | Broken HashSet/HashMap behavior | Implement both consistently |
+| `LinkedList` for random access | O(n) performance | Use `ArrayList` |
+| Not initialising capacity | Repeated resizing overhead | Pre-size when known |
+
+## Interview Questions
+
+### Q1: What is the difference between ArrayList and LinkedList?
+**Answer:** `ArrayList` uses a resizable array — O(1) random access, O(n) insert/delete. `LinkedList` uses a doubly-linked list — O(n) random access, O(1) insert/delete at ends.
+
+### Q2: How does HashMap handle collisions?
+**Answer:** Each bucket holds a linked list of entries with the same hash. Java 8+ converts lists to trees when bucket size exceeds 8, reducing lookup from O(n) to O(log n).
+
+### Q3: What is the difference between HashMap and Hashtable?
+**Answer:** `Hashtable` is synchronized (thread-safe but slow), doesn't allow null keys/values. `HashMap` is not synchronized, allows one null key. Use `ConcurrentHashMap` for thread safety.
+
+### Q4: What is the fail-fast property of collections?
+**Answer:** Iterators throw `ConcurrentModificationException` if the collection is modified structurally during iteration, unless done through the iterator itself.
+
+### Q5: When should you use TreeMap over HashMap?
+**Answer:** When you need keys sorted by natural order or a custom `Comparator`. `TreeMap` provides `firstKey()`, `lastKey()`, `headMap()`, `tailMap()` operations.
+
+### Q6: What is the difference between Iterator and ListIterator?
+**Answer:** `Iterator` works for any collection, traverses forward only. `ListIterator` works only for `List`, traverses both directions, and can add/set elements.
+
+### Q7: How do you create an unmodifiable collection?
+**Answer:** Use `Collections.unmodifiableList()`, or Java 9+ factory methods: `List.of()`, `List.copyOf()`.
+
+### Q8: What is the difference between PriorityQueue and TreeSet?
+**Answer:** `PriorityQueue` is a heap — O(1) peek, O(log n) add/poll, no ordering guarantee on iteration. `TreeSet` is a red-black tree — sorted order, O(log n) all operations.
+
+### Q9: What is copy-on-write?
+**Answer:** `CopyOnWriteArrayList` creates a new copy of the underlying array on every write. Good for read-heavy, write-rarely scenarios.
+
+### Q10: What is the `fail-safe` iterator?
+**Answer:** Iterators on concurrent collections (e.g., `ConcurrentHashMap`) don't throw `ConcurrentModificationException`. They may not reflect concurrent modifications.
+
+## Cross-References
+
+- **Previous Module:** [03 - Exception Handling](../03-exception-handling/)
+- **Next Module:** [05 - Text Processing](../05-text-processing/)
+- **Related:** [06 - Generics](../06-generics/) — parameterized collection types
+- **Related:** [07 - Functional Programming](../07-functional-programming/) — Stream API for collection processing
+- **Related:** [09 - Multithreading](../09-multithreading/) — thread-safe collections
+- **External:** [Oracle Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
+- **External:** [Effective Java - Item 28: Prefer lists to arrays](https://www.oreilly.com/library/view/effective-java/9780134686097/)

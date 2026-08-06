@@ -71,10 +71,10 @@ public class VirtualThreadsDemo {
 
             try {
                 scope.join();
-            } catch (Exception e) {
-                System.out.println("One task failed, shutting down scope");
-            }
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("One task failed, shutting down scope");
+        }
+        } catch (InterruptedException | ExecutionException e) {
             System.out.println("Scope closed due to failure: " + e.getMessage());
         }
     }

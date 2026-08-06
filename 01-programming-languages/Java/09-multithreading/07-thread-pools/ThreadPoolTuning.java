@@ -30,7 +30,7 @@ public class ThreadPoolTuning {
             });
         }
         pool.shutdown();
-        try { pool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { pool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Pool shutdown interrupted: " + e.getMessage()); }
         System.out.println("CPU-bound completed in " + (System.currentTimeMillis() - start) + "ms");
     }
 
@@ -46,11 +46,11 @@ public class ThreadPoolTuning {
                     System.out.println("IO task " + taskId + " starting on " + Thread.currentThread().getName());
                     Thread.sleep(200);
                     System.out.println("IO task " + taskId + " completed");
-                } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("IO task interrupted: " + e.getMessage()); }
             });
         }
         pool.shutdown();
-        try { pool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { pool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Pool shutdown interrupted: " + e.getMessage()); }
         System.out.println("IO-bound completed in " + (System.currentTimeMillis() - start) + "ms");
     }
 
@@ -79,7 +79,7 @@ public class ThreadPoolTuning {
         }
 
         pool.shutdown();
-        try { pool.awaitTermination(3, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { pool.awaitTermination(3, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Scheduled pool shutdown interrupted: " + e.getMessage()); }
     }
 
     private static void forkJoinPoolDivideConquer() {
@@ -136,7 +136,7 @@ public class ThreadPoolTuning {
             final int id = taskIdCounter.incrementAndGet();
             customPool.execute(() -> {
                 System.out.println("Custom task " + id + " on " + Thread.currentThread().getName());
-                try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Custom task interrupted: " + e.getMessage()); }
             });
         }
 
@@ -145,7 +145,7 @@ public class ThreadPoolTuning {
         System.out.println("Completed tasks: " + customPool.getCompletedTaskCount());
 
         customPool.shutdown();
-        try { customPool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { customPool.awaitTermination(5, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Custom pool shutdown interrupted: " + e.getMessage()); }
     }
 
     private static void monitorPoolMetrics() {
@@ -161,7 +161,7 @@ public class ThreadPoolTuning {
                 try {
                     System.out.println("Monitored task " + id + " running");
                     Thread.sleep(100);
-                } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Monitored task interrupted: " + e.getMessage()); }
             });
 
             if (i % 2 == 0) {
@@ -173,7 +173,7 @@ public class ThreadPoolTuning {
         }
 
         monitorPool.shutdown();
-        try { monitorPool.awaitTermination(3, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { monitorPool.awaitTermination(3, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); System.err.println("Monitor pool shutdown interrupted: " + e.getMessage()); }
 
         System.out.println("Final metrics:");
         System.out.println("  Pool size: " + monitorPool.getPoolSize());

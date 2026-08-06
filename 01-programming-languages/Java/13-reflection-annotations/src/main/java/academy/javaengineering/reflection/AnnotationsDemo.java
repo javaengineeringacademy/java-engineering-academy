@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -144,8 +145,8 @@ public class AnnotationsDemo {
                 try {
                     Object value = method.invoke(annotation);
                     System.out.println("    " + method.getName() + " = " + value);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    System.err.println("Cannot read annotation value: " + e.getMessage());
                 }
             });
         }

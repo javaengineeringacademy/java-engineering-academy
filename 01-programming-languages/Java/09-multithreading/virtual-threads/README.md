@@ -66,3 +66,9 @@ With virtual threads, you write straightforward sequential code that blocks on I
 ### Key Takeaway
 
 Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and scalability (async I/O). They let you write simple blocking code that scales to millions of concurrent operations — solving the thread pool sizing problem entirely.
+
+## See Also
+- [CompletableFuture](../../15-senior/advanced/concurrency-advanced/completable-future/) — Async alternative virtual threads replace
+- [ThreadPoolExecutor Source](../../15-senior/java-platform/source-exploration/threadpool-executor-source/) — How carrier threads work internally
+- [Structured Concurrency](../../15-senior/advanced/concurrency-advanced/structured-concurrency/) — Companion API for virtual threads
+- [ForkJoinPool](../../15-senior/advanced/concurrency-advanced/fork-join/) — The executor backing virtual threads

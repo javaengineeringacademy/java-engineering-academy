@@ -518,3 +518,9 @@ ManagementFactory.getMemoryPoolMXBeans().forEach(pool -> {
 | **How** | Serial, Parallel, CMS, G1, ZGC, Shenandoah |
 | **Monitor** | Logs, jstat, JFR, VisualVM |
 | **Tune** | Heap size, GC algorithm, pause targets |
+
+## See Also
+- [Java Memory Model](../java-memory-model/) — How GC interacts with thread visibility
+- [JFR (Java Flight Recorder)](../../15-senior/performance/performance-engineering/jfr/) — Monitor GC events in production
+- [Performance Patterns](../../15-senior/performance/performance-engineering/performance-patterns/) — GC tuning strategies
+- [OpenJDK HotSpot GC](../../15-senior/java-platform/openjdk/hotspot/gc/) — GC implementation source code

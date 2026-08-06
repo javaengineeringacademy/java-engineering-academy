@@ -15,6 +15,16 @@ Java I/O provides classes for reading and writing data through streams, readers,
 - Exception handling
 - File system concepts
 
+## History
+- **1995** — Java 1.0 introduced stream-based I/O (`InputStream`, `OutputStream`)
+- **1998** — Java 1.2 added `Reader`/`Writer` for character streams
+- **2001** — Java 1.4 introduced NIO (`ByteBuffer`, `Channel`, `Selector`)
+- **2004** — Java 5 added `File` convenience methods and `Scanner`
+- **2011** — Java 7 introduced NIO.2 (`Path`, `Files`, `FileVisitor`) and try-with-resources
+- **2014** — Java 8 added `Files.lines()`, `Files.list()`, `Files.walk()` returning streams
+- **2017** — Java 9 added `InputStream.transferTo()`, `Files.readString()`, `Files.writeString()`
+- **2021** — Java 17 added `Files.mismatch()`
+
 ## Why This Concept Exists
 File and network operations require:
 - Data reading/writing
@@ -31,7 +41,7 @@ I/O provides:
 ## Problem Statement
 How do you efficiently read, write, and transfer data in Java?
 
-## Theory
+## Core Concepts
 
 ### I/O Types
 
@@ -338,7 +348,12 @@ public class EnterpriseExample {
 ## Summary
 Java I/O and NIO provide comprehensive data handling capabilities. Use NIO for modern applications.
 
-## References
-- Oracle Java Documentation: I/O
-- Java NIO Tutorial
-- Baeldung I/O Guide
+## Cross-References
+
+- **Previous Module:** [07 - Functional Programming](../07-functional-programming/)
+- **Next Module:** [09 - Multithreading](../09-multithreading/)
+- **Related:** [05 - Text Processing](../05-text-processing/) — character encoding and text manipulation
+- **Related:** [10 - JVM Internals](../10-jvm-internals/) — file descriptors, memory mapping
+- **Related:** [09 - Multithreading](../09-multithreading/) — async I/O and NIO selectors
+- **External:** [Oracle Java I/O Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
+- **External:** [Java NIO Tutorial - Baeldung](https://www.baeldung.com/java-nio)

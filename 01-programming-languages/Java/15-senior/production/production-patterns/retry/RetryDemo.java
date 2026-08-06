@@ -90,7 +90,7 @@ public class RetryDemo {
         try {
             String result = retryFixed(() -> unreliableService(), 3, 500);
             System.out.println("Result: " + result);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("All attempts failed: " + e.getMessage());
         }
 
@@ -102,7 +102,7 @@ public class RetryDemo {
         try {
             String result = retryExponential(() -> unreliableService(), 4, 200);
             System.out.println("Result: " + result);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("All attempts failed: " + e.getMessage());
         }
 
@@ -114,7 +114,7 @@ public class RetryDemo {
         try {
             String result = retryWithJitter(() -> unreliableService(), 5, 100);
             System.out.println("Result: " + result);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("All attempts failed: " + e.getMessage());
         }
     }

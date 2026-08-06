@@ -197,7 +197,7 @@ public class ReflectionBasics {
             System.out.println("  Is public: " + Modifier.isPublic(methodModifiers));
             System.out.println("  Is static: " + Modifier.isStatic(methodModifiers));
         } catch (NoSuchFieldException | NoSuchMethodException e) {
-            e.printStackTrace();
+            System.err.println("Reflection error: " + e.getMessage());
         }
     }
 }

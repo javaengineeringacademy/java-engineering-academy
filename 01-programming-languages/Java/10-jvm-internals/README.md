@@ -15,6 +15,19 @@ Understanding JVM internals is crucial for Java performance tuning, debugging, a
 - Memory concepts
 - Basic optimization
 
+## History
+- **1996** — Java 1.0: Classic VM with interpreter-only execution
+- **1997** — JIT compiler introduced for hot method compilation
+- **2000** — HotSpot VM became the default (from Sun's earlier work)
+- **2004** — Java 5 added PermGen, annotations, and enhanced GC logging
+- **2011** — Java 7 replaced PermGen with Metaspace (native memory)
+- **2014** — Java 8 default GC: Parallel GC for throughput
+- **2017** — Java 9: G1 GC became the default
+- **2018** — Java 11: ZGC introduced (low-latency GC, experimental)
+- **2021** — Java 17: ZGC and Shenandoah became production-ready
+- **2021** — Java 17: Sealed classes, pattern matching (JVM bytecode changes)
+- **2023** — Java 21: Virtual threads (JVM-level lightweight threads)
+
 ## Why This Concept Exists
 JVM knowledge enables:
 - Performance optimization
@@ -25,7 +38,7 @@ JVM knowledge enables:
 ## Problem Statement
 How does the JVM execute Java code and manage resources?
 
-## Theory
+## Core Concepts
 
 ### JVM Architecture
 
@@ -393,3 +406,14 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 - JVM Specification
 - Oracle JVM Documentation
 - JVM Internals by Aleksey Shipilëv
+
+## Cross-References
+
+- **Previous Module:** [09 - Multithreading](../09-multithreading/)
+- **Next Module:** [12 - Testing](../12-testing/)
+- **Related:** [01 - Fundamentals](../01-fundamentals/) — compilation and bytecode
+- **Related:** [02 - OOP](../02-oop/) — class loading, object layout, memory model
+- **Related:** [04 - Collections](../04-collections/) — memory usage of data structures
+- **Related:** [09 - Multithreading](../09-multithreading/) — JVM thread model and memory visibility
+- **External:** [JVM Specification](https://docs.oracle.com/javase/specs/jvms/se21/html/)
+- **External:** [OpenJDK Wiki](https://wiki.openjdk.java.net/)

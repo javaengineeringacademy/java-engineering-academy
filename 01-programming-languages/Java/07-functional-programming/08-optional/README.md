@@ -401,5 +401,11 @@ boolean present = optional.isPresent();
 
 ---
 
+## See Also
+- [Lambda Expressions](../02-lambda-expressions/) — Functional syntax for Optional operations
+- [Functional Interfaces](../03-functional-interfaces/) — Predicate, Function used with map/flatMap
+- [Stream API](../05-stream-api/) — Optional integrates with stream terminal operations
+- [Null Safety](../../00-knowledge-atoms/) — Alternative null handling patterns
+
 [📖 Continue to Part 2](README-part2.md)
 ```

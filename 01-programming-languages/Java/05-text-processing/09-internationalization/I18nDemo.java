@@ -3,6 +3,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -82,7 +83,7 @@ public class I18nDemo {
             ResourceBundle frenchBundle = ResourceBundle.getBundle("Messages", french);
 
             System.out.println("\nFrench greeting: " + frenchBundle.getString("greeting"));
-        } catch (Exception e) {
+        } catch (MissingResourceException e) {
             System.out.println("Resource bundle not found (expected in demo)");
             System.out.println("In real app, create Messages.properties files:");
             System.out.println("  Messages.properties (default)");

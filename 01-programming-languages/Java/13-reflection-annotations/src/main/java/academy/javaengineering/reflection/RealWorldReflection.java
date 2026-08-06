@@ -422,7 +422,7 @@ public class RealWorldReflection {
         try {
             User user = container.resolve(User.class);
             System.out.println("Created User: " + user);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             System.out.println("DI error: " + e.getMessage());
         }
     }
@@ -446,8 +446,8 @@ public class RealWorldReflection {
             // Map to entity
             User restored = ORMFramework.mapToEntity(map, User.class);
             System.out.println("Map to entity: " + restored);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException e) {
+            System.err.println("ORM error: " + e.getMessage());
         }
     }
 
@@ -460,8 +460,8 @@ public class RealWorldReflection {
 
             User deserialized = JsonFramework.fromJson(json, User.class);
             System.out.println("Deserialized: " + deserialized);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException e) {
+            System.err.println("JSON error: " + e.getMessage());
         }
     }
 
@@ -476,8 +476,8 @@ public class RealWorldReflection {
 
             Map<String, Object> sourceMap = PropertyMapper.toMap(source);
             System.out.println("User to map: " + sourceMap);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException e) {
+            System.err.println("Property mapping error: " + e.getMessage());
         }
     }
 

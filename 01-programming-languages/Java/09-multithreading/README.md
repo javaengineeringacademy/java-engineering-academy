@@ -15,6 +15,18 @@ Java multithreading enables concurrent execution of multiple threads. It include
 - Exception handling
 - Basic JVM knowledge
 
+## History
+- **1995** — Java 1.0 introduced `Thread` class and `Runnable` interface
+- **1998** — Java 1.2 added `Timer` and `TimerTask`
+- **2001** — Java 1.3 added `java.util.concurrent` package (Doug Lea)
+- **2004** — Java 5 added `ExecutorService`, `Lock`, `Semaphore`, `CountDownLatch`, `CyclicBarrier`, `ConcurrentHashMap`
+- **2004** — Java 5 added `java.util.concurrent.atomic` package
+- **2011** — Java 7 added `ForkJoinPool`, `Phaser`
+- **2014** — Java 8 added `CompletableFuture`, `parallelStream()`
+- **2017** — Java 9 added `Flow` API (reactive streams)
+- **2021** — Java 19 added virtual threads (Project Loom, preview)
+- **2023** — Java 21 made virtual threads a standard feature
+
 ## Why This Concept Exists
 Single-threaded applications:
 - Can't utilize multiple CPUs
@@ -30,7 +42,7 @@ Multithreading provides:
 ## Problem Statement
 How do you execute multiple tasks concurrently while managing shared resources?
 
-## Theory
+## Core Concepts
 
 ### Thread States
 
@@ -478,3 +490,14 @@ Multithreading enables concurrent execution. Use synchronization and concurrency
 - Oracle Java Documentation: Concurrency
 - Java Concurrency in Practice
 - Baeldung Concurrency Guide
+
+## Cross-References
+
+- **Previous Module:** [08 - I/O and NIO](../08-io-nio/)
+- **Next Module:** [10 - JVM Internals](../10-jvm-internals/)
+- **Related:** [02 - OOP](../02-oop/) — synchronized methods, object monitors
+- **Related:** [04 - Collections](../04-collections/) — thread-safe collections
+- **Related:** [07 - Functional Programming](../07-functional-programming/) — CompletableFuture and Stream API
+- **Related:** [10 - JVM Internals](../10-jvm-internals/) — thread model, memory model
+- **External:** [Oracle Java Concurrency Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- **External:** [Java Concurrency in Practice](https://jcip.net/)

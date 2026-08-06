@@ -94,8 +94,8 @@ public class MethodInvocation {
             Method formatMethod = clazz.getMethod("format", Object[].class);
             System.out.println("format(\"a\", \"b\", \"c\"): " +
                     formatMethod.invoke(obj, (Object) new Object[]{"a", "b", "c"}));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Method invocation error: " + e.getMessage());
         }
     }
 
@@ -112,8 +112,8 @@ public class MethodInvocation {
             privateMethod.setAccessible(true);
             Object result = privateMethod.invoke(obj, "hello");
             System.out.println("internalProcess(\"hello\"): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Private method invocation error: " + e.getMessage());
         }
     }
 
@@ -127,8 +127,8 @@ public class MethodInvocation {
             // Pass null for the instance when invoking static methods
             Object result = staticMethod.invoke(null, 5);
             System.out.println("staticMethod(5): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Static method invocation error: " + e.getMessage());
         }
     }
 
@@ -157,8 +157,8 @@ public class MethodInvocation {
                     System.out.println("  " + m);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Overload resolution error: " + e.getMessage());
         }
     }
 
@@ -188,8 +188,8 @@ public class MethodInvocation {
             MethodHandle privateHandle = lookup.findVirtual(MethodInvocation.class, "internalProcess", privateType);
             String privateResult = (String) privateHandle.invoke(obj, "methodhandle");
             System.out.println("internalProcess via MethodHandle: " + privateResult);
-        } catch (Throwable e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException | Throwable e) {
+            System.err.println("MethodHandle error: " + e.getMessage());
         }
     }
 
@@ -270,8 +270,8 @@ public class MethodInvocation {
             Method method = obj.getClass().getMethod("process", argTypes);
             Object result = method.invoke(obj, args);
             System.out.println("Dynamic invocation result: " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Dynamic invocation error: " + e.getMessage());
         }
 
         // Invoke varargs method dynamically
@@ -279,8 +279,8 @@ public class MethodInvocation {
             Method sumMethod = obj.getClass().getMethod("sum", int[].class);
             Object result = sumMethod.invoke(obj, (Object) new int[]{1, 2, 3, 4, 5});
             System.out.println("sum(1,2,3,4,5): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Varargs invocation error: " + e.getMessage());
         }
     }
 

@@ -15,6 +15,18 @@ The Java Stream API provides a functional approach to processing collections of 
 - Lambda expressions
 - Functional interfaces
 
+## History
+- **1995** — Java 1.0 had anonymous inner classes (verbose functional style)
+- **2004** — Java 5 added `Iterable` interface for for-each loops
+- **2011** — Java 7 added `ForkJoinPool` for parallel processing
+- **2014** — Java 8 introduced the Stream API, lambda expressions, and functional interfaces (`Predicate`, `Function`, `Consumer`, `Supplier`)
+- **2015** — Java 8 added `Collectors` for complex aggregations
+- **2016** — Java 9 added `Stream.ofNullable()`, `takeWhile()`, `dropWhile()`
+- **2017** — Java 10 added `Collectors.toUnmodifiableList()`
+- **2021** — Java 16 added `Stream.toList()` (shortcut for `.collect(Collectors.toList())`)
+- **2021** — Java 17 added `Stream.mapMulti()` for flat-mapping
+- **2021** — Java 17 continued `Optional` improvements
+
 ## Why This Concept Exists
 Processing collections required verbose loops, mutable accumulators, and imperative code. Streams enable:
 - Declarative data processing
@@ -26,7 +38,7 @@ Processing collections required verbose loops, mutable accumulators, and imperat
 ## Problem Statement
 How do you process collections of data in a concise, readable, and potentially parallel manner?
 
-## Theory
+## Core Concepts
 
 ### Stream Characteristics
 - **Not a data structure** — computed on demand
@@ -400,5 +412,44 @@ public class StreamEnterpriseExample {
 1. Stream is single-use — cannot reuse
 
 ---
+
+## Interview Questions
+
+### Q1: What is the difference between `map()` and `flatMap()`?
+**Answer:** `map()` transforms each element one-to-one. `flatMap()` transforms each element to a stream and flattens them into a single stream.
+
+### Q2: What is lazy evaluation in Streams?
+**Answer:** Intermediate operations (filter, map, etc.) are not executed until a terminal operation (collect, forEach, etc.) is invoked. This enables optimization and short-circuiting.
+
+### Q3: When should you use parallel streams?
+**Answer:** For large datasets with CPU-bound operations. Avoid for small datasets, I/O-bound work, or when ordering matters. Always benchmark first.
+
+### Q4: What is a Collector?
+**Answer:** A mutable accumulator that combines stream elements into a result container. `Collectors.toList()`, `groupingBy()`, and `joining()` are common collectors.
+
+### Q5: What is the difference between `reduce()` and `collect()`?
+**Answer:** `reduce()` combines elements into a single value using a `BinaryOperator`. `collect()` uses a mutable accumulator (Collector) to build a result container like a List or Map.
+
+### Q6: What is a functional interface?
+**Answer:** An interface with exactly one abstract method (SAM). Examples: `Predicate<T>`, `Function<T,R>`, `Consumer<T>`, `Supplier<T>`. Used with lambdas.
+
+### Q7: What is the difference between `peek()` and `forEach()`?
+**Answer:** `peek()` is an intermediate operation that returns the stream (for debugging). `forEach()` is a terminal operation that returns void.
+
+### Q8: What is `Collectors.toMap()` and when to use it?
+**Answer:** Collects stream elements into a `Map`. Use when you need key-value pairs from a stream. Provide merge function for duplicate keys.
+
+### Q9: What is the difference between `findFirst()` and `findAny()`?
+**Answer:** `findFirst()` returns the first element (deterministic, ordered). `findAny()` returns any element (faster in parallel streams).
+
+## Cross-References
+
+- **Previous Module:** [06 - Generics](../06-generics/)
+- **Next Module:** [08 - I/O and NIO](../08-io-nio/)
+- **Related:** [04 - Collections](../04-collections/) — stream source collections
+- **Related:** [02 - OOP](../02-oop/) — functional interfaces as contracts
+- **Related:** [09 - Multithreading](../09-multithreading/) — parallel streams and ForkJoinPool
+- **External:** [Oracle Stream API Tutorial](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html)
+- **External:** [Baeldung Java Streams Guide](https://www.baeldung.com/java-streams)
 
 [📖 Continue to Part 2](README-part2.md)

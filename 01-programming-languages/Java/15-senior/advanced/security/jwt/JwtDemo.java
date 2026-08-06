@@ -4,6 +4,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +72,7 @@ public class JwtDemo {
             String expectedEncoded = base64UrlEncode(expectedSignature.getBytes(StandardCharsets.UTF_8));
 
             return expectedEncoded.equals(parts[2]);
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException e) {
             return false;
         }
     }

@@ -1,3 +1,4 @@
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.StructuredTaskScope.Subtask;
 
@@ -101,7 +102,7 @@ public class ScopedValuesDemo {
             Thread regularThread = new Thread(() -> {
                 try {
                     System.out.println("   Regular thread - User: " + CURRENT_USER.get());
-                } catch (Exception e) {
+                } catch (NoSuchElementException e) {
                     System.out.println("   Regular thread - User: not available");
                 }
             });
@@ -112,7 +113,7 @@ public class ScopedValuesDemo {
             Thread virtualThread = Thread.ofVirtual().name("virtual-1").start(() -> {
                 try {
                     System.out.println("   Virtual thread - User: " + CURRENT_USER.get());
-                } catch (Exception e) {
+                } catch (NoSuchElementException e) {
                     System.out.println("   Virtual thread - User: not available");
                 }
             });

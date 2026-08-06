@@ -178,7 +178,7 @@ public class JfrExamples {
                 recording.stop();
                 System.out.println("Recording dumped and stopped.");
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Failed to dump recording: " + e.getMessage());
             }
         }));
 

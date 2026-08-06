@@ -15,6 +15,16 @@ Object-Oriented Programming (OOP) is a programming approach based on objects tha
 - Variables and data types
 - Control flow statements
 
+## History
+- **1967** — Simula introduced classes and objects
+- **1979** — C++ added OOP features to C
+- **1995** — Java launched as a pure OOP language with classes, inheritance, and polymorphism
+- **1996** — Java 1.0 class library established core OOP patterns
+- **2004** — Java 5 added generics for type-safe OOP
+- **2014** — Java 8 introduced default methods in interfaces
+- **2017** — Java 9 modules enabled better encapsulation at package level
+- **2021** — Java 17 added sealed classes for controlled inheritance
+
 ## Why This Concept Exists
 OOP provides:
 - Code reusability
@@ -26,7 +36,7 @@ OOP provides:
 ## Problem Statement
 How do you organize code to be modular, reusable, and maintainable?
 
-## Theory
+## Core Concepts
 
 ### Four Pillars of OOP
 
@@ -529,7 +539,13 @@ public class OrderService {
 ## Summary
 OOP is fundamental to Java development. Master the four pillars and apply design principles for maintainable code.
 
-## References
-- Oracle Java Documentation: OOP
-- Effective Java by Joshua Bloch
-- Head First Design Patterns
+## Cross-References
+
+- **Previous Module:** [01 - Java Fundamentals](../01-fundamentals/)
+- **Next Module:** [03 - Exception Handling](../03-exception-handling/)
+- **Related:** [06 - Generics](../06-generics/) — type-safe parameterized classes and interfaces
+- **Related:** [07 - Functional Programming](../07-functional-programming/) — lambdas and functional interfaces
+- **Related:** [09 - Multithreading](../09-multithreading/) — synchronized objects and thread safety
+- **External:** [Oracle Java Documentation: OOP](https://docs.oracle.com/javase/tutorial/java/concepts/)
+- **External:** [Effective Java by Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
+- **External:** [Head First Design Patterns](https://www.oreilly.com/library/view/head-first-design/9781492077992/)

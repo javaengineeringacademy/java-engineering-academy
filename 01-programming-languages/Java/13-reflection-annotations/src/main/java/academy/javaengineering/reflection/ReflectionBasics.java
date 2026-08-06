@@ -87,7 +87,7 @@ public class ReflectionBasics {
             Class<?> stringClass = Class.forName("java.lang.String");
             System.out.println("Class.forName(\"java.lang.String\"): " + stringClass.getName());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Class not found: " + e.getMessage());
         }
 
         // Method 2: .class literal
@@ -156,8 +156,8 @@ public class ReflectionBasics {
             Method getInfo = clazz.getMethod("getInfo");
             String result = (String) getInfo.invoke(obj);
             System.out.println("getInfo(): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Method invocation error: " + e.getMessage());
         }
 
         // Invoke private method
@@ -166,8 +166,8 @@ public class ReflectionBasics {
             secret.setAccessible(true);
             String result = (String) secret.invoke(obj);
             System.out.println("secretMethod(): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Private method invocation error: " + e.getMessage());
         }
 
         // Invoke static method
@@ -175,8 +175,8 @@ public class ReflectionBasics {
             Method countMethod = clazz.getMethod("getInstanceCount");
             int count = (int) countMethod.invoke(null);
             System.out.println("getInstanceCount(): " + count);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Static method invocation error: " + e.getMessage());
         }
 
         // Invoke method with parameters
@@ -184,8 +184,8 @@ public class ReflectionBasics {
             Method isOlder = clazz.getMethod("isOlderThan", int.class);
             boolean result = (boolean) isOlder.invoke(obj, 30);
             System.out.println("isOlderThan(30): " + result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            System.err.println("Parameterized method invocation error: " + e.getMessage());
         }
     }
 
@@ -208,8 +208,8 @@ public class ReflectionBasics {
             Constructor<?> ctor = clazz.getConstructor(String.class, int.class, String.class);
             Object instance = ctor.newInstance("Dynamic", 40, "DYN001");
             System.out.println("Created via public constructor: " + ((ReflectionBasics) instance).getInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            System.err.println("Constructor invocation error: " + e.getMessage());
         }
 
         // Create using private constructor
@@ -218,8 +218,8 @@ public class ReflectionBasics {
             privateCtor.setAccessible(true);
             Object instance = privateCtor.newInstance("Secret");
             System.out.println("Created via private constructor: " + ((ReflectionBasics) instance).getInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            System.err.println("Private constructor invocation error: " + e.getMessage());
         }
 
         // Create using default constructor
@@ -228,8 +228,8 @@ public class ReflectionBasics {
             defaultCtor.setAccessible(true);
             Object instance = defaultCtor.newInstance();
             System.out.println("Created via default constructor: " + ((ReflectionBasics) instance).getInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            System.err.println("Default constructor invocation error: " + e.getMessage());
         }
 
         // Create using newInstance shortcut
@@ -237,8 +237,8 @@ public class ReflectionBasics {
             ReflectionBasics instance = (ReflectionBasics) clazz.getDeclaredConstructor(String.class, int.class, String.class)
                     .newInstance("Shortcut", 50, "SHT001");
             System.out.println("Created via newInstance shortcut: " + instance.getInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            System.err.println("newInstance shortcut error: " + e.getMessage());
         }
     }
 
@@ -272,7 +272,7 @@ public class ReflectionBasics {
             System.out.println("Field 'id' modifiers: " + Modifier.toString(idMods));
             System.out.println("  isFinal: " + Modifier.isFinal(idMods));
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            System.err.println("Field not found: " + e.getMessage());
         }
 
         // Method modifiers
@@ -281,7 +281,7 @@ public class ReflectionBasics {
             int methodMods = getInfo.getModifiers();
             System.out.println("Method 'getInfo' modifiers: " + Modifier.toString(methodMods));
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            System.err.println("Method not found: " + e.getMessage());
         }
     }
 
@@ -319,8 +319,8 @@ public class ReflectionBasics {
             for (Method m : clazz.getDeclaredMethods()) {
                 System.out.println("  " + m.getName());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | NoSuchFieldException e) {
+            System.err.println("Workflow error: " + e.getMessage());
         }
     }
 
