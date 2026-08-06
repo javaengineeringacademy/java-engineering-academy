@@ -56,7 +56,7 @@ public class JvmOverview {
             System.out.println("\nDynamically loaded: " + stringClass.getName());
             System.out.println("ClassLoader: " + stringClass.getClassLoader());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
 

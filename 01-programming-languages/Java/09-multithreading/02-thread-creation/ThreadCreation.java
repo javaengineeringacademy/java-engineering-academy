@@ -99,7 +99,8 @@ public class ThreadCreation {
             Integer result = future.get(); // Blocks until result is available
             System.out.println("Callable result: " + result);
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            System.err.println("Error: " + e.getMessage());
         }
 
         executor.shutdown();

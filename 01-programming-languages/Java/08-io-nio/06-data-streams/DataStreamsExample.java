@@ -189,7 +189,6 @@ public final class DataStreamsExample {
 
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

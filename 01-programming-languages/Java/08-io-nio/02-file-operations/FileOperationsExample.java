@@ -400,7 +400,6 @@ public final class FileOperationsExample {
 
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

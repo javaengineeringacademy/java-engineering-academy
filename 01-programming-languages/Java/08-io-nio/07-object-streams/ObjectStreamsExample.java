@@ -163,7 +163,6 @@ public final class ObjectStreamsExample {
 
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

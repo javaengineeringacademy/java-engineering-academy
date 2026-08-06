@@ -331,7 +331,6 @@ public final class ByteStreamsExample {
 
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

@@ -1663,3 +1663,1370 @@ metadata:
   total_readme_files: 358
   total_lines_of_code: 55666
   last_updated: "2026-08-06"
+
+# ============================================================
+# KNOWLEDGE GRAPH
+# ============================================================
+# Relationships between all major topics for navigation,
+# prerequisite tracking, and learning path optimization.
+
+knowledge_graph:
+
+  # ----------------------------------------------------------
+  # JAVA FUNDAMENTALS
+  # ----------------------------------------------------------
+
+  - id: variables
+    title: Variables & Types
+    path: programming-languages/java/01-fundamentals/01-variables
+    prerequisites: []
+    related: [types, primitives, wrapper-classes]
+    next: [operators, pass-by-value, autoboxing]
+    deep_dive: [jvm-internals.memory-model, java-platform.jvm-deep-dive]
+    tags: [fundamentals, java, types]
+
+  - id: operators
+    title: Operators
+    path: programming-languages/java/01-fundamentals/02-operators
+    prerequisites: [variables]
+    related: [control-flow, expressions]
+    next: [control-flow]
+    deep_dive: []
+    tags: [fundamentals, java]
+
+  - id: control-flow
+    title: Control Flow
+    path: programming-languages/java/01-fundamentals/03-control-flow
+    prerequisites: [operators]
+    related: [loops, conditionals, switch]
+    next: [methods]
+    deep_dive: [java.02-oop.pattern-matching]
+    tags: [fundamentals, java, control-flow]
+
+  - id: methods
+    title: Methods
+    path: programming-languages/java/01-fundamentals/04-methods
+    prerequisites: [control-flow]
+    related: [constructors, this-keyword, varargs]
+    next: [arrays, java.02-oop.constructors]
+    deep_dive: [generics, functional-programming.lambdas]
+    tags: [fundamentals, java, oop]
+
+  - id: arrays
+    title: Arrays
+    path: programming-languages/java/01-fundamentals/05-arrays
+    prerequisites: [methods]
+    related: [collections, arraylist, strings]
+    next: [strings, collections]
+    deep_dive: [jvm-internals.memory-model]
+    tags: [fundamentals, java, data-structure]
+
+  - id: strings
+    title: Strings
+    path: programming-languages/java/01-fundamentals/06-strings
+    prerequisites: [arrays]
+    related: [stringbuilder, stringbuffer, string-immutability]
+    next: [wrapper-classes, java.02-oop.string-immutable]
+    deep_dive: [jvm-internals.memory-model, performance.memory]
+    tags: [fundamentals, java, immutable]
+
+  - id: wrapper-classes
+    title: Wrapper Classes
+    path: programming-languages/java/01-fundamentals/07-wrapper-classes
+    prerequisites: [variables]
+    related: [autoboxing, collections, generics]
+    next: [java.knowledge-atoms.autoboxing, collections]
+    deep_dive: [jvm-internals.memory-model]
+    tags: [fundamentals, java, types]
+
+  - id: pass-by-value
+    title: Pass-by-Value
+    path: programming-languages/java/00-knowledge-atoms/pass-by-value
+    prerequisites: [variables]
+    related: [references, memory-model, object-lifecycle]
+    next: [java.02-oop]
+    deep_dive: [jvm-internals.memory-model]
+    tags: [fundamentals, java, semantics]
+
+  - id: autoboxing
+    title: Autoboxing
+    path: programming-languages/java/00-knowledge-atoms/autoboxing
+    prerequisites: [wrapper-classes]
+    related: [collections, generics, wrapper-classes]
+    next: [collections]
+    deep_dive: [jvm-internals.memory-model, performance.memory]
+    tags: [fundamentals, java, types, performance]
+
+  # ----------------------------------------------------------
+  # OOP
+  # ----------------------------------------------------------
+
+  - id: oop-introduction
+    title: Introduction to OOP
+    path: programming-languages/java/02-oop/01-introduction
+    prerequisites: [java.01-fundamentals]
+    related: [encapsulation, inheritance, polymorphism, abstraction]
+    next: [classes, objects]
+    deep_dive: [software-design, solid-principles]
+    tags: [oop, java, design]
+
+  - id: classes
+    title: Classes
+    path: programming-languages/java/02-oop/02-classes
+    prerequisites: [oop-introduction]
+    related: [objects, constructors, inner-classes, records, sealed-classes]
+    next: [objects, java.02-oop.inner-classes, java.02-oop.sealed-classes, java.02-oop.records, java.02-oop.enums]
+    deep_dive: [java.02-oop.composition, java.02-oop.aggregation]
+    tags: [oop, java, core]
+
+  - id: objects
+    title: Objects
+    path: programming-languages/java/02-oop/03-objects
+    prerequisites: [classes]
+    related: [constructors, java-object, equals-hashcode]
+    next: [constructors, java.02-oop.java-object, java.02-oop.comparable-comparator]
+    deep_dive: [jvm-internals.memory-model, java.02-oop.object-lifecycle]
+    tags: [oop, java, core]
+
+  - id: constructors
+    title: Constructors
+    path: programming-languages/java/02-oop/04-constructors
+    prerequisites: [objects]
+    related: [this-keyword, super-keyword, builder-pattern]
+    next: [java.02-oop.this-keyword, java.02-oop.super-keyword, java.02-oop.object-lifecycle]
+    deep_dive: [design-patterns.creational.builder, design-patterns.creational.singleton]
+    tags: [oop, java]
+
+  - id: encapsulation
+    title: Encapsulation
+    path: programming-languages/java/02-oop/08-encapsulation
+    prerequisites: [constructors]
+    related: [inheritance, polymorphism, access-modifiers]
+    next: [java.02-oop.inheritance, java.02-oop.access-modifiers]
+    deep_dive: [solid-principles, software-design]
+    tags: [oop, java, design-principle]
+
+  - id: inheritance
+    title: Inheritance
+    path: programming-languages/java/02-oop/09-inheritance
+    prerequisites: [encapsulation]
+    related: [polymorphism, abstract-classes, interfaces]
+    next: [java.02-oop.polymorphism]
+    deep_dive: [solid-principles, design-patterns.behavioral.strategy]
+    tags: [oop, java]
+
+  - id: polymorphism
+    title: Polymorphism
+    path: programming-languages/java/02-oop/10-polymorphism
+    prerequisites: [inheritance]
+    related: [abstraction, interfaces, abstract-classes]
+    next: [java.02-oop.abstraction]
+    deep_dive: [solid-principles, generics]
+    tags: [oop, java]
+
+  - id: abstraction
+    title: Abstraction
+    path: programming-languages/java/02-oop/11-abstraction
+    prerequisites: [polymorphism]
+    related: [interfaces, abstract-classes]
+    next: [java.02-oop.interfaces, java.02-oop.abstract-classes]
+    deep_dive: [software-design, solid-principles]
+    tags: [oop, java]
+
+  - id: interfaces
+    title: Interfaces
+    path: programming-languages/java/02-oop/12-interfaces
+    prerequisites: [abstraction]
+    related: [abstract-classes, sealed-classes, comparable-comparator, functional-interfaces]
+    next: [java.02-oop.abstract-classes, java.02-oop.sealed-classes, java.02-oop.comparable-comparator, functional-programming.functional-interfaces]
+    deep_dive: [generics, design-patterns.behavioral.observer]
+    tags: [oop, java, design]
+
+  - id: sealed-classes
+    title: Sealed Classes
+    path: programming-languages/java/02-oop/25-sealed-classes
+    prerequisites: [interfaces]
+    related: [pattern-matching, records, enums, sealed-interfaces]
+    next: [java.02-oop.pattern-matching]
+    deep_dive: [java.02-oop.records, records]
+    tags: [oop, java, modern-java, type-safety]
+
+  - id: records
+    title: Records
+    path: programming-languages/java/02-oop/33-records
+    prerequisites: [classes, immutability]
+    related: [immutability, equals-hashcode, sealed-classes, pattern-matching]
+    next: [java.02-oop.pattern-matching, java.02-oop.sealed-classes]
+    deep_dive: [immutability, java.02-oop.java-object]
+    tags: [oop, java, modern-java, immutable, data-class]
+
+  - id: enums
+    title: Enums
+    path: programming-languages/java/02-oop/26-enums
+    prerequisites: [classes]
+    related: [sealed-classes, pattern-matching, singleton, strategy]
+    next: [java.02-oop.sealed-classes, java.02-oop.pattern-matching]
+    deep_dive: [design-patterns.creational.singleton, design-patterns.behavioral.strategy]
+    tags: [oop, java, type-safe]
+
+  - id: pattern-matching
+    title: Pattern Matching
+    path: programming-languages/java/02-oop/27-pattern-matching
+    prerequisites: [sealed-classes, enums]
+    related: [switch, sealed-classes, records]
+    next: [java.02-oop.records]
+    deep_dive: [functional-programming]
+    tags: [oop, java, modern-java, pattern-matching]
+
+  - id: comparable-comparator
+    title: Comparable & Comparator
+    path: programming-languages/java/02-oop/32-comparable-comparator
+    prerequisites: [interfaces]
+    related: [sorting, collections, treeset, treemap]
+    next: [java.04-collections.05-sorting, java.04-collections.14-map.treemap]
+    deep_dive: [java.04-collections.05-sorting, design-patterns.behavioral.strategy]
+    tags: [oop, java, sorting, functional-interface]
+
+  - id: object-lifecycle
+    title: Object Lifecycle
+    path: programming-languages/java/02-oop/22-object-lifecycle
+    prerequisites: [constructors]
+    related: [gc, memory-model, classloader]
+    next: [java.10-jvm-internals.garbage-collection]
+    deep_dive: [jvm-internals.memory-model, jvm-internals.garbage-collection]
+    tags: [oop, java, jvm]
+
+  - id: inner-classes
+    title: Inner Classes
+    path: programming-languages/java/02-oop/24-inner-classes
+    prerequisites: [classes]
+    related: [nested-classes, lambda-scopes, anonymous-classes]
+    next: [java.02-oop.nested-classes]
+    deep_dive: [functional-programming.lambdas]
+    tags: [oop, java]
+
+  - id: solid-principles
+    title: SOLID Principles
+    path: programming-languages/java/02-oop/19-solid-principles
+    prerequisites: [encapsulation, inheritance, polymorphism, abstraction]
+    related: [software-design, clean-code, design-patterns]
+    next: [java.02-oop.oop-design-principles, java.11-design-patterns]
+    deep_dive: [software-design, architecture]
+    tags: [oop, java, design-principle, solid]
+
+  - id: composition
+    title: Composition
+    path: programming-languages/java/02-oop/14-composition
+    prerequisites: [abstract-classes]
+    related: [aggregation, association, dependency-injection]
+    next: [java.02-oop.aggregation]
+    deep_dive: [solid-principles, design-patterns.structural.decorator]
+    tags: [oop, java, design-principle]
+
+  - id: type-safety
+    title: Type Safety
+    path: programming-languages/java/00-knowledge-atoms/type-safety
+    prerequisites: [generics]
+    related: [generics, raw-types, wildcards]
+    next: [functional-programming]
+    deep_dive: [jvm-internals.classloader, generics]
+    tags: [java, generics, type-system]
+
+  # ----------------------------------------------------------
+  # COLLECTIONS
+  # ----------------------------------------------------------
+
+  - id: collections
+    title: Collections Framework
+    path: programming-languages/java/04-collections
+    prerequisites: [oop-introduction, equals-hashcode]
+    related: [generics, iterators, sorting, maps]
+    next: [java.05-text-processing, java.06-generics]
+    deep_dive: [jvm-internals.memory-model, performance.memory]
+    tags: [collections, java, data-structure]
+
+  - id: arraylist
+    title: ArrayList
+    path: programming-languages/java/04-collections/02-list/arraylist
+    prerequisites: [collections]
+    related: [linkedlist, vector, arrays]
+    next: [java.04-collections.02-list.linkedlist]
+    deep_dive: [performance.memory, jvm-internals.memory-model]
+    tags: [collections, java, list, data-structure]
+
+  - id: linkedlist
+    title: LinkedList
+    path: programming-languages/java/04-collections/02-list/linkedlist
+    prerequisites: [arraylist]
+    related: [arraylist, deque, queue]
+    next: [java.04-collections.02-list.vector, java.04-collections.07-queue]
+    deep_dive: [performance.memory]
+    tags: [collections, java, list, data-structure]
+
+  - id: hashmap
+    title: HashMap
+    path: programming-languages/java/04-collections/14-map/hashmap
+    prerequisites: [arrays, equals-hashcode, linkedlist]
+    related: [linkedhashmap, treemap, concurrenthashmap, hashtable, hashset]
+    next: [java.04-collections.14-map.linkedhashmap, java.04-collections.14-map.concurrenthashmap]
+    deep_dive: [jvm-internals.memory-model, performance.memory, java.04-collections.14-map.treemap]
+    tags: [collections, map, data-structure, java]
+
+  - id: linkedhashmap
+    title: LinkedHashMap
+    path: programming-languages/java/04-collections/14-map/linkedhashmap
+    prerequisites: [hashmap]
+    related: [hashmap, treemap, lru-cache]
+    next: [java.04-collections.14-map.treemap]
+    deep_dive: [cache-patterns, performance.memory]
+    tags: [collections, map, data-structure, java]
+
+  - id: treemap
+    title: TreeMap
+    path: programming-languages/java/04-collections/14-map/treemap
+    prerequisites: [linkedhashmap]
+    related: [hashmap, linkedhashmap, sortedmap, navigablemap]
+    next: [java.04-collections.14-map.concurrenthashmap]
+    deep_dive: [performance.memory]
+    tags: [collections, map, sorted, data-structure, java]
+
+  - id: concurrenthashmap
+    title: ConcurrentHashMap
+    path: programming-languages/java/04-collections/14-map/concurrenthashmap
+    prerequisites: [hashmap, synchronization]
+    related: [hashmap, hashtable, synchronized-collections, atomic-variables]
+    next: [java.04-collections.15-sorted-map, java.09-multithreading.concurrent-collections]
+    deep_dive: [jvm-internals.memory-model, multithreading.synchronization]
+    tags: [collections, map, concurrency, java]
+
+  - id: hashtable
+    title: Hashtable
+    path: programming-languages/java/04-collections/23-hashtable
+    prerequisites: [hashmap]
+    related: [hashmap, concurrenthashmap, properties]
+    next: [java.04-collections.24-best-practices]
+    deep_dive: [concurrenthashmap, multithreading]
+    tags: [collections, map, legacy, java]
+
+  - id: hashset
+    title: HashSet
+    path: programming-languages/java/04-collections/10-set/hashset
+    prerequisites: [collections]
+    related: [linkedhashset, treeset, hashmap]
+    next: [java.04-collections.10-set.linkedhashset]
+    deep_dive: [hashmap, performance.memory]
+    tags: [collections, set, java]
+
+  - id: treeset
+    title: TreeSet
+    path: programming-languages/java/04-collections/10-set/treeset
+    prerequisites: [hashset, linkedhashset]
+    related: [hashset, linkedhashset, comparable-comparator, sortedset]
+    next: [java.04-collections.11-sorted-set]
+    deep_dive: [comparable-comparator, performance.memory]
+    tags: [collections, set, sorted, java]
+
+  - id: iterators
+    title: Iterators
+    path: programming-languages/java/04-collections/03-iterators
+    prerequisites: [collections]
+    related: [spliterator, streams, for-each-loop]
+    next: [java.04-collections.04-comparators, functional-programming]
+    deep_dive: [functional-programming.streams, functional-programming.spliterator]
+    tags: [collections, java, iteration]
+
+  - id: sorting
+    title: Sorting Algorithms
+    path: programming-languages/java/04-collections/05-sorting
+    prerequisites: [comparable-comparator]
+    related: [comparable-comparator, searching, collections-utils]
+    next: [java.04-collections.06-searching]
+    deep_dive: [computer-science.algorithms]
+    tags: [collections, java, algorithm, sorting]
+
+  - id: blocking-queue
+    title: Blocking Queue
+    path: programming-languages/java/04-collections/09-blocking-queue
+    prerequisites: [deque]
+    related: [producer-consumer, concurrent-collections, executor-framework]
+    next: [java.04-collections.10-set, java.09-multithreading.concurrent-collections]
+    deep_dive: [multithreading.executor-framework, multithreading.virtual-threads]
+    tags: [collections, concurrency, java]
+
+  - id: copy-on-write
+    title: Copy-on-Write Collections
+    path: programming-languages/java/04-collections/20-copy-on-write
+    prerequisites: [collections]
+    related: [concurrent-collections, immutable-collections]
+    next: [java.04-collections.21-synchronized]
+    deep_dive: [multithreading, jvm-internals.memory-model]
+    tags: [collections, concurrency, java]
+
+  - id: synchronized-collections
+    title: Synchronized Collections
+    path: programming-languages/java/04-collections/21-synchronized
+    prerequisites: [copy-on-write]
+    related: [concurrent-collections, concurrenthashmap, synchronized]
+    next: [java.04-collections.22-properties]
+    deep_dive: [multithreading.synchronization, java.09-multithreading.03-synchronization]
+    tags: [collections, concurrency, java]
+
+  # ----------------------------------------------------------
+  # GENERICS
+  # ----------------------------------------------------------
+
+  - id: generics
+    title: Generics
+    path: programming-languages/java/06-generics
+    prerequisites: [collections]
+    related: [type-safety, wildcards, bounded-types, functional-interfaces]
+    next: [java.07-functional-programming, type-safety]
+    deep_dive: [jvm-internals.classloader, type-erasure]
+    tags: [generics, java, type-system]
+
+  - id: wildcards
+    title: Wildcards
+    path: programming-languages/java/06-generics/wildcards
+    prerequisites: [generics]
+    related: [bounded-types, peceprinciple, collections]
+    next: [java.07-functional-programming]
+    deep_dive: [jvm-internals.classloader]
+    tags: [generics, java, type-system]
+
+  # ----------------------------------------------------------
+  # FUNCTIONAL PROGRAMMING
+  # ----------------------------------------------------------
+
+  - id: functional-programming
+    title: Functional Programming
+    path: programming-languages/java/07-functional-programming
+    prerequisites: [generics]
+    related: [lambdas, functional-interfaces, streams, optional, composition]
+    next: [java.08-io-nio]
+    deep_dive: [java.09-multithreading.parallel-streams, java.07-functional-programming.streams]
+    tags: [functional, java, modern-java]
+
+  - id: lambdas
+    title: Lambda Expressions
+    path: programming-languages/java/07-functional-programming/lambdas
+    prerequisites: [generics, interfaces]
+    related: [functional-interfaces, method-references, streams, composition]
+    next: [java.07-functional-programming.functional-interfaces, java.07-functional-programming.streams]
+    deep_dive: [java.09-multithreading.virtual-threads, jvm-internals.jit-compilation]
+    tags: [functional, java, modern-java, lambda]
+
+  - id: functional-interfaces
+    title: Functional Interfaces
+    path: programming-languages/java/07-functional-programming/functional-interfaces
+    prerequisites: [lambdas]
+    related: [streams, optional, suppliers, consumers, predicates]
+    next: [java.07-functional-programming.streams, java.07-functional-programming.optional]
+    deep_dive: [java.09-multithreading.virtual-threads]
+    tags: [functional, java, modern-java, annotation]
+
+  - id: streams
+    title: Streams
+    path: programming-languages/java/07-functional-programming/streams
+    prerequisites: [lambdas, functional-interfaces, collections]
+    related: [spliterator, parallel-streams, collectors, flatmap, optional]
+    next: [java.07-functional-programming.collectors, java.07-functional-programming.optional, java.09-multithreading.parallel-streams]
+    deep_dive: [jvm-internals.parallel-streams, performance.memory]
+    tags: [functional, streaming, lazy-evaluation, java]
+
+  - id: collectors
+    title: Collectors
+    path: programming-languages/java/07-functional-programming/collectors
+    prerequisites: [streams]
+    related: [streams, grouping-by, partitioning, tomap]
+    next: [java.07-functional-programming.optional]
+    deep_dive: [performance.memory, collections]
+    tags: [functional, streaming, java]
+
+  - id: optional
+    title: Optional
+    path: programming-languages/java/07-functional-programming/optional
+    prerequisites: [streams]
+    related: [null-safety, functional-interfaces, monads]
+    next: [composition]
+    deep_dive: [functional-programming, java.02-oop.java-object]
+    tags: [functional, java, null-safety, modern-java]
+
+  - id: composition
+    title: Functional Composition
+    path: programming-languages/java/07-functional-programming/composition
+    prerequisites: [optional]
+    related: [lambdas, functional-interfaces, andthen, compose]
+    next: []
+    deep_dive: [design-patterns.behavioral.chain-of-responsibility]
+    tags: [functional, java, modern-java]
+
+  - id: spliterator
+    title: Spliterator
+    path: programming-languages/java/07-functional-programming/spliterator
+    prerequisites: [streams, iterators]
+    related: [streams, parallel-streams, collections, fork-join]
+    next: [java.09-multithreading.parallel-streams]
+    deep_dive: [jvm-internals.memory-model, performance.memory]
+    tags: [functional, streaming, parallel, java]
+
+  - id: parallel-streams
+    title: Parallel Streams
+    path: programming-languages/java/09-multithreading/10-parallel-streams
+    prerequisites: [streams, completable-future]
+    related: [fork-join-pool, spliterator, streams, concurrent-collections]
+    next: [java.10-jvm-internals]
+    deep_dive: [jvm-internals.memory-model, performance.memory, java.09-multithreading.virtual-threads]
+    tags: [functional, concurrency, streaming, parallel, java]
+
+  - id: method-references
+    title: Method References
+    path: programming-languages/java/07-functional-programming/method-references
+    prerequisites: [lambdas]
+    related: [lambdas, functional-interfaces]
+    next: [java.07-functional-programming.streams]
+    deep_dive: [jvm-internals.jit-compilation]
+    tags: [functional, java, modern-java]
+
+  # ----------------------------------------------------------
+  # EXCEPTION HANDLING
+  # ----------------------------------------------------------
+
+  - id: exception-handling
+    title: Exception Handling
+    path: programming-languages/java/03-exception-handling
+    prerequisites: [java.02-oop]
+    related: [try-with-resources, custom-exceptions, checked-unchecked]
+    next: [java.04-collections]
+    deep_dive: [java.08-io-nio, java.09-multithreading]
+    tags: [java, error-handling]
+
+  # ----------------------------------------------------------
+  # I/O & NIO
+  # ----------------------------------------------------------
+
+  - id: io-nio
+    title: I/O & NIO
+    path: programming-languages/java/08-io-nio
+    prerequisites: [collections]
+    related: [file-io, channels, buffers, nio2, streams-io]
+    next: [java.09-multithreading]
+    deep_dive: [jvm-internals.memory-model, performance.memory]
+    tags: [java, io, nio]
+
+  - id: nio-channels
+    title: NIO Channels
+    path: programming-languages/java/08-io-nio/nio-channels
+    prerequisites: [io-nio]
+    related: [buffers, selectors, non-blocking-io]
+    next: [java.09-multithreading]
+    deep_dive: [jvm-internals.memory-model, operating-systems]
+    tags: [java, nio, io, networking]
+
+  - id: nio2
+    title: NIO.2
+    path: programming-languages/java/08-io-nio/nio2
+    prerequisites: [io-nio]
+    related: [file-api, path-api, async-io]
+    next: [java.09-multithreading]
+    deep_dive: [operating-systems]
+    tags: [java, nio, file]
+
+  # ----------------------------------------------------------
+  # MULTITHREADING & CONCURRENCY
+  # ----------------------------------------------------------
+
+  - id: threads-basics
+    title: Thread Basics
+    path: programming-languages/java/09-multithreading/01-threads-basics
+    prerequisites: [java.02-oop]
+    related: [runnable-callable, synchronization, thread-states]
+    next: [java.09-multithreading.02-runnable-callable, java.09-multithreading.03-synchronization]
+    deep_dive: [jvm-internals.memory-model, jvm-internals.classloader]
+    tags: [concurrency, java, threading]
+
+  - id: runnable-callable
+    title: Runnable & Callable
+    path: programming-languages/java/09-multithreading/02-runnable-callable
+    prerequisites: [threads-basics]
+    related: [future, executor-framework, virtual-threads]
+    next: [java.09-multithreading.03-synchronization]
+    deep_dive: [functional-interfaces, java.09-multithreading.completable-future]
+    tags: [concurrency, java, functional-interface]
+
+  - id: synchronization
+    title: Synchronization
+    path: programming-languages/java/09-multithreading/03-synchronization
+    prerequisites: [runnable-callable]
+    related: [locks, volatile, monitors, deadlocks]
+    next: [java.09-multithreading.04-locks, java.knowledge-atoms.java-memory-model]
+    deep_dive: [jvm-internals.memory-model, java.10-jvm-internals.memory-model]
+    tags: [concurrency, java, synchronization]
+
+  - id: locks
+    title: Locks & Conditions
+    path: programming-languages/java/09-multithreading/04-locks
+    prerequisites: [synchronization]
+    related: [reentrantlock, readwritelock, conditions, synchronized]
+    next: [java.09-multithreading.05-executor-framework]
+    deep_dive: [jvm-internals.memory-model, performance.concurrency]
+    tags: [concurrency, java, locking]
+
+  - id: executor-framework
+    title: Executor Framework
+    path: programming-languages/java/09-multithreading/05-executor-framework
+    prerequisites: [locks]
+    related: [thread-pools, scheduled-executors, fork-join-pool]
+    next: [java.09-multithreading.06-concurrent-collections, java.09-multithreading.08-virtual-threads]
+    deep_dive: [java.09-multithreading.virtual-threads, performance.concurrency]
+    tags: [concurrency, java, thread-pool]
+
+  - id: concurrent-collections
+    title: Concurrent Collections
+    path: programming-languages/java/09-multithreading/06-concurrent-collections
+    prerequisites: [executor-framework]
+    related: [concurrenthashmap, blocking-queue, copyonwrite, collections]
+    next: [java.09-multithreading.07-atomic-variables]
+    deep_dive: [jvm-internals.memory-model, java.04-collections.21-synchronized]
+    tags: [concurrency, java, collections]
+
+  - id: atomic-variables
+    title: Atomic Variables
+    path: programming-languages/java/09-multithreading/07-atomic-variables
+    prerequisites: [concurrent-collections]
+    related: [compareandswap, volatile, locks]
+    next: [java.09-multithreading.08-virtual-threads]
+    deep_dive: [jvm-internals.memory-model, jvm-internals.jit-compilation]
+    tags: [concurrency, java, lock-free]
+
+  - id: virtual-threads
+    title: Virtual Threads
+    path: programming-languages/java/09-multithreading/08-virtual-threads
+    prerequisites: [executor-framework]
+    related: [completable-future, thread-pools, structured-concurrency, platform-threads]
+    next: [java.09-multithreading.09-completable-future]
+    deep_dive: [jvm-internals.memory-model, performance.concurrency, structured-concurrency]
+    tags: [concurrency, java, virtual-thread, modern-java, project-loom]
+
+  - id: completable-future
+    title: CompletableFuture
+    path: programming-languages/java/09-multithreading/09-completable-future
+    prerequisites: [virtual-threads]
+    related: [future, thenapply, thencompose, async, streams]
+    next: [java.09-multithreading.10-parallel-streams]
+    deep_dive: [functional-programming.streams, performance.concurrency]
+    tags: [concurrency, java, async, modern-java]
+
+  # ----------------------------------------------------------
+  # JVM INTERNALS
+  # ----------------------------------------------------------
+
+  - id: jvm-introduction
+    title: Introduction to JVM
+    path: programming-languages/java/10-jvm-internals/01-introduction
+    prerequisites: [multithreading]
+    related: [classloader, memory-model, garbage-collection, jit-compilation]
+    next: [java.10-jvm-internals.02-classloader]
+    deep_dive: [java-platform.jvm-deep-dive, java-platform.openjdk]
+    tags: [jvm, java, architecture]
+
+  - id: classloader
+    title: ClassLoader
+    path: programming-languages/java/10-jvm-internals/02-classloader
+    prerequisites: [jvm-introduction]
+    related: [classloading, parent-delegation, custom-classloader]
+    next: [java.10-jvm-internals.03-memory-model]
+    deep_dive: [reflection-annotations, java-platform.jdk-distributions]
+    tags: [jvm, java, classloading]
+
+  - id: memory-model
+    title: JVM Memory Model
+    path: programming-languages/java/10-jvm-internals/03-memory-model
+    prerequisites: [classloader]
+    related: [heap, stack, metaspace, volatile, happens-before, escape-analysis]
+    next: [java.10-jvm-internals.04-garbage-collection]
+    deep_dive: [java.knowledge-atoms.java-memory-model, performance.memory]
+    tags: [jvm, java, memory, concurrency]
+
+  - id: garbage-collection
+    title: Garbage Collection
+    path: programming-languages/java/10-jvm-internals/04-garbage-collection
+    prerequisites: [memory-model]
+    related: [gc-algorithms, gc-tuning, escape-analysis, memory-leaks, g1gc, zgc, shenandoah]
+    next: [java.10-jvm-internals.05-jit-compilation]
+    deep_dive: [performance.memory, java.15-senior.performance.tuning]
+    tags: [jvm, java, gc, performance]
+
+  - id: jit-compilation
+    title: JIT Compilation
+    path: programming-languages/java/10-jvm-internals/05-jit-compilation
+    prerequisites: [garbage-collection]
+    related: [c1-compiler, c2-compiler, graal, profiling, escape-analysis]
+    next: [java.10-jvm-internals.06-profiling-tools]
+    deep_dive: [performance.memory, java.15-senior.performance.profiling]
+    tags: [jvm, java, compilation, performance]
+
+  - id: profiling-tools
+    title: Profiling Tools
+    path: programming-languages/java/10-jvm-internals/06-profiling-tools
+    prerequisites: [jit-compilation]
+    related: [jfr, async-profiler, jvisualvm, jmh]
+    next: [java.11-design-patterns]
+    deep_dive: [java.15-senior.performance.jmh, java.15-senior.performance.jfr]
+    tags: [jvm, java, profiling, performance]
+
+  - id: java-memory-model
+    title: Java Memory Model
+    path: programming-languages/java/00-knowledge-atoms/java-memory-model
+    prerequisites: [threads-basics, synchronization]
+    related: [happens-before, volatile, synchronized, happens-before-edges, memory-barriers]
+    next: [java.10-jvm-internals.memory-model, java.10-jvm-internals.garbage-collection]
+    deep_dive: [jvm-internals.memory-model, performance.memory, atomic-variables]
+    tags: [jvm, java, concurrency, memory-model, jsr-133]
+
+  # ----------------------------------------------------------
+  # DESIGN PATTERNS
+  # ----------------------------------------------------------
+
+  - id: design-patterns
+    title: Design Patterns
+    path: programming-languages/java/11-design-patterns
+    prerequisites: [java.02-oop]
+    related: [creational-patterns, structural-patterns, behavioral-patterns, solid-principles]
+    next: [java.12-testing]
+    deep_dive: [software-design, architecture]
+    tags: [design-patterns, java, oop]
+
+  - id: factory-pattern
+    title: Factory Pattern
+    path: programming-languages/java/11-design-patterns/creational/factory
+    prerequisites: [design-patterns]
+    related: [abstract-factory, builder, singleton]
+    next: [java.11-design-patterns.creational.abstract-factory]
+    deep_dive: [java.02-oop.abstraction, java.02-oop.interfaces]
+    tags: [design-patterns, creational, java]
+
+  - id: builder-pattern
+    title: Builder Pattern
+    path: programming-languages/java/11-design-patterns/creational/builder
+    prerequisites: [design-patterns]
+    related: [factory, prototype, immutable-objects, records]
+    next: [java.11-design-patterns.creational.prototype]
+    deep_dive: [immutability, java.02-oop.records]
+    tags: [design-patterns, creational, java]
+
+  - id: strategy-pattern
+    title: Strategy Pattern
+    path: programming-languages/java/11-design-patterns/behavioral/strategy
+    prerequisites: [design-patterns]
+    related: [state-pattern, template-method, functional-interfaces, polymorphism]
+    next: [java.11-design-patterns.behavioral.template]
+    deep_dive: [functional-programming.functional-interfaces, java.02-oop.polymorphism]
+    tags: [design-patterns, behavioral, java]
+
+  - id: observer-pattern
+    title: Observer Pattern
+    path: programming-languages/java/11-design-patterns/behavioral/observer
+    prerequisites: [design-patterns]
+    related: [event-driven, pub-sub, mediator]
+    next: [java.11-design-patterns.behavioral.state]
+    deep_dive: [functional-programming.functional-interfaces, messaging]
+    tags: [design-patterns, behavioral, java]
+
+  - id: decorator-pattern
+    title: Decorator Pattern
+    path: programming-languages/java/11-design-patterns/structural/decorator
+    prerequisites: [design-patterns]
+    related: [adapter, wrapper, io-streams, composition]
+    next: [java.11-design-patterns.structural.facade]
+    deep_dive: [java.08-io-nio, composition]
+    tags: [design-patterns, structural, java]
+
+  - id: proxy-pattern
+    title: Proxy Pattern
+    path: programming-languages/java/11-design-patterns/structural/proxy
+    prerequisites: [design-patterns]
+    related: [dynamic-proxy, reflection, aop]
+    next: [java.11-design-patterns.behavioral]
+    deep_dive: [java.13-reflection-annotations, spring-aop]
+    tags: [design-patterns, structural, java]
+
+  - id: chain-of-responsibility
+    title: Chain of Responsibility
+    path: programming-languages/java/11-design-patterns/behavioral/chain-of-responsibility
+    prerequisites: [design-patterns]
+    related: [filter-chain, interceptors, middleware]
+    next: [java.11-design-patterns.behavioral.command]
+    deep_dive: [functional-programming.composition, backend-engineering.spring]
+    tags: [design-patterns, behavioral, java]
+
+  - id: singleton-pattern
+    title: Singleton Pattern
+    path: programming-languages/java/11-design-patterns/creational/singleton
+    prerequisites: [design-patterns]
+    related: [enum-singleton, thread-safety, double-checked-locking]
+    next: [java.11-design-patterns.structural]
+    deep_dive: [java.09-multithreading.synchronization, java.02-oop.enums]
+    tags: [design-patterns, creational, java]
+
+  # ----------------------------------------------------------
+  # TESTING
+  # ----------------------------------------------------------
+
+  - id: testing-java
+    title: Java Testing
+    path: programming-languages/java/12-testing
+    prerequisites: [java.02-oop]
+    related: [junit, mockito, assertj, test-containers]
+    next: [java.13-reflection-annotations]
+    deep_dive: [testing-general, java.11-design-patterns]
+    tags: [testing, java, quality]
+
+  - id: junit
+    title: JUnit
+    path: programming-languages/java/12-testing/junit
+    prerequisites: [testing-java]
+    related: [jupiter, assertions, parameterized, extensions]
+    next: [java.12-testing.mockito]
+    deep_dive: [testing-general, java.13-reflection-annotations]
+    tags: [testing, java, junit]
+
+  - id: mockito
+    title: Mockito
+    path: programming-languages/java/12-testing/mockito
+    prerequisites: [junit]
+    related: [mocking, stubbing, verification, spy]
+    next: [java.12-testing.assertj]
+    deep_dive: [java.13-reflection-annotations, design-patterns.behavioral.proxy]
+    tags: [testing, java, mocking]
+
+  - id: test-containers
+    title: Testcontainers
+    path: programming-languages/java/12-testing/testcontainers
+    prerequisites: [testing-java]
+    related: [docker, integration-testing, database-testing]
+    next: [devops]
+    deep_dive: [devops.docker, data-platforms]
+    tags: [testing, java, containers, integration]
+
+  # ----------------------------------------------------------
+  # REFLECTION & ANNOTATIONS
+  # ----------------------------------------------------------
+
+  - id: reflection
+    title: Reflection
+    path: programming-languages/java/13-reflection-annotations
+    prerequisites: [java.02-oop]
+    related: [annotations, dynamic-proxy, classloader]
+    next: [java.14-logging]
+    deep_dive: [java.10-jvm-internals.classloader, design-patterns.structural.proxy]
+    tags: [java, reflection, meta-programming]
+
+  - id: annotations
+    title: Annotations
+    path: programming-languages/java/13-reflection-annotations/annotations
+    prerequisites: [reflection]
+    related: [meta-annotations, custom-annotations, annotation-processing]
+    next: [java.14-logging]
+    deep_dive: [java.10-jvm-internals.classloader, backend-engineering.spring]
+    tags: [java, annotations, meta-programming]
+
+  # ----------------------------------------------------------
+  # TEXT PROCESSING
+  # ----------------------------------------------------------
+
+  - id: text-processing
+    title: Text Processing
+    path: programming-languages/java/05-text-processing
+    prerequisites: [collections]
+    related: [regex, stringbuilder, parsing, unicode]
+    next: [java.06-generics]
+    deep_dive: [io-nio, java.02-oop.string-immutable]
+    tags: [java, text, regex]
+
+  # ----------------------------------------------------------
+  # LOGGING
+  # ----------------------------------------------------------
+
+  - id: logging
+    title: Logging
+    path: programming-languages/java/14-logging
+    prerequisites: []
+    related: [slf4j, log4j, logback, structured-logging]
+    next: [java.15-senior]
+    deep_dive: [observability, java.15-senior.performance]
+    tags: [java, logging, observability]
+
+  # ----------------------------------------------------------
+  # SENIOR JAVA TOPICS
+  # ----------------------------------------------------------
+
+  - id: performance-engineering
+    title: Performance Engineering
+    path: programming-languages/java/15-senior/performance
+    prerequisites: [java.10-jvm-internals]
+    related: [jmh, jfr, profiling, tuning, gc-tuning]
+    next: [java.15-senior.architecture]
+    deep_dive: [java.10-jvm-internals.garbage-collection, java.10-jvm-internals.jit-compilation]
+    tags: [java, performance, senior]
+
+  - id: jmh
+    title: JMH (Java Microbenchmark Harness)
+    path: programming-languages/java/15-senior/performance/jmh
+    prerequisites: [performance-engineering]
+    related: [benchmarking, microbenchmark, jit-warmup]
+    next: [java.15-senior.performance.jfr]
+    deep_dive: [java.10-jvm-internals.jit-compilation]
+    tags: [java, performance, benchmarking]
+
+  - id: jfr
+    title: Java Flight Recorder
+    path: programming-languages/java/15-senior/performance/jfr
+    prerequisites: [jmh]
+    related: [profiling, events, low-overhead]
+    next: [java.15-senior.performance.profiling]
+    deep_dive: [jvm-internals.jit-compilation, jvm-internals.garbage-collection]
+    tags: [java, performance, profiling]
+
+  - id: performance-tuning
+    title: Performance Tuning
+    path: programming-languages/java/15-senior/performance/tuning
+    prerequisites: [profiling]
+    related: [gc-tuning, memory-tuning, thread-tuning, compiler-tuning]
+    next: [java.15-senior.performance.at-scale]
+    deep_dive: [java.10-jvm-internals.garbage-collection, java.10-jvm-internals.memory-model]
+    tags: [java, performance, tuning]
+
+  - id: software-architecture
+    title: Software Architecture
+    path: programming-languages/java/15-senior/architecture
+    prerequisites: [design-patterns]
+    related: [adr, trade-offs, cost-analysis, microservices]
+    next: [java.15-senior.production]
+    deep_dive: [architecture, software-design]
+    tags: [java, architecture, senior]
+
+  - id: circuit-breaker
+    title: Circuit Breaker Pattern
+    path: programming-languages/java/15-senior/production/circuit-breaker
+    prerequisites: [production-patterns]
+    related: [rate-limiting, retry, resilience4j, hystrix]
+    next: [java.15-senior.production.rate-limiting]
+    deep_dive: [java.15-senior.production.retry, resilience-patterns]
+    tags: [java, resilience, production, circuit-breaker]
+
+  - id: rate-limiting
+    title: Rate Limiting
+    path: programming-languages/java/15-senior/production/rate-limiting
+    prerequisites: [circuit-breaker]
+    related: [token-bucket, leaky-bucket, throttling, circuit-breaker]
+    next: [java.15-senior.production.retry]
+    deep_dive: [performance.concurrency, integration-engineering]
+    tags: [java, resilience, production, rate-limit]
+
+  - id: retry-backoff
+    title: Retry & Backoff
+    path: programming-languages/java/15-senior/production/retry
+    prerequisites: [rate-limiting]
+    related: [exponential-backoff, circuit-breaker, resilience4j]
+    next: [java.15-senior.production.graceful-shutdown]
+    deep_dive: [circuit-breaker, resilience-patterns]
+    tags: [java, resilience, production, retry]
+
+  - id: graceful-shutdown
+    title: Graceful Shutdown
+    path: programming-languages/java/15-senior/production/graceful-shutdown
+    prerequisites: [retry-backoff]
+    related: [virtual-threads, shutdown-hooks, jvm-shutdown]
+    next: [java.15-senior.production.health-checks]
+    deep_dive: [java.09-multithreading.virtual-threads, devops]
+    tags: [java, production, shutdown]
+
+  - id: health-checks
+    title: Health Checks
+    path: programming-languages/java/15-senior/production/health-checks
+    prerequisites: [graceful-shutdown]
+    related: [liveness, readiness, observability, prometheus]
+    next: [java.15-senior.java-platform]
+    deep_dive: [observability, devops.kubernetes]
+    tags: [java, production, observability, health]
+
+  # ----------------------------------------------------------
+  # JAVA PLATFORM DEEP DIVE
+  # ----------------------------------------------------------
+
+  - id: java-evolution
+    title: Java Language Evolution
+    path: programming-languages/java/15-senior/java-platform/evolution
+    prerequisites: [java-platform]
+    related: [jsr, jep, release-cadence, backward-compatibility]
+    next: [java.15-senior.java-platform.specification]
+    deep_dive: [java-platform.openjdk, java-platform.jdk-distributions]
+    tags: [java, platform, evolution]
+
+  - id: openjdk
+    title: OpenJDK
+    path: programming-languages/java/15-senior/java-platform/openjdk
+    prerequisites: [jvm-deep-dive]
+    related: [jdk-distributions, oracle-jdk, graalvm, eclipse-temurin]
+    next: [java.15-senior.java-platform.jdk-distributions]
+    deep_dive: [java-platform.source-exploration]
+    tags: [java, platform, open-source]
+
+  - id: jdk-distributions
+    title: JDK Distributions
+    path: programming-languages/java/15-senior/java-platform/jdk-distributions
+    prerequisites: [openjdk]
+    related: [oracle-jdk, graalvm, adoptium, amazon-corretto, zulu]
+    next: [java.15-senior.java-platform.source-exploration]
+    deep_dive: [java-platform.java-at-scale]
+    tags: [java, platform, distributions]
+
+  # ----------------------------------------------------------
+  # SECURITY
+  # ----------------------------------------------------------
+
+  - id: security
+    title: Security
+    path: 10-security
+    prerequisites: [backend-engineering]
+    related: [encryption, ssl-tls, authentication, authorization, jwt]
+    next: [architecture, observability]
+    deep_dive: [java.15-senior.advanced.security, integration-engineering]
+    tags: [security, java, encryption, auth]
+
+  - id: jwt
+    title: JSON Web Tokens (JWT)
+    path: 10-security/jwt
+    prerequisites: [security, encryption, ssl-tls]
+    related: [oauth2, session-management, tokens, hmac]
+    next: [security.oauth2]
+    deep_dive: [integration-engineering, java.15-senior.advanced.security]
+    tags: [security, auth, jwt, token]
+
+  - id: encryption
+    title: Encryption
+    path: 10-security/encryption
+    prerequisites: [security]
+    related: [symmetric, asymmetric, rsa, aes, hashing]
+    next: [security.ssl-tls, security.jwt]
+    deep_dive: [java.15-senior.advanced.security, computer-science]
+    tags: [security, cryptography, java]
+
+  - id: ssl-tls
+    title: SSL/TLS
+    path: 10-security/ssl-tls
+    prerequisites: [encryption]
+    related: [certificates, https, handshake, jca]
+    next: [security.jwt, security.oauth2]
+    deep_dive: [integration-engineering, java.15-senior.advanced.security]
+    tags: [security, networking, ssl, tls]
+
+  - id: oauth2
+    title: OAuth 2.0
+    path: 10-security/oauth2
+    prerequisites: [jwt, ssl-tls]
+    related: [jwt, authorization-code, client-credentials, resource-owner]
+    next: [security.saml]
+    deep_dive: [integration-engineering, backend-engineering.spring]
+    tags: [security, auth, oauth, authorization]
+
+  # ----------------------------------------------------------
+  # BACKEND ENGINEERING
+  # ----------------------------------------------------------
+
+  - id: backend-engineering
+    title: Backend Engineering
+    path: 04-backend-engineering
+    prerequisites: [programming-languages]
+    related: [spring-boot, rest, graphql, microservices]
+    next: [data-platforms, messaging, integration-engineering, observability, security, architecture]
+    deep_dive: [architecture, java.15-senior]
+    tags: [backend, java, spring]
+
+  - id: spring-boot
+    title: Spring Boot
+    path: 04-backend-engineering/spring-boot
+    prerequisites: [backend-engineering, java.02-oop]
+    related: [spring-mvc, spring-data, spring-security, dependency-injection]
+    next: [data-platforms, integration-engineering]
+    deep_dive: [java.13-reflection-annotations, java.11-design-patterns]
+    tags: [backend, spring, java, framework]
+
+  - id: rest-api
+    title: REST APIs
+    path: 08-integration-engineering/rest
+    prerequisites: [backend-engineering]
+    related: [http, json, openapi, swagger, content-negotiation]
+    next: [integration-engineering.graphql]
+    deep_dive: [architecture, backend-engineering.spring]
+    tags: [api, rest, http, java]
+
+  - id: graphql
+    title: GraphQL
+    path: 08-integration-engineering/graphql
+    prerequisites: [rest-api]
+    related: [rest, schema-first, code-first, resolvers, subscriptions]
+    next: [integration-engineering.websockets]
+    deep_dive: [architecture, data-platforms]
+    tags: [api, graphql, java]
+
+  # ----------------------------------------------------------
+  # DATA PLATFORMS
+  # ----------------------------------------------------------
+
+  - id: data-platforms
+    title: Data Platforms
+    path: 05-data-platforms
+    prerequisites: [backend-engineering]
+    related: [sql, nosql, databases, caching]
+    next: [data-engineering, search-analytics]
+    deep_dive: [architecture, big-data]
+    tags: [data, database, sql, nosql]
+
+  - id: sql-databases
+    title: SQL Databases
+    path: 05-data-platforms/sql
+    prerequisites: [data-platforms]
+    related: [postgresql, mysql, indexing, transactions, acid]
+    next: [data-platforms.nosql]
+    deep_dive: [data-engineering, performance.memory]
+    tags: [data, sql, database]
+
+  - id: nosql-databases
+    title: NoSQL Databases
+    path: 05-data-platforms/nosql
+    prerequisites: [data-platforms]
+    related: [redis, mongodb, cassandra, elasticsearch]
+    next: [data-platforms.caching]
+    deep_dive: [big-data, search-analytics]
+    tags: [data, nosql, database]
+
+  - id: caching
+    title: Caching Strategies
+    path: 05-data-platforms/caching
+    prerequisites: [data-platforms]
+    related: [redis, ehcache, caffeine, cache-patterns]
+    next: [data-engineering]
+    deep_dive: [performance.memory, architecture]
+    tags: [data, caching, performance]
+
+  # ----------------------------------------------------------
+  # MESSAGING & EVENT STREAMING
+  # ----------------------------------------------------------
+
+  - id: messaging
+    title: Messaging & Event Streaming
+    path: 07-messaging
+    prerequisites: [backend-engineering]
+    related: [kafka, rabbitmq, events, async-messaging]
+    next: [data-engineering, observability]
+    deep_dive: [architecture, java.09-multithreading.concurrent-collections]
+    tags: [messaging, kafka, events, async]
+
+  - id: kafka
+    title: Apache Kafka
+    path: 07-messaging/kafka
+    prerequisites: [messaging]
+    related: [topics, partitions, consumers, producers, streams-api]
+    next: [data-engineering]
+    deep_dive: [big-data, observability]
+    tags: [messaging, kafka, streaming]
+
+  # ----------------------------------------------------------
+  # OBSERVABILITY
+  # ----------------------------------------------------------
+
+  - id: observability
+    title: Observability
+    path: 09-observability
+    prerequisites: [backend-engineering]
+    related: [monitoring, logging, tracing, metrics]
+    next: [security, architecture]
+    deep_dive: [java.15-senior.production.health-checks, java.14-logging]
+    tags: [observability, monitoring, logging]
+
+  - id: distributed-tracing
+    title: Distributed Tracing
+    path: 09-observability/tracing
+    prerequisites: [observability]
+    related: [opentelemetry, zipkin, jaeger, spans]
+    next: [security, architecture]
+    deep_dive: [messaging, backend-engineering.microservices]
+    tags: [observability, tracing, opentelemetry]
+
+  - id: metrics-monitoring
+    title: Metrics & Monitoring
+    path: 09-observability/metrics
+    prerequisites: [observability]
+    related: [prometheus, grafana, micrometer, dashboards]
+    next: [observability.tracing]
+    deep_dive: [java.15-senior.performance.jmh, java.15-senior.performance.jfr]
+    tags: [observability, metrics, monitoring]
+
+  # ----------------------------------------------------------
+  # DEVOPS
+  # ----------------------------------------------------------
+
+  - id: devops
+    title: DevOps
+    path: 13-devops
+    prerequisites: [backend-engineering]
+    related: [docker, kubernetes, ci-cd, infrastructure-as-code]
+    next: [cloud]
+    deep_dive: [cloud, architecture]
+    tags: [devops, ci-cd, infrastructure]
+
+  - id: docker
+    title: Docker
+    path: 13-devops/docker
+    prerequisites: [devops]
+    related: [containers, images, dockerfile, compose]
+    next: [devops.kubernetes]
+    deep_dive: [cloud, test-containers]
+    tags: [devops, docker, containers]
+
+  - id: kubernetes
+    title: Kubernetes
+    path: 13-devops/kubernetes
+    prerequisites: [docker]
+    related: [pods, services, deployments, helm, operators]
+    next: [cloud]
+    deep_dive: [cloud, architecture.microservices]
+    tags: [devops, kubernetes, orchestration]
+
+  - id: ci-cd
+    title: CI/CD Pipelines
+    path: 13-devops/ci-cd
+    prerequisites: [devops]
+    related: [github-actions, jenkins, gitlab-ci, automation]
+    next: [cloud]
+    deep_dive: [testing-general, test-containers]
+    tags: [devops, ci-cd, automation]
+
+  # ----------------------------------------------------------
+  # CLOUD
+  # ----------------------------------------------------------
+
+  - id: cloud
+    title: Cloud Computing
+    path: 14-cloud
+    prerequisites: [devops]
+    related: [aws, azure, gcp, serverless, iam]
+    next: [architecture]
+    deep_dive: [devops.kubernetes, java.15-senior.performance.at-scale]
+    tags: [cloud, aws, azure, gcp]
+
+  - id: cloud-native
+    title: Cloud Native Development
+    path: 14-cloud/cloud-native
+    prerequisites: [cloud]
+    related: [twelve-factor, microservices, serverless, containers]
+    next: [architecture]
+    deep_dive: [devops.kubernetes, observability]
+    tags: [cloud, cloud-native, twelve-factor]
+
+  # ----------------------------------------------------------
+  # ARCHITECTURE
+  # ----------------------------------------------------------
+
+  - id: architecture-general
+    title: Architecture
+    path: 11-architecture
+    prerequisites: [backend-engineering, software-design]
+    related: [microservices, ddd, event-driven, monolith, clean-architecture]
+    next: [reference-implementations, case-studies]
+    deep_dive: [java.15-senior.architecture, software-design]
+    tags: [architecture, microservices, ddd]
+
+  - id: microservices
+    title: Microservices Architecture
+    path: 11-architecture/microservices
+    prerequisites: [architecture-general]
+    related: [service-discovery, api-gateway, saga, event-sourcing]
+    next: [architecture-general.event-driven]
+    deep_dive: [messaging.kafka, devops.kubernetes, observability]
+    tags: [architecture, microservices]
+
+  - id: domain-driven-design
+    title: Domain-Driven Design
+    path: 11-architecture/ddd
+    prerequisites: [architecture-general]
+    related: [bounded-contexts, aggregates, repositories, anti-corruption-layer]
+    next: [architecture-general.clean-architecture]
+    deep_dive: [software-design, java.02-oop.solid-principles]
+    tags: [architecture, ddd, design]
+
+  - id: clean-architecture
+    title: Clean Architecture
+    path: 11-architecture/clean-architecture
+    prerequisites: [domain-driven-design]
+    related: [hexagonal, onion, ports-and-adapters, dependency-inversion]
+    next: [architecture-general.event-driven]
+    deep_dive: [java.02-oop.solid-principles, software-design]
+    tags: [architecture, clean, solid]
+
+  - id: event-driven
+    title: Event-Driven Architecture
+    path: 11-architecture/event-driven
+    prerequisites: [architecture-general]
+    related: [event-sourcing, cqrs, saga, messaging, kafka]
+    next: [reference-implementations]
+    deep_dive: [messaging.kafka, java.11-design-patterns.behavioral.observer]
+    tags: [architecture, event-driven, async]
+
+  # ----------------------------------------------------------
+  # COMPUTER SCIENCE
+  # ----------------------------------------------------------
+
+  - id: algorithms
+    title: Algorithms
+    path: 02-computer-science/algorithms
+    prerequisites: [computer-science]
+    related: [sorting, searching, graph-algorithms, dynamic-programming]
+    next: [computer-science.data-structures]
+    deep_dive: [java.04-collections.05-sorting, java.04-collections.06-searching]
+    tags: [computer-science, algorithms]
+
+  - id: data-structures
+    title: Data Structures
+    path: 02-computer-science/data-structures
+    prerequisites: [computer-science]
+    related: [arrays, linkedlist, trees, graphs, hash-tables]
+    next: [computer-science.algorithms]
+    deep_dive: [java.04-collections, java.09-multithreading.concurrent-collections]
+    tags: [computer-science, data-structure]
+
+  - id: operating-systems
+    title: Operating Systems
+    path: 18-operating-systems
+    prerequisites: []
+    related: [processes, threads, memory-management, file-systems]
+    next: [java.10-jvm-internals, java.09-multithreading]
+    deep_dive: [java.09-multithreading.virtual-threads, java.10-jvm-internals.garbage-collection]
+    tags: [operating-systems, linux, fundamentals]
+
+  # ----------------------------------------------------------
+  # TESTING (GENERAL)
+  # ----------------------------------------------------------
+
+  - id: testing-general
+    title: Testing (General)
+    path: 12-testing
+    prerequisites: [programming-languages]
+    related: [tdd, bdd, unit-testing, integration-testing, e2e-testing]
+    next: [devops.ci-cd]
+    deep_dive: [java.12-testing, test-containers]
+    tags: [testing, tdd, bdd]
+
+  # ----------------------------------------------------------
+  # SOFTWARE DESIGN
+  # ----------------------------------------------------------
+
+  - id: software-design
+    title: Software Design
+    path: 03-software-design
+    prerequisites: [computer-science]
+    related: [solid, design-principles, design-patterns, refactoring]
+    next: [architecture-general, backend-engineering]
+    deep_dive: [java.02-oop.solid-principles, java.11-design-patterns]
+    tags: [design, principles, patterns]

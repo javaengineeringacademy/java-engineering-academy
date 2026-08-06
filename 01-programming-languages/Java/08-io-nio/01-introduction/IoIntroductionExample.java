@@ -248,7 +248,6 @@ public final class IoIntroductionExample {
 
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
         } finally {
             // Cleanup
             try {
