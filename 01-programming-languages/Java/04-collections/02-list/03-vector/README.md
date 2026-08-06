@@ -202,6 +202,7 @@ The JIT compiler applies optimizations to Vector:
 ## 9. Memory Representation
 
 ```
+```
 Vector<String> vector = new Vector<>(4);
 vector.add("Hello");
 vector.add("World");

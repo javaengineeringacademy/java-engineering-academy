@@ -7,6 +7,7 @@
 
         System.out.println(numbers);  // [1, 2, 3]
         
+```
         // Swap
         String[] arr = {"first", "second"};
         swap(arr, 0, 1);

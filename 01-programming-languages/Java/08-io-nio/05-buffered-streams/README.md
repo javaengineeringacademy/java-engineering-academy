@@ -27,6 +27,7 @@ By the end of this topic, you will be able to:
 Without buffering, every read/write operation results in a system call:
 
 ```
+```
 Unbuffered: read() → system call → read() → system call → read() → system call
 Buffered:   read() → read() → read() → read() → system call (reads multiple bytes)
 ```

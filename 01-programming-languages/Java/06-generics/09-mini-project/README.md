@@ -204,6 +204,7 @@ public class ArrayList<E> implements SimpleList<E> {
 ### ArrayList Memory Layout
 
 ```
+```
 ArrayList object:
 ┌─────────────────────────────┐
 │ Object header (16 bytes)    │

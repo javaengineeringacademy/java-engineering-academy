@@ -220,6 +220,7 @@ The JIT compiler optimizes ArrayList operations:
 ## 9. Memory Representation
 
 ```
+```
 ArrayList<String> list = new ArrayList<>(4);
 list.add("Hello");
 list.add("World");

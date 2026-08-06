@@ -58,6 +58,7 @@
             return "EXPENSIVE_RESULT";
         }.memoize();
         
+```
         System.out.println("First access:");
         System.out.println("Value: " + expensiveComputation.get());
         System.out.println("Second access (cached):");

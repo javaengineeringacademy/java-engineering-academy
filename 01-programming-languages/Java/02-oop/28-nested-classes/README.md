@@ -50,6 +50,7 @@ Think of a company hierarchy. A department (outer class) contains teams (inner c
 For each nested class, the compiler generates a separate `.class` file named `OuterClass$NestedClass.class`. Anonymous classes get numeric suffixes: `OuterClass$1.class`, `OuterClass$2.class`, etc.
 
 ```
+```
 MyClass.class
 MyClass$InnerClass.class
 MyClass$StaticNested.class

@@ -180,6 +180,7 @@ ArrayDeque provides better cache locality than LinkedList because elements are s
 ## 9. Memory Representation
 
 ```
+```
 Deque<String> deque = new ArrayDeque<>();
 deque.addLast("First");
 deque.addLast("Second");

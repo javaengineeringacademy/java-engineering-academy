@@ -402,3 +402,4 @@ public class SimpleRepository<T, ID> {
 ---
 
 [📖 Continue to Part 2](README-part2.md)
+```

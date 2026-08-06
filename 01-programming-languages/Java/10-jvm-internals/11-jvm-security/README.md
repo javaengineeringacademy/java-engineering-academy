@@ -75,6 +75,7 @@ The solution? Implementing comprehensive JVM security measures.
 ### JVM Security Layers
 
 ```
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                    JVM Security Layers                       │
 │                                                             │

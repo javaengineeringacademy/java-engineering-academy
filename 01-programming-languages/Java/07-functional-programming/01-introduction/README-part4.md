@@ -116,3 +116,4 @@ Functional programming in Java provides a powerful alternative to traditional im
 4. [Effective Java, 3rd Edition - Item 42: Prefer lambdas to anonymous classes](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 5. [Java Performance, 2nd Edition - Chapter on Lambdas](https://www.oreilly.com/library/view/java-performance-2nd/9781492056102/)
 6. [Baeldung: Functional Programming in Java](https://www.baeldung.com/java-functional-programming)
+```

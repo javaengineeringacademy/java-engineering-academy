@@ -105,6 +105,7 @@ when(mock.method(any())).thenAnswer(invocation -> {
 ## 9. Memory Representation
 
 ```
+```
 Spy Object Memory:
 ┌─────────────────────────────┐
 │        Spy Object           │

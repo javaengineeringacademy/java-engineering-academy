@@ -43,6 +43,7 @@ The `count++` operation is not atomic. It involves three steps:
 With two threads executing simultaneously:
 
 ```
+```
 Thread 1: read(0) → add(1) → write(1)
 Thread 2:         read(0) → add(1) → write(1)
 Result: 1 (should be 2!)

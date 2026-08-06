@@ -359,3 +359,4 @@ Stream operations are the building blocks of data processing pipelines. Key take
 2. [Java Language Specification: Stream Operations](https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html)
 3. [Effective Java, 3rd Edition - Item 43](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Java Stream Operations](https://www.baeldung.com/java-streams)
+```

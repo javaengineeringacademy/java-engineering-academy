@@ -405,3 +405,4 @@ Does your generic type need to call specific methods?
 **A:** `<T extends Comparable>` means T implements raw Comparable. `<T extends Comparable<T>>` means T implements Comparable<T> — it can be compared to itself. The latter is more type-safe and allows calling `compareTo(T)` without casting.
 
 ### Q3: Can you have multiple bounds?
+```

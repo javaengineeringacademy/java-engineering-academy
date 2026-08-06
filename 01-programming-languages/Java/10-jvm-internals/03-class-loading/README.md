@@ -81,6 +81,7 @@ The root cause? Improper class loading configuration.
 The class loading process consists of three phases:
 
 ```
+```
 1. LOADING
    ├── Find the .class file
    ├── Read the bytecode

@@ -312,3 +312,4 @@ The Stream API provides a powerful, declarative approach to data processing. Key
 2. [Java Language Specification: Streams](https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html)
 3. [Effective Java, 3rd Edition - Item 43](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 4. [Baeldung: Java Streams](https://www.baeldung.com/java-streams)
+```

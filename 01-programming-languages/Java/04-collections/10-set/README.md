@@ -188,6 +188,7 @@ The JIT compiler optimizes Set operations:
 ## 9. Memory Representation
 
 ```
+```
 Set<String> set = new HashSet<>();
 set.add("Apple");
 set.add("Banana");

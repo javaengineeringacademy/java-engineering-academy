@@ -94,6 +94,7 @@ File metadata includes:
 ### 7.1 How File Operations Work
 
 ```
+```
 Application → Java File API → JVM Native Methods → OS System Calls → File System
                                 ↓
                          Security Manager checks

@@ -64,6 +64,7 @@ Understanding thread lifecycle enables you to:
 ### The Six Thread States
 
 ```
+```
                     ┌──────────────┐
                     │    NEW       │
                     └──────┬───────┘

@@ -55,6 +55,7 @@ However, multithreading is not free. It introduces:
 Consider a web server handling HTTP requests. A single-threaded server must process each request completely before handling the next:
 
 ```
+```
 Request 1: [===processing===] [===response===] → Request 2: [===processing===] [===response===] → ...
 ```
 

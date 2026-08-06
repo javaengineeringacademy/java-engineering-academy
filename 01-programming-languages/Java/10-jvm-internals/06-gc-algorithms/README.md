@@ -79,6 +79,7 @@ The solution? Switching from Parallel GC to ZGC with proper tuning.
 ### GC Algorithm Categories
 
 ```
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                    GC Algorithms                            │
 │                                                             │

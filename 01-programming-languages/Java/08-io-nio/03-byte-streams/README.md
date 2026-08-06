@@ -50,6 +50,7 @@ All these require handling raw bytes, not characters. Byte streams provide the m
 ### 6.1 The Byte Stream Hierarchy
 
 ```
+```
 java.io.InputStream (abstract)
 ├── ByteArrayInputStream
 ├── FileInputStream

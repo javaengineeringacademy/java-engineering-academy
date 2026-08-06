@@ -191,6 +191,7 @@ The JIT compiler optimizes Stack operations:
 ## 9. Memory Representation
 
 ```
+```
 Stack<String> stack = new Stack<>();
 stack.push("Bottom");
 stack.push("Middle");

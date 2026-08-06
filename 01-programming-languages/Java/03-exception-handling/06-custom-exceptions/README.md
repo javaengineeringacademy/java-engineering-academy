@@ -120,6 +120,7 @@ graph TD
 ### Exception Hierarchy Design
 
 ```
+```
 BaseApplicationException (abstract)
 ├── ValidationException
 │   ├── InvalidFieldException

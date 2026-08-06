@@ -112,6 +112,7 @@ An exception is an event that occurs during the execution of a program that disr
 ### The Exception Hierarchy
 
 ```
+```
 Throwable
 ├── Error (serious problems - should not be caught)
 │   ├── OutOfMemoryError

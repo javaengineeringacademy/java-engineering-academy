@@ -75,6 +75,7 @@ The solution? Systematic JVM tuning based on workload analysis.
 ### JVM Tuning Goals
 
 ```
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Tuning Goals                              │
 │                                                             │

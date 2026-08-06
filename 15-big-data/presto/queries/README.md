@@ -63,3 +63,4 @@ SELECT filter(orders, x -> x.total > 1000) FROM orders;
 
 -- Use bucketed tables
 SELECT * FROM hive.default.events_bucketed WHERE user_id = '123';
+```

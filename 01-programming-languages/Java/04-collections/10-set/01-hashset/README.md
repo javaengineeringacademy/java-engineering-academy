@@ -155,6 +155,7 @@ The JIT compiler optimizes HashSet operations by:
 ## 9. Memory Representation
 
 ```
+```
 HashSet<String> set = new HashSet<>();
 set.add("Apple");
 set.add("Banana");

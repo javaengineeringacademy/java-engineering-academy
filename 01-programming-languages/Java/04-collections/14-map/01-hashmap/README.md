@@ -337,6 +337,7 @@ Good hash codes distribute keys uniformly across the table. Poor hash codes (e.g
 ## 9. Memory Representation
 
 ```
+```
 HashMap<String, Integer> map = new HashMap<>();
 map.put("Alice", 30);
 map.put("Bob", 25);

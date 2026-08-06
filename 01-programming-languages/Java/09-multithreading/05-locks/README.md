@@ -182,6 +182,7 @@ try {
 ReentrantLock is implemented using the `AbstractQueuedSynchronizer` (AQS):
 
 ```
+```
 AQS State:
 ┌─────────────────────────────────────┐
 │ state: 0 (unlocked)                │

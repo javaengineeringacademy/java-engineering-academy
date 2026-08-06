@@ -194,6 +194,7 @@ The JIT compiler optimizes LinkedHashMap operations:
 ## 9. Memory Representation
 
 ```
+```
 LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
 map.put("Alice", 30);
 map.put("Bob", 25);

@@ -172,6 +172,7 @@ When `Thread.startVirtualThread(runnable)` is called:
 ### Runnable vs Callable Execution
 
 ```
+```
 Runnable execution:
 Thread.start() → new OS thread → run() → void return
 

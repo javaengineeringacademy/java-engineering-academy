@@ -147,6 +147,7 @@ E unlink(Node<E> x) {
 Each Node is a separate object on the heap:
 
 ```
+```
 Node 1 (first):
 ┌─────────────────────────────┐
 │ Object header (12 bytes)    │

@@ -147,6 +147,7 @@ public class ComparatorDemo {
 }
 ```
 
+```
 **Expected Output**:
 ```
 Before sorting: [Charlie, Bob, Alice, Diana, Eve]

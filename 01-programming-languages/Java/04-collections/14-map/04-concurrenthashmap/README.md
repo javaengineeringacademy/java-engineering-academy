@@ -275,6 +275,7 @@ CAS operations provide memory barriers:
 ## 9. Memory Representation
 
 ```
+```
 ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
 map.put("Alice", 30);
 map.put("Bob", 25);

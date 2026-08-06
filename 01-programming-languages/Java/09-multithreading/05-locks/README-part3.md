@@ -219,3 +219,4 @@ Key takeaways on locks:
 - [Synchronization](../04-synchronization/README.md)
 - [Atomic Variables](../06-atomic-variables/README.md)
 - [Concurrent Collections](../07-concurrent-collections/README.md)
+```

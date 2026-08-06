@@ -186,6 +186,7 @@ The JIT compiler optimizes LinkedHashSet operations:
 ## 9. Memory Representation
 
 ```
+```
 LinkedHashSet<String> set = new LinkedHashSet<>();
 set.add("Apple");
 set.add("Banana");

@@ -66,6 +66,7 @@ Queue<Contact> recentCalls = new PriorityQueue<>(Comparator.comparing(Contact::g
 ### The Collection Hierarchy
 
 ```
+```
 Iterable<E>                    (root interface - provides iterator())
 ├── Collection<E>              (main interface - defines bulk operations)
     ├── List<E>                (ordered, allows duplicates)

@@ -265,6 +265,7 @@ The JVM optimizes streams:
 Lambdas have minimal memory overhead:
 
 ```
+```
 Lambda Object:
 ┌─────────────────────────────────────┐
 │  Header                             │
