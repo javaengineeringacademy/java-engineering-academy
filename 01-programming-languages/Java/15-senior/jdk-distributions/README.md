@@ -1,126 +1,117 @@
-# JDK Distributions Comparison
+# JDK Distributions
 
 ## Overview
 
-Java SE is a specification; multiple vendors provide compatible implementations (distributions). All distributions must pass the Technology Compatibility Kit (TCK) to be certified as Java SE compatible.
+Java SE is a specification. Multiple vendors provide compatible implementations (distributions) that must pass the Technology Compatibility Kit (TCK) to be certified as Java SE compatible. While all distributions share the same core APIs, they differ in licensing, support, update cadence, and specialized features.
 
-## OpenJDK
+## Why Multiple Distributions Exist
 
-| Property | Details |
-|----------|---------|
-| **Provider** | Oracle (reference implementation) + community |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception |
-| **Support** | Community support; Oracle provides patches for mainline |
-| **Cost** | Free |
-| **Unique Features** | Reference implementation, always latest features first, fully open source |
-| **Best For** | Learning, contributing to Java, building custom distributions, bleeding-edge features |
-| **When to Choose** | You want the source of truth, plan to build your own JDK, or need the latest features immediately |
+- **Different vendors** contribute to OpenJDK and build their own distributions
+- **Licensing requirements** vary (open source vs commercial)
+- **Support models** range from community-driven to enterprise SLAs
+- **Platform optimizations** target specific workloads (cloud, low-latency, containers)
+- **Cost considerations** — some distributions are completely free, others require subscriptions
 
-## Oracle JDK
+## Major Distributions at a Glance
 
-| Property | Details |
-|----------|---------|
-| **Provider** | Oracle Corporation |
-| **License** | Oracle No-Fee Terms and Conditions (NFTC) for production; Java SE Subscription for commercial features |
-| **Support** | Oracle premier support (paid subscription) |
-| **Cost** | Free for development/testing; paid for commercial support and some features |
-| **Unique Features** | Oracle-tested, Oracle-specific tools (Flight Recorder historically), commercial monitoring tools |
-| **Best For** | Enterprise environments needing Oracle support, compliance, certified binaries |
-| **When to Choose** | You need Oracle-backed binaries, commercial support, or are already in the Oracle ecosystem |
+| Distribution | Provider | License | Cost | LTS Support | Best For |
+|--------------|----------|---------|------|-------------|----------|
+| OpenJDK | Oracle/Community | GPLv2+CE | Free | Community | Reference implementation, learning |
+| Oracle JDK | Oracle | NFTC | Free* | Yes | Enterprise, compliance, Oracle ecosystem |
+| Eclipse Temurin | Eclipse Foundation | GPLv2+CE | Free | Yes | General production, CI/CD |
+| Amazon Corretto | Amazon | GPLv2+CE | Free | Yes | AWS workloads |
+| Azul Zulu | Azul Systems | GPLv2+CE | Free | Yes | General purpose |
+| Azul Zing | Azul Systems | Commercial | Paid | Yes | Ultra-low latency, trading |
+| Liberica JDK | BellSoft | GPLv2+CE | Free | Yes | Containers, Alpine, microservices |
+| Microsoft Build | Microsoft | GPLv2+CE | Free | Yes | Azure workloads |
+| SapMachine | SAP | GPLv2+CE | Free | Yes | SAP ecosystem |
 
-## Eclipse Temurin (Adoptium)
+*Free under NFTC for production use; paid for commercial support
 
-| Property | Details |
-|----------|---------|
-| **Provider** | Eclipse Foundation (formerly AdoptOpenJDK) |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception |
-| **Support** | Community + Eclipse Foundation backing |
-| **Cost** | Free |
-| **Unique Features** | TCK certified, multi-platform binaries, automated testing, LTS support, widely adopted |
-| **Best For** | Production workloads, CI/CD pipelines, Docker containers, general-purpose development |
-| **When to Choose** | You want a well-tested, free, community-driven distribution with long-term support |
+## Decision Framework
 
-## Amazon Corretto
+### Choose Based on Your Needs
 
-| Property | Details |
-|----------|---------|
-| **Provider** | Amazon Web Services |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception |
-| **Support** | Amazon support, free quarterly updates |
-| **Cost** | Free |
-| **Unique Features** | Long-term support (LTS), Amazon-tested, performance optimizations for AWS, no-charge updates for years |
-| **Best For** | AWS workloads, production systems needing long-term support, Amazon ecosystem |
-| **When to Choose** | You run on AWS, need free LTS, or want Amazon-backed support without cost |
+1. **Need commercial support with SLA?**
+   - Oracle JDK (Oracle-backed) or Azul Platform Prime (Azul-backed)
 
-## Azul Zulu
+2. **Running on a specific cloud provider?**
+   - AWS → Amazon Corretto
+   - Azure → Microsoft Build of OpenJDK
+   - SAP Cloud → SapMachine
 
-| Property | Details |
-|----------|---------|
-| **Provider** | Azul Systems |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception (community); commercial license for Zing |
-| **Support** | Community (Zulu) + Commercial (Zing/Platform Prime) |
-| **Cost** | Zulu: Free; Zing: Commercial (subscription) |
-| **Unique Features** | Zing (advanced GC with C4), ReadyNow (warm-up optimization), CRaC (Coordinated Restore at Cloud), best-in-class GC tuning |
-| **Best For** | Low-latency applications, financial trading, applications needing advanced garbage collection |
-| **When to Choose** | You need ultra-low latency (sub-millisecond GC pauses), warm-up optimization, or enterprise-grade GC |
+3. **Containerized workloads?**
+   - Liberica JDK (Alpine-native, smallest images)
+   - Eclipse Temurin (excellent Docker support)
 
-## Liberica JDK (BellSoft)
+4. **Ultra-low latency requirements?**
+   - Azul Zing (C4 garbage collector, sub-millisecond pauses)
 
-| Property | Details |
-|----------|---------|
-| **Provider** | BellSoft |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception |
-| **Support** | Community + Commercial support available |
-| **Cost** | Free (standard); Commercial for enterprise support |
-| **Unique Features** | Full JRE (not just JDK), Alpine Linux native support, smallest Docker images, GraalVM integration |
-| **Best For** | Containerized applications, microservices, Docker, Alpine Linux, Spring Boot |
-| **When to Choose** | You need minimal Docker image sizes, Alpine Linux support, or a full JRE for client apps |
+5. **General purpose / no strong preference?**
+   - Eclipse Temurin (widely adopted, well-tested)
 
-## SapMachine
-
-| Property | Details |
-|----------|---------|
-| **Provider** | SAP |
-| **License** | GNU General Public License v2 (GPLv2) + Classpath Exception |
-| **Support** | SAP support (free for community, enterprise support available) |
-| **Cost** | Free |
-| **Unique Features** | SAP-tested, enterprise-grade, ARM64 support, SAP ecosystem integration |
-| **Best For** | SAP environments, enterprise Java, SAP Cloud Platform, on-premise SAP systems |
-| **When to Choose** | You run SAP software, need SAP-backed binaries, or are in the SAP ecosystem |
-
-## Comparison Table
-
-| Distribution | Provider | License | Cost | LTS | Docker Support | GC Options | Best Use Case |
-|-------------|----------|---------|------|-----|----------------|------------|---------------|
-| OpenJDK | Oracle/Community | GPLv2+CE | Free | Community | Good | Standard | Reference, learning |
-| Oracle JDK | Oracle | NFTC | Free* | Yes | Good | Standard + Flight | Enterprise, compliance |
-| Eclipse Temurin | Eclipse Foundation | GPLv2+CE | Free | Yes | Excellent | Standard | Production, CI/CD |
-| Amazon Corretto | Amazon | GPLv2+CE | Free | Yes | Good | Standard | AWS, production |
-| Azul Zulu | Azul Systems | GPLv2+CE | Free | Yes | Good | Standard | General purpose |
-| Azul Zing | Azul Systems | Commercial | Paid | Yes | Good | C4 (advanced) | Low-latency, trading |
-| Liberica JDK | BellSoft | GPLv2+CE | Free | Yes | Excellent (Alpine) | Standard | Containers, microservices |
-| SapMachine | SAP | GPLv2+CE | Free | Yes | Good | Standard | SAP ecosystem |
-
-*Free under NFTC for production use; paid for commercial support/subscription features
-
-## Choosing a Distribution — Decision Tree
-
-```
-Need commercial support?
-├── Yes → Oracle JDK (subscription) or Azul Platform Prime
-└── No
-    ├── Running on AWS? → Amazon Corretto
-    ├── Running on SAP? → SapMachine
-    ├── Containerized/Alpine? → Liberica JDK
-    ├── Need latest features? → OpenJDK or Temurin
-    ├── Need ultra-low latency? → Azul Zing
-    └── General purpose? → Eclipse Temurin
-```
+6. **Building custom distributions?**
+   - OpenJDK (reference implementation, full source)
 
 ## Key Considerations
 
-1. **Licensing**: GPLv2+CE is permissive; you can distribute modified binaries without open-sourcing your app
-2. **LTS versions**: Java 8, 11, 17, 21 are LTS releases
-3. **TCK certification**: Ensures compatibility — always verify your distribution is certified
-4. **Update frequency**: Most distributions update quarterly; some monthly for security patches
-5. **Vendor lock-in risk**: All GPLv2 distributions are interchangeable — no lock-in
+### Licensing
+
+| License | Implications |
+|---------|--------------|
+| GPLv2+CE | Free to use, modify, distribute; Classpath Exception allows proprietary linking |
+| NFTC | Free for production; commercial support requires subscription |
+| Commercial | Paid subscription; includes support and SLA |
+
+### Long-Term Support (LTS) Versions
+
+Java LTS releases: **8, 11, 17, 21** (and future releases every 2 years)
+
+Most distributions provide extended support for LTS versions beyond Oracle's public updates.
+
+### TCK Certification
+
+All distributions listed here are TCK-certified, ensuring compatibility with the Java SE specification. Always verify certification for production use.
+
+## Getting Started
+
+### Quick Installation
+
+```bash
+# macOS (Homebrew)
+brew install --cask temurin       # Eclipse Temurin
+brew install --cask corretto      # Amazon Corretto
+brew install --cask zulu          # Azul Zulu
+
+# Ubuntu/Debian
+sudo apt install openjdk-21-jdk   # OpenJDK (varies by distro)
+
+# SDKMAN (any platform)
+sdk install java 21-tem           # Eclipse Temurin
+sdk install java 21-amzn          # Amazon Corretto
+sdk install java 21-zulu          # Azul Zulu
+```
+
+## Directory Structure
+
+- [Oracle JDK](oracle-jdk/README.md) — Oracle's commercial distribution
+- [OpenJDK](openjdk/README.md) — The reference implementation
+- [Eclipse Temurin](eclipse-temurin/README.md) — Adoptium's community distribution
+- [Amazon Corretto](amazon-corretto/README.md) — Amazon's free distribution
+- [Azul Zulu](azul-zulu/README.md) — Azul's free and commercial distributions
+- [Liberica JDK](liberica/README.md) — BellSoft's container-optimized distribution
+- [Microsoft Build](microsoft-build/README.md) — Microsoft's Azure-optimized distribution
+- [SapMachine](sapmachine/README.md) — SAP's enterprise distribution
+- [Comparison](comparison/README.md) — Detailed side-by-side comparison
+- [Oracle vs OpenJDK](oracle-vs-openjdk/README.md) — Deep dive into the two main options
+
+## Further Reading
+
+- [OpenJDK Project](https://openjdk.org/)
+- [Oracle Java SE](https://www.oracle.com/java/)
+- [Eclipse Adoptium](https://adoptium.net/)
+- [Amazon Corretto](https://aws.amazon.com/corretto/)
+- [Azul Systems](https://www.azul.com/)
+- [BellSoft Liberica](https://bell-sw.com/liberica-jdk/)
+- [Microsoft Build of OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/)
+- [SapMachine](https://.sapmachine.io/)
