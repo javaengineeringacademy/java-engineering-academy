@@ -1,5 +1,8 @@
 # Module 09: Stream API
 
+> **Difficulty:** ⭐⭐⭐ Intermediate  
+> **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
+
 ## Overview
 The Java Stream API provides a functional approach to processing collections of objects. Streams support operations like filter, map, reduce, and aggregate to process data declaratively, enabling parallel processing and lazy evaluation.
 
@@ -453,3 +456,17 @@ public class StreamEnterpriseExample {
 - **External:** [Baeldung Java Streams Guide](https://www.baeldung.com/java-streams)
 
 [📖 Continue to Part 2](README-part2.md)
+
+## Prerequisites
+
+- [Generics](../06-generics/README.md)
+- [Collections](../04-collections/README.md)
+
+## Related Topics
+
+- [I/O and NIO](../08-io-nio/README.md)
+
+## Next
+
+- [I/O and NIO](../08-io-nio/README.md)
+- [Multithreading](../09-multithreading/README.md)

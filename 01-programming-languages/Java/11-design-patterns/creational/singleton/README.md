@@ -59,6 +59,43 @@ public enum Singleton {
 
 Singleton initialization has negligible overhead. Double-checked locking adds a volatile write barrier (~10-20ns) on first access. Static holder and enum approaches have zero synchronization cost after class loading. In hot paths, the cost is a single null check (branch prediction handles this well).
 
+## Engineering Decision Framework
+
+### ✅ Use Singleton when:
+- A single shared instance is naturally required (connection pools, caches)
+- Global coordination point is needed (thread pools, registries)
+- Resource management requires centralized control
+- Stateless service with no testability concerns
+
+### ❌ Avoid Singleton when:
+- Dependency injection is available (preferred approach)
+- Unit testing requires mockability
+- Concurrency patterns need multiple instances
+- Application server classloader lifecycle is a concern
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Dependency Injection | When DI container manages lifecycle |
+| Enum Singleton | When serialization safety is required |
+| Static utility class | When no state or instance is needed |
+| Per-request instance | When statelessness is preferred |
+
+### Production Examples
+- Database connection pool manager
+- Application configuration loader
+- Logging service initialization
+- Cache manager for shared data
+- Thread pool for async task execution
+
+### Common Production Mistakes
+- Using Singleton when DI works better (tight coupling)
+- Forgetting volatile in double-checked locking (broken on some JVMs)
+- Making Singleton testable with static methods (hard to mock)
+- Holding resources that prevent application undeployment
+- Overusing Singleton as global mutable state
+
 ## Internal Working
 
 The JVM ensures a class is loaded only once via its class loader. Static holder leverages this: the inner class `Holder` is loaded only when referenced, at which point the JVM guarantees thread-safe initialization. Double-checked locking uses `volatile` to prevent instruction reordering — without it, another thread might see a partially constructed object. The enum approach is enforced by the JVM specification: enum constants are singletons by construction.

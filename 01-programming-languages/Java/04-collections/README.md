@@ -1,5 +1,8 @@
 # Module 04: Collections Framework
 
+> **Difficulty:** ⭐⭐⭐ Intermediate  
+> **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
+
 ## Overview
 The Java Collections Framework provides interfaces, implementations, and algorithms for working with collections of objects. It includes List, Set, Queue, and Map interfaces with various implementations.
 
@@ -395,3 +398,18 @@ System.out.println(aWords); // [apple, avocado]
 - **Related:** [09 - Multithreading](../09-multithreading/) — thread-safe collections
 - **External:** [Oracle Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
 - **External:** [Effective Java - Item 28: Prefer lists to arrays](https://www.oreilly.com/library/view/effective-java/9780134686097/)
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+- [Equals & HashCode](../00-knowledge-atoms/equals-hashcode/README.md)
+
+## Related Topics
+
+- [Generics](../06-generics/README.md)
+- [Immutability](../00-knowledge-atoms/immutability/README.md)
+
+## Next
+
+- [Text Processing](../05-text-processing/README.md)
+- [Functional Programming](../07-functional-programming/README.md)

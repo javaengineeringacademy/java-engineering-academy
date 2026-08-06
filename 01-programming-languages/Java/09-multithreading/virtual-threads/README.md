@@ -67,6 +67,44 @@ With virtual threads, you write straightforward sequential code that blocks on I
 
 Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and scalability (async I/O). They let you write simple blocking code that scales to millions of concurrent operations — solving the thread pool sizing problem entirely.
 
+## Engineering Decision Framework
+
+### ✅ Use Virtual Threads when:
+- I/O-bound workloads dominate (HTTP, DB, file operations)
+- Millions of concurrent connections are needed
+- Simple blocking code is preferred over async/callback patterns
+- Thread-per-request model should scale
+- Legacy blocking code needs improved concurrency
+
+### ❌ Avoid Virtual Threads when:
+- CPU-bound work is the bottleneck (use thread pools)
+- Thread-local state is heavily used (carrier thread switching loses it)
+- Synchronized blocks are held during blocking operations (pins carrier)
+- Platform thread pools are already tuned for the workload
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Platform thread pools | CPU-bound, predictable workloads |
+| CompletableFuture | Async composition and chaining |
+| Reactor/Vert.x | Reactive streams with backpressure |
+| ExecutorService | Traditional thread pool management |
+
+### Production Examples
+- Web server request handling at scale
+- Database connection pooling without pool sizing
+- Microservice-to-microservice HTTP calls
+- WebSocket connection management
+- Legacy application scalability improvements
+
+### Common Production Mistakes
+- Using synchronized blocks inside virtual threads (causes pinning)
+- Not using StructuredTaskScope for complex concurrent tasks
+- Assuming virtual threads fix CPU-bound performance
+- Using thread-local variables that span blocking operations
+- Not monitoring carrier thread pool utilization
+
 ## See Also
 - [CompletableFuture](../../15-senior/advanced/concurrency-advanced/completable-future/) — Async alternative virtual threads replace
 - [ThreadPoolExecutor Source](../../15-senior/java-platform/source-exploration/threadpool-executor-source/) — How carrier threads work internally

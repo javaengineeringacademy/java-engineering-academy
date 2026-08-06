@@ -1,5 +1,8 @@
 # Logging Module
 
+> **Difficulty:** ⭐⭐ Easy  
+> **Reading:** 20 min | **Practice:** 30 min | **Total:** 50 min
+
 ## Overview
 This module covers Java logging frameworks including SLF4J, Logback, and Log4j2 for application logging and monitoring.
 
@@ -76,3 +79,15 @@ This module covers Java logging frameworks including SLF4J, Logback, and Log4j2 
 - [Official Documentation](#)
 - [Related: topic1](#)
 - [Related: topic2](#)
+
+## Prerequisites
+
+- [Fundamentals](../01-fundamentals/README.md)
+
+## Related Topics
+
+- [Senior](../15-senior/README.md)
+
+## Next
+
+- [Senior](../15-senior/README.md)

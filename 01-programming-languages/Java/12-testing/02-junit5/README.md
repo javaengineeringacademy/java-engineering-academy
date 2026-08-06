@@ -432,6 +432,45 @@ class LifecycleTest {
 
 [Performance considerations and benchmarks]
 
+## Engineering Decision Framework
+
+### ✅ Use JUnit 5 when:
+- Writing unit tests for Java applications
+- Integration testing with Spring or other frameworks
+- Parameterized or data-driven testing is needed
+- Test lifecycle management with @BeforeEach/@AfterEach
+- Modern assertions and assumptions API is beneficial
+
+### ❌ Avoid JUnit 5 when:
+- Legacy JUnit 3/4 tests already work (use Vintage runner)
+- Simple script-based testing suffices
+- Testing requires external tools (Postman, curl for APIs)
+- Performance benchmarking is the goal (use JMH instead)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| TestNG | Advanced test grouping and parallel execution |
+| Spock | BDD-style testing with Groovy |
+| JMH | Microbenchmarking and performance measurement |
+| Mockito | Mocking framework (used alongside JUnit) |
+| AssertJ | Rich fluent assertions (complements JUnit) |
+
+### Production Examples
+- Unit testing service layer business logic
+- Integration testing REST API endpoints
+- Database repository testing with TestContainers
+- Contract testing for microservices
+- Regression test suites in CI/CD pipelines
+
+### Common Production Mistakes
+- Testing implementation details instead of behavior
+- Not cleaning up test data (flaky tests)
+- Overusing mocks (tests become coupled to implementation)
+- Ignoring test execution time in CI pipelines
+- Using @Disabled as a permanent fix instead of tracking tech debt
+
 ## Overview
 
 [Brief description of the topic]

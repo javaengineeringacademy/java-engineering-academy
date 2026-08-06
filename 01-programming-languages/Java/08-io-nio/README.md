@@ -1,5 +1,8 @@
 # Module 06: Java I/O and NIO
 
+> **Difficulty:** ⭐⭐⭐ Intermediate  
+> **Reading:** 30 min | **Practice:** 45 min | **Total:** 75 min
+
 ## Overview
 Java I/O provides classes for reading and writing data through streams, readers, and writers. NIO (New I/O) adds channels, buffers, and selectors for non-blocking I/O operations.
 
@@ -357,3 +360,15 @@ Java I/O and NIO provide comprehensive data handling capabilities. Use NIO for m
 - **Related:** [09 - Multithreading](../09-multithreading/) — async I/O and NIO selectors
 - **External:** [Oracle Java I/O Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
 - **External:** [Java NIO Tutorial - Baeldung](https://www.baeldung.com/java-nio)
+
+## Prerequisites
+
+- [Fundamentals](../01-fundamentals/README.md)
+
+## Related Topics
+
+- [Multithreading](../09-multithreading/README.md)
+
+## Next
+
+- [Multithreading](../09-multithreading/README.md)

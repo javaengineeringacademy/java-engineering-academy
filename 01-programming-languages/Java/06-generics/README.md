@@ -1,5 +1,8 @@
 # Module 05: Generics
 
+> **Difficulty:** ⭐⭐⭐ Intermediate  
+> **Reading:** 30 min | **Practice:** 45 min | **Total:** 75 min
+
 ## Overview
 
 Generics enable you to write code that works with any object type while providing compile-time type safety. Introduced in Java 5, generics eliminate the need for explicit type casting and catch type mismatches at compile time rather than runtime.
@@ -328,3 +331,16 @@ public class TypeSafeContainer {
 ---
 
 **Note:** This module contains comprehensive documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments.
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [Functional Programming](../07-functional-programming/README.md)
+- [Type Safety](../00-knowledge-atoms/type-safety/README.md)
+
+## Next
+
+- [Functional Programming](../07-functional-programming/README.md)

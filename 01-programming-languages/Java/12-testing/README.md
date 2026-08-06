@@ -1,5 +1,8 @@
 # Module 52: Debugging
 
+> **Difficulty:** ⭐⭐ Easy  
+> **Reading:** 25 min | **Practice:** 45 min | **Total:** 70 min
+
 ## Overview
 Debugging is the process of finding and resolving defects in software. Effective debugging uses breakpoints, logging, profiling, and systematic analysis to identify and fix issues.
 
@@ -486,3 +489,15 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 - **Related:** [10 - JVM Internals](../10-jvm-internals/) — heap dumps, GC logs, JFR
 - **External:** [Oracle Java Debugging Guide](https://docs.oracle.com/javase/tutorial/essential/io/)
 - **External:** [Effective Debugging by Diomidis Spinellis](https://www.oreilly.com/library/view/effective-debugging/9780134685809/)
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [Reflection & Annotations](../13-reflection-annotations/README.md)
+
+## Next
+
+- [Reflection & Annotations](../13-reflection-annotations/README.md)

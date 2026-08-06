@@ -128,6 +128,45 @@ int queued = executor.getQueue().size();
 4. **Not handling exceptions**: Swallowed in execute()
 5. **Static pool creation**: Creates too many pools
 
+## Engineering Decision Framework
+
+### ✅ Use ExecutorService when:
+- You have multiple tasks to execute concurrently
+- Thread reuse across tasks improves performance
+- Graceful shutdown and lifecycle management is needed
+- Task queuing and scheduling is required
+- You need Future-based result handling
+
+### ❌ Avoid ExecutorService when:
+- A single long-running task is sufficient (use raw Thread)
+- Virtual threads better fit I/O-bound workloads
+- Simple CompletableFuture composition is enough
+- One-off tasks with no need for pooling
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Virtual Threads (Java 21+) | Massive I/O-bound concurrency |
+| CompletableFuture | Async composition and chaining |
+| ForkJoinPool | Recursive divide-and-conquer tasks |
+| ScheduledExecutorService | Delayed or periodic task execution |
+| Raw Thread | Single long-running daemon task |
+
+### Production Examples
+- Web request handling thread pools
+- Background job processing queues
+- Async email/notification sending
+- Database connection pool management
+- Scheduled health checks and monitoring
+
+### Common Production Mistakes
+- Using unbounded queues with fixed pools (risk of OOM)
+- Not calling shutdown() (thread leaks)
+- Ignoring RejectedExecutionException (task drops silently)
+- Creating new ExecutorService per request (wastes resources)
+- Using Executors.newCachedThreadPool() in production (unbounded threads)
+
 ## Why ExecutorService Over Raw Threads?
 
 | Criteria | ExecutorService | Raw Threads |

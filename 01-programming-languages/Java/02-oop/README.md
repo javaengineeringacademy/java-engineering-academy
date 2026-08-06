@@ -1,5 +1,8 @@
 # Module 02: Object-Oriented Programming
 
+> **Difficulty:** ⭐⭐ Easy  
+> **Reading:** 40 min | **Practice:** 90 min | **Total:** 130 min
+
 ## Overview
 Object-Oriented Programming (OOP) is a programming approach based on objects that contain data and code. Java is a pure OOP language supporting encapsulation, inheritance, polymorphism, and abstraction.
 
@@ -549,3 +552,18 @@ OOP is fundamental to Java development. Master the four pillars and apply design
 - **External:** [Oracle Java Documentation: OOP](https://docs.oracle.com/javase/tutorial/java/concepts/)
 - **External:** [Effective Java by Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - **External:** [Head First Design Patterns](https://www.oreilly.com/library/view/head-first-design/9781492077992/)
+
+## Prerequisites
+
+- [Fundamentals](../01-fundamentals/README.md)
+- [Pass by Value](../00-knowledge-atoms/pass-by-value/README.md)
+
+## Related Topics
+
+- [Equals & HashCode](../00-knowledge-atoms/equals-hashcode/README.md)
+- [Immutability](../00-knowledge-atoms/immutability/README.md)
+
+## Next
+
+- [Exception Handling](../03-exception-handling/README.md)
+- [Collections](../04-collections/README.md)

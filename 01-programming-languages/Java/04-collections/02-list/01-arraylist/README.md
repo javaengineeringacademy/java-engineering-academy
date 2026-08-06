@@ -425,6 +425,45 @@ import java.util.ArrayList;
 
 **Part 1** of 3 | Part 2 | Part 3
 
+## Engineering Decision Framework
+
+### ✅ Use ArrayList when:
+- You need frequent random access by index (O(1))
+- Append operations dominate (add at end)
+- Cache-friendly iteration is important
+- You need a simple, general-purpose list
+- You know approximate size upfront (pre-allocate capacity)
+
+### ❌ Avoid ArrayList when:
+- Frequent insertions/removals in the middle (use LinkedList or ArrayDeque)
+- Queue/deque operations are primary (use ArrayDeque)
+- Thread-safe access is needed without external sync (use CopyOnWriteArrayList)
+- You need consistent O(1) add/remove at both ends
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| LinkedList | Frequent insertions/removals at known positions |
+| ArrayDeque | Queue/deque operations (add/remove from both ends) |
+| CopyOnWriteArrayList | Read-heavy concurrent access with rare writes |
+| Vector | Legacy code requiring synchronized list |
+| Stack | LIFO operations (prefer ArrayDeque instead) |
+
+### Production Examples
+- Data grid row storage in UI frameworks
+- Event listener registration lists
+- Undo/redo history buffers
+- CSV/JSON record collections
+- Caching recently accessed items
+
+### Common Production Mistakes
+- Using indexOf() in hot loops (O(n) per call)
+- Not pre-allocating capacity when size is known
+- Modifying list during enhanced for-loop (ConcurrentModificationException)
+- Using subList() as a persistent view (it's a live view of original)
+- Removing elements by index in a loop without accounting for shifted indices
+
 ## Related Topics
 - Cache Locality — Why ArrayList beats LinkedList
 - Memory Footprint — ArrayList memory layout

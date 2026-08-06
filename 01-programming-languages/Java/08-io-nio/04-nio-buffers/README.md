@@ -402,4 +402,42 @@ import java.nio.*;
 ---
 
 [📖 Continue to Part 2](README-part2.md)
+
+## Engineering Decision Framework
+
+### ✅ Use NIO Buffers when:
+- High-performance I/O with channels is required
+- Large file transfers with zero-copy optimization
+- Network socket operations need batch processing
+- Direct memory access for native I/O is beneficial
+- Non-blocking I/O patterns are implemented
+
+### ❌ Avoid NIO Buffers when:
+- Simple file reading/writing (use Files API instead)
+- Text processing with small data sizes
+- Sequential stream processing is sufficient
+- Memory management complexity is undesirable
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Files API (Java 7+) | Simple file read/write operations |
+| InputStream/OutputStream | Sequential text/binary processing |
+| DataInputStream/DataOutputStream | Primitive type serialization |
+| Channels with ScatteringByteChannel | Multiple buffer reading |
+
+### Production Examples
+- High-throughput file transfer services
+- WebSocket message handling
+- Database page cache management
+- Video/audio stream processing
+- Inter-process communication (IPC)
+
+### Common Production Mistakes
+- Not flipping buffers before reading (position confusion)
+- Using direct buffers for small, short-lived data
+- Forgetting to clear/compact buffers after reads
+- Not handling BufferUnderflowException/BufferOverflowException
+- Allocating buffers inside tight loops (reuse instead)
 ```

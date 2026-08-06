@@ -1,5 +1,8 @@
 # Module 09: JVM Internals
 
+> **Difficulty:** ⭐⭐⭐⭐ Advanced  
+> **Reading:** 45 min | **Practice:** 30 min | **Total:** 75 min
+
 ## Overview
 Understanding JVM internals is crucial for Java performance tuning, debugging, and troubleshooting. The JVM handles class loading, memory management, garbage collection, and bytecode execution.
 
@@ -417,3 +420,16 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 - **Related:** [09 - Multithreading](../09-multithreading/) — JVM thread model and memory visibility
 - **External:** [JVM Specification](https://docs.oracle.com/javase/specs/jvms/se21/html/)
 - **External:** [OpenJDK Wiki](https://wiki.openjdk.java.net/)
+
+## Prerequisites
+
+- [Multithreading](../09-multithreading/README.md)
+- [Java Memory Model](../00-knowledge-atoms/java-memory-model/README.md)
+
+## Related Topics
+
+- [Design Patterns](../11-design-patterns/README.md)
+
+## Next
+
+- [Design Patterns](../11-design-patterns/README.md)

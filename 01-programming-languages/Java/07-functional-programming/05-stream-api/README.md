@@ -431,6 +431,45 @@ IntStream stream = IntStream.range(0, 100);
 
 ---
 
+## Engineering Decision Framework
+
+### ✅ Use Stream API when:
+- Data transformation, filtering, or aggregation is needed
+- Processing collections declaratively improves readability
+- Parallel processing can leverage multiple CPU cores
+- Chaining multiple operations on a data pipeline
+- Working with Optional return values from find/min/max
+
+### ❌ Avoid Stream API when:
+- Simple loops are clearer and more performant
+- Performance-critical hot paths (stream overhead ~5-10%)
+- You need to modify the source collection during iteration
+- Debugging complex stream pipelines is required
+- Operations are side-effect heavy (use forEach carefully)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Traditional for-loop | Simple iteration, performance-critical code |
+| parallelStream() | Large datasets with CPU-bound operations |
+| Collectors utilities | Complex groupings and aggregations |
+| for-each with mutation | When you need to modify external state |
+
+### Production Examples
+- E-commerce order filtering and reporting
+- Log file processing and analysis
+- Data validation pipelines
+- Database result set transformations
+- Real-time event stream processing
+
+### Common Production Mistakes
+- Using parallelStream() on small datasets (overhead exceeds benefit)
+- Side effects inside stream operations (use collect instead)
+- Not closing streams from I/O sources
+- Creating intermediate lists unnecessarily (use streams directly)
+- Using findFirst() without considering ordering implications
+
 ## See Also
 - [Lambda Expressions](../02-lambda-expressions/) — Core syntax powering stream operations
 - [Functional Interfaces](../03-functional-interfaces/) — Predicate, Function, Consumer used in streams

@@ -401,6 +401,46 @@ public class Utility {
 
 ---
 
+## Engineering Decision Framework
+
+### ✅ Use Generics when:
+- Type safety at compile time is critical
+- Writing reusable code that works with multiple types
+- Building collections or data structures
+- API design that should prevent ClassCastException
+- Creating type-safe builder patterns
+
+### ❌ Avoid Generics when:
+- Simple types with no polymorphism needed
+- Performance-critical code where type erasure adds overhead
+- Working with legacy code that uses raw types
+- Runtime type information is required (type erasure limitation)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Object casting | Legacy code, one-off type conversions |
+| Specific typed classes | When only one type is ever used |
+| var (Java 10+) | Local variable type inference |
+| Annotation processing | Compile-time code generation |
+
+### Production Examples
+- Repository pattern with generic entity types
+- Type-safe HTTP client responses
+- Generic event handling systems
+- Collections framework (List<T>, Map<K,V>)
+- Generic DAO/Service base classes
+
+### Common Production Mistakes
+- Using raw types (loses type safety)
+- Overusing wildcards (makes API hard to understand)
+- Ignoring type erasure limitations (T.class won't work)
+- Creating generic arrays (not allowed due to reification)
+- Not using bounded types when constraints exist
+
+---
+
 [📖 Continue to Part 2](README-part2.md)
  | [📖 Continue to Part 3](README-part3.md)
 ```

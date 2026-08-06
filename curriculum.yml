@@ -1,6 +1,5 @@
 # Java Engineering Academy - Curriculum Manifest
 # Single source of truth for structure, navigation, and learning paths
-# Can be used to generate READMEs, breadcrumbs, navigation, and progress tracking
 
 meta:
   name: Java Engineering Academy
@@ -10,7 +9,132 @@ meta:
   repository: https://github.com/javaengineeringacademy/java-engineering-academy
 
 # ============================================================
-# MODULE DEFINITIONS
+# SIMPLIFIED MANIFEST (for manual use)
+# ============================================================
+
+java_modules:
+  - id: fundamentals
+    title: Java Fundamentals
+    difficulty: beginner
+    estimated_time: "90 min"
+    prerequisites: []
+    related: [knowledge-atoms]
+    next: oop
+
+  - id: oop
+    title: Object-Oriented Programming
+    difficulty: easy
+    estimated_time: "130 min"
+    prerequisites: [fundamentals]
+    related: [knowledge-atoms/equals-hashcode, knowledge-atoms/immutability]
+    next: exception-handling
+
+  - id: exception-handling
+    title: Exception Handling
+    difficulty: easy
+    estimated_time: "50 min"
+    prerequisites: [oop]
+    related: [testing]
+    next: collections
+
+  - id: collections
+    title: Collections Framework
+    difficulty: intermediate
+    estimated_time: "95 min"
+    prerequisites: [oop, knowledge-atoms/equals-hashcode]
+    related: [generics, knowledge-atoms/immutability]
+    next: text-processing
+
+  - id: text-processing
+    title: Text Processing
+    difficulty: easy
+    estimated_time: "65 min"
+    prerequisites: [fundamentals]
+    related: [generics]
+    next: generics
+
+  - id: generics
+    title: Generics
+    difficulty: intermediate
+    estimated_time: "75 min"
+    prerequisites: [oop]
+    related: [functional-programming, knowledge-atoms/type-safety]
+    next: functional-programming
+
+  - id: functional-programming
+    title: Functional Programming
+    difficulty: intermediate
+    estimated_time: "95 min"
+    prerequisites: [generics, collections]
+    related: [io-nio]
+    next: io-nio
+
+  - id: io-nio
+    title: I/O & NIO
+    difficulty: intermediate
+    estimated_time: "75 min"
+    prerequisites: [fundamentals]
+    related: [multithreading]
+    next: multithreading
+
+  - id: multithreading
+    title: Multithreading
+    difficulty: advanced
+    estimated_time: "100 min"
+    prerequisites: [oop]
+    related: [jvm-internals, knowledge-atoms/java-memory-model]
+    next: jvm-internals
+
+  - id: jvm-internals
+    title: JVM Internals
+    difficulty: advanced
+    estimated_time: "75 min"
+    prerequisites: [multithreading, knowledge-atoms/java-memory-model]
+    related: [design-patterns]
+    next: design-patterns
+
+  - id: design-patterns
+    title: Design Patterns
+    difficulty: intermediate
+    estimated_time: "90 min"
+    prerequisites: [oop]
+    related: [senior]
+    next: testing
+
+  - id: testing
+    title: Testing
+    difficulty: easy
+    estimated_time: "70 min"
+    prerequisites: [oop]
+    related: [reflection-annotations]
+    next: reflection-annotations
+
+  - id: reflection-annotations
+    title: Reflection & Annotations
+    difficulty: advanced
+    estimated_time: "70 min"
+    prerequisites: [oop]
+    related: [logging]
+    next: logging
+
+  - id: logging
+    title: Logging
+    difficulty: easy
+    estimated_time: "50 min"
+    prerequisites: [fundamentals]
+    related: [senior]
+    next: senior
+
+  - id: senior
+    title: Senior Java Developer
+    difficulty: expert
+    estimated_time: "180 min"
+    prerequisites: [jvm-internals, design-patterns]
+    related: [all-modules]
+    next: none
+
+# ============================================================
+# DETAILED MANIFEST (for automation)
 # ============================================================
 
 modules:

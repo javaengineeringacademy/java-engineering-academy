@@ -400,6 +400,44 @@ public class ExceptionChainingExample {
         try {
             int result = Integer.parseInt("invalid");
 
+## Engineering Decision Framework
+
+### ✅ Use Exception Handling when:
+- Recoverable errors occur (file not found, network timeout)
+- Resource cleanup is required (try-with-resources)
+- Validating input and signaling business rule violations
+- Propagating errors up the call stack
+- Maintaining application stability under error conditions
+
+### ❌ Avoid Exception Handling when:
+- Flow control (use if-else or Optional instead)
+- Frequent, expected conditions (use return codes or Optional)
+- Performance-critical paths (exception creation is expensive)
+- Simple null checking (use Optional or @NonNull annotations)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Optional<T> | Method returns that may be absent |
+| Result types | Functional error handling without exceptions |
+| Validation annotations | Declarative input validation |
+| Assert statements | Precondition checking in development |
+
+### Production Examples
+- Database connection failure recovery
+- File I/O error handling in data pipelines
+- REST API error response formatting
+- Transaction rollback on business rule violations
+- Graceful degradation in microservice calls
+
+### Common Production Mistakes
+- Catching generic Exception instead of specific types
+- Using exceptions for normal flow control
+- Swallowing exceptions silently (empty catch blocks)
+- Not preserving the cause chain in wrapped exceptions
+- Overly broad try blocks that mask the actual failure point
+
 ## 📑 Continue Reading
 
 **Part 1** of 3 | Part 2 | Part 3

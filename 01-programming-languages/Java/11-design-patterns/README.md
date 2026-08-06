@@ -1,5 +1,8 @@
 # Module 11: Design Patterns
 
+> **Difficulty:** ⭐⭐⭐ Intermediate  
+> **Reading:** 30 min | **Practice:** 60 min | **Total:** 90 min
+
 ## Overview
 Design patterns are reusable solutions to common software design problems. This module covers all 23 Gang of Four (GoF) patterns with real-world examples.
 
@@ -521,3 +524,16 @@ flowchart TD
 - [Official Documentation](#)
 - [Related: topic1](#)
 - [Related: topic2](#)
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [Senior](../15-senior/README.md)
+
+## Next
+
+- [Testing](../12-testing/README.md)
+- [Senior](../15-senior/README.md)

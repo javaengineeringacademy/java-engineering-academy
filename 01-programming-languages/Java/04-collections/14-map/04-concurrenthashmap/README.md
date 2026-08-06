@@ -427,6 +427,46 @@ public class ConcurrentHashMapBasics {
 
 **Part 1** of 3 | Part 2 | Part 3
 
+## Engineering Decision Framework
+
+### ✅ Use ConcurrentHashMap when:
+- Multiple threads read and write concurrently
+- High-throughput map operations are required
+- Atomic compound operations (compute, merge) are needed
+- Weakly consistent iteration is acceptable
+- Null keys/values are not used
+
+### ❌ Avoid ConcurrentHashMap when:
+- Single-threaded access (use HashMap for less overhead)
+- Sorted key iteration is required (use TreeMap)
+- Null keys or values are needed
+- Strict consistency during iteration is required
+- Simple synchronized wrapper suffices (use Collections.synchronizedMap)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| HashMap | Single-threaded scenarios |
+| Collections.synchronizedMap | Simple sync with less complexity |
+| TreeMap | Sorted key iteration needed |
+| Hashtable | Legacy code compatibility |
+| CopyOnWriteArrayMap | Read-heavy with rare writes |
+
+### Production Examples
+- Web application session caching
+- Real-time analytics counters
+- Connection pool tracking
+- Distributed lock implementations
+- Rate limiter state storage
+
+### Common Production Mistakes
+- Using size() for exact counts (uses sumCount which is approximate)
+- Not using computeIfAbsent for lazy initialization (race condition)
+- Assuming weakly consistent iterators reflect current state
+- Using null keys/values (throws NullPointerException)
+- Not leveraging atomic operations for compound updates
+
 ## Why ConcurrentHashMap Over Alternatives?
 
 | Criteria | ConcurrentHashMap | Collections.synchronizedMap | Hashtable |

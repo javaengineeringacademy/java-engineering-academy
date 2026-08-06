@@ -1,5 +1,8 @@
 # Module 08: Multithreading
 
+> **Difficulty:** ⭐⭐⭐⭐ Advanced  
+> **Reading:** 40 min | **Practice:** 60 min | **Total:** 100 min
+
 ## Overview
 Java multithreading enables concurrent execution of multiple threads. It includes thread creation, synchronization, concurrency utilities, and the java.util.concurrent package.
 
@@ -501,3 +504,16 @@ Multithreading enables concurrent execution. Use synchronization and concurrency
 - **Related:** [10 - JVM Internals](../10-jvm-internals/) — thread model, memory model
 - **External:** [Oracle Java Concurrency Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
 - **External:** [Java Concurrency in Practice](https://jcip.net/)
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [JVM Internals](../10-jvm-internals/README.md)
+- [Java Memory Model](../00-knowledge-atoms/java-memory-model/README.md)
+
+## Next
+
+- [JVM Internals](../10-jvm-internals/README.md)

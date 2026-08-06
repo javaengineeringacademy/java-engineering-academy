@@ -248,6 +248,44 @@ Matches if NOT preceded by the pattern:
 
 ---
 
+## Engineering Decision Framework
+
+### ✅ Use Regex when:
+- Complex pattern matching is required (email, URL, phone validation)
+- Text extraction with capture groups is needed
+- Search-and-replace with patterns is required
+- Input validation against structured formats
+- Log file parsing with variable formats
+
+### ❌ Avoid Regex when:
+- Simple string operations suffice (startsWith, contains, equals)
+- Performance is critical in hot paths (regex compilation overhead)
+- Patterns are simple and static (use String methods instead)
+- User input is untrusted (risk of ReDoS attacks)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| String methods | Simple prefix/suffix/contains checks |
+| StringTokenizer | Basic delimiter-based splitting |
+| Scanner | Token-based input parsing |
+| Parser combinators | Complex grammar-based parsing |
+
+### Production Examples
+- Email and phone number validation
+- URL parsing and normalization
+- Log file pattern extraction
+- CSV/TSV data processing
+- Security input sanitization
+
+### Common Production Mistakes
+- Compiling patterns inside loops (reuse compiled Pattern objects)
+- Using greedy quantifiers where lazy is needed (catastrophic backtracking)
+- Not using Pattern.quote() for user-provided patterns
+- Overly complex regex that nobody can maintain
+- Not testing edge cases (empty strings, special characters)
+
 ## Common Interview Questions
 
 ### Q1: What is the difference between `matches()` and `find()`?

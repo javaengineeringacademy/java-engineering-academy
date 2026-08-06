@@ -1,5 +1,8 @@
 # Reflection and Annotations Module
 
+> **Difficulty:** ⭐⭐⭐⭐ Advanced  
+> **Reading:** 30 min | **Practice:** 40 min | **Total:** 70 min
+
 ## Overview
 This module covers Java Reflection API and Annotations, enabling runtime inspection and modification of classes, methods, fields, and creating custom annotations.
 
@@ -77,3 +80,15 @@ This module covers Java Reflection API and Annotations, enabling runtime inspect
 - [Official Documentation](#)
 - [Related: topic1](#)
 - [Related: topic2](#)
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [Logging](../14-logging/README.md)
+
+## Next
+
+- [Logging](../14-logging/README.md)

@@ -90,6 +90,44 @@ Netflix Hystrix popularized this pattern but is now in maintenance mode. Migrate
 
 Circuit breaker adds ~10-50ns overhead per call (state check + metrics update). The benefit is avoiding cascading failures that cause seconds of latency. When open, calls fail immediately (~1µs) instead of timing out (~30s). Metrics use lock-free counters for high throughput.
 
+## Engineering Decision Framework
+
+### ✅ Use Circuit Breaker when:
+- Calling external services that may fail or timeout
+- Cascading failures across microservices are possible
+- Graceful degradation is required during outages
+- Load shedding is needed for failing dependencies
+- Rapid failure detection improves user experience
+
+### ❌ Avoid Circuit Breaker when:
+- Simple retry with backoff handles transient failures
+- No external service dependencies exist
+- Operations are purely in-process
+- Failure rate is too low to justify overhead
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Retry with backoff | Transient, recoverable failures |
+| Rate limiting | Preventing overload on healthy services |
+| Bulkhead pattern | Isolating failure domains |
+| Timeout + fallback | Simple degradation without state machine |
+
+### Production Examples
+- Payment gateway integration
+- Third-party API calls (REST, gRPC)
+- Database connection failure handling
+- Message queue producer/consumer resilience
+- Inter-service communication in microservices
+
+### Common Production Mistakes
+- Not providing meaningful fallback responses
+- Setting failure thresholds too sensitively (opens too often)
+- Ignoring circuit breaker state transitions in monitoring
+- Not combining with retry for transient failures
+- Using circuit breaker for non-idempotent operations without careful design
+
 ## Examples
 
 ```java

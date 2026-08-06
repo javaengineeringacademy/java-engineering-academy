@@ -407,5 +407,44 @@ boolean present = optional.isPresent();
 - [Stream API](../05-stream-api/) — Optional integrates with stream terminal operations
 - [Null Safety](../../00-knowledge-atoms/) — Alternative null handling patterns
 
+## Engineering Decision Framework
+
+### ✅ Use Optional when:
+- Method return types may legitimately have no value
+- Chaining operations on potentially absent values
+- Replacing null checks with fluent API
+- Documenting nullability in API contracts
+- Integrating with stream operations (findFirst, min, max)
+
+### ❌ Avoid Optional when:
+- Performance-critical code (Optional adds allocation overhead)
+- Class fields (use null with @Nullable annotation instead)
+- Method parameters (use overloading or builder pattern)
+- Serialization is required (Optional is not serializable)
+- Collections (use empty collections instead)
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| Null checks with @NonNull | Simple, performance-critical code |
+| Empty collections | When absence means "no items" |
+| Default values | When a sensible default exists |
+| Exceptions | When absence is truly exceptional |
+
+### Production Examples
+- Repository findById methods
+- Configuration property lookup
+- Cache retrieval operations
+- Stream terminal operations (findFirst, min, max)
+- API response wrappers for optional fields
+
+### Common Production Mistakes
+- Using Optional.get() without checking isPresent()
+- Wrapping null-returning methods with Optional.of() instead of ofNullable()
+- Using Optional as method parameters (use overloading instead)
+- Creating Optional every call instead of caching empty instances
+- Not using Optional in stream pipelines for nullable transformations
+
 [📖 Continue to Part 2](README-part2.md)
 ```

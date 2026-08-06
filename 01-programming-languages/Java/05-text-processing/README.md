@@ -1,5 +1,8 @@
 # Text Processing in Java
 
+> **Difficulty:** ⭐⭐ Easy  
+> **Reading:** 25 min | **Practice:** 40 min | **Total:** 65 min
+
 ## Overview
 Java provides a rich set of APIs for text processing, string manipulation,
 and working with character data. This module covers the essential text
@@ -359,3 +362,15 @@ public class RegexExample {
 - **Related:** [06 - Generics](../06-generics/) — type-safe text processing
 - **External:** [Java Documentation - String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)
 - **External:** [Java Documentation - StringBuilder](https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html)
+
+## Prerequisites
+
+- [Fundamentals](../01-fundamentals/README.md)
+
+## Related Topics
+
+- [Generics](../06-generics/README.md)
+
+## Next
+
+- [Generics](../06-generics/README.md)

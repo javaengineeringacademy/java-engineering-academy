@@ -1,5 +1,8 @@
 # Module 03: Exception Handling
 
+> **Difficulty:** ⭐⭐ Easy  
+> **Reading:** 20 min | **Practice:** 30 min | **Total:** 50 min
+
 ## Overview
 Master Java's exception handling mechanism to build robust, fault-tolerant applications. Learn to anticipate, catch, and gracefully handle runtime errors while maintaining program stability. This comprehensive module covers everything from basic try-catch blocks to advanced enterprise patterns like circuit breakers and retry mechanisms.
 
@@ -328,3 +331,15 @@ After completing this module, you should be able to:
 ---
 
 **Note:** This module contains comprehensive documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments. Each topic README is 400+ lines for in-depth learning.
+
+## Prerequisites
+
+- [OOP](../02-oop/README.md)
+
+## Related Topics
+
+- [Testing](../12-testing/README.md)
+
+## Next
+
+- [Collections](../04-collections/README.md)

@@ -1,5 +1,8 @@
 # Java Fundamentals
 
+> **Difficulty:** ⭐ Beginner  
+> **Reading:** 30 min | **Practice:** 60 min | **Total:** 90 min
+
 ## Overview
 This module covers the essential building blocks of Java programming — data types, operators, control flow, methods, arrays, strings, packages, build tools, and reserved keywords. These are the foundation every Java developer must master before moving to object-oriented programming.
 
@@ -216,3 +219,16 @@ public class ControlFlow {
 - **Related:** [04 - Collections](../04-collections/) — dynamic data structures beyond arrays
 - **External:** [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
 - **External:** [Java Language Specification](https://docs.oracle.com/javase/specs/)
+
+## Prerequisites
+
+No prerequisites — this is the starting point.
+
+## Related Topics
+
+- [Pass by Value](../00-knowledge-atoms/pass-by-value/README.md)
+- [Autoboxing](../00-knowledge-atoms/autoboxing/README.md)
+
+## Next
+
+- [OOP](../02-oop/README.md)

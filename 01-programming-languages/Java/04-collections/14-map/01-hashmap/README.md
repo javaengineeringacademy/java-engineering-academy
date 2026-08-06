@@ -455,3 +455,43 @@ Need ordering? → Yes → TreeMap or LinkedHashMap
 Need thread safety? → Yes → ConcurrentHashMap (not Hashtable)
 General purpose? → Yes → Use HashMap
 
+## Engineering Decision Framework
+
+### ✅ Use HashMap when:
+- You need fast key-value lookups (O(1) average)
+- Single-threaded access or external synchronization is acceptable
+- Keys have good hashCode()/equals() implementations
+- You don't need sorted iteration order
+- Null keys/values are acceptable
+
+### ❌ Avoid HashMap when:
+- Multiple threads write concurrently (use ConcurrentHashMap)
+- You need sorted key iteration (use TreeMap)
+- You need insertion-order iteration (use LinkedHashMap)
+- Keys don't have proper hashCode()/equals() implementations
+- You need thread-safe iteration without external synchronization
+
+### Better Alternatives
+
+| Alternative | When to use |
+|-------------|-------------|
+| ConcurrentHashMap | Concurrent access from multiple threads |
+| LinkedHashMap | Need insertion or access order iteration |
+| TreeMap | Need keys sorted naturally or by comparator |
+| Hashtable | Legacy code requiring synchronized map |
+| Collections.synchronizedMap | Simple sync wrapper when ConcurrentHashMap isn't needed |
+
+### Production Examples
+- Caching user sessions in web applications
+- Database connection pool configuration
+- API response caching with TTL
+- Counting word frequency in text processing
+- Storing configuration key-value pairs
+
+### Common Production Mistakes
+- Using HashMap in concurrent scenarios without synchronization
+- Using mutable objects as keys without stable hashCode()
+- Not providing initial capacity for known sizes (causes unnecessary rehashing)
+- Overriding hashCode() without overriding equals()
+- Ignoring null key/value implications in multi-threaded contexts
+
