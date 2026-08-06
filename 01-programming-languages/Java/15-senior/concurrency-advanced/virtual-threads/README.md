@@ -111,3 +111,17 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 - Throughput: scales linearly with I/O tasks
 
 Run with: `java -Djdk.tracePinnedThreads=full VirtualThreadsDemo.java`
+
+## Why Virtual Threads Over Thread Pools?
+
+| Criteria | Virtual Threads | Thread Pools |
+|----------|----------------|--------------|
+| Creation cost | ~1KB | ~1MB |
+| Max count | Millions | Thousands |
+| Blocking | Cheap (unmounts) | Expensive (wastes thread) |
+| Complexity | Simple | Complex sizing |
+| Use when | I/O-bound, many connections | CPU-bound, few connections |
+
+### Decision Flowchart
+I/O-bound? → Yes → Many concurrent? → Yes → Use Virtual Threads
+CPU-bound? → Yes → Use Thread Pools

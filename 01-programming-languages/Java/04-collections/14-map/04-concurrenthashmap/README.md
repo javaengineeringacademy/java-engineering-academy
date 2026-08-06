@@ -426,3 +426,16 @@ public class ConcurrentHashMapBasics {
 
 **Part 1** of 3 | [Part 2](README-part2.md) | [Part 3](README-part3.md)
 
+## Why ConcurrentHashMap Over Alternatives?
+
+| Criteria | ConcurrentHashMap | Collections.synchronizedMap | Hashtable |
+|----------|-------------------|----------------------------|-----------|
+| Concurrency | Fine-grained (segments) | Coarse-grained (single lock) | Coarse-grained (single lock) |
+| Performance | High | Low | Low |
+| Null keys | Not allowed | Allowed | Not allowed |
+| Iteration | Weakly consistent | Fail-fast | Fail-fast |
+| Use when | Concurrent access | Simple sync | Legacy |
+
+### Decision Flowchart
+Concurrent access? → Yes → Need high performance? → Yes → Use ConcurrentHashMap
+

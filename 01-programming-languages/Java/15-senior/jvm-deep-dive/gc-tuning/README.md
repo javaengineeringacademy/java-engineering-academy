@@ -115,3 +115,20 @@ java -XX:+UseG1GC -Xlog:gc*:file=gc.log -jar app.jar
 # Logging
 -Xlog:gc*:file=gc.log:time,uptime,level,tags
 ```
+
+## GC Selection Decision Framework
+
+| Workload | Recommended GC | Why |
+|----------|---------------|-----|
+| Small app (<256MB) | Serial | Simple, low overhead |
+| Throughput-critical | Parallel | Max throughput |
+| Latency-sensitive (<200ms) | G1 | Balanced |
+| Ultra-low latency (<10ms) | ZGC or Shenandoah | Concurrent |
+| Testing/Development | Epsilon | No GC overhead |
+
+### Decision Flowchart
+Heap size? → <256MB → Serial
+Heap size? → 256MB-4GB → Parallel
+Heap size? → >4GB → Latency requirement?
+Latency? → <200ms → G1
+Latency? → <10ms → ZGC or Shenandoah

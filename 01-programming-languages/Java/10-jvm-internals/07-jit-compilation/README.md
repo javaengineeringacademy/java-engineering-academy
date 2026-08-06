@@ -178,3 +178,9 @@ Just-In-Time (JIT) compilation is one of the most critical performance optimizat
 - [HotSpot Internals](https://openjdk.org/groups/hotspot/)
 - "Java Performance" by Scott Oaks
 - "Optimizing Java" by Benjamin J. Evans
+
+## Related Topics
+- [GC](../05-garbage-collection/) — JIT and GC interact
+- [Memory Model](../../00-knowledge-atoms/java-memory-model/) — JIT optimizations affect memory
+- [Performance](../../15-senior/performance-engineering/) — JIT tuning
+- [Safepoints](../../15-senior/jvm-deep-dive/safepoints/) — JIT triggers safepoints

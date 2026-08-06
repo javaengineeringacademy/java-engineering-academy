@@ -424,3 +424,10 @@ import java.util.ArrayList;
 
 **Part 1** of 3 | [Part 2](README-part2.md) | [Part 3](README-part3.md)
 
+## Related Topics
+- [Cache Locality](../32-cache-locality/) — Why ArrayList beats LinkedList
+- [Memory Footprint](../33-memory-footprint/) — ArrayList memory layout
+- [Iterator Internals](../34-iterator-internals/) — How ArrayList iteration works
+- [Generics](../../05-generics/) — Type-safe list operations
+- [Streams](../../07-functional-programming/05-stream-api/) — Stream processing on lists
+

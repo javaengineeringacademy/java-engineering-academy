@@ -430,8 +430,25 @@ V value = map.computeIfAbsent(key, k -> createValue(k));
 **Part 1** of 3 | [Part 2](README-part2.md) | [Part 3](README-part3.md)
 
 ## Related Topics
-- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where HashMap objects live
+- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where HashMap objects live in heap
 - [equals() and hashCode](../../00-knowledge-atoms/equals-hashcode/) — Contract for HashMap keys
-- [Concurrency](../../09-multithreading/) — ConcurrentHashMap for thread safety
-- [Generics](../../05-generics/) — Type-safe collections
+- [Immutability](../../00-knowledge-atoms/immutability/) — Immutable keys are safer
+- [Concurrency](../../09-multithreading/) — Use ConcurrentHashMap for thread safety
+- [Generics](../../05-generics/) — Type-safe map operations
+- [Load Factor Deep Dive](../31-hashmap-internals/) — Internal implementation details
+- [Why Not Hashtable](../35-why-not/) — Legacy alternatives
+
+## Why HashMap Over Alternatives?
+
+| Criteria | HashMap | TreeMap | LinkedHashMap | Hashtable |
+|----------|---------|---------|---------------|-----------|
+| Performance | O(1) | O(log n) | O(1) | O(1) synchronized |
+| Ordering | None | Sorted | Insertion | None |
+| Thread safety | No | No | No | Yes (slow) |
+| Use when | General purpose | Need ordering | Need insertion order | Legacy code |
+
+### Decision Flowchart
+Need ordering? → Yes → TreeMap or LinkedHashMap
+Need thread safety? → Yes → ConcurrentHashMap (not Hashtable)
+General purpose? → Yes → Use HashMap
 

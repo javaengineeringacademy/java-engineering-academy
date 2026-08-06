@@ -127,3 +127,17 @@ int queued = executor.getQueue().size();
 3. **Using `Thread.sleep()` in pools**: Wastes threads
 4. **Not handling exceptions**: Swallowed in execute()
 5. **Static pool creation**: Creates too many pools
+
+## Why ExecutorService Over Raw Threads?
+
+| Criteria | ExecutorService | Raw Threads |
+|----------|----------------|-------------|
+| Thread reuse | Yes | No |
+| Task queue | Built-in | Manual |
+| Shutdown | Graceful | Manual |
+| Scaling | Pool sizing | Manual |
+| Use when | Multiple tasks | Single long-running task |
+
+### Decision Flowchart
+Multiple tasks? → Yes → Use ExecutorService
+Single long-running task? → Yes → Use raw Thread

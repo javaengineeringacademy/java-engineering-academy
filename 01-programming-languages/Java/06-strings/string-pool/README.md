@@ -195,3 +195,4 @@ You cannot force GC, but you can suggest it with `System.gc()`. The JVM decides 
 - [Immutability](../immutability/) — Why String is immutable
 - [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where String pool lives
 - [String Source Code](../../15-senior/source-exploration/string-source/) — How String is implemented
+- [Wrapper Classes](../07-wrapper-classes/) — Boxing with strings

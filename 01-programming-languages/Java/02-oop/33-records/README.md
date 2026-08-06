@@ -1,0 +1,22 @@
+# Records
+
+## Why Records Over Classes?
+
+| Criteria | Record | Class |
+|----------|--------|-------|
+| Immutable by default | Yes | No (must enforce) |
+| Boilerplate | Auto-generated | Manual |
+| Pattern matching | Built-in | Manual |
+| Performance | Same | Same |
+| Use when | Data carrier, DTO, value object | Mutable state, complex behavior |
+
+### Decision Flowchart
+Need a data carrier? → Yes → Need mutability? → No → Use Record
+Need mutability? → Yes → Use Class
+Need complex behavior? → Yes → Use Class
+
+## Related Topics
+- [Immutability](../../00-knowledge-atoms/immutability/) — Records are immutable by design
+- [Value Objects](../32-value-objects/) — Related concept
+- [Sealed Classes](../34-sealed-hierarchy/) — Often used together
+- [Pattern Matching](../../15-senior/java-evolution/java-21-deep-dive/) — Records + pattern matching

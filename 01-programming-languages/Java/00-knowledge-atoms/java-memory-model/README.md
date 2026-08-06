@@ -712,7 +712,8 @@ public class Immutable {
 The JMM is not just theoretical — it directly impacts the correctness of every concurrent Java program. Understanding happens-before relationships is the key to reasoning about thread safety.
 
 ## Related Topics
-- [Garbage Collection](../garbage-collection/) — How GC manages memory
+- [Garbage Collection](../../10-jvm-internals/05-garbage-collection/) — How GC manages memory
 - [Volatile](../../09-multithreading/04-synchronization/) — Memory visibility
 - [JVM Internals](../../10-jvm-internals/) — JVM memory architecture
 - [Performance](../../15-senior/performance-engineering/) — Memory performance
+- [HashMap Internals](../../04-collections/31-hashmap-internals/) — Object layout in memory

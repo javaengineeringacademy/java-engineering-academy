@@ -407,4 +407,5 @@ public class BankAccount {
 - [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Happens-before relationships
 - [Volatile](../05-locks/) — Volatile vs synchronized
 - [Virtual Threads](../../15-senior/concurrency-advanced/virtual-threads/) — Modern alternative
-- [Lock-free Programming](../../15-senior/concurrency-advanced/lock-free/) — Lock-free alternatives
+- [Lock-free](../../15-senior/concurrency-advanced/lock-free/) — Lock-free alternatives
+- [False Sharing](../../15-senior/concurrency-advanced/false-sharing/) — Performance impact
