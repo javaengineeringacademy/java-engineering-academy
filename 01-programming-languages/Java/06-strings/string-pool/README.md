@@ -190,3 +190,8 @@ You cannot force GC, but you can suggest it with `System.gc()`. The JVM decides 
 5. **Always use `.equals()`** for string content comparison
 6. **Compact strings** (Java 9+) reduce memory for ASCII strings
 7. **Tune with `-XX:StringTableSize`** for performance optimization
+
+## Related Topics
+- [Immutability](../immutability/) — Why String is immutable
+- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where String pool lives
+- [String Source Code](../../15-senior/source-exploration/string-source/) — How String is implemented

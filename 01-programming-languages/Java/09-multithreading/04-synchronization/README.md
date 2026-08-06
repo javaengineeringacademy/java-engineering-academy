@@ -402,3 +402,9 @@ public class BankAccount {
 ---
 
 [📖 Continue to Part 2](README-part2.md)
+
+## Related Topics
+- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Happens-before relationships
+- [Volatile](../05-locks/) — Volatile vs synchronized
+- [Virtual Threads](../../15-senior/concurrency-advanced/virtual-threads/) — Modern alternative
+- [Lock-free Programming](../../15-senior/concurrency-advanced/lock-free/) — Lock-free alternatives

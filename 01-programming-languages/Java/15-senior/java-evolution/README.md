@@ -403,3 +403,8 @@ Long-term support release focusing on enterprise features, performance, and remo
 ---
 
 **Continue to Part 2**: [README-part2.md](README-part2.md) | [Part 3](README-part3.md)
+
+## Related Topics
+- [Java Philosophy](../java-philosophy/) — Why features were introduced
+- [JEPs](../openjdk/jeps/) — How features are proposed
+- [JDK Distributions](../jdk-distributions/) — Which JDK to use

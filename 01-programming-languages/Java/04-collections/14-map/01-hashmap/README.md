@@ -429,3 +429,9 @@ V value = map.computeIfAbsent(key, k -> createValue(k));
 
 **Part 1** of 3 | [Part 2](README-part2.md) | [Part 3](README-part3.md)
 
+## Related Topics
+- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where HashMap objects live
+- [equals() and hashCode](../../00-knowledge-atoms/equals-hashcode/) — Contract for HashMap keys
+- [Concurrency](../../09-multithreading/) — ConcurrentHashMap for thread safety
+- [Generics](../../05-generics/) — Type-safe collections
+

@@ -164,3 +164,8 @@ public static <T extends Serializable> T deepCopy(T object) {
 - Effective Java, Item 13: Override clone judiciously
 - Effective Java, Item 14: Consider implementing Serializable
 - Java API Documentation: Object.clone(), Cloneable
+
+## Related Topics
+- [Immutability](../../00-knowledge-atoms/immutability/) — Alternative to cloning
+- [Records](../33-records/) — Immutable data carriers
+- [Equals and HashCode](../../00-knowledge-atoms/equals-hashcode/) — Object identity

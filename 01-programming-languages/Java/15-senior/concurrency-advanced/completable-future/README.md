@@ -107,3 +107,9 @@ CompletableFuture<UserProfile> combined = userFuture
 | Creating too many threads | Use shared executor |
 | No timeout on external calls | Use `orTimeout()` |
 | Swallowing errors silently | Log in `handle()` |
+
+## Related Topics
+- [Virtual Threads](../virtual-threads/) — Simpler concurrency alternative
+- [Fork/Join](../fork-join/) — Parallel processing
+- [Thread Pools](../../09-multithreading/07-thread-pools/) — ExecutorService basics
+- [Structured Concurrency](../structured-concurrency/) — Future of async
