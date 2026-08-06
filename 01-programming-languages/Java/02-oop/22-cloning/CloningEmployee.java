@@ -1,11 +1,11 @@
-public class Employee implements Cloneable {
+public class CloningEmployee implements Cloneable {
     private String name;
     private int id;
     private double salary;
     private Address address;
     private transient String password;
 
-    public Employee(String name, int id, double salary, Address address, String password) {
+    public CloningEmployee(String name, int id, double salary, Address address, String password) {
         this.name = name;
         this.id = id;
         this.salary = salary;
@@ -45,17 +45,17 @@ public class Employee implements Cloneable {
         this.address = address;
     }
 
-    public Employee shallowClone() {
+    public CloningEmployee shallowClone() {
         try {
-            return (Employee) super.clone();
+            return (CloningEmployee) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
     }
 
-    public Employee deepClone() {
+    public CloningEmployee deepClone() {
         try {
-            Employee cloned = (Employee) super.clone();
+            CloningEmployee cloned = (CloningEmployee) super.clone();
             cloned.address = this.address.clone();
             return cloned;
         } catch (CloneNotSupportedException e) {
@@ -65,6 +65,6 @@ public class Employee implements Cloneable {
 
     @Override
     public String toString() {
-        return "Employee{name='" + name + "', id=" + id + ", salary=" + salary + ", address=" + address + ", password='" + password + "'}";
+        return "CloningEmployee{name='" + name + "', id=" + id + ", salary=" + salary + ", address=" + address + ", password='" + password + "'}";
     }
 }

@@ -1,8 +1,8 @@
-public class Animal {
+public class MethodOverridingAnimal {
 
     protected String name;
 
-    public Animal(String name) {
+    public MethodOverridingAnimal(String name) {
         this.name = name;
     }
 

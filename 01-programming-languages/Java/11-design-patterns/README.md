@@ -398,7 +398,78 @@ Defines new operations on object structure without modifying classes.
 ## Pattern Selection Guide
 
 ```mermaid
-
+flowchart TD
+    Start[Design Problem] --> Q1{Creating Objects?}
+    
+    Q1 -->|"Yes"| Creational
+    Q1 -->|"No"| Q2{Structuring Classes/Objects?}
+    Q2 -->|"Yes"| Structural
+    Q2 -->|"No"| Q3{Communicating Between Objects?}
+    Q3 -->|"Yes"| Behavioral
+    
+    subgraph Creational["Creational Patterns"]
+        direction TB
+        Q1A{Single Instance?}
+        Q1A -->|"Yes"| Singleton["Singleton"]
+        Q1A -->|"No"| Q1B{Create Without Specifying Class?}
+        Q1B -->|"Yes"| Factory["Factory Method"]
+        Q1B -->|"No"| Q1C{Create Families of Objects?}
+        Q1C -->|"Yes"| AbstractFactory["Abstract Factory"]
+        Q1C -->|"No"| Q1D{Complex Object Construction?}
+        Q1D -->|"Yes"| Builder["Builder"]
+        Q1D -->|"No"| Prototype["Prototype"]
+    end
+    
+    subgraph Structural["Structural Patterns"]
+        direction TB
+        Q2A{Adapt Interface?}
+        Q2A -->|"Yes"| Adapter["Adapter"]
+        Q2A -->|"No"| Q2B{Simplify Complex System?}
+        Q2B -->|"Yes"| Facade["Facade"]
+        Q2B -->|"No"| Q2C{Add Behavior Dynamically?}
+        Q2C -->|"Yes"| Decorator["Decorator"]
+        Q2C -->|"No"| Q2D{Control Access?}
+        Q2D -->|"Yes"| Proxy["Proxy"]
+        Q2D -->|"No"| Q2E{Share Common State?}
+        Q2E -->|"Yes"| Flyweight["Flyweight"]
+        Q2E -->|"No"| Q2F{Tree Structure?}
+        Q2F -->|"Yes"| Composite["Composite"]
+        Q2F -->|"No"| Bridge["Bridge"]
+    end
+    
+    subgraph Behavioral["Behavioral Patterns"]
+        direction TB
+        Q3A{Pass Request Along Chain?}
+        Q3A -->|"Yes"| ChainOfResp["Chain of Responsibility"]
+        Q3A -->|"No"| Q3B{Encapsulate Request?}
+        Q3B -->|"Yes"| Command["Command"]
+        Q3B -->|"No"| Q3C{Notify Multiple Objects?}
+        Q3C -->|"Yes"| Observer["Observer"]
+        Q3C -->|"No"| Q3D{Change Behavior by State?}
+        Q3D -->|"Yes"| State["State"]
+        Q3D -->|"No"| Q3E{Define Algorithm Variants?}
+        Q3E -->|"Yes"| Strategy["Strategy"]
+        Q3E -->|"No"| Q3F{Define Algorithm Skeleton?}
+        Q3F -->|"Yes"| TemplateMethod["Template Method"]
+        Q3F -->|"No"| Q3G{Centralize Communication?}
+        Q3G -->|"Yes"| Mediator["Mediator"]
+        Q3G -->|"No"| Q3H{Traverse Structure?}
+        Q3H -->|"Yes"| Visitor["Visitor"]
+        Q3H -->|"No"| Q3I{Save/Restore State?}
+        Q3I -->|"Yes"| Memento["Memento"]
+        Q3I -->|"No"| Iterator["Iterator"]
+    end
+    
+    style Singleton fill:#ffcdd2
+    style Factory fill:#c8e6c9
+    style Builder fill:#bbdefb
+    style Adapter fill:#fff9c4
+    style Facade fill:#e1bee7
+    style Decorator fill:#b2dfdb
+    style Observer fill:#ffe0b2
+    style Strategy fill:#d1c4e9
+    style Command fill:#f0f4c3
+```
 
 ---
 

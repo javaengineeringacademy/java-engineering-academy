@@ -1,11 +1,11 @@
-public class Car {
+public class CompositionCar {
 
     private final String make;
     private final String model;
     private final Engine engine;
     private final int year;
 
-    public Car(String make, String model, int year, Engine engine) {
+    public CompositionCar(String make, String model, int year, Engine engine) {
         this.make = make;
         this.model = model;
         this.year = year;

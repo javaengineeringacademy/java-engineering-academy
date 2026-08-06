@@ -6,9 +6,9 @@ class CloneTest {
     @Test
     void testShallowClone() {
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Alice", 101, 75000.0, address, "secret123");
+        CloningEmployee original = new CloningEmployee("Alice", 101, 75000.0, address, "secret123");
 
-        Employee shallowCopy = original.shallowClone();
+        CloningEmployee shallowCopy = original.shallowClone();
 
         assertNotSame(original, shallowCopy);
         assertSame(original.getAddress(), shallowCopy.getAddress());
@@ -23,9 +23,9 @@ class CloneTest {
     @Test
     void testDeepClone() {
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Bob", 102, 85000.0, address, "pass456");
+        CloningEmployee original = new CloningEmployee("Bob", 102, 85000.0, address, "pass456");
 
-        Employee deepCopy = original.deepClone();
+        CloningEmployee deepCopy = original.deepClone();
 
         assertNotSame(original, deepCopy);
         assertNotSame(original.getAddress(), deepCopy.getAddress());
@@ -40,9 +40,9 @@ class CloneTest {
     @Test
     void testTransientField() {
         Address address = new Address("456 Oak Ave", "Metropolis", "NY", "10001");
-        Employee original = new Employee("Charlie", 103, 95000.0, address, "mySecretPassword");
+        CloningEmployee original = new CloningEmployee("Charlie", 103, 95000.0, address, "mySecretPassword");
 
-        Employee clone = original.deepClone();
+        CloningEmployee clone = original.deepClone();
 
         assertNull(clone.getPassword());
         assertNotNull(original.getPassword());
@@ -96,10 +96,10 @@ class CloneTest {
     @Test
     void testMultipleClonesAreIndependent() {
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Eve", 104, 100000.0, address, "pwd123");
+        CloningEmployee original = new CloningEmployee("Eve", 104, 100000.0, address, "pwd123");
 
-        Employee clone1 = original.deepClone();
-        Employee clone2 = original.deepClone();
+        CloningEmployee clone1 = original.deepClone();
+        CloningEmployee clone2 = original.deepClone();
 
         assertNotSame(clone1, clone2);
         assertNotSame(clone1.getAddress(), clone2.getAddress());
@@ -115,9 +115,9 @@ class CloneTest {
     @Test
     void testShallowCloneSharesAllMutableFields() {
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Frank", 105, 60000.0, address, "secret");
+        CloningEmployee original = new CloningEmployee("Frank", 105, 60000.0, address, "secret");
 
-        Employee clone = original.shallowClone();
+        CloningEmployee clone = original.shallowClone();
 
         clone.setSalary(99999.0);
         assertEquals(99999.0, original.getSalary());

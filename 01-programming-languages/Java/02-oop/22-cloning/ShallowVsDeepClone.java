@@ -4,9 +4,9 @@ public class ShallowVsDeepClone {
         System.out.println("=== SHALLOW CLONE DEMO ===");
 
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Alice", 101, 75000.0, address, "secret123");
+        CloningEmployee original = new CloningEmployee("Alice", 101, 75000.0, address, "secret123");
 
-        Employee shallowCopy = original.shallowClone();
+        CloningEmployee shallowCopy = original.shallowClone();
 
         System.out.println("Original: " + original);
         System.out.println("Shallow Copy: " + shallowCopy);
@@ -24,9 +24,9 @@ public class ShallowVsDeepClone {
         System.out.println("=== DEEP CLONE DEMO ===");
 
         Address address = new Address("123 Main St", "Springfield", "IL", "62704");
-        Employee original = new Employee("Bob", 102, 85000.0, address, "pass456");
+        CloningEmployee original = new CloningEmployee("Bob", 102, 85000.0, address, "pass456");
 
-        Employee deepCopy = original.deepClone();
+        CloningEmployee deepCopy = original.deepClone();
 
         System.out.println("Original: " + original);
         System.out.println("Deep Copy: " + deepCopy);
@@ -44,9 +44,9 @@ public class ShallowVsDeepClone {
         System.out.println("=== TRANSIENT FIELD DEMO ===");
 
         Address address = new Address("456 Oak Ave", "Metropolis", "NY", "10001");
-        Employee original = new Employee("Charlie", 103, 95000.0, address, "mySecretPassword");
+        CloningEmployee original = new CloningEmployee("Charlie", 103, 95000.0, address, "mySecretPassword");
 
-        Employee clone = original.deepClone();
+        CloningEmployee clone = original.deepClone();
 
         System.out.println("Original password: " + original.getPassword());
         System.out.println("Cloned password: " + clone.getPassword());

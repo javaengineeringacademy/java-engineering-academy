@@ -34,6 +34,26 @@ How do you execute multiple tasks concurrently while managing shared resources?
 
 ### Thread States
 
+```mermaid
+stateDiagram-v2
+    [*] --> NEW: new Thread()
+    NEW --> RUNNABLE: start()
+    RUNNABLE --> BLOCKED: waiting for monitor lock
+    BLOCKED --> RUNNABLE: acquired lock
+    RUNNABLE --> WAITING: wait(), join(), LockSupport.park()
+    WAITING --> RUNNABLE: notify(), notifyAll(), unpark()
+    RUNNABLE --> TIMED_WAITING: sleep(ms), wait(ms), join(ms)
+    TIMED_WAITING --> RUNNABLE: timeout, notify(), unpark()
+    RUNNABLE --> TERMINATED: run() completes
+    TERMINATED --> [*]
+    
+    state RUNNABLE {
+        [*] --> Ready
+        Ready --> Running: scheduler dispatch
+        Running --> Ready: yield/preemption
+    }
+```
+
 | State | Description |
 |-------|-------------|
 | NEW | Created but not started |
@@ -150,7 +170,43 @@ public void update() {
 private volatile boolean running = true;
 ```
 
-### ExecutorService
+### ExecutorService Types
+
+```mermaid
+graph TB
+    subgraph ExecutorHierarchy["ExecutorService Hierarchy"]
+        Executor["Executor<br/>(execute Runnable)"]
+        ExecutorService["ExecutorService<br/>(submit Callable/Future)"]
+        ScheduledExecutor["ScheduledExecutorService<br/>(delayed/periodic tasks)"]
+        
+        Executor --> ExecutorService
+        ExecutorService --> ScheduledExecutor
+    end
+    
+    subgraph Implementations["Common Implementations"]
+        direction TB
+        Fixed["FixedThreadPool<br/>Fixed number of threads"]
+        Cached["CachedThreadPool<br/>Creates as needed, reuses idle"]
+        Single["SingleThreadExecutor<br/>Single worker thread"]
+        Scheduled["ScheduledThreadPool<br/>Core pool for scheduling"]
+        ForkJoin["ForkJoinPool<br/>Work-stealing algorithm"]
+    end
+    
+    ExecutorService --> Fixed
+    ExecutorService --> Cached
+    ExecutorService --> Single
+    ScheduledExecutor --> Scheduled
+    ForkJoin -.->|"extends"| ExecutorService
+    
+    style Fixed fill:#e8f5e9
+    style Cached fill:#e3f2fd
+    style Single fill:#fff3e0
+    style Scheduled fill:#f3e5f5
+    style ForkJoin fill:#e0f7fa
+```
+
+### ExecutorService Usage
+
 ```java
 // Thread pool
 ExecutorService executor = Executors.newFixedThreadPool(4);

@@ -6,6 +6,88 @@ The Java Memory Model (JMM) defines how threads interact through memory, and wha
 
 ---
 
+## JVM Memory Layout
+
+```mermaid
+graph TB
+    subgraph JVM["JVM Memory"]
+        subgraph Heap["Heap (Shared)"]
+            direction TB
+            YoungGen["Young Generation"]
+            OldGen["Old Generation"]
+            YoungGen --> Eden["Eden Space"]
+            YoungGen --> S0["Survivor 0"]
+            YoungGen --> S1["Survivor 1"]
+        end
+        
+        subgraph NonHeap["Non-Heap (Per-Thread/Shared)"]
+            direction TB
+            Stack["Stack<br/>(Per Thread)"]
+            Metaspace["Metaspace<br/>(Shared)"]
+            CodeCache["Code Cache<br/>(Shared)"]
+            NativeMem["Native Memory"]
+        end
+    end
+    
+    Stack -->|"references"| Heap
+    Metaspace -->|"class metadata"| Heap
+    CodeCache -->|"compiled code"| JVM
+```
+
+---
+
+## Object Allocation Flow
+
+```mermaid
+flowchart TD
+    A[New Object Created] --> B{Size Check}
+    B -->|"Small Object"| C[Allocate in TLAB]
+    B -->|"Large Object"| D[Allocate Directly in Old Gen]
+    C --> E[Eden Space]
+    E --> F{Eden Full?}
+    F -->|"No"| G[Object Created Successfully]
+    F -->|"Yes"| H[Minor GC Triggered]
+    H --> I{Object Survived?}
+    I -->|"Yes"| J[Move to Survivor Space]
+    I -->|"No"| K[Object Reclaimed]
+    J --> L{Survivor Threshold Met?}
+    L -->|"No"| M[Stay in Young Gen]
+    L -->|"Yes"| N[Promote to Old Gen]
+    D --> G
+    M --> G
+    N --> G
+```
+
+---
+
+## GC Generations
+
+```mermaid
+graph LR
+    subgraph YoungGen["Young Generation (Minor GC)"]
+        direction LR
+        Eden["Eden<br/>(90%)"]
+        S0["S0<br/>(5%)"]
+        S1["S1<br/>(5%)"]
+    end
+    
+    subgraph OldGen["Old Generation (Major GC)"]
+        direction LR
+        Old["Long-lived<br/>Objects"]
+    end
+    
+    subgraph Meta["Metaspace"]
+        ClassMeta["Class Metadata"]
+    end
+    
+    Eden -->|"Minor GC"| S0
+    S0 <-->|"Copying"| S1
+    S0 -->|"Promotion"| Old
+    S1 -->|"Promotion"| Old
+```
+
+---
+
 ## Heap vs Stack vs Metaspace
 
 ### Stack Memory

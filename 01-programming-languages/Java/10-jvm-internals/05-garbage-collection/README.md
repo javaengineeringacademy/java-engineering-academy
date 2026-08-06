@@ -4,6 +4,83 @@
 
 Garbage Collection (GC) is one of the most important features of the Java Virtual Machine. It automatically manages memory by identifying and reclaiming objects that are no longer in use, eliminating the need for manual memory management.
 
+## GC Algorithm Decision Tree
+
+```mermaid
+flowchart TD
+    Start[Select GC Algorithm] --> Q1{Application Type?}
+    
+    Q1 -->|"Embedded/Small"| Q2{Memory < 256MB?}
+    Q2 -->|"Yes"| Serial["Serial GC<br/>-XX:+UseSerialGC"]
+    Q2 -->|"No"| Parallel
+    
+    Q1 -->|"Batch/Throughput"| Parallel["Parallel GC<br/>-XX:+UseParallelGC"]
+    
+    Q1 -->|"Web/Interactive"| Q3{Heap Size?}
+    Q3 -->|"4GB - 16GB"| G1["G1 GC<br/>-XX:+UseG1GC"]
+    Q3 -->|"> 16GB"| Q4{Latency Target?}
+    Q4 -->|"< 10ms"| ZGC
+    Q4 -->"10-200ms" | G1
+    
+    Q1 -->|"Latency-Critical"| Q5{Java Version?}
+    Q5 -->|"15+"| ZGC["ZGC<br/>-XX:+UseZGC"]
+    Q5 -->|"12-14"| Shenandoah["Shenandoah<br/>-XX:+UseShenandoahGC"]
+    
+    Q1 -->|"Testing Only"| Epsilon["Epsilon GC<br/>-XX:+UseEpsilonGC"]
+    
+    style Serial fill:#ffcdd2
+    style Parallel fill:#c8e6c9
+    style G1 fill:#bbdefb
+    style ZGC fill:#e1bee7
+    style Shenandoah fill:#fff9c4
+    style Epsilon fill:#f5f5f5
+```
+
+---
+
+## Heap Memory Layout
+
+```mermaid
+graph TB
+    subgraph Heap["JVM Heap Memory"]
+        direction TB
+        
+        subgraph YoungGen["Young Generation (Minor GC)"]
+            direction LR
+            Eden["Eden Space<br/>(80-90%)<br/>New objects allocated here"]
+            S0["Survivor 0<br/>(5-10%)<br/>From Space"]
+            S1["Survivor 1<br/>(5-10%)<br/>To Space"]
+        end
+        
+        subgraph OldGen["Old Generation (Major GC)"]
+            direction LR
+            Old["Long-lived Objects<br/>(60-75% of heap)<br/>Promoted from Young Gen"]
+        end
+        
+        subgraph Meta["Metaspace"]
+            direction LR
+            ClassMeta["Class Metadata<br/>Method Bytecode<br/>Constant Pools"]
+        end
+    end
+    
+    Eden -->|"Minor GC<br/>(copying)"| S0
+    S0 <-->|"Copying<br/>(alternating)"| S1
+    S0 -->|"Promotion<br/>(after threshold)"| Old
+    S1 -->|"Promotion<br/>(after threshold)"| Old
+    
+    classDef edenStyle fill:#e8f5e9,stroke:#2e7d32
+    classDef survivorStyle fill:#e3f2fd,stroke:#1565c0
+    classDef oldStyle fill:#fff3e0,stroke:#e65100
+    classDef metaStyle fill:#f3e5f5,stroke:#6a1b9a
+    
+    class Eden edenStyle
+    class S0,S1 survivorStyle
+    class Old oldStyle
+    class ClassMeta metaStyle
+```
+
+---
+
 ## Complete GC Comparison Table
 
 | Feature | Serial | Parallel | CMS | G1 | ZGC | Shenandoah | Epsilon |

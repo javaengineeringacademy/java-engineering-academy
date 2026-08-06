@@ -6,23 +6,74 @@ The Java Virtual Machine (JVM) is the cornerstone of Java's "Write Once, Run Any
 
 ## JVM Architecture Diagram
 
+```mermaid
+graph TB
+    subgraph JVM["JVM Architecture"]
+        subgraph ClassLoader["Class Loader Subsystem"]
+            Bootstrap["Bootstrap<br/>ClassLoader"]
+            Platform["Platform<br/>ClassLoader"]
+            Application["Application<br/>ClassLoader"]
+        end
+        
+        subgraph RuntimeData["Runtime Data Areas"]
+            MethodArea["Method Area<br/>(Metaspace)"]
+            Heap["Heap"]
+            Stack["Stack<br/>(Per Thread)"]
+            PC["Program Counter<br/>(Per Thread)"]
+            NativeMethod["Native Method<br/>Stack (Per Thread)"]
+        end
+        
+        subgraph Execution["Execution Engine"]
+            Interpreter["Interpreter"]
+            JIT["JIT Compiler"]
+            GC["Garbage Collector"]
+        end
+        
+        NativeInterface["Native Method<br/>Interface (JNI)"]
+    end
+    
+    Bootstrap --> RuntimeData
+    Platform --> RuntimeData
+    Application --> RuntimeData
+    RuntimeData --> Execution
+    NativeInterface --> RuntimeData
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        JVM                                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Class       │  │   Runtime    │  │   Execution  │     │
-│  │   Loader      │  │   Data       │  │   Engine     │     │
-│  │   Subsystem   │  │   Areas      │  │              │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Native      │  │   JIT        │  │   Garbage    │     │
-│  │   Method      │  │   Compiler   │  │   Collector  │     │
-│  │   Interface   │  │              │  │              │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-└─────────────────────────────────────────────────────────────┘
+
+```mermaid
+graph LR
+    subgraph Traditional["Traditional ASCII Diagram"]
+        direction TB
+        A["┌─────────────────────────────────────────────────────────────┐"]
+        B["│                        JVM                                  │"]
+        C["│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │"]
+        D["│  │   Class       │  │   Runtime    │  │   Execution  │     │"]
+        E["│  │   Loader      │  │   Data       │  │   Engine     │     │"]
+        F["│  │   Subsystem   │  │   Areas      │  │              │     │"]
+        G["│  └──────────────┘  └──────────────┘  └──────────────┘     │"]
+        H["│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │"]
+        I["│  │   Native      │  │   JIT        │  │   Garbage    │     │"]
+        J["│  │   Method      │  │   Compiler   │  │   Collector  │     │"]
+        K["│  │   Interface   │  │              │  │              │     │"]
+        L["│  └──────────────┘  └──────────────┘  └──────────────┘     │"]
+        M["└─────────────────────────────────────────────────────────────┘"]
+    end
 ```
 
 ## JVM Startup Sequence
+
+```mermaid
+flowchart TD
+    A["java MyApp"] --> B["OS Creates JVM Process"]
+    B --> C["JVM Initialization"]
+    C --> D["Bootstrap ClassLoader<br/>(java.base module)"]
+    D --> E["Platform ClassLoader<br/>(java.xml, java.sql, etc.)"]
+    E --> F["Application ClassLoader<br/>(classpath classes)"]
+    F --> G["Static Initializers<br/>execute"]
+    G --> H["main(String[] args)<br/>invoked"]
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+```
 
 The JVM startup follows this sequence:
 

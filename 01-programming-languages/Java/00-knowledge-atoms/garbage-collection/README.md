@@ -94,6 +94,64 @@ Stores class metadata (not part of the generational model):
 
 ---
 
+## GC Algorithm Comparison
+
+```mermaid
+graph TB
+    subgraph GC["GC Algorithms"]
+        Serial["Serial GC<br/>- Single-threaded<br/>- Stop-the-world<br/>- Small heaps"]
+        Parallel["Parallel GC<br/>- Multi-threaded<br/>- High throughput<br/>- Batch processing"]
+        CMS["CMS GC<br/>- Concurrent<br/>- Low pause<br/>- Deprecated"]
+        G1["G1 GC<br/>- Region-based<br/>- Predictable pauses<br/>- Default Java 9+"]
+        ZGC["ZGC<br/>- Ultra-low latency<br/>- Sub-ms pauses<br/>- Large heaps"]
+        Shenandoah["Shenandoah<br/>- Concurrent compaction<br/>- Low latency<br/>- OpenJDK"]
+    end
+    
+    Serial -->|"Single core"| SmallApp["Small Apps"]
+    Parallel -->|"Throughput"| BatchApp["Batch Processing"]
+    CMS -->|"Legacy"| LegacyApp["Java 8 Apps"]
+    G1 -->|"Balanced"| WebApp["Web Applications"]
+    ZGC -->|"Latency-critical"| FinanceApp["Financial Systems"]
+    Shenandoah -->|"Consistent"| RealTimeApp["Real-time Systems"]
+```
+
+---
+
+## When to Use Which Collector
+
+```mermaid
+flowchart TD
+    Start[Choose GC Algorithm] --> Q1{Heap Size?}
+    
+    Q1 -->|"Small < 256MB"| Q2{Single Core?}
+    Q2 -->|"Yes"| Serial["Serial GC"]
+    Q2 -->|"No"| Q3{Need Throughput?}
+    Q3 -->|"Yes"| Parallel["Parallel GC"]
+    Q3 -->|"No"| Serial
+    
+    Q1 -->|"Medium 256MB-4GB"| Q4{Latency Requirement?}
+    Q4 -->|"< 200ms"| G1["G1 GC"]
+    Q4 -->|"> 200ms"| Parallel
+    
+    Q1 -->|"Large > 4GB"| Q5{Latency Requirement?}
+    Q5 -->|"< 10ms"| Q6{Java Version?}
+    Q6 -->|"15+"| ZGC["ZGC"]
+    Q6 -->|"12-14"| Shenandoah["Shenandoah"]
+    Q5 -->|"10-200ms"| G1
+    
+    Q1 -->|"Very Large > 16GB"| Q7{Sub-ms Required?}
+    Q7 -->|"Yes"| ZGC
+    Q7 -->|"No"| G1
+    
+    style Serial fill:#ffcccc
+    style Parallel fill:#ccffcc
+    style G1 fill:#ccccff
+    style ZGC fill:#ffccff
+    style Shenandoah fill:#ffffcc
+```
+
+---
+
 ## GC Algorithms
 
 ### Serial GC
