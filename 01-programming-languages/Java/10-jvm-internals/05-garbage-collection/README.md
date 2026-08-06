@@ -219,6 +219,23 @@ java -XX:+UseEpsilonGC MyApp
 4. **Optimize Object Creation**: Reuse objects, minimize temporary objects
 5. **Prevent Memory Leaks**: Close resources, use weak references
 
+## Why Garbage Collection Exists
+
+Garbage collection exists because manual memory management is fundamentally error-prone and incompatible with Java's safety goals.
+
+**Manual memory management causes two classes of bugs: memory leaks and dangling pointers.** In C/C++, developers must explicitly allocate (`malloc`/`new`) and deallocate (`free`/`delete`) memory. Failing to free memory causes leaks — the program consumes more and more memory until it crashes. Freeing memory too early or twice causes dangling pointers — reading freed memory produces undefined behavior, data corruption, or security vulnerabilities. These bugs are notoriously difficult to find because they may not manifest immediately or consistently.
+
+**GC automates memory reclamation, eliminating these entire bug classes.** The garbage collector tracks which objects are still reachable from the program and automatically reclaims unreachable objects. Developers allocate objects freely and never worry about when or how to free them. The JVM guarantees that an object's memory is reclaimed only after no live references can reach it.
+
+**Different GC algorithms serve different workload characteristics.** No single garbage collection strategy is optimal for all applications. Java provides multiple collectors because applications have fundamentally different priorities:
+
+- **Throughput-focused** (batch processing, scientific computing): Maximize work done per time unit. Parallel GC pauses briefly but uses all CPU cores during collection.
+- **Latency-focused** (web servers, real-time systems): Minimize pause times. G1, ZGC, and Shenandoah perform mostly concurrent collection, keeping pauses under 10ms.
+- **Memory-constrained** (embedded systems, small containers): Minimize footprint. Serial GC uses minimal overhead for small heaps.
+- **Testing** (short-lived processes): Epsilon GC skips collection entirely for benchmarking allocation overhead.
+
+**GC also enables Java's safety guarantees.** Without GC, Java could not provide array bounds checking, null-safety (partial), or the reference type system (weak, soft, phantom references). GC is foundational to Java's "write once, run anywhere" philosophy — memory management is handled by the JVM, not the operating system.
+
 ## Interview Questions
 
 1. **What is the difference between Serial and Parallel GC?** - Serial is single-threaded, Parallel is multi-threaded

@@ -151,6 +151,36 @@ List<String> result = orders.stream()
 
 ---
 
+## 4b. Why Streams Exist
+
+The Stream API was introduced in Java 8 to provide a declarative, composable approach to data processing that imperative loops cannot match.
+
+**Declarative processing expresses intent, not mechanism.** With loops, you describe *how* to process data (iterate, check condition, accumulate). With streams, you describe *what* you want (filter, transform, collect). This separation of intent from implementation makes code easier to read, maintain, and reason about.
+
+```java
+// Imperative: how to do it
+List<String> result = new ArrayList<>();
+for (Order order : orders) {
+    if (order.getTotal() > 1000) {
+        result.add(order.getCustomer());
+    }
+}
+
+// Declarative: what to do
+List<String> result = orders.stream()
+    .filter(o -> o.getTotal() > 1000)
+    .map(Order::getCustomer)
+    .toList();
+```
+
+**Parallel execution is built-in.** Changing `.stream()` to `.parallelStream()` parallelizes the entire pipeline across CPU cores. The ForkJoinPool splits the data source, processes chunks in parallel, and merges results — all automatically. With loops, parallelization requires manually partitioning data, creating threads, coordinating results, and handling exceptions.
+
+**Composability enables reuse.** Stream operations are chainable building blocks. You can create a base pipeline (filter + map) and extend it with additional operations (sorted, limit, collect) without modifying the original code. This is difficult with loops because each processing step requires a new loop or method.
+
+**Lazy evaluation optimizes performance.** Intermediate operations (filter, map, limit) are deferred — they don't execute until a terminal operation triggers processing. This means the stream can short-circuit (e.g., `findFirst()` stops after one match) and fuse operations (e.g., filter + map can be done in a single pass). Loops execute eagerly, processing every element even if you only need the first match.
+
+**Streams provide a consistent API across data sources.** The same stream operations work on Lists, Sets, arrays, files, databases, and generators. The processing logic is decoupled from the data source, making it easy to switch implementations without rewriting processing code.
+
 ## 5. Problem Statement
 
 ### Real-World Scenario: Data Processing Pipeline

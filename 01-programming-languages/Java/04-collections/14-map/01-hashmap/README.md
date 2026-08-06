@@ -47,6 +47,32 @@ HashMap is essential for:
 - Counting and frequency analysis
 - Object relationship mapping
 
+## 4b. Why HashMap Uses Buckets
+
+HashMap's bucket-based design is the foundation of its O(1) average-case performance. Understanding why requires examining each design decision.
+
+**The hash function distributes keys uniformly.** When you call `map.put(key, value)`, HashMap computes `key.hashCode()`, applies a spreading function (`h ^ (h >>> 16)`), and uses the result to determine a bucket index. A good hash function maps different keys to different buckets, minimizing collisions. With 16 buckets and a uniform hash, most keys land in unique buckets — giving O(1) lookup.
+
+**Buckets reduce collision handling overhead.** Without buckets, all keys would need to be compared linearly (O(n)) or stored in a balanced tree (O(log n)). Buckets partition the key space: instead of searching all entries, you search only the entries that hashed to the same index. With a well-distributed hash and a reasonable load factor, most buckets contain 0-1 entries, making lookup effectively constant time.
+
+**Why the bucket count is always a power of 2.** HashMap uses `hash & (capacity - 1)` to compute the bucket index. When capacity is a power of 2, the subtraction creates a bitmask that selects the lower bits efficiently — a single AND instruction versus an expensive modulo operation. This also ensures every bit of the hash contributes to the index, improving distribution.
+
+**Why the load factor is 0.75.** The load factor controls when HashMap resizes (at `capacity * loadFactor` entries). At 0.75:
+- **Too low (0.5)**: HashMap wastes 50% of allocated memory; frequent resizing creates garbage
+- **Too high (1.0)**: Buckets fill up, collision chains grow, lookup degrades toward O(n)
+- **0.75**: Balances memory usage against collision probability. At this threshold, the probability of any bucket containing more than 2-3 entries is very low for well-distributed hashes
+
+The 0.75 factor is also mathematically optimal: assuming a uniform hash function, the expected number of entries per bucket follows a Poisson distribution. At load factor 0.75, the probability of more than 2 collisions is ~0.04 — meaning nearly all buckets have 0-1 entries.
+
+**Summary:**
+
+| Decision | Rationale |
+|----------|-----------|
+| Buckets | Partition key space for O(1) lookup |
+| Power-of-2 capacity | Bitwise AND instead of modulo |
+| Load factor 0.75 | Optimal balance of memory vs collisions |
+| Treeification (8+) | Worst-case O(log n) when hash is poor |
+
 ## 5. Problem Statement
 
 Consider building a phone book application:

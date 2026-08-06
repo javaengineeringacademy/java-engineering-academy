@@ -113,6 +113,33 @@ Lambda expressions reduce boilerplate by:
 
 ---
 
+## 4b. Why Lambdas Were Introduced
+
+Java 8 introduced lambdas to solve several concrete problems that had accumulated over 15 years of the language's evolution.
+
+**Anonymous classes were too verbose.** Before lambdas, implementing a functional interface required 6-10 lines of boilerplate for a single method. The class name, method name, and type parameters all repeated information that the compiler could infer. This verbosity made functional-style code painful to write and hard to read.
+
+```java
+// 7 lines to sort by name
+Arrays.sort(names, new Comparator<String>() {
+    @Override
+    public int compare(String a, String b) {
+        return a.compareTo(b);
+    }
+});
+
+// 1 line with lambda
+Arrays.sort(names, (a, b) -> a.compareTo(b));
+```
+
+**Lambdas enable functional programming in Java.** By making functions first-class citizens (passable as arguments, returnable from methods, storable in variables), lambdas opened the door to higher-order functions — methods that accept or return other functions. This is the foundation of functional programming patterns like map, filter, reduce, and compose.
+
+**Lambdas make the Stream API possible.** The Stream API (also Java 8) is the primary consumer of lambdas. Without lambdas, expressing `filter`, `map`, `sorted`, and `collect` as chainable operations would require anonymous classes at each step — defeating the purpose of a clean, readable pipeline. Lambdas give streams their declarative, composable syntax.
+
+**Lambdas enable parallel processing.** The Stream API's `.parallel()` method splits work across CPU cores with no explicit thread management. This is only practical because lambdas capture state cleanly and the JVM can optimize them via `invokedynamic`. Without lambdas, parallel collection processing would require manual `ExecutorService` management and callback hell.
+
+**Lambdas reduce cognitive load.** Reading `(a, b) -> a.compareTo(b)` is immediately understandable. Reading an anonymous `Comparator` class requires mentally stripping away the boilerplate to find the one line that matters. Lambda syntax focuses attention on the logic, not the ceremony.
+
 ## 5. Problem Statement
 
 ### Real-World Scenario: Event Handler Registration

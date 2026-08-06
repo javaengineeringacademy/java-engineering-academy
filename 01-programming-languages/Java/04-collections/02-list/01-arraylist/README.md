@@ -41,6 +41,27 @@ ArrayList solves all these problems by:
 - **Type safety**: Generic type parameter prevents ClassCastException
 - **Integration**: Works with all Collection APIs (streams, iterators, algorithms)
 
+## 4b. Why ArrayList Is Backed by Object[]
+
+ArrayList uses an `Object[]` array as its internal storage. This design choice is deliberate and optimal for several reasons.
+
+**Array is the fastest data structure for indexed access.** An array provides O(1) random access because elements are stored contiguously in memory. The JVM calculates the address of any element with a single arithmetic operation: `baseAddress + (index * elementSize)`. No pointer chasing, no tree traversal — just a direct memory offset. This is as fast as memory access gets.
+
+**ArrayList adds dynamic resizing on top of raw speed.** A plain Java array has a fixed size. ArrayList wraps the array and automatically grows it (by 1.5x) when capacity is exceeded. The amortized cost of `add()` remains O(1) because resizing happens infrequently — the geometric growth ensures that the total copies across n insertions sum to O(n).
+
+**Why not LinkedList?** LinkedList stores elements as doubly-linked nodes scattered across the heap. Each node is a separate object with two pointers (prev, next) plus the element reference — that's ~48 bytes of overhead per element versus ~8 bytes for an array reference. More critically, LinkedList has poor **cache locality**: traversing a linked list causes cache misses because nodes are non-contiguous in memory. Modern CPUs prefetch sequential memory; linked lists defeat this optimization. Benchmarks consistently show ArrayList outperforms LinkedList for iteration, random access, and even many insertion patterns.
+
+**Why not Vector?** Vector is synchronized — every method acquires a monitor lock. In single-threaded code (the vast majority of use cases), this synchronization is pure overhead. Even in multi-threaded code, Vector's coarse-grained locking (locking the entire collection for each operation) provides no real benefit over explicit synchronization when needed. ArrayList lets you choose your synchronization strategy: use `Collections.synchronizedList()` or `CopyOnWriteArrayList` only when you actually need thread safety.
+
+**Summary:**
+
+| Factor | Object[] (ArrayList) | Linked Nodes (LinkedList) | Synchronized (Vector) |
+|--------|---------------------|--------------------------|----------------------|
+| Access time | O(1) | O(n) | O(1) + lock overhead |
+| Memory per element | ~8 bytes ref | ~48 bytes node | ~8 bytes + lock |
+| Cache performance | Excellent (contiguous) | Poor (scattered) | Good + lock overhead |
+| Thread-safe | No (by design) | No | Yes (always) |
+
 ## 5. Problem Statement
 
 Consider building a shopping cart for an e-commerce application:

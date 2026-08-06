@@ -48,6 +48,29 @@ ConcurrentHashMap solves these by:
 - **Atomic operations**: `compute()`, `merge()`, `putIfAbsent()` are thread-safe
 - **Weakly consistent iterators**: Don't throw ConcurrentModificationException
 
+## 4b. Why ConcurrentHashMap Uses CAS + Synchronized
+
+ConcurrentHashMap's design evolved from Java 7's segment locking to Java 8+'s CAS + synchronized approach. Each evolution addressed real scalability limitations.
+
+**Java 7 used lock striping — a significant improvement over Hashtable, but with limitations.** The map was divided into 16 segments, each with its own lock. This allowed 16 concurrent writes (one per segment), but had problems: the segment count was fixed at construction time, segments could not be rebalanced, and reads still required volatile reads for visibility. The lock granularity was too coarse for high-contention workloads.
+
+**CAS + synchronized is more scalable because it locks at the bucket level.** In Java 8+, each bucket is an independent lock unit. If thread A writes to bucket 5 and thread B writes to bucket 12, they never contend — no lock is shared. This is fundamentally more parallel than fixed segments because contention scales with the number of buckets, not with a hardcoded segment count.
+
+**CAS enables lock-free reads and writes to empty buckets.** When `put()` encounters an empty bucket, it uses a CAS (Compare-And-Swap) operation to atomically install the new node — no lock needed. CAS is a single CPU instruction (`cmpxchg` on x86) that is extremely fast. This means the most common case (writing to an empty bucket) avoids lock acquisition entirely.
+
+**Synchronized is used only for bucket contention.** When two threads write to the same bucket simultaneously, CAS will fail for one of them. That thread then acquires a synchronized lock on the bucket's first node. This is a narrow lock: only threads contending on that exact bucket are blocked. All other buckets remain fully accessible.
+
+**Why not just synchronized on the entire map?** That's Hashtable's approach — it serializes all operations. With 100 threads writing to different buckets, Hashtable forces them into a single-file line. ConcurrentHashMap with bucket-level locking allows all 100 threads to proceed in parallel, with synchronization only when two threads hit the same bucket (statistically rare with a good hash function and 16+ buckets).
+
+**CAS vs synchronized tradeoff:**
+
+| Scenario | CAS | synchronized |
+|----------|-----|-------------|
+| Empty bucket write | O(1), no lock | N/A (CAS preferred) |
+| Same-bucket contention | Fallback to synchronized | Necessary |
+| Read operations | Never blocks | N/A (volatile read) |
+| Scalability | Excellent | Good (bucket-level) |
+
 ## 5. Problem Statement
 
 Consider building a web application with:
