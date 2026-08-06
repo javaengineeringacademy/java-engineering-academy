@@ -218,8 +218,8 @@ B) false false
 C) true false
 D) false true
 
-**Answer: A**
-**Explanation:** Both StringBuilder and StringBuffer return a new String object from `toString()`. However, `sb1 == sb1.toString()` compares the StringBuilder object itself (not the result of toString), which is the same reference, so true. Wait — actually `toString()` returns a String, and `sb1` is a StringBuilder. These are different types, so `==` returns false. The correct answer is B (false false). The `==` operator compares references of different types — a StringBuilder and a String are never the same object.
+**Answer: B**
+**Explanation:** Both StringBuilder and StringBuffer return a new String object from `toString()`. `sb1 == sb1.toString()` compares a StringBuilder reference with a String reference — these are different types, so `==` returns false. Same for `sb2 == sb2.toString()`. Output: `false false`.
 
 ---
 

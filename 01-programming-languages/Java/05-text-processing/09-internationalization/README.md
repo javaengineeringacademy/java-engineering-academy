@@ -2,7 +2,7 @@
 
 Internationalization (i18n) is the process of designing applications
 to support multiple languages and regions without code changes.
-Java provides comprehensive APIs for i18n support.
+Java provides detailed APIs for i18n support.
 
 ## What is i18n?
 

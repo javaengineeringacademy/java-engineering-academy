@@ -128,6 +128,19 @@ Circuit breaker adds ~10-50ns overhead per call (state check + metrics update). 
 - Not combining with retry for transient failures
 - Using circuit breaker for non-idempotent operations without careful design
 
+## Production Checklist
+
+### ✅ Before using Circuit Breaker in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
 ## Examples
 
 ```java
@@ -172,6 +185,42 @@ When a downstream service fails, callers keep sending requests, overwhelming the
 
 ## References
 
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
+## References
+
 - [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker)
 - [Michael Nygard - Release It!](https://pragprog.com/titles/mnee2/release-it-second-edition/)
 - [Netflix Hystrix (Legacy)](https://github.com/Netflix/Hystrix)
+
+## Common Myths
+
+### ❌ Myth 1: Circuit breaker prevents all failures
+**Reality:** Only prevents cascade. It stops calling failing services, not preventing failures.
+
+### ❌ Myth 2: Circuit breaker is always needed
+**Reality:** Depends on dependencies. Not needed for in-process operations or stable services.
+
+### ❌ Myth 3: Circuit breaker state is shared
+**Reality:** Usually per-service. Each service should have its own circuit breaker instance.

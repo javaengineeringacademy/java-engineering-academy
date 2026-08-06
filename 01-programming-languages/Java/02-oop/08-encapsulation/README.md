@@ -61,9 +61,75 @@ account.withdraw(BigDecimal.valueOf(200)); // Checked
 - Mixing data and behavior in anemic domain models
 - Over-encapsulating simple value objects
 
+## Production Incidents
+
+### Incident 1: Exposing Mutable Internal State
+
+**Problem:** A user management service allowed unauthorized balance modifications. Users could set their own account balance to any value.
+**Cause:** A `BankAccount` class had a `getBalance()` method that returned a direct reference to the internal `BigDecimal` field. Since `BigDecimal` is immutable, this wasn't the issue. However, a `getTransactions()` method returned the internal `List<Transaction>` directly. Callers could add/remove transactions, bypassing validation logic.
+**Impact:** 3 users exploited this to modify transaction history. Audit revealed unauthorized balance adjustments totaling $15,000.
+**Detection:** Anomaly detection system flagged unusual transaction patterns.
+**Solution:** Return unmodifiable views: `Collections.unmodifiableList(transactions)`. Add defensive copying in getters for mutable objects.
+**Prevention:** Never return references to internal mutable objects. Use `Collections.unmodifiable*()` or defensive copies. Add static analysis rules for mutable getter returns.
+
+### Incident 2: Anemic Domain Model Causing Business Logic Bugs
+
+**Problem:** An e-commerce order system applied discounts incorrectly, overcharging customers by 10-15% on discounted items.
+**Cause:** The `Order` class was an anemic domain model with only getters/setters. Discount calculation logic was scattered across 5 different service classes. Each service calculated discounts slightly differently due to rounding and tax handling inconsistencies.
+**Impact:** 2,000+ customers overcharged. Refund processing cost $50K in operational overhead. Customer trust damaged.
+**Solution:** Move discount calculation into the `Order` class as a business method: `order.applyDiscount(DiscountRule rule)`. Centralize all business logic in domain objects.
+**Prevention:** Follow "Tell, Don't Ask" principle. Domain objects should encapsulate business behavior, not just hold data. Use code review to flag anemic domain models.
+
+## Production Checklist
+
+### ✅ Before using Encapsulation in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## Interview Questions
 1. What is encapsulation and why is it important?
 2. What is the difference between a POJO, JavaBean, and a domain object?
 3. When should you NOT use encapsulation?
 4. What is the Hollywood Principle and how does it relate to encapsulation?
 5. How do you handle immutable objects with encapsulation?
+
+## Common Myths
+
+### ❌ Myth 1: Private fields are always best
+**Reality:** Records and DTOs often use public final fields. Context determines the right approach.
+
+### ❌ Myth 2: Getters/setters are always needed
+**Reality:** Immutable objects don't need setters. Records provide accessors automatically.
+
+### ❌ Myth 3: Encapsulation means private everything
+**Reality:** Package-private exists for a reason. Not everything needs to be private.

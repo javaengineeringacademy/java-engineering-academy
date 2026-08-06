@@ -132,7 +132,7 @@ A payment gateway system processing transactions with fraud detection and reconc
 - Implement security patterns (tokenization, encryption)
 - Design the Facade pattern for complex subsystems
 - Use the Strategy pattern for payment routing
-- Practice comprehensive error handling
+- Practice detailed error handling
 - Implement audit logging
 
 ---

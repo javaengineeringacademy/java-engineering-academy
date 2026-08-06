@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-This mini project consolidates all exception handling concepts into a comprehensive, production-ready framework. You'll build a complete exception handling system that includes custom exceptions, retry mechanisms, circuit breakers, logging, and monitoring.
+This mini project consolidates all exception handling concepts into a detailed, production-ready framework. You'll build a complete exception handling system that includes custom exceptions, retry mechanisms, circuit breakers, logging, and monitoring.
 
 ## 2. Learning Objectives
 
@@ -26,7 +26,7 @@ By the end of this project, you will be able to:
 
 ### Goal
 
-Create a comprehensive exception handling framework that can be used in any Java application.
+Create a detailed exception handling framework that can be used in any Java application.
 
 ### Components
 

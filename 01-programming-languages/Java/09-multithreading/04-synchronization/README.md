@@ -404,9 +404,76 @@ public class BankAccount {
 
 [📖 Continue to Part 2](README-part2.md)
 
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## Related Topics
 - [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Happens-before relationships
 - [Volatile](../05-locks/) — Volatile vs synchronized
 - Virtual Threads — Modern alternative
 - Lock-free — Lock-free alternatives
 - False Sharing — Performance impact
+
+## Production Incidents
+
+### Incident 1: Deadlock Causing Application Freeze
+
+**Problem:** A banking application completely froze every few hours under load. No requests were served, and only a restart recovered the service.
+**Cause:** Two threads acquired locks in inconsistent order. Thread 1 held `accountALock` and waited for `accountBLock`. Thread 2 held `accountBLock` and waited for `accountALock`. This classic deadlock occurred during concurrent transfers between accounts A and B.
+**Impact:** Service completely frozen. 2-hour outage per incident. Required manual restart. Customer complaints and SLA breach.
+**Detection:** Thread dumps showed two threads in BLOCKED state, each waiting on the other's lock. Monitoring showed thread count plateau.
+**Solution:** Enforce a global lock ordering: always acquire locks by account ID (lower ID first). Alternatively, use `tryLock(timeout)` to detect and recover from potential deadlocks.
+**Prevention:** Use `jstack` or thread dump analysis in staging. Add deadlock detection to monitoring. Use lock ordering protocols. Consider using `ReentrantLock.tryLock()` with timeouts.
+
+### Incident 2: Lock Contention Causing Performance Degradation
+
+**Problem:** A high-traffic service response time increased linearly with load. At 1,000 concurrent users, response time exceeded 10 seconds.
+**Cause:** A `synchronized` method was used on a hot path called by all requests. Every request serialized on this single lock, creating a bottleneck. The method performed a simple cache lookup that took 5ms, but with 1,000 concurrent requests, average wait time was 2.5 seconds.
+**Impact:** Service became unusable at peak load. Revenue loss during high-traffic promotional period.
+**Detection:** Thread dumps showed 500+ threads waiting on the same monitor lock. Response time metrics showed linear degradation.
+**Solution:** Replace synchronized method with `ConcurrentHashMap` for cache storage. Use `ReadWriteLock` if complex state must be protected. Minimize synchronized block scope to only the critical section.
+**Prevention:** Profile lock contention in load tests. Use JMH benchmarks to measure synchronized vs concurrent alternatives. Add lock contention metrics to production monitoring.
+
+## Production Checklist
+
+### ✅ Before using Synchronization in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: synchronized is always slow
+**Reality:** Biased locking optimizes. JVM optimizes uncontended synchronization to near-zero cost.
+
+### ❌ Myth 2: volatile and synchronized are the same
+**Reality:** Different guarantees. Volatile ensures visibility but not atomicity; synchronized ensures both.
+
+### ❌ Myth 3: Locks prevent deadlocks
+**Reality:** Can cause deadlocks. Improper lock ordering leads to deadlock situations.

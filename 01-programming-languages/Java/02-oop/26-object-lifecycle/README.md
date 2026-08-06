@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Object Lifecycle in Java encompasses the complete journey of an object from its creation to its destruction. Understanding this lifecycle is crucial for writing efficient, memory-safe, and well-optimized Java applications. It covers object creation, initialization, usage, garbage collection, and finalization. Mastering the object lifecycle helps developers avoid memory leaks, understand performance implications, and write robust code.
+The Object Lifecycle in Java encompasses the complete journey of an object from its creation to its destruction. Understanding this lifecycle is crucial for writing efficient, memory-safe, and well-optimized Java applications. It covers object creation, initialization, usage, garbage collection, and finalization. Mastering the object lifecycle helps developers avoid memory leaks, understand performance implications, and write reliable code.
 
 ## Learning Objectives
 

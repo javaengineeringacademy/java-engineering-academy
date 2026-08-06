@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Exception handling best practices are guidelines and patterns that help you write robust, maintainable, and efficient error handling code. Following these practices ensures your applications are resilient, debuggable, and user-friendly. This lesson covers the essential best practices for Java exception handling.
+Exception handling best practices are guidelines and patterns that help you write reliable, maintainable, and efficient error handling code. Following these practices ensures your applications are resilient, debuggable, and user-friendly. This lesson covers the essential best practices for Java exception handling.
 
 ## 2. Learning Objectives
 

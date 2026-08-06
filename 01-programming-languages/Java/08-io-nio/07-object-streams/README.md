@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Object streams enable serialization and deserialization of Java objects—converting objects to byte streams and back. This is essential for persisting object state to files, transmitting objects over networks, and implementing deep copies. Java provides `ObjectInputStream` and `ObjectOutputStream` for this purpose. Understanding object serialization is crucial for building robust Java applications.
+Object streams enable serialization and deserialization of Java objects—converting objects to byte streams and back. This is essential for persisting object state to files, transmitting objects over networks, and implementing deep copies. Java provides `ObjectInputStream` and `ObjectOutputStream` for this purpose. Understanding object serialization is crucial for building reliable Java applications.
 
 ## 2. Learning Objectives
 

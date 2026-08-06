@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Profiling tools are essential for understanding and optimizing Java application performance. They help identify bottlenecks, memory issues, thread contention, and CPU utilization patterns. From lightweight sampling profilers to comprehensive production monitoring tools, the right profiler can dramatically improve your ability to diagnose and fix performance problems.
+Profiling tools are essential for understanding and optimizing Java application performance. They help identify bottlenecks, memory issues, thread contention, and CPU utilization patterns. From lightweight sampling profilers to detailed production monitoring tools, the right profiler can dramatically improve your ability to diagnose and fix performance problems.
 
 This topic covers the major Java profiling tools including JProfiler, VisualVM, async-profiler, Java Flight Recorder (JFR), and various command-line tools. We'll explore when to use each tool, how to configure them, and how to interpret their output.
 

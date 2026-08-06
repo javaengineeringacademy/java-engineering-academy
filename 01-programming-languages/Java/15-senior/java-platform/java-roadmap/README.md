@@ -100,7 +100,7 @@ double area(Shape shape) {
 
 **Impact:**
 - Simplified collection operations
-- More intuitive API
+- More clear API
 - Reduced boilerplate
 
 **Example:**

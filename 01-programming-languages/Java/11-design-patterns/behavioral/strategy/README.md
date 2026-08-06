@@ -107,8 +107,57 @@ Algorithms often have multiple variants: sorting (bubble, quick, merge), compres
 4. **Factory overhead**: Combining strategy with factory adds complexity — justify the indirection
 5. **Testing**: Each strategy needs its own unit tests — factor out shared behavior
 
+## Production Checklist
+
+### ✅ Before using Strategy Pattern in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## References
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## References
 
 - [Refactoring.Guru - Strategy Pattern](https://refactoring.guru/design-patterns/strategy)
 - [Head First Design Patterns - Strategy Pattern](https://www.oreilly.com/library/view/head-first-design/0596007124/)
 - [Effective Java - Item 21: Use method references instead of lambdas where possible](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
+
+## Common Myths
+
+### ❌ Myth 1: Strategy is always overkill
+**Reality:** Simple if-else is fine. Use Strategy when algorithms need to be swapped at runtime.
+
+### ❌ Myth 2: Strategy requires interfaces
+**Reality:** Can use lambdas. Java 8+ functional interfaces enable concise strategy definitions.
+
+### ❌ Myth 3: Strategy is only for algorithms
+**Reality:** Any behavior. Strategy encapsulates any interchangeable behavior, not just algorithms.

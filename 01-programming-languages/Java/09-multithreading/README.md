@@ -1,4 +1,4 @@
-# Module 08: Multithreading
+# Module 09: Multithreading
 
 > **Difficulty:** ⭐⭐⭐⭐ Advanced  
 > **Reading:** 40 min | **Practice:** 60 min | **Total:** 100 min
@@ -32,7 +32,7 @@ Java multithreading enables concurrent execution of multiple threads. It include
 
 ## Why This Concept Exists
 Single-threaded applications:
-- Can't utilize multiple CPUs
+- Can't use multiple CPUs
 - Block on I/O
 - Poor responsiveness
 
@@ -517,3 +517,16 @@ Multithreading enables concurrent execution. Use synchronization and concurrency
 ## Next
 
 - [JVM Internals](../10-jvm-internals/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Concurrent execution |
+| Complexity | Varies |
+| Thread Safe | Must be implemented |
+| Ordered | No (execution order) |
+| Allows Null | Yes |
+| Best Alternative | Virtual threads (for I/O) |
+| When to Use | Parallel processing |
+| When to Avoid | Simple sequential code |

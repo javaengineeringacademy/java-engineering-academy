@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-The Java Collections Framework (JCF) is a unified architecture for representing and manipulating groups of objects. Introduced in Java 1.2, it provides a comprehensive set of interfaces, implementations, and algorithms that simplify the most common tasks in Java programming. The framework includes roughly 30 classes and 15 interfaces, forming a coherent system for managing collections of data.
+The Java Collections Framework (JCF) is a unified architecture for representing and manipulating groups of objects. Introduced in Java 1.2, it provides a detailed set of interfaces, implementations, and algorithms that simplify the most common tasks in Java programming. The framework includes roughly 30 classes and 15 interfaces, forming a coherent system for managing collections of data.
 
 At its core, the Collections Framework replaces the legacy `Vector`, `Hashtable`, and `Arrays`-based approaches with a modern, high-performance, and well-designed set of data structures. Understanding the JCF is essential for every Java developer because virtually every Java application—whether a simple script or a large enterprise system—relies on collections to store, retrieve, and process data.
 

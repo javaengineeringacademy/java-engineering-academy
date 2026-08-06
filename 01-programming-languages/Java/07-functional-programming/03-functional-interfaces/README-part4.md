@@ -120,7 +120,7 @@ Design an event system using functional interfaces:
 
 ### Project: Functional Interface Toolkit
 
-Build a comprehensive toolkit of functional interfaces:
+Build a detailed toolkit of functional interfaces:
 
 **Requirements:**
 1. Create custom interfaces: `TryCatch`, `Retry`, `Cache`, `Validator`

@@ -147,7 +147,7 @@ Implement a file encryption/decryption tool using:
 
 **File Management System**
 
-Create a comprehensive file management system that:
+Create a detailed file management system that:
 1. Provides CLI interface for file operations
 2. Supports CRUD operations on files and directories
 3. Implements file search with multiple criteria

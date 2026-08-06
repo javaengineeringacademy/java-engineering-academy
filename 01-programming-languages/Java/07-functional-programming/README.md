@@ -1,4 +1,4 @@
-# Module 09: Stream API
+# Module 07: Functional Programming
 
 > **Difficulty:** ⭐⭐⭐ Intermediate  
 > **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
@@ -470,3 +470,16 @@ public class StreamEnterpriseExample {
 
 - [I/O and NIO](../08-io-nio/README.md)
 - [Multithreading](../09-multithreading/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Functional style programming |
+| Complexity | Varies |
+| Thread Safe | Yes (immutable) |
+| Ordered | Yes (streams) |
+| Allows Null | No (Optional) |
+| Best Alternative | Loops (for simple cases) |
+| When to Use | Data transformation |
+| When to Avoid | Simple iteration |

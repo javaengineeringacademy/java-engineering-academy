@@ -121,7 +121,7 @@ try {
 }
 ```
 
-**Impact:** Better error handling, easier debugging, more robust applications.
+**Impact:** Better error handling, easier debugging, more reliable applications.
 
 ---
 

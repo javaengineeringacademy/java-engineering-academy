@@ -45,7 +45,7 @@ public class fragileApplication {
 Try-catch provides a structured way to handle exceptional conditions:
 
 ```java
-public class robustApplication {
+public class reliableApplication {
     public static void main(String[] args) {
         try {
             processData();

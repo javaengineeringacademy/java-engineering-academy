@@ -131,7 +131,7 @@ Adopt Java 21 as the standard JVM version for all services.
 
 Positive:
 - Virtual threads (Project Loom) eliminate the need for reactive programming complexity
-- Sequenced collections provide a more intuitive Collection API
+- Sequenced collections provide a more clear Collection API
 - Pattern matching for switch reduces boilerplate in complex conditional logic
 - ZGC now has sub-millisecond pause times regardless of heap size
 - String templates reduce string concatenation errors

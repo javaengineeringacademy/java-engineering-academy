@@ -170,13 +170,13 @@ public class Main {
 }
 ```
 
-A) int-double: 15
+A) int-double: 510.0
 B) double-int: 15.0
 C) Compilation error - ambiguous method call
-D) int-double: 510
+D) int-double: 15
 
 **Answer: A**
-**Explanation:** Java resolves overloaded methods by finding the most specific applicable method. `display(5, 10)` with both int arguments matches `display(int, double)` (5 fits int, 10 widens to double) and `display(double, int)` (5 widens to double, 10 fits int). `display(int, double)` is more specific because the first parameter doesn't require widening. Output: `int-double: 510` (string concatenation).
+**Explanation:** Java resolves overloaded methods by finding the most specific applicable method. `display(5, 10)` with both int arguments matches `display(int, double)` (5 fits int, 10 widens to double) and `display(double, int)` (5 widens to double, 10 fits int). `display(int, double)` is more specific because the first parameter doesn't require widening. Output: `int-double: 510.0` (string concatenation of int 5 and double 10.0).
 
 ---
 

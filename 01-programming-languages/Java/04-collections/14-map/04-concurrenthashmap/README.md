@@ -4,7 +4,7 @@
 
 ConcurrentHashMap is a thread-safe implementation of the `Map` interface that allows concurrent access without locking the entire map. Introduced in Java 5 as part of the `java.util.concurrent` package, it provides better performance than `Collections.synchronizedMap()` by allowing concurrent reads and segment-based locking for writes.
 
-Unlike Hashtable which locks the entire map for every operation, ConcurrentHashMap uses a more sophisticated approach:
+Unlike Hashtable which locks the entire map for every operation, ConcurrentHashMap uses a more advanced approach:
 - **Java 7**: Segment locking (divides the table into 16 segments, each with its own lock)
 - **Java 8+**: CAS operations + synchronized on individual buckets (fine-grained locking)
 
@@ -467,6 +467,38 @@ public class ConcurrentHashMapBasics {
 - Using null keys/values (throws NullPointerException)
 - Not leveraging atomic operations for compound updates
 
+## Production Incidents
+
+### Incident 1: Race Condition in Check-Then-Act
+
+**Problem:** A connection pool allowed more connections than configured maximum, causing database overload and connection exhaustion.
+**Cause:** The code used `if (!pool.containsKey(id)) { pool.put(id, connection); }` — a classic check-then-act race condition. Two threads simultaneously checked if a connection existed, both found it absent, and both added new connections, exceeding the pool limit.
+**Impact:** Database connection limit hit. All queries failed. Service was down for 45 minutes.
+**Detection:** Database monitoring showed connection count exceeding configured max. Application logs showed connection timeouts.
+**Solution:** Replace check-then-act with atomic `computeIfAbsent()`: `pool.computeIfAbsent(id, k -> createConnection())`. This guarantees the creation function runs exactly once per key.
+**Prevention:** Always use atomic operations (`compute`, `computeIfAbsent`, `merge`) for compound operations. Add code review rule flagging `containsKey` + `put` patterns.
+
+### Incident 2: Wrong Concurrency Level Causing Contention
+
+**Problem:** A ConcurrentHashMap with 16,000 entries exhibited unexpected serialization under high concurrency. Thread dumps showed threads blocked on the same lock.
+**Cause:** The map was created with the deprecated `concurrencyLevel` parameter set to 4. In Java 7, this created only 4 segments, meaning all 16,000 entries were distributed across just 4 locks. In Java 8+, the `concurrencyLevel` parameter is ignored (bucket-level locking is used), but the old constructor call was left in place, giving a false sense of configuration.
+**Impact:** Throughput dropped by 80% under load. API response times exceeded SLA thresholds.
+**Solution:** Remove the `concurrencyLevel` parameter. In Java 8+, ConcurrentHashMap uses bucket-level locking automatically. Let the implementation manage concurrency.
+**Prevention:** Don't use deprecated constructors. Document that `concurrencyLevel` is ignored in Java 8+. Add architecture review for concurrency configuration.
+
+## Production Checklist
+
+### ✅ Before using ConcurrentHashMap in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
 ## Why ConcurrentHashMap Over Alternatives?
 
 | Criteria | ConcurrentHashMap | Collections.synchronizedMap | Hashtable |
@@ -479,4 +511,38 @@ public class ConcurrentHashMapBasics {
 
 ### Decision Flowchart
 Concurrent access? → Yes → Need high performance? → Yes → Use ConcurrentHashMap
+
+## Common Myths
+
+### ❌ Myth 1: ConcurrentHashMap is synchronized
+**Reality:** Uses locks per segment or bucket. Not all methods are synchronized; reads are lock-free.
+
+### ❌ Myth 2: ConcurrentHashMap allows null keys
+**Reality:** No null keys or values allowed. Throws NullPointerException.
+
+### ❌ Myth 3: ConcurrentHashMap is always faster
+**Reality:** Overhead for single-threaded scenarios. HashMap is faster when concurrency isn't needed.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
 

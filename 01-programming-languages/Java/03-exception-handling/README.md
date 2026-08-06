@@ -4,7 +4,7 @@
 > **Reading:** 20 min | **Practice:** 30 min | **Total:** 50 min
 
 ## Overview
-Master Java's exception handling mechanism to build robust, fault-tolerant applications. Learn to anticipate, catch, and gracefully handle runtime errors while maintaining program stability. This comprehensive module covers everything from basic try-catch blocks to advanced enterprise patterns like circuit breakers and retry mechanisms.
+Master Java's exception handling mechanism to build reliable, fault-tolerant applications. Learn to anticipate, catch, and gracefully handle runtime errors while maintaining program stability. This detailed module covers everything from basic try-catch blocks to advanced enterprise patterns like circuit breakers and retry mechanisms.
 
 ## Why This Concept Exists
 Without proper exception handling, programs crash unpredictably on invalid input, network failures, or resource unavailability. Exception handling provides a structured way to:
@@ -34,7 +34,7 @@ By the end of this module, you will be able to:
 - Apply best practices for exception handling
 - Design fault-tolerant real-world applications
 - Implement retry and circuit breaker patterns
-- Build comprehensive exception handling frameworks
+- Build detailed exception handling frameworks
 
 ## Prerequisites
 
@@ -316,7 +316,7 @@ After completing this module, you should be able to:
 4. **Apply** best practices for exception handling
 5. **Design** fault-tolerant applications with retry and circuit breaker patterns
 6. **Debug** exception-related issues effectively
-7. **Build** comprehensive exception handling frameworks
+7. **Build** detailed exception handling frameworks
 
 ## Cross-References
 
@@ -330,7 +330,7 @@ After completing this module, you should be able to:
 
 ---
 
-**Note:** This module contains comprehensive documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments. Each topic README is 400+ lines for in-depth learning.
+**Note:** This module contains detailed documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments. Each topic README is 400+ lines for in-depth learning.
 
 ## Prerequisites
 
@@ -343,3 +343,16 @@ After completing this module, you should be able to:
 ## Next
 
 - [Collections](../04-collections/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Error handling and recovery |
+| Complexity | O(1) for throw |
+| Thread Safe | Yes |
+| Ordered | N/A |
+| Allows Null | No (messages) |
+| Best Alternative | Optional (for nulls) |
+| When to Use | Recoverable errors |
+| When to Avoid | Flow control |

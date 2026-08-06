@@ -1,4 +1,4 @@
-# Module 52: Debugging
+# Module 12: Testing
 
 > **Difficulty:** ⭐⭐ Easy  
 > **Reading:** 25 min | **Practice:** 45 min | **Total:** 70 min
@@ -481,7 +481,7 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 
 ## Cross-References
 
-- **Previous Module:** [10 - JVM Internals](../10-jvm-internals/)
+- **Previous Module:** [11 - Design Patterns](../11-design-patterns/)
 - **Related:** [01 - Fundamentals](../01-fundamentals/) — basic syntax for reading stack traces
 - **Related:** [02 - OOP](../02-oop/) — object lifecycle and memory
 - **Related:** [03 - Exception Handling](../03-exception-handling/) — exception analysis and debugging
@@ -501,3 +501,16 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 ## Next
 
 - [Reflection & Annotations](../13-reflection-annotations/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Quality assurance |
+| Complexity | Varies |
+| Thread Safe | Yes (tests should be independent) |
+| Ordered | No (tests should be independent) |
+| Allows Null | No (assertions) |
+| Best Alternative | Manual testing (for exploratory) |
+| When to Use | Code verification |
+| When to Avoid | Skipping tests |

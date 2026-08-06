@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Byte streams are the most fundamental IO mechanism in Java. They handle raw binary data—bytes—without any interpretation or transformation. Every piece of data in a computer is ultimately stored as bytes, making byte streams the foundation upon which all other IO operations are built. Java provides a comprehensive hierarchy of byte stream classes for reading and writing binary data.
+Byte streams are the most fundamental IO mechanism in Java. They handle raw binary data—bytes—without any interpretation or transformation. Every piece of data in a computer is ultimately stored as bytes, making byte streams the foundation upon which all other IO operations are built. Java provides a detailed hierarchy of byte stream classes for reading and writing binary data.
 
 ## 2. Learning Objectives
 

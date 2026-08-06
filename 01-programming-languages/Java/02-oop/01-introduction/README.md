@@ -323,7 +323,7 @@ public class EnhancedBankAccount extends BankAccount {
 
 ### Example 1: Library Management System
 **Problem Statement:**
-Design a comprehensive library management system that handles books, members, and borrowing operations.
+Design a detailed library management system that handles books, members, and borrowing operations.
 **Requirements:**
 - Support multiple book types (fiction, non-fiction, reference)
 - Member management with different membership types

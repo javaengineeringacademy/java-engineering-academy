@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Class loading is the process by which the JVM loads Java bytecode into memory and makes it available for execution. It is one of the most fundamental and sophisticated subsystems of the JVM, responsible for locating, loading, linking, and initializing classes. Understanding class loading is essential for developing modular applications, application servers, and debugging complex classpath issues.
+Class loading is the process by which the JVM loads Java bytecode into memory and makes it available for execution. It is one of the most fundamental and advanced subsystems of the JVM, responsible for locating, loading, linking, and initializing classes. Understanding class loading is essential for developing modular applications, application servers, and debugging complex classpath issues.
 
 The class loading mechanism follows a hierarchical delegation model that ensures proper class isolation and prevents security vulnerabilities. This topic explores the entire class loading process, from locating class files to initializing static fields, and covers practical scenarios like custom class loaders and hot deployment.
 

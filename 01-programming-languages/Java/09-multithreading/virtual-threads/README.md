@@ -105,6 +105,54 @@ Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and sca
 - Using thread-local variables that span blocking operations
 - Not monitoring carrier thread pool utilization
 
+## Production Checklist
+
+### ✅ Before using Virtual Threads in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: Virtual threads are always better
+**Reality:** Not for CPU-bound work. Platform thread pools are better for compute-intensive tasks.
+
+### ❌ Myth 2: Virtual threads use less memory
+**Reality:** Depends on stack size. While default stack is small, it grows on demand.
+
+### ❌ Myth 3: Virtual threads are green threads
+**Reality:** Different implementation. Virtual threads are scheduled by the JVM, not OS-level green threads.
+
+## See Also
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## See Also
 - [CompletableFuture](../../15-senior/advanced/concurrency-advanced/completable-future/) — Async alternative virtual threads replace
 - [ThreadPoolExecutor Source](../../15-senior/java-platform/source-exploration/threadpool-executor-source/) — How carrier threads work internally

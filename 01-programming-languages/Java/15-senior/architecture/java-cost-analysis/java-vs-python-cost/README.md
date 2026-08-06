@@ -209,7 +209,7 @@ Use both languages strategically based on workload characteristics:
 
 ## Conclusion
 
-Java and Python serve fundamentally different markets. Java excels in enterprise applications, performance-critical systems, and long-lived codebases. Python dominates in machine learning, data science, and rapid development. The most successful organizations leverage both languages strategically, using each where it provides the greatest value. The hybrid approach often yields the best results for modern applications requiring both performance and ML capabilities.
+Java and Python serve fundamentally different markets. Java excels in enterprise applications, performance-critical systems, and long-lived codebases. Python dominates in machine learning, data science, and rapid development. The most successful organizations use both languages strategically, using each where it provides the greatest value. The hybrid approach often yields the best results for modern applications requiring both performance and ML capabilities.
 
 ## Interview Questions
 

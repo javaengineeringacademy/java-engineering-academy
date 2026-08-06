@@ -83,7 +83,7 @@ import java.nio.file.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String> args) throws IOException {
+    public static void main(String[] args) throws IOException {
         Path dir = Path.of("temp_dir");
         Files.createDirectories(dir);
         Files.writeString(dir.resolve("file1.txt"), "Hello");

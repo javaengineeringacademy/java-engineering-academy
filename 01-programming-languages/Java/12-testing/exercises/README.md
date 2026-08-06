@@ -5,7 +5,7 @@ Practice Java testing through hands-on exercises.
 ## Exercise 1: Unit Tests for a Calculator
 
 **Problem Statement:**
-Write comprehensive unit tests for a `Calculator` class that supports add, subtract, multiply, divide, and modulo operations. Test normal cases, edge cases (zero, negative numbers), and error cases (division by zero).
+Write detailed unit tests for a `Calculator` class that supports add, subtract, multiply, divide, and modulo operations. Test normal cases, edge cases (zero, negative numbers), and error cases (division by zero).
 
 **Expected Behavior:**
 - `add(2, 3)` returns `5`.
@@ -150,7 +150,7 @@ Use TDD to implement a `PasswordValidator` class. Write the test first for each 
 ## Exercise 8: Refactor with Test Safety Net
 
 **Problem Statement:**
-Given a poorly structured `OrderCalculator` class with everything in one method, first write comprehensive tests to capture current behavior, then refactor the method into smaller, well-named methods while ensuring all tests continue to pass.
+Given a poorly structured `OrderCalculator` class with everything in one method, first write detailed tests to capture current behavior, then refactor the method into smaller, well-named methods while ensuring all tests continue to pass.
 
 **Expected Behavior:**
 - Existing behavior is captured in 15+ test cases before refactoring.

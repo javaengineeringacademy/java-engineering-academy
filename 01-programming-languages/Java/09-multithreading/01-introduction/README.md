@@ -8,7 +8,7 @@ Java was designed from the ground up with multithreading support. The `java.lang
 
 Understanding multithreading is essential for modern Java development. Whether you're building web applications, microservices, data processing pipelines, or desktop applications, concurrency plays a critical role. However, multithreading introduces complexity—race conditions, deadlocks, visibility issues, and thread-safety problems—that can lead to subtle, hard-to-reproduce bugs.
 
-This module provides a comprehensive understanding of Java multithreading, from fundamental concepts to advanced patterns used in enterprise applications.
+This module provides a detailed understanding of Java multithreading, from fundamental concepts to advanced patterns used in enterprise applications.
 
 ## 2. Learning Objectives
 

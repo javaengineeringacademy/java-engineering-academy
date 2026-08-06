@@ -567,3 +567,16 @@ OOP is fundamental to Java development. Master the four pillars and apply design
 
 - [Exception Handling](../03-exception-handling/README.md)
 - [Collections](../04-collections/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Object-oriented programming |
+| Complexity | N/A |
+| Thread Safe | No (by default) |
+| Ordered | N/A |
+| Allows Null | Yes |
+| Best Alternative | Records (for data carriers) |
+| When to Use | Modeling real-world entities |
+| When to Avoid | Simple data structures |

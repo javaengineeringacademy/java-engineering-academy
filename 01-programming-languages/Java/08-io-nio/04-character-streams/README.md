@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Character streams are specialized IO streams designed for handling text data. Unlike byte streams that work with raw bytes, character streams automatically handle character encoding and decoding, making them essential for working with text files in different encodings (UTF-8, UTF-16, ISO-8859-1, etc.). Java provides a comprehensive hierarchy of character stream classes for reading and writing text data.
+Character streams are specialized IO streams designed for handling text data. Unlike byte streams that work with raw bytes, character streams automatically handle character encoding and decoding, making them essential for working with text files in different encodings (UTF-8, UTF-16, ISO-8859-1, etc.). Java provides a detailed hierarchy of character stream classes for reading and writing text data.
 
 ## 2. Learning Objectives
 

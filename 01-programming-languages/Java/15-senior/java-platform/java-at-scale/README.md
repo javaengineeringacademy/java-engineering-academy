@@ -391,7 +391,7 @@ Java powers some of the world's largest and most demanding systems. The key to s
 4. **Plan for failure** (circuit breakers, retry logic)
 5. **Monitor everything** (latency, throughput, errors)
 
-**Bottom Line:** Java can scale to handle any workload, but it requires careful architecture, optimization, and monitoring. The companies listed above prove that Java is not only viable at scale but can be the foundation for world-class systems.
+**Bottom Line:** Java can scale to handle any workload, but it requires careful architecture, optimization, and monitoring. The companies listed above prove that Java is not only viable at scale but can be the foundation for excellent systems.
 
 ## Interview Questions
 

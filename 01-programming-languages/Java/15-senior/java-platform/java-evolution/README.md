@@ -321,7 +321,7 @@ Functional programming support, addressing the rise of multi-core processors and
 - Default methods enabled interface evolution
 
 ### Migration Effort
-- Medium (paradigm shift to functional programming)
+- Medium (change to functional programming)
 
 ---
 

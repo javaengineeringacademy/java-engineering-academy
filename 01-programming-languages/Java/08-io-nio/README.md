@@ -1,4 +1,4 @@
-# Module 06: Java I/O and NIO
+# Module 08: Java I/O and NIO
 
 > **Difficulty:** ⭐⭐⭐ Intermediate  
 > **Reading:** 30 min | **Practice:** 45 min | **Total:** 75 min
@@ -349,7 +349,7 @@ public class EnterpriseExample {
 **Answer:** New I/O with channels, buffers, and selectors.
 
 ## Summary
-Java I/O and NIO provide comprehensive data handling capabilities. Use NIO for modern applications.
+Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern applications.
 
 ## Cross-References
 
@@ -372,3 +372,16 @@ Java I/O and NIO provide comprehensive data handling capabilities. Use NIO for m
 ## Next
 
 - [Multithreading](../09-multithreading/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | File and network I/O |
+| Complexity | Varies |
+| Thread Safe | No (by default) |
+| Ordered | Yes (byte order) |
+| Allows Null | No |
+| Best Alternative | Files API (for simple ops) |
+| When to Use | Low-level I/O |
+| When to Avoid | Simple file operations |

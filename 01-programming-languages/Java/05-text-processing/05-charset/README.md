@@ -1,7 +1,7 @@
 # Charset and Encoding in Java
 
 A `Charset` defines how characters are encoded into bytes and decoded
-from bytes. Java provides comprehensive charset support for working
+from bytes. Java provides detailed charset support for working
 with different character encodings.
 
 ## What are Charsets?

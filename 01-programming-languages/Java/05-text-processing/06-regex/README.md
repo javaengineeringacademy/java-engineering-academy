@@ -286,6 +286,19 @@ Matches if NOT preceded by the pattern:
 - Overly complex regex that nobody can maintain
 - Not testing edge cases (empty strings, special characters)
 
+## Production Checklist
+
+### ✅ Before using Regex in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
 ## Common Interview Questions
 
 ### Q1: What is the difference between `matches()` and `find()`?
@@ -311,7 +324,41 @@ Matches if NOT preceded by the pattern:
 
 ---
 
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## Additional Resources
 - [Java Regex Documentation](https://docs.oracle.com/javase/8/docs/api/java/util/regex/package-summary.html)
 - [Regex101](https://regex101.com/) - Online regex tester
 - [RegExr](https://regexr.com/) - Another regex testing tool
+
+## Common Myths
+
+### ❌ Myth 1: Regex is always the best solution
+**Reality:** Often overkill. Simple string methods (startsWith, contains) are faster for basic operations.
+
+### ❌ Myth 2: Compiled patterns are always faster
+**Reality:** Depends on reuse. Compiling once and reusing is faster; compiling in loops is wasteful.
+
+### ❌ Myth 3: Regex is portable
+**Reality:** Flavors differ. Java regex syntax may not work in other languages or tools.

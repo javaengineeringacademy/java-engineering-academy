@@ -413,3 +413,16 @@ System.out.println(aWords); // [apple, avocado]
 
 - [Text Processing](../05-text-processing/README.md)
 - [Functional Programming](../07-functional-programming/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Data structures and algorithms |
+| Complexity | Varies (O(1) to O(n)) |
+| Thread Safe | No (by default) |
+| Ordered | Depends on implementation |
+| Allows Null | Depends on implementation |
+| Best Alternative | Varies by use case |
+| When to Use | Storing and manipulating data |
+| When to Avoid | Simple arrays |

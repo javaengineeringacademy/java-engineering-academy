@@ -75,7 +75,7 @@ Generics are a fundamental Java feature that:
 4. **Uses type erasure** — no runtime overhead, but limits reflection
 5. **Is essential for collections** — `List<E>`, `Map<K,V>`, etc.
 
-Understanding generics is crucial for writing robust, maintainable Java code. While type erasure introduces some limitations (no generic arrays, no `instanceof` with type parameters), the benefits far outweigh the costs.
+Understanding generics is crucial for writing reliable, maintainable Java code. While type erasure introduces some limitations (no generic arrays, no `instanceof` with type parameters), the benefits far outweigh the costs.
 
 ---
 

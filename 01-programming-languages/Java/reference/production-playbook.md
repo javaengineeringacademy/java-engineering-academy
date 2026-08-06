@@ -28,7 +28,7 @@ Amazon's disaster recovery strategy includes multi-region deployments with autom
 
 Google uses Java for many internal services and Google Cloud offerings. Their production emphasis is on reliability and developer productivity. Google's JVM tuning uses their custom OpenJDK builds with performance patches. They use gRPC for inter-service communication with protocol buffers.
 
-Google's production practices include comprehensive load testing before deployment. They use SRE principles with error budgets per service. Google's monitoring uses Monarch (internal time-series database) with alerting on SLO violations. Their deployment uses canary releases with automated rollback. Google practices progressive delivery with traffic shifting.
+Google's production practices include detailed load testing before deployment. They use SRE principles with error budgets per service. Google's monitoring uses Monarch (internal time-series database) with alerting on SLO violations. Their deployment uses canary releases with automated rollback. Google practices progressive delivery with traffic shifting.
 
 Google's Java services include: Cloud Platform offerings, internal tools, and data processing pipelines. Their JVM tuning uses custom OpenJDK builds with performance optimizations. Google uses gRPC for high-performance inter-service communication. Their monitoring tracks service-level objectives (SLOs) and error budgets.
 
@@ -52,7 +52,7 @@ LinkedIn's disaster recovery strategy includes multi-region deployments with aut
 
 Uber's Java services handle ride matching, pricing, and payment processing. Their production emphasis is on low-latency and high-throughput. Uber's JVM tuning uses ZGC for real-time services that require sub-millisecond pause times. They use custom serialization frameworks to reduce network overhead.
 
-Uber's production practices include comprehensive chaos engineering (Chaos Kong for region failover). They use a custom service mesh for traffic management. Uber's monitoring uses a combination of StatsD and custom dashboards. Their deployment uses automated rollback based on error rate thresholds. Uber practices continuous profiling to identify performance bottlenecks.
+Uber's production practices include detailed chaos engineering (Chaos Kong for region failover). They use a custom service mesh for traffic management. Uber's monitoring uses a combination of StatsD and custom dashboards. Their deployment uses automated rollback based on error rate thresholds. Uber practices continuous profiling to identify performance bottlenecks.
 
 Uber's Java services include: ride matching algorithms, dynamic pricing engines, payment processing, and driver management. Their JVM tuning uses ZGC for latency-sensitive services and G1GC for throughput-oriented services. Uber uses custom serialization to reduce network overhead in inter-service communication.
 

@@ -361,7 +361,7 @@ Payback Period = $100,000 / ($2,000,000 / 12) = 0.6 months
 ### Pre-Optimization Checklist
 
 - [ ] Establish baseline performance metrics
-- [ ] Set up comprehensive monitoring
+- [ ] Set up detailed monitoring
 - [ ] Identify critical user journeys
 - [ ] Create realistic load tests
 - [ ] Establish performance budgets
@@ -395,7 +395,7 @@ The e-commerce platform's JVM tuning strategy was a resounding success, achievin
 - **1,900% ROI** in Year 1
 - **0.6 month payback period**
 
-The key to success was data-driven decision making, incremental optimization, and comprehensive testing. Other e-commerce platforms can replicate this success by following the recommended best practices and avoiding common pitfalls.
+The key to success was data-driven decision making, incremental optimization, and detailed testing. Other e-commerce platforms can replicate this success by following the recommended best practices and avoiding common pitfalls.
 
 ## Interview Questions
 

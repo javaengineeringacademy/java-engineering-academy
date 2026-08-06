@@ -106,7 +106,7 @@ The facade class holds references to subsystem components. It provides simplifie
 
 ## Why This Concept Exists
 
-Complex subsystems have many classes with intricate dependencies. Using them requires understanding the entire subsystem. A facade provides a simple interface that hides complexity. For example, a `JdbcTemplate` is a facade over raw JDBC connections, statements, and result sets. The facade does not add functionality — it makes existing functionality accessible.
+Complex subsystems have many classes with complex dependencies. Using them requires understanding the entire subsystem. A facade provides a simple interface that hides complexity. For example, a `JdbcTemplate` is a facade over raw JDBC connections, statements, and result sets. The facade does not add functionality — it makes existing functionality accessible.
 
 ## Pitfalls
 

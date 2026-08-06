@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Java Input/Output (IO) and New Input/Output (NIO) form the backbone of data handling in Java applications. Every application, from a simple console program to a massive enterprise microservice, needs to read data from external sources and write data to destinations. Java provides a comprehensive IO ecosystem that has evolved from the original blocking IO (BIO) introduced in JDK 1.0 to the non-blocking NIO introduced in JDK 1.4, and further to NIO.2 in JDK 7.
+Java Input/Output (IO) and New Input/Output (NIO) form the backbone of data handling in Java applications. Every application, from a simple console program to a massive enterprise microservice, needs to read data from external sources and write data to destinations. Java provides a detailed IO ecosystem that has evolved from the original blocking IO (BIO) introduced in JDK 1.0 to the non-blocking NIO introduced in JDK 1.4, and further to NIO.2 in JDK 7.
 
 This module provides a foundational understanding of how Java handles input and output operations, the architecture behind the IO libraries, and sets the stage for deep dives into each component.
 

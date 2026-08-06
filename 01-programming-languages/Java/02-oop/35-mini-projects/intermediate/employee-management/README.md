@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A comprehensive Employee Management System that handles employee records, department organization, payroll calculations, and generating various reports. This intermediate project introduces more complex OOP concepts including inheritance, polymorphism, abstract classes, and interfaces. Students will design a system that supports different employee types with varying salary structures and benefits.
+A detailed Employee Management System that handles employee records, department organization, payroll calculations, and generating various reports. This intermediate project introduces more complex OOP concepts including inheritance, polymorphism, abstract classes, and interfaces. Students will design a system that supports different employee types with varying salary structures and benefits.
 
 ## Learning Outcomes
 

@@ -1,4 +1,4 @@
-# Module 09: JVM Internals
+# Module 10: JVM Internals
 
 > **Difficulty:** ⭐⭐⭐⭐ Advanced  
 > **Reading:** 45 min | **Practice:** 30 min | **Total:** 75 min
@@ -413,7 +413,7 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 ## Cross-References
 
 - **Previous Module:** [09 - Multithreading](../09-multithreading/)
-- **Next Module:** [12 - Testing](../12-testing/)
+- **Next Module:** [11 - Design Patterns](../11-design-patterns/)
 - **Related:** [01 - Fundamentals](../01-fundamentals/) — compilation and bytecode
 - **Related:** [02 - OOP](../02-oop/) — class loading, object layout, memory model
 - **Related:** [04 - Collections](../04-collections/) — memory usage of data structures
@@ -433,3 +433,16 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 ## Next
 
 - [Design Patterns](../11-design-patterns/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | JVM internals and optimization |
+| Complexity | N/A |
+| Thread Safe | N/A |
+| Ordered | N/A |
+| Allows Null | N/A |
+| Best Alternative | N/A |
+| When to Use | Performance optimization |
+| When to Avoid | Normal development |

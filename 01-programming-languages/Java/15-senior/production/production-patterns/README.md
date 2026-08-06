@@ -2,7 +2,7 @@
 
 ## Overview
 
-Production-ready applications require robust patterns for reliability, observability, and graceful operation. This guide covers essential patterns for building resilient distributed systems in Java.
+Production-ready applications require reliable patterns for reliability, observability, and graceful operation. This guide covers essential patterns for building resilient distributed systems in Java.
 
 ---
 

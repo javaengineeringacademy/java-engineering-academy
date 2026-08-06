@@ -14,19 +14,36 @@ Singleton ensures a class has only one instance and provides a global point of a
 
 ### Double-Checked Locking
 ```java
-if (instance == null) {
-    synchronized (Singleton.class) {
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
         if (instance == null) {
-            instance = new Singleton();
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
         }
+        return instance;
     }
 }
 ```
 
 ### Static Holder
 ```java
-private static class Holder {
-    private static final Singleton INSTANCE = new Singleton();
+public class Singleton {
+    private Singleton() {}
+
+    private static class Holder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    public static Singleton getInstance() {
+        return Holder.INSTANCE;
+    }
 }
 ```
 
@@ -34,6 +51,10 @@ private static class Holder {
 ```java
 public enum Singleton {
     INSTANCE;
+
+    public void doSomething() {
+        // implementation
+    }
 }
 ```
 
@@ -96,9 +117,22 @@ Singleton initialization has negligible overhead. Double-checked locking adds a 
 - Holding resources that prevent application undeployment
 - Overusing Singleton as global mutable state
 
+## Production Checklist
+
+### ✅ Before using Singleton in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
 ## Internal Working
 
-The JVM ensures a class is loaded only once via its class loader. Static holder leverages this: the inner class `Holder` is loaded only when referenced, at which point the JVM guarantees thread-safe initialization. Double-checked locking uses `volatile` to prevent instruction reordering — without it, another thread might see a partially constructed object. The enum approach is enforced by the JVM specification: enum constants are singletons by construction.
+The JVM ensures a class is loaded only once via its class loader. Static holder uses this: the inner class `Holder` is loaded only when referenced, at which point the JVM guarantees thread-safe initialization. Double-checked locking uses `volatile` to prevent instruction reordering — without it, another thread might see a partially constructed object. The enum approach is enforced by the JVM specification: enum constants are singletons by construction.
 
 ## Why This Concept Exists
 
@@ -169,8 +203,42 @@ public class CacheManager {
 4. **Class loader leaks**: In app servers, singleton held by a web app's class loader can prevent undeployment
 5. **Overuse**: Use dependency injection instead when possible; singletons are often a code smell
 
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## References
 
 - [Effective Java - Item 3: Enforce the singleton property with a private constructor or an enum type](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 - [Oracle Java Documentation - Singleton Pattern](https://docs.oracle.com/javase/tutorial/essential/concepts/)
 - [Baeldung - Singleton Pattern in Java](https://www.baeldung.com/java-singleton)
+
+## Common Myths
+
+### ❌ Myth 1: Singleton is always good
+**Reality:** Testing and concurrency issues. Singletons make unit testing harder and can cause thread-safety problems.
+
+### ❌ Myth 2: Singleton is thread-safe by default
+**Reality:** Must be implemented. Simple lazy initialization without synchronization is not thread-safe.
+
+### ❌ Myth 3: Singleton is one instance per JVM
+**Reality:** Can be per classloader. In app servers, each classloader may create its own instance.

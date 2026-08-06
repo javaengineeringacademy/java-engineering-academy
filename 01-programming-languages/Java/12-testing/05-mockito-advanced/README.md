@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Advanced Mockito covers spies, BDD-style mocking, void method stubbing, custom answer logic, and sophisticated verification patterns. These features enable testing complex scenarios and legacy code.
+Advanced Mockito covers spies, BDD-style mocking, void method stubbing, custom answer logic, and advanced verification patterns. These features enable testing complex scenarios and legacy code.
 
 ## 2. Learning Objectives
 

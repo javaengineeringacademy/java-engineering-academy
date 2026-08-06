@@ -232,3 +232,16 @@ No prerequisites — this is the starting point.
 ## Next
 
 - [OOP](../02-oop/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Java basics (variables, operators, control flow) |
+| Complexity | N/A |
+| Thread Safe | N/A |
+| Ordered | N/A |
+| Allows Null | N/A |
+| Best Alternative | N/A |
+| When to Use | Starting Java journey |
+| When to Avoid | Skipping basics |

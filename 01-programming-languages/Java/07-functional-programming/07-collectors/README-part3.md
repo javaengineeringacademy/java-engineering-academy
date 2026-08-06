@@ -198,7 +198,7 @@ Create a utility class with collector helpers:
 
 ### Project: Data Analytics Collector Library
 
-Build a comprehensive collector library:
+Build a detailed collector library:
 
 **Requirements:**
 1. Implement custom collectors for common patterns

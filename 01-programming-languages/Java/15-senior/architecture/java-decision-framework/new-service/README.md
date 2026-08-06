@@ -239,7 +239,7 @@ This decision analysis evaluates whether to use Java for building a new payment 
 1. **Infrastructure Cost**: Higher than Go/Rust options
 2. **Startup Time**: Slower than Go/Rust for serverless scenarios
 3. **Memory Usage**: Higher than Go/Rust
-4. **Modern Features**: Fewer cutting-edge features than Go/Rust
+4. **Modern Features**: Fewer advanced features than Go/Rust
 
 ### Mitigation Strategies
 
@@ -275,7 +275,7 @@ This decision analysis evaluates whether to use Java for building a new payment 
 
 **Java is the recommended choice** for this payment processing service. While Go offers lower infrastructure costs, Java's team expertise, compliance support, and ecosystem maturity make it the best fit for this critical financial service. The 4-month timeline and $500K budget are realistic and achievable with the proposed approach.
 
-The decision prioritizes risk reduction and time-to-market over pure performance optimization, which is appropriate for a payment processing service where reliability and compliance are paramount.
+The decision prioritizes risk reduction and time-to-market over pure performance optimization, which is appropriate for a payment processing service where reliability and compliance are critical.
 
 ## Interview Questions
 

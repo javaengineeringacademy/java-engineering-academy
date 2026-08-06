@@ -88,7 +88,7 @@ Implement a factory pattern using constructor references:
 
 ### Project: Method Reference Utility Library
 
-Build a comprehensive utility library using method references:
+Build a detailed utility library using method references:
 
 **Requirements:**
 1. Create utility classes for common operations

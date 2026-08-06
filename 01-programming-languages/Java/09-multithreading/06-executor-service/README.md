@@ -91,9 +91,15 @@ Where targetUtilization is between 0 and 1.
 
 ### Graceful Shutdown
 ```java
-ExecutorService pool = Executors.newFixedThreadPool(n);
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+ExecutorService pool = Executors.newFixedThreadPool(4);
 try {
     // submit tasks
+    pool.submit(() -> System.out.println("Task 1"));
+    pool.submit(() -> System.out.println("Task 2"));
 } finally {
     pool.shutdown();
     if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
@@ -104,6 +110,10 @@ try {
 
 ### Bounded Execution with Timeout
 ```java
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 Future<Result> future = pool.submit(task);
 try {
     Result result = future.get(5, TimeUnit.SECONDS);
@@ -114,10 +124,13 @@ try {
 
 ### Thread Pool Monitoring
 ```java
+import java.util.concurrent.ThreadPoolExecutor;
+
 ThreadPoolExecutor executor = (ThreadPoolExecutor) pool;
 int active = executor.getActiveCount();
 long completed = executor.getCompletedTaskCount();
 int queued = executor.getQueue().size();
+System.out.println("Active: " + active + ", Completed: " + completed + ", Queued: " + queued);
 ```
 
 ## Common Mistakes
@@ -167,6 +180,39 @@ int queued = executor.getQueue().size();
 - Creating new ExecutorService per request (wastes resources)
 - Using Executors.newCachedThreadPool() in production (unbounded threads)
 
+## Production Incidents
+
+### Incident 1: Thread Pool Exhaustion Causing Cascading Failure
+
+**Problem:** An order processing service stopped processing orders during peak traffic. Downstream services also failed due to timeout cascades.
+**Cause:** A fixed thread pool of 50 threads was used for external API calls. One external API started responding slowly (5-second timeouts instead of 50ms). All 50 threads were blocked waiting for responses, and new orders piled up in the queue indefinitely.
+**Impact:** Order processing halted for 3 hours. Revenue loss estimated at $200K. SLA breach triggered penalties.
+**Detection:** Monitoring showed thread pool active count at 50 with queue depth growing. Alerts fired on queue depth threshold.
+**Solution:** Implement bounded queues with `CallerRunsPolicy` to apply backpressure. Add per-task timeouts using `Future.get(timeout, unit)`. Separate slow and fast operations into different pools.
+**Prevention:** Always set task timeouts. Use bounded queues with rejection policies. Add circuit breakers for external calls. Monitor thread pool utilization metrics.
+
+### Incident 2: Unbounded Queue Causing OOM
+
+**Problem:** A background job processing system crashed with OutOfMemoryError after running for several days.
+**Cause:** A fixed thread pool with an unbounded `LinkedBlockingQueue` was used. Tasks were submitted faster than processed. The queue grew unbounded, accumulating millions of task objects in memory.
+**Impact:** Production OOM crash. 4-hour recovery time. Data loss for unprocessed tasks.
+**Detection:** Heap dumps showed a massive LinkedBlockingQueue consuming 90% of heap space.
+**Solution:** Replace unbounded queue with `ArrayBlockingQueue` of fixed capacity. Implement `RejectedExecutionHandler` that logs and alerts on rejection. Add queue depth monitoring.
+**Prevention:** Never use `Executors.newFixedThreadPool()` in production (it uses unbounded queues). Always use `ThreadPoolExecutor` directly with bounded queues. Set up queue depth alerts.
+
+## Production Checklist
+
+### ✅ Before using ExecutorService in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
 ## Why ExecutorService Over Raw Threads?
 
 | Criteria | ExecutorService | Raw Threads |
@@ -180,3 +226,37 @@ int queued = executor.getQueue().size();
 ### Decision Flowchart
 Multiple tasks? → Yes → Use ExecutorService
 Single long-running task? → Yes → Use raw Thread
+
+## Common Myths
+
+### ❌ Myth 1: More threads = better performance
+**Reality:** Context switching cost degrades performance beyond optimal thread count. Use pool sizing formulas.
+
+### ❌ Myth 2: Thread pools auto-size
+**Reality:** Must be configured. Default pools may not match your workload characteristics.
+
+### ❌ Myth 3: execute() and submit() are the same
+**Reality:** Different error handling. execute() swallows exceptions; submit() returns Future with exception details.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations

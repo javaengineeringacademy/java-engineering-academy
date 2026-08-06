@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A comprehensive E-Commerce Platform that handles product catalog, shopping cart, order processing, payment, user management, and inventory tracking. This enterprise project introduces microservice architecture concepts, the Circuit Breaker pattern for fault tolerance, and CQRS for read/write optimization. Students will design a scalable system that demonstrates enterprise-level architecture patterns.
+A detailed E-Commerce Platform that handles product catalog, shopping cart, order processing, payment, user management, and inventory tracking. This enterprise project introduces microservice architecture concepts, the Circuit Breaker pattern for fault tolerance, and CQRS for read/write optimization. Students will design a scalable system that demonstrates enterprise-level architecture patterns.
 
 ## Learning Outcomes
 
@@ -10,7 +10,7 @@ A comprehensive E-Commerce Platform that handles product catalog, shopping cart,
 - Implement Circuit Breaker pattern for fault tolerance
 - Use CQRS pattern for read/write optimization
 - Design event-driven architecture with domain events
-- Implement comprehensive validation and security
+- Implement detailed validation and security
 - Use DTOs for API layer separation
 - Design for horizontal scalability
 

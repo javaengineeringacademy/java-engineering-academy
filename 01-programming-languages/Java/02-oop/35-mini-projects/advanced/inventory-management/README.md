@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-An enterprise-grade Inventory Management System that handles products, warehouses, stock tracking, orders, and comprehensive reporting. This advanced project introduces design patterns like Repository, Unit of Work, and Specification pattern. Students will build a scalable system that demonstrates proper layering, abstraction, and extensibility.
+An enterprise-grade Inventory Management System that handles products, warehouses, stock tracking, orders, and detailed reporting. This advanced project introduces design patterns like Repository, Unit of Work, and Specification pattern. Students will build a scalable system that demonstrates proper layering, abstraction, and extensibility.
 
 ## Learning Outcomes
 

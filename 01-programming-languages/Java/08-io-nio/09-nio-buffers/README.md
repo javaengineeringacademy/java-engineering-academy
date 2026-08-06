@@ -440,4 +440,51 @@ import java.nio.*;
 - Forgetting to clear/compact buffers after reads
 - Not handling BufferUnderflowException/BufferOverflowException
 - Allocating buffers inside tight loops (reuse instead)
+
+## Production Checklist
+
+### ✅ Before using NIO Buffers in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: NIO is always faster
+**Reality:** Depends on use case. For simple file operations, Files API may be simpler and fast enough.
+
+### ❌ Myth 2: Buffers are thread-safe
+**Reality:** Not thread-safe. Each thread should use its own buffer instance.
+
+### ❌ Myth 3: Direct buffers are always better
+**Reality:** More expensive to allocate. Use heap buffers for small, short-lived data.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
 ```

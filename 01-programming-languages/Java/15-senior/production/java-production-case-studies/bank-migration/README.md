@@ -265,7 +265,7 @@ Payback Period = 24 months
 2. **More Pilot Services**: 5 was too few, should be 10
 3. **Better Communication**: More frequent stakeholder updates
 4. **Performance Testing**: Earlier performance validation
-5. **Documentation**: More comprehensive migration guides
+5. **Documentation**: More detailed migration guides
 
 ### Key Success Factors
 
@@ -285,7 +285,7 @@ Payback Period = 24 months
 - [ ] Identify critical services and dependencies
 - [ ] Establish migration team and governance
 - [ ] Create automated migration tools
-- [ ] Develop comprehensive test suite
+- [ ] Develop detailed test suite
 - [ ] Plan training program
 - [ ] Secure executive sponsorship
 - [ ] Establish rollback procedures
@@ -317,7 +317,7 @@ The bank's Java 8 to Java 21 migration was a success, achieving:
 - **100% ROI** over 3 years
 - **Improved developer productivity**
 
-The key to success was a phased approach, automated tooling, comprehensive testing, and strong executive sponsorship. Other financial institutions can replicate this success by following the recommended best practices and avoiding common pitfalls.
+The key to success was a phased approach, automated tooling, detailed testing, and strong executive sponsorship. Other financial institutions can replicate this success by following the recommended best practices and avoiding common pitfalls.
 
 ## Interview Questions
 

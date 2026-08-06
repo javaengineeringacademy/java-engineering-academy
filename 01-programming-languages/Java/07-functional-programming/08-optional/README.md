@@ -446,5 +446,52 @@ boolean present = optional.isPresent();
 - Creating Optional every call instead of caching empty instances
 - Not using Optional in stream pipelines for nullable transformations
 
+## Production Checklist
+
+### ✅ Before using Optional in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: Optional replaces null
+**Reality:** Optional is for return types only. It should not be used for fields or parameters.
+
+### ❌ Myth 2: Optional.get() is safe
+**Reality:** Can throw NoSuchElementException. Always use isPresent(), orElse(), or orElseThrow().
+
+### ❌ Myth 3: Optional is serializable
+**Reality:** Not serializable. Cannot be used with serialization frameworks.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 [📖 Continue to Part 2](README-part2.md)
 ```

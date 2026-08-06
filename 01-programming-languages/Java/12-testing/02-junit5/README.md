@@ -398,39 +398,46 @@ class LifecycleTest {
     }
     
     @Nested
-
-
----
-
-**Continue to Part 2**: [README-part2.md](README-part2.md)
+    @DisplayName("Inner group of tests")
+    class InnerTests {
+        @Test
+        void shouldPassInNestedGroup() {
+            assertTrue(true);
+        }
+    }
+}
 ```
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is @BeforeEach used for?**
+   Runs a method before each test method for setup logic.
 
-1. **What is this concept?**
-   [Answer]
+2. **How do you disable a test in JUnit 5?**
+   Use `@Disabled("reason")` annotation.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is @Nested used for?**
+   Groups related tests into inner classes for better organization.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **How do you assert an exception is thrown?**
+   Use `assertThrows(ExceptionClass.class, () -> { ... })`.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **What is the difference between @BeforeAll and @BeforeEach?**
+   `@BeforeAll` runs once before all tests; `@BeforeEach` runs before each test.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Shared mutable state**: Causes test interdependence and flakiness
+2. **Overusing mocks**: Tests become coupled to implementation details
+3. **Missing cleanup**: Leftover state affects subsequent tests
+4. **Testing implementation**: Focus on behavior, not internal details
 
 ## Performance
 
-[Performance considerations and benchmarks]
+1. **Test isolation**: Each test should be independent for parallel execution
+2. **Setup cost**: Minimize expensive operations in @BeforeEach
+3. **Mock creation**: Reuse mocks via @MockBean when possible
+4. **Assertion count**: Use assertAll() for grouped assertions to see all failures
 
 ## Engineering Decision Framework
 
@@ -471,26 +478,75 @@ class LifecycleTest {
 - Ignoring test execution time in CI pipelines
 - Using @Disabled as a permanent fix instead of tracking tech debt
 
-## Overview
+## Production Incidents
 
-[Brief description of the topic]
+### Incident 1: Flaky Test Causing False Positives
 
-## Why This Concept Exists
+**Problem:** A CI/CD pipeline showed intermittent test failures that passed on retry. Developers started ignoring test failures, assuming they were "just flaky."
+**Cause:** A test depended on system time (`LocalDateTime.now()`) and ran slightly differently depending on execution speed. When the test ran near midnight, date-based assertions failed. The test also shared state via a static field that wasn't reset between runs.
+**Impact:** 40% of CI builds were red. Developers stopped trusting the test suite. A real regression slipped through and reached production.
+**Detection:** Test failure analysis showed failures correlated with midnight execution times.
+**Solution:** Inject time via `Clock` parameter instead of using system time. Use `@BeforeEach` to reset all shared state. Add `@Timeout` to prevent hanging tests.
+**Prevention:** Enforce test isolation rules. Use random test ordering to surface state dependencies. Add flaky test detection to CI pipeline.
 
-[Problem this concept solves and motivation behind it]
+### Incident 2: Missing Integration Test Causing Production Bug
 
-## Internal Working
+**Problem:** A new feature passed all unit tests but broke in production. The bug caused data corruption affecting 10,000 records.
+**Cause:** Unit tests mocked the database layer, testing only business logic. The actual SQL query had a syntax error that only manifested against a real database. No integration test existed for this feature.
+**Impact:** Data corruption required manual remediation. 10,000 records affected. 6-hour production incident.
+**Detection:** Users reported incorrect data in their accounts.
+**Solution:** Add integration tests using TestContainers for database-dependent code. Require both unit and integration tests for features touching persistence.
+**Prevention:** Establish test pyramid: unit tests (70%), integration tests (20%), E2E tests (10%). Require integration tests for any code touching external systems. Add test coverage gates to CI/CD.
 
-[How this works under the hood]
+## Production Checklist
 
-## Examples
+### ✅ Before using JUnit 5 in production:
 
-[Code examples demonstrating the concept]
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: 100% code coverage = no bugs
+**Reality:** Coverage != quality. High coverage doesn't mean tests are meaningful or thorough.
+
+### ❌ Myth 2: Unit tests are enough
+**Reality:** Need integration tests. Unit tests with mocks may not catch real-world interaction issues.
+
+### ❌ Myth 3: Test order matters
+**Reality:** Tests should be independent. Each test must work regardless of execution order.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
+- [JUnit 5 Official Documentation](https://junit.org/junit5/docs/current/user-guide/)
+- [Baeldung JUnit 5 Tutorial](https://www.baeldung.com/junit-5)
+- [JUnit 5 GitHub Repository](https://github.com/junit-team/junit5)
 
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations

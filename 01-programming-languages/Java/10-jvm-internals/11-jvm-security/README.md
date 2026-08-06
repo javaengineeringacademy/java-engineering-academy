@@ -68,7 +68,7 @@ A financial application experienced:
 - Data exposure through insecure deserialization
 - System compromise through privilege escalation
 
-The solution? Implementing comprehensive JVM security measures.
+The solution? Implementing detailed JVM security measures.
 
 ## Theory
 

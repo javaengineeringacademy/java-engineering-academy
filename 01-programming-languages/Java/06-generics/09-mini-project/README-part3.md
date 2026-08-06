@@ -214,7 +214,7 @@ Add these methods to Collections:
 
 ### Assignment 3: Write Unit Tests
 
-Write comprehensive unit tests for all classes.
+Write detailed unit tests for all classes.
 
 ---
 

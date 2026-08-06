@@ -175,7 +175,7 @@ You're building a data processing framework that accepts lists of any Comparable
 - D) Use raw types without generics
 
 **Answer: B**
-**Explanation:** `List<? extends Comparable>` (or more precisely `List<? extends Comparable<?>>`) accepts any list of Comparable types while maintaining type safety. This leverages generics for reusability without losing compile-time checks.
+**Explanation:** `List<? extends Comparable>` (or more precisely `List<? extends Comparable<?>>`) accepts any list of Comparable types while maintaining type safety. This uses generics for reusability without losing compile-time checks.
 
 ---
 

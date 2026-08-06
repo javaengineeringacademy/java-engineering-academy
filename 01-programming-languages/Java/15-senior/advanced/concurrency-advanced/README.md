@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced concurrency in Java goes beyond basic `synchronized` and `volatile` to include sophisticated constructs for complex parallel and asynchronous programming. This guide covers modern concurrency tools available in Java 11+.
+Advanced concurrency in Java goes beyond basic `synchronized` and `volatile` to include advanced constructs for complex parallel and asynchronous programming. This guide covers modern concurrency tools available in Java 11+.
 
 ---
 

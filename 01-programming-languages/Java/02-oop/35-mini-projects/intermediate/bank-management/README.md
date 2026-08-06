@@ -12,7 +12,7 @@ A Bank Management System that simulates core banking operations including accoun
 - Implement transaction logging and audit trails
 - Design for data integrity and consistency
 - Practice interface-based programming
-- Implement comprehensive validation
+- Implement detailed validation
 
 ## Requirements
 

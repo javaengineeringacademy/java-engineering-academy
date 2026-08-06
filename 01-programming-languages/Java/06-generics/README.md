@@ -330,7 +330,7 @@ public class TypeSafeContainer {
 
 ---
 
-**Note:** This module contains comprehensive documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments.
+**Note:** This module contains detailed documentation with 27 sections per topic, including theory, examples, best practices, interview questions, exercises, and assignments.
 
 ## Prerequisites
 
@@ -344,3 +344,16 @@ public class TypeSafeContainer {
 ## Next
 
 - [Functional Programming](../07-functional-programming/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Type safety and code reuse |
+| Complexity | O(1) (type erasure) |
+| Thread Safe | Yes (no state) |
+| Ordered | N/A |
+| Allows Null | Yes |
+| Best Alternative | Specific types (for performance) |
+| When to Use | Generic algorithms |
+| When to Avoid | Simple types |

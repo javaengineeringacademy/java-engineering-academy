@@ -252,7 +252,7 @@ Related work.
 
 - Work with your sponsor
 - Follow coding standards
-- Write comprehensive tests
+- Write detailed tests
 - Update documentation
 
 ## Mailing Lists for JEPs

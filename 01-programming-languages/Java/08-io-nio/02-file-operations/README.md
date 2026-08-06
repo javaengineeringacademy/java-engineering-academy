@@ -48,7 +48,7 @@ Consider an enterprise application that needs to:
 
 Java provides two generations of APIs to handle these scenarios:
 - **Legacy**: `java.io.File` (limited functionality, error-prone)
-- **Modern**: `java.nio.file.Path` + `Files` (comprehensive, robust)
+- **Modern**: `java.nio.file.Path` + `Files` (detailed, reliable)
 
 ## 6. Theory
 

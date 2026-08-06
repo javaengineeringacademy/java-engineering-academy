@@ -153,7 +153,7 @@ HashMap capacity is always a power of 2 (16, 32, 64, 128, ...). This allows effi
 ### The put() Operation
 
 ```java
-public V put(K key, Value value) {
+public V put(K key, V value) {
     return putVal(hash(key), key, value, false, true);
 }
 
@@ -337,7 +337,6 @@ Good hash codes distribute keys uniformly across the table. Poor hash codes (e.g
 ## 9. Memory Representation
 
 ```
-```
 HashMap<String, Integer> map = new HashMap<>();
 map.put("Alice", 30);
 map.put("Bob", 25);
@@ -424,7 +423,7 @@ map.replace(key, oldValue, newValue);   // Conditional replace
 V value = map.get(key);                 // Returns null if absent
 V value = map.getOrDefault(key, default); // Returns default if absent
 V value = map.computeIfAbsent(key, k -> createValue(k));
-
+```
 
 ## 📑 Continue Reading
 
@@ -494,4 +493,71 @@ General purpose? → Yes → Use HashMap
 - Not providing initial capacity for known sizes (causes unnecessary rehashing)
 - Overriding hashCode() without overriding equals()
 - Ignoring null key/value implications in multi-threaded contexts
+
+## Production Checklist
+
+### ✅ Before using HashMap in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Production Incidents
+
+### Incident 1: Mutable Keys Causing Memory Leak
+
+**Problem:** Application memory usage grew steadily over days until it hit OutOfMemoryError.
+**Cause:** Mutable objects (e.g., `Date` or custom `User` objects with mutable fields) were used as HashMap keys. When a key's fields were modified after insertion, `hashCode()` changed, making the old bucket unreachable. The old entry was never removed.
+**Impact:** Memory leak leading to production outage and emergency restart.
+**Detection:** Heap dumps showed phantom HashMap entries with stale keys scattered across the table.
+**Solution:** Replace mutable keys with immutable equivalents (e.g., `Instant` instead of `Date`). If mutation is unavoidable, explicitly remove old entries before modifying key fields.
+**Prevention:** Enforce immutable key policy. Use static analysis tools (ErrorProne, SpotBugs) to detect mutable key usage.
+
+### Incident 2: Poor hashCode() Causing O(n) Lookups
+
+**Problem:** API endpoint response times degraded from 5ms to 500ms under load.
+**Cause:** A `User` class had a `hashCode()` that only returned the hash of one field (e.g., `firstName`), causing many collisions in a HashMap with 100,000+ entries. Lookups degraded from O(1) to O(n) within a single bucket.
+**Impact:** Customer-facing latency spike, SLA breach, cascading timeouts in downstream services.
+**Detection:** Thread dumps showed threads blocked in `HashMap.getNode()` traversing long linked lists.
+**Solution:** Rewrite `hashCode()` to incorporate all significant fields using a consistent algorithm (Objects.hash). Add benchmark tests to validate distribution.
+**Prevention:** Mandate code review of `hashCode()/equals()` implementations. Add load testing with realistic data volumes.
+
+## Common Myths
+
+### ❌ Myth 1: HashMap preserves insertion order
+**Reality:** Use LinkedHashMap for insertion order. HashMap uses a hash table that provides no ordering guarantee.
+
+### ❌ Myth 2: Initial capacity equals max size
+**Reality:** It's the initial bucket count. HashMap resizes (doubles) automatically when the threshold (capacity × load factor) is exceeded.
+
+### ❌ Myth 3: Concurrent reads/writes are always safe
+**Reality:** Not thread-safe. Concurrent modifications can cause data corruption or infinite loops. Use ConcurrentHashMap for concurrent access.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
 

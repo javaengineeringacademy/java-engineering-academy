@@ -2,7 +2,7 @@
 
 ## Introduction
 
-JVM diagnostics is the practice of investigating and resolving issues in Java applications through various diagnostic techniques. This includes thread dumps for analyzing concurrency issues, heap dumps for memory problems, flight recordings for comprehensive profiling, and various command-line tools for real-time analysis. Effective diagnostics can mean the difference between hours of debugging and minutes of problem resolution.
+JVM diagnostics is the practice of investigating and resolving issues in Java applications through various diagnostic techniques. This includes thread dumps for analyzing concurrency issues, heap dumps for memory problems, flight recordings for detailed profiling, and various command-line tools for real-time analysis. Effective diagnostics can mean the difference between hours of debugging and minutes of problem resolution.
 
 This topic covers the essential diagnostic techniques every Java developer should master, from basic thread dumps to advanced flight recorder analysis, along with the tools and commands needed to perform effective diagnostics.
 
@@ -12,7 +12,7 @@ By the end of this topic, you will be able to:
 
 - [ ] Capture and analyze thread dumps effectively
 - [ ] Generate and analyze heap dumps for memory issues
-- [ ] Use Java Flight Recorder for comprehensive diagnostics
+- [ ] Use Java Flight Recorder for detailed diagnostics
 - [ ] Identify deadlocks, thread contention, and memory leaks
 - [ ] Use diagnostic tools like jstack, jmap, jcmd, and jhat
 - [ ] Interpret diagnostic data to find root causes

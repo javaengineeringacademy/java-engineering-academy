@@ -393,11 +393,25 @@ public interface Repository<T, ID> {
 ### Generic Method Declaration
 
 ```java
+import java.util.Arrays;
+import java.util.List;
+
 public class Utility {
     public static <T> List<T> asList(T... elements) {
         return Arrays.asList(elements);
     }
+
+    public static <T extends Comparable<T>> T max(T a, T b) {
+        return a.compareTo(b) >= 0 ? a : b;
+    }
+
+    public static <T> void swap(T[] array, int i, int j) {
+        T temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
+```
 
 ---
 
@@ -439,8 +453,74 @@ public class Utility {
 - Creating generic arrays (not allowed due to reification)
 - Not using bounded types when constraints exist
 
+## Production Incidents
+
+### Incident 1: Type Erasure Causing ClassCastException
+
+**Problem:** A deserialization service crashed at runtime with `ClassCastException: java.lang.Integer cannot be cast to java.lang.String`.
+**Cause:** A generic class `Box<T>` was used with raw types in an intermediate version of the code. When `Box rawBox = (Box) getBox()` was called, type information was lost. The raw type cast allowed an `Integer` to be placed in what the caller expected to be a `String` box.
+**Impact:** Production service crashed intermittently when processing specific data types. Debugging took 2 days due to intermittent nature.
+**Detection:** Runtime exception logs showed ClassCastException at unexpected locations.
+**Solution:** Replace all raw types with parameterized types. Add `@SuppressWarnings("unchecked")` only where unavoidable and add explicit comments. Enable compiler warnings for raw type usage.
+**Prevention:** Enable `-Xlint:unchecked` compiler warnings. Use static analysis (ErrorProne) to detect raw type usage. Enforce generics in code review guidelines.
+
+### Incident 2: Raw Types Causing Runtime Errors
+
+**Problem:** A configuration management system stored incorrect values, causing production deployments to fail silently.
+**Cause:** A `Map` was declared without type parameters (`Map config = new HashMap()`). Values of mixed types (String, Integer, Boolean) were stored without type checking. A `ClassCastException` occurred when code assumed all values were Strings.
+**Impact:** Wrong configuration values deployed to production. 500+ user accounts affected. Rollback required.
+**Detection:** Users reported unexpected behavior. Logs showed ClassCastException in configuration parsing code.
+**Solution:** Replace `Map` with `Map<String, Object>` and add explicit type checks when retrieving values. Better yet, use `Map<String, String>` and parse values at access time.
+**Prevention:** Never use raw types. Use IDE inspections to flag raw type usage. Add pre-commit hooks that fail on raw type introduction.
+
+## Production Checklist
+
+### ✅ Before using Generics in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: Generics work at runtime
+**Reality:** Type erasure removes them. JVM sees only raw types after compilation.
+
+### ❌ Myth 2: You can create new T()
+**Reality:** Type erasure prevents this. You cannot instantiate type parameters directly.
+
+### ❌ Myth 3: List<Integer> and List<String> are different at runtime
+**Reality:** Same type. Due to type erasure, both are just List at runtime.
+
 ---
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
 
 [📖 Continue to Part 2](README-part2.md)
  | [📖 Continue to Part 3](README-part3.md)
-```

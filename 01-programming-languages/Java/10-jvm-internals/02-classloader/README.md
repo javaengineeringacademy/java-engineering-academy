@@ -213,6 +213,55 @@ jcmd <pid> VM.classloader_stats
 
 ## References
 
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
+## References
+
 - [Java ClassLoader Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java/lang/ClassLoader.html)
 - "Inside the Java Virtual Machine" by Bill Venners
 - "Optimizing Java" by Benjamin J. Evans
+
+## Production Checklist
+
+### ✅ Before using ClassLoader in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: Classes are loaded when imported
+**Reality:** Loaded on first use. Classes are loaded lazily when first referenced.
+
+### ❌ Myth 2: ClassLoader is parent-first
+**Reality:** Can be child-first. Custom classloaders can override parent delegation.
+
+### ❌ Myth 3: Classes are loaded once
+**Reality:** Can be unloaded. Classes can be garbage collected when their classloader is collected.

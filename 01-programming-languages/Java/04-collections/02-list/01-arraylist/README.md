@@ -220,7 +220,6 @@ The JIT compiler optimizes ArrayList operations:
 ## 9. Memory Representation
 
 ```
-```
 ArrayList<String> list = new ArrayList<>(4);
 list.add("Hello");
 list.add("World");
@@ -420,6 +419,49 @@ public class ArrayListBasics {
 
 ```java
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Comparator;
+import java.util.Optional;
+
+public class ArrayListMediumExample {
+    public static void main(String[] args) {
+        List<String> names = new ArrayList<>();
+        names.add("Charlie");
+        names.add("Alice");
+        names.add("Bob");
+        names.add("Diana");
+        names.add("Eve");
+
+        System.out.println("Original: " + names);
+
+        // Sort alphabetically
+        names.sort(Comparator.naturalOrder());
+        System.out.println("Sorted: " + names);
+
+        // Find names starting with a letter
+        List<String>startsWithB = names.stream()
+            .filter(n -> n.startsWith("B"))
+            .toList();
+        System.out.println("Starting with B: " + startsWithB);
+
+        // Get max and min length names
+        Optional<String> longest = names.stream()
+            .max(Comparator.comparingInt(String::length));
+        Optional<String> shortest = names.stream()
+            .min(Comparator.comparingInt(String::length));
+        System.out.println("Longest: " + longest.orElse("N/A"));
+        System.out.println("Shortest: " + shortest.orElse("N/A"));
+
+        // Remove all names shorter than 4 characters
+        names.removeIf(n -> n.length() < 4);
+        System.out.println("After removing short names: " + names);
+
+        // Replace all names with uppercase
+        names.replaceAll(String::toUpperCase);
+        System.out.println("Uppercase: " + names);
+    }
+}
+```
 
 ## 📑 Continue Reading
 
@@ -464,10 +506,76 @@ import java.util.ArrayList;
 - Using subList() as a persistent view (it's a live view of original)
 - Removing elements by index in a loop without accounting for shifted indices
 
+## Production Checklist
+
+### ✅ Before using ArrayList in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Production Incidents
+
+### Incident 1: Concurrent Modification Exception in Production
+
+**Problem:** Application threw `ConcurrentModificationException` under moderate load, crashing batch jobs.
+**Cause:** A background thread was iterating over an ArrayList using an enhanced for-loop while the main thread added elements via `list.add()`. The iterator's fail-fast mechanism detected structural modification.
+**Impact:** Batch processing jobs failed repeatedly, delaying nightly data synchronization. Customers received stale data.
+**Detection:** Exception stack traces in production logs pointed to the iteration code.
+**Solution:** Replace ArrayList with `CopyOnWriteArrayList` for this read-heavy, write-light use case. Wrap the original list in `Collections.synchronizedList()` and use explicit synchronization for compound operations.
+**Prevention:** Use thread-safe collections in concurrent contexts. Add static analysis rules to flag shared mutable collection access.
+
+### Incident 2: ArrayList Resizing Causing Memory Spike
+
+**Problem:** A nightly report job caused the application's heap to spike by 2GB, triggering GC pauses and degraded performance.
+**Cause:** An ArrayList was created without initial capacity (`new ArrayList<>()`). When 10 million records were added, the list resized ~23 times (1.5x growth), each time allocating a new array and copying. The old arrays became garbage simultaneously, causing a full GC cycle.
+**Impact:** 30-second GC pauses, API timeouts, and customer complaints.
+**Solution:** Pre-allocate capacity based on expected data size: `new ArrayList<>(12_000_000)`. Use `trimToSize()` after population to release excess memory.
+**Prevention:** Always pre-allocate when the approximate size is known. Add JVM monitoring for GC pause metrics. Use JMH benchmarks to measure resize cost.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## Related Topics
 - Cache Locality — Why ArrayList beats LinkedList
 - Memory Footprint — ArrayList memory layout
 - Iterator Internals — How ArrayList iteration works
 - Generics — Type-safe list operations
 - Streams — Stream processing on lists
+
+## Common Myths
+
+### ❌ Myth 1: ArrayList is always faster than LinkedList
+**Reality:** Depends on operations. LinkedList can be faster for frequent insertions/removals at known positions.
+
+### ❌ Myth 2: ArrayList size equals capacity
+**Reality:** Capacity >= size. The backing array can have more space than the number of elements stored.
+
+### ❌ Myth 3: ArrayList is thread-safe
+**Reality:** Not thread-safe. Use Collections.synchronizedList() or CopyOnWriteArrayList for concurrent access.
 

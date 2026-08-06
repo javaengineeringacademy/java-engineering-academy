@@ -79,7 +79,7 @@ on individual characters and determining their properties.
 ### 5. Charset
 
 Charsets define how characters are encoded into bytes. Java provides
-robust charset support for encoding and decoding text data.
+reliable charset support for encoding and decoding text data.
 
 **Key Concepts:**
 - Standard charsets (UTF-8, UTF-16, ISO-8859-1)
@@ -123,7 +123,7 @@ of international character sets and supplementary characters.
 
 ### 9. Internationalization (i18n)
 
-Java provides comprehensive support for internationalization, allowing
+Java provides detailed support for internationalization, allowing
 applications to be adapted to different languages and regions without
 code changes.
 
@@ -374,3 +374,16 @@ public class RegexExample {
 ## Next
 
 - [Generics](../06-generics/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | String manipulation |
+| Complexity | O(n) for most operations |
+| Thread Safe | Yes (String is immutable) |
+| Ordered | Yes (character order) |
+| Allows Null | No (String methods) |
+| Best Alternative | StringBuilder (for mutations) |
+| When to Use | Text operations |
+| When to Avoid | Large text processing |

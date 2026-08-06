@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-Exception handling is a fundamental programming construct that allows developers to manage runtime errors and exceptional conditions in a controlled and structured manner. In Java, exception handling provides a robust mechanism to deal with errors that occur during program execution without crashing the application unexpectedly.
+Exception handling is a fundamental programming construct that allows developers to manage runtime errors and exceptional conditions in a controlled and structured manner. In Java, exception handling provides a reliable mechanism to deal with errors that occur during program execution without crashing the application unexpectedly.
 
 This module introduces the concept of exception handling in Java, covering the basic principles, the exception hierarchy, and the rationale behind having a dedicated error-handling mechanism. Understanding exception handling is crucial for writing reliable, production-ready applications.
 
@@ -399,6 +399,12 @@ public class ExceptionChainingExample {
     static void processData() throws Exception {
         try {
             int result = Integer.parseInt("invalid");
+        } catch (NumberFormatException e) {
+            throw new Exception("Failed to process data", e);
+        }
+    }
+}
+```
 
 ## Engineering Decision Framework
 
@@ -438,7 +444,74 @@ public class ExceptionChainingExample {
 - Not preserving the cause chain in wrapped exceptions
 - Overly broad try blocks that mask the actual failure point
 
+## Production Incidents
+
+### Incident 1: Exception in Finally Block Masking Original Error
+
+**Problem:** A file processing service reported misleading error messages. The actual failure was hidden, causing engineers to spend 4 hours debugging the wrong issue.
+**Cause:** A `finally` block contained `reader.close()` which threw an `IOException`. In Java, if both `try` and `finally` throw exceptions, the `finally` exception overwrites the `try` exception. The original `FileNotFoundException` was lost.
+**Impact:** 4 hours of wasted debugging time. Delayed hotfix deployment by 4 hours.
+**Detection:** Production logs showed only `IOException` in finally, not the original cause.
+**Solution:** Use try-with-resources (`try (Reader r = ...)`) which automatically closes resources and properly chains exceptions. Avoid cleanup code in finally blocks.
+**Prevention:** Mandate try-with-resources for all AutoCloseable resources. Add code review checklist item: "No I/O operations in finally blocks."
+
+### Incident 2: Empty Catch Block Hiding Critical Failure
+
+**Problem:** A payment processing service silently failed to record transactions. Financial reconciliation showed missing records for 3 days.
+**Cause:** An empty `catch (Exception e) { }` block in the transaction persistence code swallowed a `DataIntegrityViolationException`. The code was originally added to handle a transient error but became a silent failure for all database errors.
+**Impact:** 3 days of lost transaction records. Manual reconciliation required. $50K in unaccounted transactions.
+**Detection:** Financial audit detected discrepancies between payment gateway logs and database records.
+**Solution:** Replace empty catch block with proper exception handling: log the exception, alert on critical failures, and implement retry logic for transient errors.
+**Prevention:** Enable static analysis rule for empty catch blocks (SonarQube rule S108). Add lint check that fails CI on empty catch blocks. Document exception handling policy.
+
+## Production Checklist
+
+### ✅ Before using Exception Handling in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Common Myths
+
+### ❌ Myth 1: Exceptions are expensive
+**Reality:** Only creation is expensive, not catching. The cost is in stack trace generation, not handling.
+
+### ❌ Myth 2: catch(Exception) is safe
+**Reality:** Catches too much including RuntimeExceptions. Prefer specific exception types.
+
+### ❌ Myth 3: finally always runs
+**Reality:** Not if JVM exits via System.exit() or fatal error. finally blocks are skipped in those cases.
+
 ## 📑 Continue Reading
 
 **Part 1** of 3 | Part 2 | Part 3
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
 

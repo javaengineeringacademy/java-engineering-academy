@@ -37,10 +37,10 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 ### Core (Build Your Skills)
 | # | Module | What You'll Learn |
 |---|--------|-------------------|
-| 03 | [Collections](04-collections/) | List, Set, Map, Queue — internals, when to use which |
-| 04 | Generics | Type safety, wildcards, type erasure |
-| 05 | [Exceptions](03-exception-handling/) | Try-catch, custom exceptions, best practices |
-| 06 | Strings | String pool, immutability, StringBuilder |
+| 03 | [Exception Handling](03-exception-handling/) | Try-catch, custom exceptions, best practices |
+| 04 | [Collections](04-collections/) | List, Set, Map, Queue — internals, when to use which |
+| 05 | [Text Processing](05-text-processing/) | String pool, immutability, StringBuilder |
+| 06 | [Generics](06-generics/) | Type safety, wildcards, type erasure |
 | 07 | [Functional Programming](07-functional-programming/) | Lambdas, streams, Optional |
 | 08 | [IO/NIO](08-io-nio/) | Files, streams, buffers, channels |
 
@@ -51,7 +51,7 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 | 10 | [JVM Internals](10-jvm-internals/) | Class loading, memory, GC, JIT |
 | 11 | [Design Patterns](11-design-patterns/) | 23 GoF patterns with Java implementations |
 | 12 | [Testing](12-testing/) | JUnit 5, Mockito |
-| 13 | [Reflection](13-reflection-annotations/) | Runtime type info, custom annotations |
+| 13 | [Reflection & Annotations](13-reflection-annotations/) | Runtime type info, custom annotations |
 | 14 | [Logging](14-logging/) | SLF4J, Logback |
 
 ### Expert (Master Java)
@@ -66,23 +66,23 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 ```mermaid
 graph TD
     A[01-Fundamentals] --> B[02-OOP]
-    B --> C[03-Collections]
-    B --> D[06-Strings]
-    C --> E[04-Generics]
+    B --> C[03-Exception Handling]
+    B --> D[05-Text Processing]
+    C --> E[04-Collections]
     D --> E
-    E --> F[05-Exceptions]
+    E --> F[06-Generics]
     F --> G[07-Functional Programming]
     G --> H[08-IO/NIO]
     H --> I[09-Multithreading]
     I --> J[10-JVM Internals]
     J --> K[11-Design Patterns]
     K --> L[12-Testing]
-    L --> M[13-Reflection]
+    L --> M[13-Reflection & Annotations]
     M --> N[14-Logging]
     N --> O[15-Senior Topics]
     
     P[Knowledge Atoms] -.->|reference| A
-    P -.->|reference| C
+    P -.->|reference| E
     P -.->|reference| I
     P -.->|reference| J
 ```
@@ -92,7 +92,7 @@ graph TD
 ## For Students
 
 **Start here:** [01-Fundamentals](01-fundamentals/)
-**Then:** [02-OOP](02-oop/) → [03-Collections](04-collections/)
+**Then:** [02-OOP](02-oop/) → [03-Exception Handling](03-exception-handling/)
 **Goal:** Write your first Java programs, understand OOP
 
 **Time:** 2-3 months
@@ -101,8 +101,8 @@ graph TD
 
 ## For Junior Developers
 
-**Start here:** [03-Collections](04-collections/)
-**Then:** 04-Generics → [07-Functional Programming](07-functional-programming/)
+**Start here:** [04-Collections](04-collections/)
+**Then:** [06-Generics](06-generics/) → [07-Functional Programming](07-functional-programming/)
 **Goal:** Write production-quality code
 
 **Time:** 3-6 months

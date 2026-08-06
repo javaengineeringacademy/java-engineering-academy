@@ -131,7 +131,7 @@ public void testStringConcat_basic() {
 ### Test Requirements
 
 - Every bug fix should have a regression test
-- New features should have comprehensive tests
+- New features should have detailed tests
 - Performance changes should have benchmarks
 - Tests should be deterministic (no flakiness)
 

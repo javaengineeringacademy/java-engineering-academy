@@ -480,50 +480,161 @@ flowchart TD
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is the Singleton pattern and when would you use it?**
+   Singleton ensures only one instance exists. Use for configuration, logging, connection pools. Be careful with testing and thread safety. Prefer dependency injection over Singleton in modern applications.
 
-1. **What is this concept?**
-   [Answer]
+2. **When would you use Factory Method vs Abstract Factory?**
+   Factory Method creates one product via subclassing. Abstract Factory creates families of related objects. Use Factory Method when you need one product; Abstract Factory when you need a cohesive set (e.g., cross-platform UI components).
 
-2. **When would you use it?**
-   [Answer]
+3. **What are the alternatives to the Builder pattern?**
+   Lombok `@Builder`, telescoping constructors, records (for immutable objects), factory methods, and the step builder pattern. Records reduce Builder need for simple DTOs.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What are common mistakes with design patterns?**
+   Over-engineering (using patterns when simple code suffices), forcing wrong pattern, not following SOLID principles, creating God classes, and tight coupling through pattern misuse.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **How does the Strategy pattern differ from polymorphism?**
+   Strategy uses composition and delegates behavior to interchangeable objects. Polymorphism uses inheritance. Strategy is more flexible — you can change behavior at runtime and combine behaviors.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **When should you NOT use the Observer pattern?**
+   When you need synchronous guaranteed delivery, when order matters strictly, or when overused causing cascading updates that are hard to debug. Consider event sourcing or reactive streams instead.
+
+7. **What is the difference between Adapter and Facade?**
+   Adapter converts one interface to another (works with existing interfaces). Facade provides a simplified interface to a complex subsystem (defines its own simplified interface).
+
+8. **How do you decide which pattern to use for a design problem?**
+   Identify the problem category (creational, structural, behavioral), consider the specific constraints (thread safety, performance, extensibility), evaluate trade-offs, and start with the simplest solution that works.
+
+9. **What are anti-patterns in the context of design patterns?**
+   Golden Hammer (overusing one pattern), Abstract Leak (abstraction exposes details), Singleton abuse (global state), God Object (one class doing too much), and Analysis Paralysis (over-designing before coding).
+
+10. **How do design patterns relate to SOLID principles?**
+    Each pattern embodies specific SOLID principles: Strategy follows OCP (open/closed), Facade follows ISP (interface segregation), Factory follows SRP (single responsibility), Decorator follows OCP.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+- **Over-engineering**: Using design patterns for simple problems adds unnecessary complexity. A simple if-else is sometimes better than a Strategy pattern.
+- **Wrong pattern choice**: Using Singleton when you need testability, or Observer when you need guaranteed delivery.
+- **God classes**: Combining too many patterns in one class, violating SRP.
+- **Tight coupling through Singleton**: Global state makes unit testing difficult. Prefer dependency injection.
+- **Ignoring thread safety**: Many patterns (Singleton, Observer) need explicit thread safety handling.
+- **Premature abstraction**: Abstracting too early leads to wrong abstractions that are costly to change.
+- **Pattern soup**: Applying every known pattern to a simple problem, making code harder to understand.
+- **Not considering evolution**: Patterns chosen for today's requirements may not fit tomorrow's needs.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+| Pattern | Performance Impact | Notes |
+|---------|-------------------|-------|
+| Singleton | O(1) access | Thread safety adds synchronization cost |
+| Factory Method | O(1) | Minimal overhead, creates objects |
+| Builder | O(n) fields | Slight overhead for immutability |
+| Proxy | O(1) per call | Adds indirection; caching proxy improves performance |
+| Flyweight | Memory savings | Significant for large numbers of shared objects |
+| Observer | O(n) notification | Linear in number of observers; can cause cascading updates |
+| Strategy | O(1) | Composition overhead is negligible |
+| Decorator | O(1) per layer | Stack depth adds indirection |
+| Composite | O(n) traversal | Depends on tree depth and branching factor |
+
+**Key insights:**
+- Most patterns add minimal runtime overhead
+- Flyweight and Object Pool patterns can significantly reduce memory/GC pressure
+- Observer pattern can cause performance issues with many subscribers
+- Proxy pattern can improve performance when combined with caching
+- Benchmark before optimizing — pattern overhead is usually negligible
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Strategy Pattern — interchangeable algorithms
+interface SortStrategy {
+    void sort(int[] array);
+}
+class BubbleSort implements SortStrategy {
+    public void sort(int[] array) { /* O(n^2) */ }
+}
+class QuickSort implements SortStrategy {
+    public void sort(int[] array) { /* O(n log n) avg */ }
+}
+class Sorter {
+    private SortStrategy strategy;
+    public Sorter(SortStrategy strategy) { this.strategy = strategy; }
+    public void sort(int[] array) { strategy.sort(array); }
+}
+
+// Observer Pattern — event notification
+interface EventListener {
+    void onEvent(String event);
+}
+class EventBus {
+    private final List<EventListener> listeners = new ArrayList<>();
+    public void subscribe(EventListener l) { listeners.add(l); }
+    public void publish(String event) {
+        listeners.forEach(l -> l.onEvent(event));
+    }
+}
+
+// Decorator Pattern — add behavior dynamically
+interface DataSource {
+    void writeData(String data);
+    String readData();
+}
+class FileDataSource implements DataSource {
+    private String filename;
+    public FileDataSource(String f) { this.filename = f; }
+    public void writeData(String data) { /* write to file */ }
+    public String readData() { return ""; /* read from file */ }
+}
+class EncryptionDecorator implements DataSource {
+    private DataSource wrapped;
+    public EncryptionDecorator(DataSource source) { this.wrapped = source; }
+    public void writeData(String data) {
+        String encrypted = encrypt(data);
+        wrapped.writeData(encrypted);
+    }
+    public String readData() {
+        String data = wrapped.readData();
+        return decrypt(data);
+    }
+    private String encrypt(String s) { return s; /* encrypt */ }
+    private String decrypt(String s) { return s; /* decrypt */ }
+}
+```
 
 ## Internal Working
 
-[How this works under the hood]
+**How patterns work under the hood:**
+
+- **Singleton**: Uses class loading guarantees and volatile + double-checked locking (or enum) to ensure single instance. JVM class loader ensures one instance per classloader.
+- **Factory Method**: Relies on dynamic dispatch — the JVM calls the appropriate subclass implementation at runtime via virtual method invocation.
+- **Strategy**: Uses composition and interface polymorphism. The context holds a reference to a strategy interface; actual implementation is resolved at runtime.
+- **Observer**: Maintains a list of registered listeners. When state changes, iterates through listeners. The subject holds references to observer interfaces.
+- **Decorator**: Wraps objects implementing the same interface. Each decorator delegates to the wrapped object, adding behavior before/after.
+- **Proxy**: Creates a surrogate class (often via java.lang.reflect.Proxy or cglib) that implements the same interface, intercepting method calls.
+- **Composite**: Defines a tree structure where leaf and composite nodes implement the same interface. Operations are applied recursively.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Design patterns exist because software developers repeatedly encounter the same design problems across different projects. Instead of reinventing solutions, patterns provide:
+
+1. **Proven solutions** — Battle-tested approaches that handle edge cases and known pitfalls
+2. **Common vocabulary** — A shared language for developers to communicate design decisions efficiently
+3. **Best practices** — Encapsulated wisdom about handling extensibility, flexibility, and maintainability
+4. **Reduced complexity** — Frameworks and libraries use patterns internally; understanding them helps understand the ecosystem
+5. **Design principles** — Patterns embody SOLID, DRY, and other principles in practical, applicable forms
+
+Without patterns, every team would solve the same problems differently, making codebases harder to maintain and onboard new developers.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
+- [Design Patterns: Elements of Reusable Object-Oriented Software (GoF)](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612)
+- [Head First Design Patterns](https://www.amazon.com/First-Design-Patterns-Brain-Friendly/dp/0596007124)
+- [Refactoring.Guru — Design Patterns](https://refactoring.guru/design-patterns)
+- [SourceMaking — Design Patterns](https://sourcemaking.com/design_patterns)
+- [Java Design Patterns — GitHub](https://github.com/iluwatar/java-design-patterns)
 
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+## Cross-References
+
+- **Previous Module:** [10 - JVM Internals](../10-jvm-internals/)
 
 ## Prerequisites
 
@@ -537,3 +648,16 @@ flowchart TD
 
 - [Testing](../12-testing/README.md)
 - [Senior](../15-senior/README.md)
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Reusable solutions to common problems |
+| Complexity | Varies |
+| Thread Safe | Varies |
+| Ordered | N/A |
+| Allows Null | Varies |
+| Best Alternative | Simple code (for simple cases) |
+| When to Use | Common problems |
+| When to Avoid | Over-engineering |

@@ -428,6 +428,7 @@ Stream<T> stream = Stream.of(values);
 
 // From Range
 IntStream stream = IntStream.range(0, 100);
+```
 
 ---
 
@@ -436,7 +437,7 @@ IntStream stream = IntStream.range(0, 100);
 ### ✅ Use Stream API when:
 - Data transformation, filtering, or aggregation is needed
 - Processing collections declaratively improves readability
-- Parallel processing can leverage multiple CPU cores
+- Parallel processing can use multiple CPU cores
 - Chaining multiple operations on a data pipeline
 - Working with Optional return values from find/min/max
 
@@ -470,6 +471,73 @@ IntStream stream = IntStream.range(0, 100);
 - Creating intermediate lists unnecessarily (use streams directly)
 - Using findFirst() without considering ordering implications
 
+## Production Checklist
+
+### ✅ Before using Stream API in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+
+## Production Incidents
+
+### Incident 1: Parallel Stream Causing Thread Starvation
+
+**Problem:** A web service started returning 503 errors under moderate traffic. Response times increased from 50ms to 30 seconds.
+**Cause:** A developer used `list.parallelStream()` in a controller method. The ForkJoinPool.commonPool() has a fixed thread count (CPU cores - 1). High-traffic endpoints exhausted the common pool, starving all parallel stream operations across the application.
+**Impact:** All endpoints using parallel streams became unresponsive. Cascading failures across multiple services.
+**Detection:** Thread dumps showed all ForkJoinPool threads blocked. Monitoring showed queue depth growing.
+**Solution:** Replace `parallelStream()` with a dedicated `ForkJoinPool` and submit work with `ForkJoinPool.submit()`. For I/O-bound work, use `CompletableFuture` instead of parallel streams.
+**Prevention:** Never use `parallelStream()` in shared thread pools for request handling. Configure dedicated pools for CPU-bound parallel operations. Add pool metrics to monitoring.
+
+### Incident 2: Stream Memory Leak with Large Datasets
+
+**Problem:** A data processing pipeline ran out of memory after processing 5 million records. Heap usage grew linearly until OOM.
+**Cause:** A stream pipeline called `.peek()` to collect intermediate results into a `static List` for debugging. This list accumulated all elements across multiple stream invocations, never being cleared. The static reference prevented GC collection.
+**Impact:** Production OOM crash, 2-hour downtime, data loss in the processing pipeline.
+**Detection:** Heap dumps showed a large static ArrayList holding millions of elements, retained by a stream pipeline.
+**Solution:** Remove the debug `peek()` call that collected into a static list. Use proper logging frameworks instead of side-effect-based debugging.
+**Prevention:** Avoid side effects in stream operations. Use structured logging instead of `peek()` for debugging. Add memory profiling to CI/CD pipelines.
+
+## Common Myths
+
+### ❌ Myth 1: Parallel streams are always faster
+**Reality:** Depends on data size and CPU cores. Small datasets or I/O-bound operations may be slower with parallel streams.
+
+### ❌ Myth 2: Streams modify the source collection
+**Reality:** Streams are read-only. They never modify the underlying data source.
+
+### ❌ Myth 3: Terminal operations can be called multiple times
+**Reality:** Streams are single-use. After a terminal operation, the stream is consumed and cannot be reused.
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Knows resize/rehash algorithms
+- Can optimize for specific use cases
+
+### Level 5: Master
+- Can debug in production
+- Can explain trade-offs to team
+- Can design custom implementations
+
 ## See Also
 - [Lambda Expressions](../02-lambda-expressions/) — Core syntax powering stream operations
 - [Functional Interfaces](../03-functional-interfaces/) — Predicate, Function, Consumer used in streams
@@ -477,4 +545,3 @@ IntStream stream = IntStream.range(0, 100);
 - [Collections Framework](../../04-collections/) — Data sources streams operate on
 
 [📖 Continue to Part 2](README-part2.md)
-```

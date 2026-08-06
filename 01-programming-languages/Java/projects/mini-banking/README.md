@@ -1,6 +1,6 @@
 # Mini Banking System
 
-A comprehensive Java project demonstrating core Java concepts through a realistic banking domain.
+A detailed Java project demonstrating core Java concepts through a realistic banking domain.
 
 ## Topics Covered
 

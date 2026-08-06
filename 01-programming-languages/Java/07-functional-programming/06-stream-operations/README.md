@@ -69,7 +69,7 @@ Before starting this topic, you should be comfortable with:
 
 ### The Problem with Limited Operations
 
-Without a comprehensive set of stream operations, developers must:
+Without a detailed set of stream operations, developers must:
 1. Write manual loops for simple transformations
 2. Implement custom logic for common patterns
 3. Reuse the same boilerplate code repeatedly

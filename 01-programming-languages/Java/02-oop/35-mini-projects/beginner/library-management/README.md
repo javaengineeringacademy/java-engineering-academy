@@ -12,7 +12,7 @@ A console-based Library Management System that enables library staff to manage b
 - Practice exception handling with custom exceptions
 - Use interfaces for polymorphic behavior
 - Implement search algorithms with different criteria
-- Write comprehensive unit tests
+- Write detailed unit tests
 
 ## Requirements
 
