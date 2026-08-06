@@ -84,38 +84,72 @@ while (true) {
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is the ABA problem and how do you solve it?** — ABA occurs when a value changes from A to B and back to A between a read and CAS. Use `AtomicStampedReference` with version stamps to detect this.
 
-1. **What is this concept?**
-   [Answer]
+2. **When would you use lock-free over synchronized?** — Under high contention where threads frequently block. Lock-free avoids deadlocks and priority inversion but has higher implementation complexity.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is CAS and how does it work?** — Compare-And-Swap atomically compares a memory location with an expected value and swaps if equal. It is a hardware-level instruction (CMPXCHG on x86).
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What are the downsides of lock-free programming?** — ABA problem, livelock under extreme contention, harder to debug, memory reclamation complexity (hazard pointers, epoch-based).
 
-4. **What are common mistakes?**
-   [Answer]
+5. **How does `AtomicInteger` differ from `synchronized int`?** — AtomicInteger uses CAS (non-blocking); synchronized uses monitor locks (blocking). Under low contention, synchronized may be faster; under high contention, AtomicInteger wins.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What is a spin lock and when is it useful?** — A lock that busy-waits instead of blocking. Useful for very short critical sections where context switch overhead exceeds spin time.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **ABA problem**: CAS can succeed even when value changed A→B→A — use `AtomicStampedReference`
+2. **Livelock**: Thread repeatedly retries CAS without progress — add backoff or randomization
+3. **Memory reclamation**: Lock-free data structures need careful memory management (hazard pointers)
+4. **False sharing**: CAS on adjacent fields causes cache line bouncing — use padding
+5. **Over-engineering**: Simple operations don't need lock-free — `synchronized` is often faster under low contention
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Lock-free counter
+class LockFreeCounter {
+    private final AtomicInteger count = new AtomicInteger(0);
+    
+    void increment() {
+        count.incrementAndGet();
+    }
+    
+    int get() {
+        return count.get();
+    }
+}
+
+// CAS retry pattern
+class CASRetryExample {
+    private final AtomicInteger value = new AtomicInteger(0);
+    
+    int computeNewValue(int current) {
+        return current * 2 + 1;
+    }
+    
+    void update() {
+        int attempts = 0;
+        while (true) {
+            int current = value.get();
+            int next = computeNewValue(current);
+            if (value.compareAndSet(current, next)) {
+                System.out.println("Updated after " + attempts + " attempts");
+                break;
+            }
+            attempts++;
+        }
+    }
+}
+```
 
 ## Internal Working
 
-[How this works under the hood]
+Lock-free algorithms use hardware atomic instructions (CAS) to ensure thread safety without locks. When a CAS fails (another thread modified the value), the operation retries with the new value. The JVM provides `sun.misc.Unsafe` for CAS operations, wrapped by `java.util.concurrent.atomic` classes. The hardware guarantees atomicity of the CAS instruction on a single memory word.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Traditional locks have issues: deadlocks, priority inversion, and thread blocking under contention. Lock-free algorithms avoid these by using non-blocking atomic operations. At least one thread is always guaranteed to make progress, preventing system-wide stalls. This is critical for high-throughput systems: message queues, counters, and concurrent data structures.
 
 ## See Also
 
@@ -124,12 +158,10 @@ while (true) {
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Lock-free operations are O(1) but may retry multiple times under contention. Under low contention, CAS is faster than locks (~20ns vs ~100ns). Under high contention, lock-free provides better throughput because threads don't block. The JVM's biased locking and lock coarsening can make `synchronized` competitive for uncontended cases. Always benchmark with realistic workloads.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java Concurrent Atomic Package](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/atomic/package-summary.html)
+- [The Art of Multiprocessor Programming](https://www.amazon.com/Art-Multiprocessor-Programming-Revised-Reprint/dp/0123705916)
+- [Java Memory Model](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)

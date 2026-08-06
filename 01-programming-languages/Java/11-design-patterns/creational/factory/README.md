@@ -53,28 +53,63 @@ circle.draw();
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Factory method invocation adds ~10-50ns overhead (a switch/map lookup plus constructor call). This is negligible compared to object initialization cost. For hot paths, cache factory results or use a registry pattern with pre-built instances. Reflection-based factories (e.g., `Class.forName`) add ~1-5 microseconds — avoid in performance-critical code.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Payment processor factory
+interface PaymentProcessor {
+    void processPayment(double amount);
+}
+
+class CreditCardProcessor implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Charging credit card: $" + amount);
+    }
+}
+
+class PayPalProcessor implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Processing PayPal: $" + amount);
+    }
+}
+
+class PaymentProcessorFactory {
+    public static PaymentProcessor create(String type) {
+        return switch (type.toLowerCase()) {
+            case "credit" -> new CreditCardProcessor();
+            case "paypal" -> new PayPalProcessor();
+            default -> throw new IllegalArgumentException("Unknown: " + type);
+        };
+    }
+}
+
+// Usage
+PaymentProcessor processor = PaymentProcessorFactory.create("credit");
+processor.processPayment(99.99);
+```
 
 ## Internal Working
 
-[How this works under the hood]
+The factory method encapsulates object creation logic in a centralized location. When called, it evaluates input (type string, enum, config) and returns the appropriate concrete implementation. The client code depends only on the product interface, not on concrete classes. The factory uses polymorphism internally — the switch statement or map lookup resolves to a specific constructor call.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Object creation logic often depends on runtime conditions: configuration, user input, or environment. Without a factory, creation code is scattered across the application with `new` calls and conditionals. A factory centralizes this logic, makes it testable (you can mock the factory), and decouples the client from concrete types. It also enables returning different implementations based on context.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Over-engineering**: Simple constructors work fine when creation logic is trivial
+2. **God factory**: A single factory handling too many types becomes a maintenance burden
+3. **Hidden dependencies**: Factory masks which class is actually being created
+4. **Testing complexity**: Factory itself needs testing, and mocking factories requires frameworks
+5. **Violation of SRP**: Factory that does creation + validation + configuration violates single responsibility
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Refactoring.Guru - Factory Method](https://refactoring.guru/design-patterns/factory-method)
+- [Head First Design Patterns - Factory Pattern](https://www.oreilly.com/library/view/head-first-design/0596007124/)
+- [Effective Java - Item 53: Prefer interfaces to reflection](https://learning.oreilly.com/library/view/effective-java/9780134686097/)

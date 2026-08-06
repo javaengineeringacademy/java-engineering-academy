@@ -74,48 +74,66 @@ Netflix Hystrix popularized this pattern but is now in maintenance mode. Migrate
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What are the three states of a circuit breaker?** — CLOSED (normal), OPEN (failing, calls rejected), HALF_OPEN (trial calls allowed to test recovery).
 
-1. **What is this concept?**
-   [Answer]
+2. **When does a circuit breaker open?** — When the failure rate exceeds the threshold (default 50%) within the sliding window.
 
-2. **When would you use it?**
-   [Answer]
+3. **How does a circuit breaker recover?** — After `waitDurationInOpenState` expires, it transitions to HALF_OPEN. If trial calls succeed, it closes; if they fail, it reopens.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What is the difference between circuit breaker and retry?** — Circuit breaker prevents calls when a service is failing; retry attempts to recover from transient failures. They are complementary.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **How do you test a circuit breaker?** — Unit test state transitions with mocked failures. Use Resilience4j's `CircuitBreakerTestUtils` for state manipulation.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What happens if no fallback is configured?** — The exception propagates to the caller. Always provide a fallback for graceful degradation.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Circuit breaker adds ~10-50ns overhead per call (state check + metrics update). The benefit is avoiding cascading failures that cause seconds of latency. When open, calls fail immediately (~1µs) instead of timing out (~30s). Metrics use lock-free counters for high throughput.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Circuit breaker with fallback
+CircuitBreakerConfig config = CircuitBreakerConfig.custom()
+    .failureRateThreshold(50)
+    .waitDurationInOpenState(Duration.ofSeconds(30))
+    .slidingWindowSize(10)
+    .minimumNumberOfCalls(5)
+    .build();
+
+CircuitBreaker cb = CircuitBreaker.of("paymentService", config);
+
+// With fallback
+Supplier<String> decorated = CircuitBreaker
+    .decorateSupplier(cb, () -> paymentService.processPayment(order));
+
+String result = Try.ofSupplier(decorated)
+    .recover(CallNotPermittedException.class, e -> {
+        System.out.println("Circuit open, using fallback");
+        return "fallback: payment queued";
+    })
+    .recover(TimeoutException.class, e -> "fallback: timeout, retry later")
+    .get();
+```
 
 ## Internal Working
 
-[How this works under the hood]
-
-## Overview
-
-[Brief description of the topic]
+The circuit breaker tracks failures using a sliding window (count-based or time-based). Each call increments the failure counter. When the failure rate exceeds the threshold, the state transitions to OPEN. After the wait duration, it transitions to HALF_OPEN and allows trial calls. Success closes the circuit; failure reopens it. State transitions are atomic and thread-safe.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+When a downstream service fails, callers keep sending requests, overwhelming the failing service and consuming resources (threads, connections). Circuit breaker stops this by failing fast when failures exceed a threshold. This gives the failing service time to recover and prevents cascading failures across the system. It is essential for microservice resilience.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **No fallback**: Without a fallback, circuit breaker just changes the exception type — not helpful
+2. **Wrong thresholds**: Too sensitive (opens too often) or not sensitive enough (lets failures through)
+3. **Ignoring state changes**: Not monitoring when circuit opens/closes misses recovery opportunities
+4. **Not combining with retry**: Transient failures need retry; persistent failures need circuit breaker
+5. **Testing gaps**: Circuit breaker behavior must be tested with fault injection
 
 ## References
 
-- [Resilience4j Documentation](https://resilience4j.readme.io/)
-- Michael Nygard - *Release It!*
+- [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker)
+- [Michael Nygard - Release It!](https://pragprog.com/titles/mnee2/release-it-second-edition/)
+- [Netflix Hystrix (Legacy)](https://github.com/Netflix/Hystrix)

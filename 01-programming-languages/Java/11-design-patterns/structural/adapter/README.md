@@ -44,28 +44,69 @@ public class AudioPlayer implements MediaPlayer {
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Adapter adds minimal overhead — a single method delegation per call (~5-10ns). The cost is negligible compared to I/O or business logic. In performance-critical hot paths, consider inlining the adaptation directly. Multiple adapter layers (adapter of adapter) compound the overhead, so flatten when possible.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Target interface clients expect
+interface Charger {
+    void charge();
+}
+
+// Existing class with incompatible interface
+class USBCCharger {
+    void plugIntoUSBSocket() {
+        System.out.println("Charging via USB-C");
+    }
+}
+
+// Adapter makes USBCCharger work as a Charger
+class USBCToChargerAdapter implements Charger {
+    private final USBCCharger usbc;
+    
+    USBCToChargerAdapter(USBCCharger usbc) {
+        this.usbc = usbc;
+    }
+    
+    @Override
+    public void charge() {
+        usbc.plugIntoUSBSocket();
+    }
+}
+
+// Client code uses Charger interface
+class Phone {
+    void chargeWith(Charger charger) {
+        charger.charge();
+    }
+}
+
+// Usage
+Phone phone = new Phone();
+USBCCharger usbc = new USBCCharger();
+Charger adapter = new USBCToChargerAdapter(usbc);
+phone.chargeWith(adapter); // Works!
+```
 
 ## Internal Working
 
-[How this works under the hood]
+The adapter holds a reference to the adaptee object and implements the target interface. Each method in the target interface delegates to the corresponding adaptee method, potentially transforming parameters or return values. The client calls target methods; the adapter translates these to adaptee calls. No reflection or bytecode manipulation is involved — it is pure delegation.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Third-party libraries, legacy systems, and OS APIs expose interfaces you cannot change. When your code expects one interface but gets another, you need an adapter. It decouples your application from external dependencies and lets you integrate incompatible components without modifying either side.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Over-engineering**: If you control both sides, redesign the interface instead of adding an adapter
+2. **Too many adapters**: Indicates a deeper design problem — consider a facade
+3. **Performance in tight loops**: Adapter delegation in hot paths adds measurable overhead
+4. **Leaky abstraction**: Adapters that transform data may hide important details from the client
+5. **Testing complexity**: Adapters add a layer that must be tested separately
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Refactoring.Guru - Adapter Pattern](https://refactoring.guru/design-patterns/adapter)
+- [Head First Design Patterns - Adapter Pattern](https://www.oreilly.com/library/view/head-first-design/0596007124/)
+- [OpenJDK Collections - adapters in java.util](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/package-summary.html)

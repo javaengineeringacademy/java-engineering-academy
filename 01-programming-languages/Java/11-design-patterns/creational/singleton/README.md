@@ -57,28 +57,83 @@ public enum Singleton {
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Singleton initialization has negligible overhead. Double-checked locking adds a volatile write barrier (~10-20ns) on first access. Static holder and enum approaches have zero synchronization cost after class loading. In hot paths, the cost is a single null check (branch prediction handles this well).
 
 ## Internal Working
 
-[How this works under the hood]
+The JVM ensures a class is loaded only once via its class loader. Static holder leverages this: the inner class `Holder` is loaded only when referenced, at which point the JVM guarantees thread-safe initialization. Double-checked locking uses `volatile` to prevent instruction reordering — without it, another thread might see a partially constructed object. The enum approach is enforced by the JVM specification: enum constants are singletons by construction.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Many objects are naturally singular: a configuration manager, a thread pool, a logging service. Creating multiple instances wastes resources or causes inconsistent behavior. Singleton provides a controlled access point while hiding the instantiation mechanism. It solves the problem of "who owns the single instance" without global variables.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Bill Pugh Singleton (recommended)
+public class DatabaseConnection {
+    private DatabaseConnection() {}
+    
+    private static class Holder {
+        private static final DatabaseConnection INSTANCE = new DatabaseConnection();
+    }
+    
+    public static DatabaseConnection getInstance() {
+        return Holder.INSTANCE;
+    }
+    
+    public void query(String sql) { /* ... */ }
+}
+
+// Enum Singleton (Joshua Bloch recommended)
+public enum Configuration {
+    INSTANCE;
+    
+    private final Map<String, String> settings = new HashMap<>();
+    
+    public void set(String key, String value) {
+        settings.put(key, value);
+    }
+    
+    public String get(String key) {
+        return settings.get(key);
+    }
+}
+
+// Thread-safe lazy singleton with double-checked locking
+public class CacheManager {
+    private static volatile CacheManager instance;
+    private final Map<String, Object> cache = new ConcurrentHashMap<>();
+    
+    private CacheManager() {}
+    
+    public static CacheManager getInstance() {
+        if (instance == null) {
+            synchronized (CacheManager.class) {
+                if (instance == null) {
+                    instance = new CacheManager();
+                }
+            }
+        }
+        return instance;
+    }
+    
+    public void put(String key, Object value) {
+        cache.put(key, value);
+    }
+}
+```
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Global state**: Singletons introduce global mutable state, making testing harder
+2. **Tight coupling**: Classes depending directly on a singleton are hard to refactor
+3. **Testability**: Static `getInstance()` makes mocking difficult without frameworks like Mockito
+4. **Class loader leaks**: In app servers, singleton held by a web app's class loader can prevent undeployment
+5. **Overuse**: Use dependency injection instead when possible; singletons are often a code smell
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Effective Java - Item 3: Enforce the singleton property with a private constructor or an enum type](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
+- [Oracle Java Documentation - Singleton Pattern](https://docs.oracle.com/javase/tutorial/essential/concepts/)
+- [Baeldung - Singleton Pattern in Java](https://www.baeldung.com/java-singleton)

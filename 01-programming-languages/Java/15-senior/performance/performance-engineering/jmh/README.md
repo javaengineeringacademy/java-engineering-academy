@@ -207,46 +207,75 @@ java -jar benchmarks.jar -prof gc StringConcatBenchmark
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **Why can't you use `System.nanoTime()` for benchmarking?** — It measures wall-clock time including GC pauses and OS scheduling. JMH handles warmup, dead code elimination, and statistical analysis.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is dead code elimination in benchmarking?** — If the JIT determines a computation's result is unused, it may skip it entirely, producing misleading fast results. Use `Blackhole.consume()` or return the value.
 
-2. **When would you use it?**
-   [Answer]
+3. **Why is `@Fork` necessary?** — Each fork starts a fresh JVM, isolating benchmarks from JIT state of the host JVM and other benchmarks. Without forks, results are contaminated.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What is the difference between `avgt` and `sample` modes?** — `avgt` reports mean time per operation. `sample` collects individual operation times and reports percentiles (p50, p99, etc.). Use `sample` for latency-sensitive code.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **How many warmup iterations are enough?** — At least 10,000 invocations for the JIT to compile hot methods. JMH defaults are conservative; increase for complex code paths.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What is `@CompilerControl`?** — Forces or prevents JIT inlining/control-flow optimizations for specific methods. Useful for measuring the effect of a single optimization.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+JMH itself adds ~10-50ns overhead per benchmark iteration (annotations, mode checks, timing). The benchmark overhead is negligible compared to most real operations. Fork management adds ~1-5 seconds per fork (JVM startup). For reliable results, use at least 3 forks with 10+ warmup and 10+ measurement iterations.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Warmup(iterations = 10, time = 1)
+@Measurement(iterations = 10, time = 1)
+@Fork(3)
+@State(Scope.Benchmark)
+public class StringBenchmark {
+    
+    @Benchmark
+    public String stringConcat() {
+        String result = "";
+        for (int i = 0; i < 100; i++) {
+            result += i;
+        }
+        return result;
+    }
+    
+    @Benchmark
+    public String stringBuilder() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            sb.append(i);
+        }
+        return sb.toString();
+    }
+    
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+            .include(StringBenchmark.class.getSimpleName())
+            .build();
+        new Runner(opt).run();
+    }
+}
+```
 
 ## Internal Working
 
-[How this works under the hood]
+JMH generates benchmark code at compile time (annotation processor). It wraps the benchmark method with timing infrastructure, applies dead code elimination prevention (Blackhole or return values), and manages warmup/measurement iterations. The JVM's JIT compiler optimizes the benchmark during warmup, and JMH collects timing data using `System.nanoTime()` with high-precision counters.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
-
-## Overview
-
-[Brief description of the topic]
+Microbenchmarking Java code is deceptively hard. The JIT compiler optimizes aggressively — it can eliminate dead code, inline methods, and vectorize loops. Without proper warmup and dead code prevention, benchmarks measure the wrong thing. JMH was created by the OpenJDK team to provide a correct, reliable benchmarking harness that accounts for JIT behavior.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Not enough warmup**: JIT needs 10,000+ invocations to compile — premature measurement gives wrong results
+2. **Dead code elimination**: If benchmark result is unused, JIT skips the computation — use Blackhole
+3. **JVM state contamination**: Running benchmarks without `@Fork` inherits JIT state from previous runs
+4. **Benchmarking too much**: Keep each benchmark focused on a single operation
+5. **Ignoring GC**: GC pauses affect timing — use `-prof gc` to measure allocation rate
 
 ## References
 

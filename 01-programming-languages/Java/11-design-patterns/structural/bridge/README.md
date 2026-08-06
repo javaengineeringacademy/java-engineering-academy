@@ -45,28 +45,75 @@ public class Circle extends Shape {
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Bridge adds one level of indirection (~5ns per delegation). For I/O-bound or business logic operations, this is negligible. The benefit is structural: without bridge, you need M×N subclasses for M abstractions × N implementations. Bridge reduces this to M+N classes.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Shape × Color bridge
+interface Color {
+    String fill();
+}
+
+class Red implements Color {
+    @Override public String fill() { return "Red"; }
+}
+
+class Blue implements Color {
+    @Override public String fill() { return "Blue"; }
+}
+
+abstract class Shape {
+    protected Color color;
+    
+    Shape(Color color) { this.color = color; }
+    
+    abstract void draw();
+}
+
+class Circle extends Shape {
+    Circle(Color color) { super(color); }
+    
+    @Override
+    void draw() {
+        System.out.println("Drawing Circle in " + color.fill());
+    }
+}
+
+class Square extends Shape {
+    Square(Color color) { super(color); }
+    
+    @Override
+    void draw() {
+        System.out.println("Drawing Square in " + color.fill());
+    }
+}
+
+// Usage - combine any shape with any color
+Shape redCircle = new Circle(new Red());
+Shape blueSquare = new Square(new Blue());
+redCircle.draw();   // Drawing Circle in Red
+blueSquare.draw();  // Drawing Square in Blue
+```
 
 ## Internal Working
 
-[How this works under the hood]
+Bridge separates two hierarchies: abstraction (Shape) and implementation (Color). The abstraction holds a reference to the implementation interface. Concrete abstractions call implementation methods through this reference. This decouples the two — you can add new shapes without touching colors, and new colors without touching shapes. The two hierarchies evolve independently.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+When you have two independent dimensions of variation (shape × color, platform × format), combining them with inheritance creates a class explosion: RedCircle, BlueCircle, RedSquare, BlueSquare. Bridge uses composition instead: Shape holds a Color reference. Adding Green requires one new Color class, not three new shape-color classes. This is the same principle as "favor composition over inheritance."
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Over-engineering**: Simple hierarchies (2×2) don't need bridge — inheritance is clearer
+2. **Wrong boundaries**: If abstraction and implementation are not independent, bridge adds complexity without benefit
+3. **Indirection confusion**: Two levels of hierarchy can be harder to follow than direct inheritance
+4. **Configuration**: Selecting the right implementation at runtime requires a factory or DI
+5. **Limited support**: Not all languages handle bridge well — Java's single inheritance makes it natural
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Refactoring.Guru - Bridge Pattern](https://refactoring.guru/design-patterns/bridge)
+- [Head First Design Patterns - Bridge Pattern](https://www.oreilly.com/library/view/head-first-design/0596007124/)
+- [Java AWT Component hierarchy](https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/java/awt/package-summary.html)

@@ -42,28 +42,80 @@ public class ProxyImage implements Image {
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Proxy adds one method delegation (~5-10ns) per call. In access-controlled or logging proxies, the overhead includes the additional logic (permission check, log write). Virtual proxies defer expensive initialization — the first call pays the cost, subsequent calls are fast. Caching proxies amortize the real object cost over multiple requests.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Access-controlled proxy
+interface Document {
+    String readContent();
+    void writeContent(String content);
+}
+
+class RealDocument implements Document {
+    private String content;
+    
+    RealDocument(String content) { this.content = content; }
+    
+    @Override
+    public String readContent() { return content; }
+    
+    @Override
+    public void writeContent(String content) { this.content = content; }
+}
+
+class ProtectionProxy implements Document {
+    private final RealDocument document;
+    private final String userRole;
+    
+    ProtectionProxy(RealDocument document, String userRole) {
+        this.document = document;
+        this.userRole = userRole;
+    }
+    
+    @Override
+    public String readContent() {
+        System.out.println("Access check for: " + userRole);
+        return document.readContent();
+    }
+    
+    @Override
+    public void writeContent(String content) {
+        if (!"admin".equals(userRole)) {
+            throw new SecurityException("Write access denied");
+        }
+        document.writeContent(content);
+    }
+}
+
+// Usage
+Document doc = new ProtectionProxy(new RealDocument("Secret"), "admin");
+System.out.println(doc.readContent()); // Secret
+doc.writeContent("Updated"); // OK
+
+Document guest = new ProtectionProxy(new RealDocument("Secret"), "guest");
+guest.writeContent("Hack"); // SecurityException
+```
 
 ## Internal Working
 
-[How this works under the hood]
+The proxy implements the same interface as the real subject. It holds a reference to the real subject and controls access to it. The client interacts with the proxy as if it were the real subject. The proxy can perform pre-processing (permission check, logging, lazy initialization) before delegating to the real subject. Types include virtual (lazy loading), protection (access control), caching, and logging proxies.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Direct access to objects is not always desirable. You may need to defer expensive initialization until actually needed (virtual proxy), enforce access control (protection proxy), cache results (caching proxy), or log every operation (logging proxy). Proxy adds this control without modifying the real subject. It is the foundation of RMI stubs, Spring AOP, and ORM lazy loading.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Transparency**: Clients may not realize they are talking to a proxy — can cause confusion
+2. **Overhead**: Every call goes through the proxy — performance-sensitive paths need careful design
+3. **Leaky abstraction**: Proxy may expose behavior the real subject does not have
+4. **Complexity**: Multiple proxy types (virtual, protection, caching) can be combined, making debugging hard
+5. **Memory leaks**: Virtual proxies that cache expensive objects may hold references unnecessarily
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Refactoring.Guru - Proxy Pattern](https://refactoring.guru/design-patterns/proxy)
+- [Java RMI Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/package-summary.html)
+- [Spring AOP Documentation](https://docs.spring.io/spring-framework/reference/core/aop.html)

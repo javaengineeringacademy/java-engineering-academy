@@ -391,47 +391,71 @@ Set<String> set = new HashSet<>();
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **How do you find a memory leak?** — Take heap dumps with `jmap` or JFR, compare snapshots over time, look for objects with increasing counts that should be collected.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is the difference between throughput and latency tuning?** — Throughput: maximize work per time unit (Parallel GC). Latency: minimize pause times (ZGC, G1). They often trade off against each other.
 
-2. **When would you use it?**
-   [Answer]
+3. **When should you set `-Xms` equal to `-Xmx`?** — Always for production. It prevents heap resizing pauses during GC. The JVM grows/shrinks the heap between these bounds, causing latency spikes.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **How do you tune GC pauses?** — Use G1 with `-XX:MaxGCPauseMillis=200`, or ZGC for sub-10ms pauses. Tune region size and initiating heap occupancy percentage.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **What is the first thing to check when an application is slow?** — Profile first. Don't guess. Use JFR or async-profiler to find the actual bottleneck before optimizing.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What is false sharing and how do you fix it?** — Threads modifying variables on the same cache line cause cache bouncing. Fix with `@Contended` annotation or padding fields.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
-
-## Performance
-
-[Performance considerations and benchmarks]
+1. **Premature optimization**: Optimizing without profiling wastes time on non-bottlenecks
+2. **Wrong GC choice**: Using Parallel GC for latency-sensitive apps causes long pauses
+3. **Ignoring GC logs**: Not monitoring GC in production hides memory issues until they are critical
+4. **Over-tuning flags**: Too many JVM flags create configuration drift — change one at a time
+5. **Not testing under load**: Benchmarks without realistic traffic miss real-world issues
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Before: String concatenation in loop (O(n²))
+public String badConcatenate(List<String> items) {
+    String result = "";
+    for (String item : items) {
+        result += item;
+    }
+    return result;
+}
+
+// After: StringBuilder (O(n))
+public String goodConcatenate(List<String> items) {
+    StringBuilder sb = new StringBuilder(items.size() * 10);
+    for (String item : items) {
+        sb.append(item);
+    }
+    return sb.toString();
+}
+
+// Before: Lock contention
+public class BadCounter {
+    private int count = 0;
+    public synchronized void increment() { count++; }
+}
+
+// After: Lock-free atomic
+public class GoodCounter {
+    private final AtomicInteger count = new AtomicInteger(0);
+    public void increment() { count.incrementAndGet(); }
+}
+```
 
 ## Internal Working
 
-[How this works under the hood]
+Performance tuning involves three JVM subsystems: memory (heap sizing, GC), JIT compilation (tiered compilation, inlining), and threading (pool sizing, contention). The profiling pipeline: measure → identify bottleneck → optimize → re-measure. Tools like JFR record events at ~1% overhead; async-profiler uses perf events for ~0.1% overhead. Never optimize without data.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Java applications often need to meet strict latency (< 100ms) or throughput (10K+ req/s) requirements. The JVM provides many tuning knobs but they must be configured correctly. Default settings work for development but not production. Performance tuning bridges the gap between "it works" and "it works at scale."
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java Performance Tuning Guide](https://www.baeldung.com/java-performance)
+- [Oracle JVM Performance Documentation](https://docs.oracle.com/en/java/javase/21/gctuning/)
+- [Java Flight Recorder](https://docs.oracle.com/en/java/javase/21/jfapi/)
+- [async-profiler](https://github.com/async-profiler/async-profiler)

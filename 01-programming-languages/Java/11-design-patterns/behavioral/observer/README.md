@@ -33,28 +33,78 @@ NewsAgency (concrete)        NewsReader (concrete)
 
 ## Performance
 
-[Performance considerations and benchmarks]
+Notification cost is O(n) per observer list iteration. For thousands of observers, consider batched notifications or async delivery. Observer registration/deregistration is O(1) with a HashSet, O(n) with a List. In high-frequency event systems, use a concurrent copy-on-write list to avoid lock contention during iteration.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+interface StockObserver {
+    void update(String stock, double price);
+}
+
+class StockMarket {
+    private final List<StockObserver> observers = new ArrayList<>();
+    private final Map<String, Double> prices = new HashMap<>();
+    
+    void addObserver(StockObserver observer) {
+        observers.add(observer);
+    }
+    
+    void removeObserver(StockObserver observer) {
+        observers.remove(observer);
+    }
+    
+    void setPrice(String stock, double price) {
+        prices.put(stock, price);
+        notifyObservers(stock, price);
+    }
+    
+    private void notifyObservers(String stock, double price) {
+        for (StockObserver observer : observers) {
+            observer.update(stock, price);
+        }
+    }
+}
+
+class MobileApp implements StockObserver {
+    @Override
+    public void update(String stock, double price) {
+        System.out.println("Mobile alert: " + stock + " now $" + price);
+    }
+}
+
+class TradingBot implements StockObserver {
+    @Override
+    public void update(String stock, double price) {
+        if (price > 100) System.out.println("Bot buying " + stock);
+    }
+}
+
+// Usage
+StockMarket market = new StockMarket();
+market.addObserver(new MobileApp());
+market.addObserver(new TradingBot());
+market.setPrice("AAPL", 150.0); // Both notified
+```
 
 ## Internal Working
 
-[How this works under the hood]
+The subject maintains a list of observer references. When state changes, it iterates the list and calls each observer's update method. Java's `PropertyChangeListener` and `EventListenerList` use this pattern. Swing/AWT event dispatch uses an observer-like mechanism with event queues. The key is that the subject does not know the concrete type of observers — it only depends on the observer interface.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Many objects need to react to state changes in other objects without tight coupling. GUI frameworks need to notify buttons when data changes. Message queues need to fan out events. Stock tickers need to push price updates. Observer decouples the event source from consumers, enabling open/closed principle — new observers can be added without modifying the subject.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Memory leaks**: Forgetting to remove observers causes memory leaks, especially in long-lived subjects
+2. **Update order**: Notification order is not guaranteed; observers should not depend on each other
+3. **Cascading updates**: Observer A triggers subject update which triggers observer B which triggers A — infinite loop
+4. **Thread safety**: Subject and observer list must be synchronized if accessed from multiple threads
+5. **Granularity**: Fine-grained notifications flood observers; coarse-grained ones waste cycles
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Refactoring.Guru - Observer Pattern](https://refactoring.guru/design-patterns/observer)
+- [Oracle Java Documentation - PropertyChangeListener](https://docs.oracle.com/en/java/javase/21/docs/api/java.desktop/java/beans/PropertyChangeListener.html)
+- [Head First Design Patterns - Observer Pattern](https://www.oreilly.com/library/view/head-first-design/0596007124/)
