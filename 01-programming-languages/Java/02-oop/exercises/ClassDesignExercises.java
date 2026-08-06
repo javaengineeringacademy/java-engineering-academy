@@ -59,7 +59,7 @@ public class ClassDesignExercises {
             //     System.out.println("Test 1 FAILED: BankAccount");
             // }
             System.out.println("Test 1 SKIPPED: BankAccount - implement inner class");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Test 1 FAILED: BankAccount - " + e.getMessage());
         }
 
@@ -79,7 +79,7 @@ public class ClassDesignExercises {
             //     System.out.println("Test 2 FAILED: Address");
             // }
             System.out.println("Test 2 SKIPPED: Address - implement inner class");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Test 2 FAILED: Address - " + e.getMessage());
         }
 
@@ -101,7 +101,7 @@ public class ClassDesignExercises {
             //     System.out.println("Test 3 FAILED: Computer Builder");
             // }
             System.out.println("Test 3 SKIPPED: Computer Builder - implement inner classes");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println("Test 3 FAILED: Computer Builder - " + e.getMessage());
         }
 

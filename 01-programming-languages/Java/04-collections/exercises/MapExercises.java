@@ -184,7 +184,7 @@ public class MapExercises {
             } else {
                 System.out.println("Test 7 FAILED: SimpleCache");
             }
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             System.out.println("Test 7 FAILED: SimpleCache - " + e.getMessage());
         }
 

@@ -84,7 +84,7 @@ public class PolymorphismExercises {
             //     System.out.println("Test 1 FAILED: Payment system");
             // }
             System.out.println("Test 1 SKIPPED: Payment system - implement classes");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | ClassCastException e) {
             System.out.println("Test 1 FAILED: Payment system - " + e.getMessage());
         }
 
@@ -112,7 +112,7 @@ public class PolymorphismExercises {
             //     System.out.println("Test 2 FAILED: Notification system");
             // }
             System.out.println("Test 2 SKIPPED: Notification system - implement classes");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | ClassCastException e) {
             System.out.println("Test 2 FAILED: Notification system - " + e.getMessage());
         }
 

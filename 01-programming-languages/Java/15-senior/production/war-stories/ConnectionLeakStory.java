@@ -540,7 +540,7 @@ public class ConnectionLeakStory {
             try {
                 // This will fail after 5 requests (pool size = 5)
                 buggyService.generateReport("monthly");
-            } catch (Exception e) {
+            } catch (java.sql.SQLException e) {
                 System.out.println("Request " + i + " failed: " + e.getMessage());
             }
         }
@@ -560,7 +560,7 @@ public class ConnectionLeakStory {
             try {
                 fixedService.generateReport("monthly");
                 System.out.println("Request " + i + " succeeded");
-            } catch (Exception e) {
+            } catch (java.sql.SQLException e) {
                 System.out.println("Request " + i + " failed: " + e.getMessage());
             }
         }

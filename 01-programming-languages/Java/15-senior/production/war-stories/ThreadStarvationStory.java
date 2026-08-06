@@ -67,7 +67,7 @@ public class ThreadStarvationStory {
             // This will timeout if all threads are busy
             try {
                 return future.get(30, TimeUnit.SECONDS);
-            } catch (Exception e) {
+            } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
                 throw new RuntimeException("Request timed out", e);
             }
         }
@@ -193,7 +193,7 @@ public class ThreadStarvationStory {
                     );
                     return criticalFuture.get(5, TimeUnit.SECONDS);
                 }
-            } catch (Exception e) {
+            } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
                 int failures = failureCount.incrementAndGet();
                 if (failures >= FAILURE_THRESHOLD) {
                     circuitOpen = true;
@@ -231,7 +231,7 @@ public class ThreadStarvationStory {
                 try {
                     String result = buggyGateway.handleRequest("user-" + requestId, null);
                     System.out.println("Request " + requestId + " succeeded: " + result);
-                } catch (Exception e) {
+                } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
                     System.out.println("Request " + requestId + " failed: " + e.getMessage());
                 }
             });
@@ -279,7 +279,7 @@ public class ThreadStarvationStory {
                     
                     String result = fixedGateway.handleRequest(userId, token);
                     System.out.println("Request " + requestId + " succeeded: " + result);
-                } catch (Exception e) {
+                } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
                     System.out.println("Request " + requestId + " failed: " + e.getMessage());
                 }
             });

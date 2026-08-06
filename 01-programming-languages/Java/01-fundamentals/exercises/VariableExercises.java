@@ -86,7 +86,7 @@ public class VariableExercises {
             } else {
                 System.out.println("Test 1 FAILED: primitiveTypeValues - incorrect values or types");
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | RuntimeException e) {
             System.out.println("Test 1 FAILED: primitiveTypeValues - " + e.getMessage());
         }
 
@@ -104,7 +104,7 @@ public class VariableExercises {
             } else {
                 System.out.println("Test 2 FAILED: typeCasting - incorrect values");
             }
-        } catch (Exception e) {
+        } catch (ClassCastException | IllegalArgumentException e) {
             System.out.println("Test 2 FAILED: typeCasting - " + e.getMessage());
         }
 
@@ -118,7 +118,7 @@ public class VariableExercises {
             } else {
                 System.out.println("Test 3 FAILED: compoundInterest - expected ~1647.01, got " + result);
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 3 FAILED: compoundInterest - " + e.getMessage());
         }
 
@@ -132,7 +132,7 @@ public class VariableExercises {
             } else {
                 System.out.println("Test 4 FAILED: temperatureConversion - expected [212.0, 0.0], got [" + temps[0] + ", " + temps[1] + "]");
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 4 FAILED: temperatureConversion - " + e.getMessage());
         }
 
@@ -149,7 +149,7 @@ public class VariableExercises {
             } else {
                 System.out.println("Test 5 FAILED: isValidVariableName");
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 5 FAILED: isValidVariableName - " + e.getMessage());
         }
 

@@ -131,7 +131,7 @@ public class ControlFlowExercises {
             } else {
                 System.out.println("Test 5 FAILED: calculate");
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 5 FAILED: calculate - " + e.getMessage());
         }
 

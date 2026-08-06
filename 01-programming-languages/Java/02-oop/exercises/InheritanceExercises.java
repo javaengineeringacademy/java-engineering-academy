@@ -68,7 +68,7 @@ public class InheritanceExercises {
             //     System.out.println("Test 1 FAILED: Shape hierarchy");
             // }
             System.out.println("Test 1 SKIPPED: Shape hierarchy - implement classes");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | UnsupportedOperationException e) {
             System.out.println("Test 1 FAILED: Shape hierarchy - " + e.getMessage());
         }
 
@@ -94,7 +94,7 @@ public class InheritanceExercises {
             //     System.out.println("Test 2 FAILED: Employee hierarchy");
             // }
             System.out.println("Test 2 SKIPPED: Employee hierarchy - implement classes");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | UnsupportedOperationException e) {
             System.out.println("Test 2 FAILED: Employee hierarchy - " + e.getMessage());
         }
 

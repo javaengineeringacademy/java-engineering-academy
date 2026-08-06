@@ -100,7 +100,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 1 FAILED: executeTasks - got " + results);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             System.out.println("Test 1 FAILED: executeTasks - " + e.getMessage());
         }
 
@@ -115,7 +115,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 2 FAILED: parallelMap - got " + doubled);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             System.out.println("Test 2 FAILED: parallelMap - " + e.getMessage());
         }
 
@@ -135,7 +135,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 3 FAILED: executeWithTimeout - fast=" + fast + ", slow=" + slow);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
             System.out.println("Test 3 FAILED: executeWithTimeout - " + e.getMessage());
         }
 
@@ -150,7 +150,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 4 FAILED: fetchAndCalculateTotal - got " + totalAmount);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException e) {
             System.out.println("Test 4 FAILED: fetchAndCalculateTotal - " + e.getMessage());
         }
 
@@ -169,7 +169,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 5 FAILED: submitAndWaitAll - got " + results);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             System.out.println("Test 5 FAILED: submitAndWaitAll - " + e.getMessage());
         }
 
@@ -188,7 +188,7 @@ public class ExecutorExercises {
             } else {
                 System.out.println("Test 6 FAILED: retryOnFailure - result=" + result + ", attempts=" + attempts[0]);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             System.out.println("Test 6 FAILED: retryOnFailure - " + e.getMessage());
         }
 

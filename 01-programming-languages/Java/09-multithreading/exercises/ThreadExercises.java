@@ -128,7 +128,7 @@ public class ThreadExercises {
             } else {
                 System.out.println("Test 1 FAILED: SynchronizedCounter - expected 10000, got " + counter.getCount());
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println("Test 1 FAILED: SynchronizedCounter - " + e.getMessage());
         }
 
@@ -150,7 +150,7 @@ public class ThreadExercises {
             } else {
                 System.out.println("Test 2 FAILED: AtomicCounter - expected 10000, got " + atomicCounter.getCount());
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println("Test 2 FAILED: AtomicCounter - " + e.getMessage());
         }
 
@@ -190,7 +190,7 @@ public class ThreadExercises {
             } else {
                 System.out.println("Test 3 FAILED: BoundedBuffer");
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println("Test 3 FAILED: BoundedBuffer - " + e.getMessage());
         }
 
@@ -209,7 +209,7 @@ public class ThreadExercises {
                         readCount.incrementAndGet();
                         Thread.sleep(10);
                         rwLock.readUnlock();
-                    } catch (Exception e) {}
+                    } catch (InterruptedException e) {}
                 });
             }
 
@@ -219,7 +219,7 @@ public class ThreadExercises {
                     writeCount.incrementAndGet();
                     Thread.sleep(10);
                     rwLock.writeUnlock();
-                } catch (Exception e) {}
+                } catch (InterruptedException e) {}
             });
 
             for (Thread r : readers) r.start();
@@ -233,7 +233,7 @@ public class ThreadExercises {
             } else {
                 System.out.println("Test 4 FAILED: ReadWriteLock");
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println("Test 4 FAILED: ReadWriteLock - " + e.getMessage());
         }
 

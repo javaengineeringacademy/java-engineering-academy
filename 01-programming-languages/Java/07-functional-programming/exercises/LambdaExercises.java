@@ -96,7 +96,7 @@ public class LambdaExercises {
             } else {
                 System.out.println("Test 1 FAILED: lambda basics");
             }
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             System.out.println("Test 1 FAILED: lambda basics - " + e.getMessage());
         }
 
@@ -114,7 +114,7 @@ public class LambdaExercises {
             } else {
                 System.out.println("Test 2 FAILED: filtering with lambdas");
             }
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             System.out.println("Test 2 FAILED: filtering with lambdas - " + e.getMessage());
         }
 
@@ -131,7 +131,7 @@ public class LambdaExercises {
             } else {
                 System.out.println("Test 3 FAILED: custom functional interface - got '" + result + "'");
             }
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             System.out.println("Test 3 FAILED: custom functional interface - " + e.getMessage());
         }
 
@@ -149,7 +149,7 @@ public class LambdaExercises {
             } else {
                 System.out.println("Test 4 FAILED: function composition - got " + (composed != null ? composed.apply(5) : "null"));
             }
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             System.out.println("Test 4 FAILED: function composition - " + e.getMessage());
         }
 
@@ -165,7 +165,7 @@ public class LambdaExercises {
             } else {
                 System.out.println("Test 5 FAILED: curry");
             }
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             System.out.println("Test 5 FAILED: curry - " + e.getMessage());
         }
 

@@ -65,7 +65,7 @@ public class RecordsExercises {
             //     System.out.println("Test 1 FAILED: Point record");
             // }
             System.out.println("Test 1 SKIPPED: Point record - implement record");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 1 FAILED: Point record - " + e.getMessage());
         }
 
@@ -83,7 +83,7 @@ public class RecordsExercises {
             //     System.out.println("Test 2 FAILED: Product record");
             // }
             System.out.println("Test 2 SKIPPED: Product record - implement record");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 2 FAILED: Product record - " + e.getMessage());
         }
 
@@ -102,7 +102,7 @@ public class RecordsExercises {
             //     System.out.println("Test 3 FAILED: Address record");
             // }
             System.out.println("Test 3 SKIPPED: Address record - implement record");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 3 FAILED: Address record - " + e.getMessage());
         }
 
@@ -122,7 +122,7 @@ public class RecordsExercises {
             //     System.out.println("Test 4 FAILED: Complex records");
             // }
             System.out.println("Test 4 SKIPPED: Complex records - implement records");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Test 4 FAILED: Complex records - " + e.getMessage());
         }
 
