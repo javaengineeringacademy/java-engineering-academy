@@ -55,6 +55,8 @@ How do you organize code to be modular, reusable, and maintainable?
 | default | ✅ | ✅ | ❌ | ❌ |
 | private | ✅ | ❌ | ❌ | ❌ |
 
+> See `36-access-modifiers/` for detailed examples, patterns, and interview questions.
+
 ## Internal Working
 
 ### Object Creation

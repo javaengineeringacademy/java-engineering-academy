@@ -16,6 +16,7 @@ By the end of this module, you'll be able to:
 - Manipulate strings (text) in your programs
 - Organize code using Java packages and understand project structure
 - Manage builds and dependencies with Maven
+- Know all 67 Java reserved keywords and when to use each
 
 ---
 
@@ -39,8 +40,9 @@ By the end of this module, you'll be able to:
 | 6 | [Strings](06-strings/) | Working with text | 2-3 hours |
 | 7 | [Project Structure & Packages](07-project-structure/) | Organizing code with packages | 2-3 hours |
 | 8 | [Maven](08-maven/) | Build tool and dependency management | 3-4 hours |
+| 9 | [Keywords](10-keywords/) | All 67 Java reserved keywords | 2-3 hours |
 
-**Total time:** 19-27 hours (learn at your own pace)
+**Total time:** 21-30 hours (learn at your own pace)
 
 ---
 

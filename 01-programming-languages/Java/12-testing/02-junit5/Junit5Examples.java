@@ -1,98 +1,224 @@
-package testing;
+package academy.javaengineering.testing;
+
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Junit5Examples - @Test, @BeforeEach, assertions
+ * JUnit 5 examples - annotations, assertions, lifecycle, parameterized tests
  *
- * Covers:
- * - JUnit 5 annotations
- * - Assertions
- * - Lifecycle callbacks
- * - Parameterized tests
- * - Nested tests
+ * This file covers:
+ * - @Test, @BeforeEach, @AfterEach, @BeforeAll, @AfterAll
+ * - Assertions: assertEquals, assertTrue, assertThrows, assertAll
+ * - @DisplayName for readable test names
+ * - @Nested for grouping related tests
+ * - @ParameterizedTest with @ValueSource, @CsvSource
+ * - Exception testing
  */
-public class Junit5Examples {
+class Junit5ExamplesTest {
 
-    private List<String>名单;
+    private List<String> names;
 
-    public void setUp() {
-       名单 = new ArrayList<>();
-       名单.add("Alice");
-       名单.add("Bob");
-       名单.add("Charlie");
+    // =========================================================
+    // 1. LIFECYCLE CALLBACKS
+    // =========================================================
+
+    @BeforeAll
+    static void beforeAll() {
+        // Runs once before all tests in this class
+        // Use for expensive setup (database, file system)
+        System.out.println("Setting up test class...");
     }
 
-    public void testListSize() {
-        setUp();
-        assert名单.size() == 3 : "List should have 3 elements";
-        System.out.println("testListSize: PASS");
+    @AfterAll
+    static void afterAll() {
+        // Runs once after all tests in this class
+        // Use for cleanup (close connections, delete temp files)
+        System.out.println("Tearing down test class...");
     }
 
-    public void testListContains() {
-        setUp();
-        assert名单.contains("Alice") : "List should contain Alice";
-        assert名单.contains("Bob") : "List should contain Bob";
-        assert名单.contains("Charlie") : "List should contain Charlie";
-        System.out.println("testListContains: PASS");
+    @BeforeEach
+    void setUp() {
+        // Runs before each test method
+        names = new ArrayList<>();
+        names.add("Alice");
+        names.add("Bob");
+        names.add("Charlie");
     }
 
-    public void testListAdd() {
-        setUp();
-       名单.add("David");
-        assert名单.size() == 4 : "List should have 4 elements after add";
-        assert名单.contains("David") : "List should contain David";
-        System.out.println("testListAdd: PASS");
+    @AfterEach
+    void tearDown() {
+        // Runs after each test method
+        // Use to clean up resources between tests
+        names = null;
     }
 
-    public void testListRemove() {
-        setUp();
-       名单.remove("Bob");
-        assert名单.size() == 2 : "List should have 2 elements after remove";
-        assert!名单.contains("Bob") : "List should not contain Bob";
-        System.out.println("testListRemove: PASS");
+    // =========================================================
+    // 2. BASIC ASSERTIONS
+    // =========================================================
+
+    @Test
+    @DisplayName("List should contain 3 elements after setup")
+    void shouldHaveThreeElements() {
+        assertEquals(3, names.size());
     }
 
-    public void testExceptionHandling() {
-        setUp();
-        try {
-           名单.get(10); // Should throw IndexOutOfBoundsException
-            assert false : "Should have thrown exception";
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("testExceptionHandling: PASS (exception caught)");
+    @Test
+    @DisplayName("List should contain Alice, Bob, Charlie")
+    void shouldContainInitialNames() {
+        assertAll(
+            () -> assertTrue(names.contains("Alice"), "Should contain Alice"),
+            () -> assertTrue(names.contains("Bob"), "Should contain Bob"),
+            () -> assertTrue(names.contains("Charlie"), "Should contain Charlie")
+        );
+    }
+
+    // =========================================================
+    // 3. ADDING AND REMOVING
+    // =========================================================
+
+    @Test
+    @DisplayName("Adding a name increases list size")
+    void shouldAddName() {
+        names.add("David");
+
+        assertEquals(4, names.size());
+        assertTrue(names.contains("David"));
+    }
+
+    @Test
+    @DisplayName("Removing a name decreases list size")
+    void shouldRemoveName() {
+        names.remove("Bob");
+
+        assertEquals(2, names.size());
+        assertFalse(names.contains("Bob"));
+    }
+
+    // =========================================================
+    // 4. EXCEPTION TESTING
+    // =========================================================
+
+    @Test
+    @DisplayName("Accessing index beyond size throws exception")
+    void shouldThrowOnOutOfBoundsAccess() {
+        IndexOutOfBoundsException exception = assertThrows(
+            IndexOutOfBoundsException.class,
+            () -> names.get(10)
+        );
+        assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Removing non-existent element does not change size")
+    void shouldNotChangeSizeWhenRemovingNonExistent() {
+        boolean removed = names.remove("Zara");
+
+        assertFalse(removed);
+        assertEquals(3, names.size());
+    }
+
+    // =========================================================
+    // 5. NESTED TESTS - Group related tests
+    // =========================================================
+
+    @Nested
+    @DisplayName("When list is empty")
+    class EmptyListTests {
+
+        @BeforeEach
+        void setUpEmpty() {
+            names.clear();
+        }
+
+        @Test
+        @DisplayName("Size should be 0")
+        void shouldHaveSizeZero() {
+            assertEquals(0, names.size());
+        }
+
+        @Test
+        @DisplayName("Contains should return false")
+        void shouldNotContainAnything() {
+            assertFalse(names.contains("Alice"));
+        }
+
+        @Test
+        @DisplayName("Adding first element should work")
+        void shouldAddFirstElement() {
+            names.add("First");
+            assertEquals(1, names.size());
+            assertEquals("First", names.get(0));
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== JUnit 5 Examples ===\n");
+    // =========================================================
+    // 6. PARAMETERIZED TESTS
+    // =========================================================
 
-        Junit5Examples examples = new Junit5Examples();
+    @ParameterizedTest
+    @DisplayName("All listed names should be recognized as valid")
+    @ValueSource(strings = {"Alice", "Bob", "Charlie", "David"})
+    void shouldRecognizeValidNames(String name) {
+        names.add(name);
+        assertTrue(names.contains(name));
+    }
 
-        System.out.println("Running tests...");
-        examples.testListSize();
-        examples.testListContains();
-        examples.testListAdd();
-        examples.testListRemove();
-        examples.testExceptionHandling();
+    @ParameterizedTest
+    @DisplayName("Age boundary checks")
+    @CsvSource({
+        "18, true",
+        "17, false",
+        "25, true",
+        "0, false",
+        "150, true",
+        "151, false"
+    })
+    void shouldValidateAgeBoundaries(int age, boolean expectedAdult) {
+        if (age >= 0 && age <= 150) {
+            User user = new User("Test", age);
+            assertEquals(expectedAdult, user.isAdult());
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                () -> new User("Test", age));
+        }
+    }
 
-        System.out.println("\n=== JUnit 5 Annotations Reference ===");
-        System.out.println("@Test - Marks a test method");
-        System.out.println("@BeforeEach - Runs before each test");
-        System.out.println("@AfterEach - Runs after each test");
-        System.out.println("@BeforeAll - Runs once before all tests");
-        System.out.println("@AfterAll - Runs once after all tests");
-        System.out.println("@Nested - Groups related tests");
-        System.out.println("@DisplayName - Custom test names");
-        System.out.println("@Disabled - Skips test");
+    // =========================================================
+    // 7. ASSERTALL - Multiple assertions without stopping
+    // =========================================================
 
-        System.out.println("\n=== Assertions Reference ===");
-        System.out.println("assertEquals(expected, actual)");
-        System.out.println("assertTrue(condition)");
-        System.out.println("assertFalse(condition)");
-        System.out.println("assertNull(object)");
-        System.out.println("assertNotNull(object)");
-        System.out.println("assertThrows(ExceptionClass, executable)");
-        System.out.println("assertAll(executables...)");
+    @Test
+    @DisplayName("Validate all list invariants at once")
+    void shouldValidateAllInvariants() {
+        names.add("David");
+
+        assertAll("list state",
+            () -> assertEquals(4, names.size()),
+            () -> assertTrue(names.contains("Alice")),
+            () -> assertTrue(names.contains("Bob")),
+            () -> assertTrue(names.contains("Charlie")),
+            () -> assertTrue(names.contains("David")),
+            () -> assertEquals("Alice", names.get(0))
+        );
+    }
+
+    // Inner class used by parameterized test
+    static class User {
+        private final String name;
+        private final int age;
+
+        User(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        boolean isAdult() { return age >= 18; }
     }
 }

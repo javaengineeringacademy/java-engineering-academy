@@ -1,26 +1,40 @@
-package testing;
+package academy.javaengineering.testing;
+
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
- * IntegrationTest - Spring Boot Test example
+ * Integration test examples - testing multiple components together
  *
- * Covers:
- * - Spring Boot Test setup
- * - @SpringBootTest annotation
- * - TestRestTemplate
+ * This file covers:
+ * - Testing controller -> service -> repository chain
+ * - @MockBean for external dependencies
+ * - @TestConfiguration for test-specific beans
+ * - @ActiveProfiles("test") for test environment
+ * - Spring Boot Test annotations: @SpringBootTest, @WebMvcTest
+ * - TestRestTemplate for HTTP testing
  * - MockMvc for web layer testing
- * - Test profiles and configuration
  */
-public class IntegrationTest {
+@ExtendWith(MockitoExtension.class)
+class IntegrationTestTest {
 
-    // Simulated Spring Boot controller
+    // =========================================================
+    // 1. COMPONENTS UNDER TEST (simulated Spring Boot layers)
+    // =========================================================
+
     static class UserController {
         private final UserService userService;
 
-        public UserController(UserService userService) {
+        UserController(UserService userService) {
             this.userService = userService;
         }
 
-        public String getUser(int id) {
+        String getUser(int id) {
             String user = userService.findById(id);
             if (user == null) {
                 return "User not found";
@@ -28,112 +42,207 @@ public class IntegrationTest {
             return "User: " + user;
         }
 
-        public String createUser(String name) {
+        String createUser(String name) {
             boolean saved = userService.save(name);
             if (saved) {
                 return "User created: " + name;
             }
             return "Failed to create user";
         }
+
+        String deleteUser(int id) {
+            try {
+                userService.delete(id);
+                return "User deleted: " + id;
+            } catch (Exception e) {
+                return "Failed to delete: " + e.getMessage();
+            }
+        }
     }
 
-    // Simulated service layer
     static class UserService {
         private final UserRepository repository;
 
-        public UserService(UserRepository repository) {
+        UserService(UserRepository repository) {
             this.repository = repository;
         }
 
-        public String findById(int id) {
+        String findById(int id) {
             return repository.findById(id);
         }
 
-        public boolean save(String name) {
+        boolean save(String name) {
             if (name == null || name.trim().isEmpty()) {
                 return false;
             }
             repository.save(name);
             return true;
         }
+
+        void delete(int id) {
+            if (repository.findById(id) == null) {
+                throw new IllegalArgumentException("User not found: " + id);
+            }
+            repository.delete(id);
+        }
     }
 
-    // Simulated repository
     static class UserRepository {
-        private java.util.Map<Integer, String> database = new java.util.HashMap<>();
+        private final java.util.Map<Integer, String> database = new java.util.HashMap<>();
         private int nextId = 1;
 
-        public String findById(int id) {
+        String findById(int id) {
             return database.get(id);
         }
 
-        public void save(String name) {
+        void save(String name) {
             database.put(nextId++, name);
         }
 
-        public int count() {
+        void delete(int id) {
+            database.remove(id);
+        }
+
+        int count() {
             return database.size();
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== Spring Boot Test Concepts ===\n");
+    // =========================================================
+    // 2. INTEGRATION TEST - Multiple components together
+    // =========================================================
 
-        System.out.println("Spring Boot Test Annotations:");
-        System.out.println("@SpringBootTest - Full application context");
-        System.out.println("@WebMvcTest - Web layer only");
-        System.out.println("@DataJpaTest - JPA layer only");
-        System.out.println("@RestClientTest - REST clients");
-        System.out.println();
+    @Nested
+    @DisplayName("Controller -> Service -> Repository integration")
+    class FullStackTest {
 
-        System.out.println("Test Configuration:");
-        System.out.println("@TestConfiguration - Additional beans");
-        System.out.println("@MockBean - Mock external dependencies");
-        System.out.println("@ActiveProfiles - Set test profile");
-        System.out.println();
+        private UserRepository repository;
+        private UserService service;
+        private UserController controller;
 
-        // Demonstrate integration test
-        System.out.println("=== Integration Test Example ===\n");
-        integrationTestDemo();
+        @BeforeEach
+        void setUp() {
+            repository = new UserRepository();
+            service = new UserService(repository);
+            controller = new UserController(service);
+        }
+
+        @Test
+        @DisplayName("GET /users/1 returns not found for non-existent user")
+        void shouldReturnNotFoundForMissingUser() {
+            String result = controller.getUser(1);
+            assertEquals("User not found", result);
+        }
+
+        @Test
+        @DisplayName("POST /users creates user and returns success")
+        void shouldCreateUser() {
+            String result = controller.createUser("Alice");
+            assertEquals("User created: Alice", result);
+        }
+
+        @Test
+        @DisplayName("GET /users/1 returns user after creation")
+        void shouldRetrieveCreatedUser() {
+            controller.createUser("Alice");
+
+            String result = controller.getUser(1);
+            assertEquals("User: Alice", result);
+        }
+
+        @Test
+        @DisplayName("POST /users rejects empty name")
+        void shouldRejectEmptyName() {
+            String result = controller.createUser("");
+            assertEquals("Failed to create user", result);
+            assertEquals(0, repository.count());
+        }
+
+        @Test
+        @DisplayName("POST /users rejects null name")
+        void shouldRejectNullName() {
+            String result = controller.createUser(null);
+            assertEquals("Failed to create user", result);
+            assertEquals(0, repository.count());
+        }
+
+        @Test
+        @DisplayName("DELETE /users/1 removes user")
+        void shouldDeleteUser() {
+            controller.createUser("Alice");
+
+            String result = controller.deleteUser(1);
+            assertEquals("User deleted: 1", result);
+            assertEquals(0, repository.count());
+        }
+
+        @Test
+        @DisplayName("DELETE /users/999 fails for non-existent user")
+        void shouldFailToDeleteNonExistentUser() {
+            String result = controller.deleteUser(999);
+            assertTrue(result.startsWith("Failed to delete:"));
+        }
     }
 
-    static void integrationTestDemo() {
-        // Setup (like @BeforeEach)
-        UserRepository repository = new UserRepository();
-        UserService service = new UserService(repository);
-        UserController controller = new UserController(service);
+    // =========================================================
+    // 3. UNIT TEST WITH MOCKS - Isolated component testing
+    // =========================================================
 
-        // Test 1: GET user
-        System.out.println("Test: GET /users/1");
-        String result = controller.getUser(1);
-        System.out.println("Result: " + result);
-        assert "User not found".equals(result) : "Should return not found";
+    @Nested
+    @DisplayName("Service layer with mocked repository")
+    class ServiceWithMockTest {
 
-        // Test 2: POST user
-        System.out.println("\nTest: POST /users");
-        result = controller.createUser("Alice");
-        System.out.println("Result: " + result);
-        assert "User created: Alice".equals(result) : "Should create user";
+        @Mock
+        UserRepository mockRepository;
 
-        // Test 3: GET created user
-        System.out.println("\nTest: GET /users/1 (after creation)");
-        result = controller.getUser(1);
-        System.out.println("Result: " + result);
-        assert "User: Alice".equals(result) : "Should return user";
+        @InjectMocks
+        UserService service;
 
-        // Test 4: Invalid input
-        System.out.println("\nTest: POST /users (empty name)");
-        result = controller.createUser("");
-        System.out.println("Result: " + result);
-        assert "Failed to create user".equals(result) : "Should fail for empty name";
+        @Test
+        @DisplayName("Service delegates to repository")
+        void shouldDelegateToRepository() {
+            when(mockRepository.findById(1)).thenReturn("Alice");
 
-        // Verify repository state
-        System.out.println("\nFinal state:");
-        System.out.println("Total users: " + repository.count());
-        assert repository.count() == 1 : "Should have 1 user";
+            String result = service.findById(1);
 
-        System.out.println("\n=== Test Profiles ===");
-        System.out.println("Use @ActiveProfiles(\"test\") to use test configuration");
-        System.out.println("application-test.properties overrides main properties");
+            assertEquals("Alice", result);
+            verify(mockRepository).findById(1);
+        }
+
+        @Test
+        @DisplayName("Service rejects null input")
+        void shouldRejectNull() {
+            boolean saved = service.save(null);
+
+            assertFalse(saved);
+            verify(mockRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Service throws when deleting non-existent user")
+        void shouldThrowOnDeleteNonExistent() {
+            when(mockRepository.findById(999)).thenReturn(null);
+
+            assertThrows(IllegalArgumentException.class,
+                () -> service.delete(999));
+        }
     }
+
+    // =========================================================
+    // 4. SPRING BOOT TEST ANNOTATIONS (reference)
+    // =========================================================
+    //
+    // @SpringBootTest - Full application context
+    //   @WebMvcTest - Web layer only (controllers, filters)
+    //   @DataJpaTest - JPA layer only (repositories, entities)
+    //   @RestClientTest - REST client testing
+    //
+    // Test Configuration:
+    //   @TestConfiguration - Additional beans for tests
+    //   @MockBean - Mock external dependencies (databases, APIs)
+    //   @ActiveProfiles("test") - Use test-specific configuration
+    //
+    // HTTP Testing:
+    //   TestRestTemplate - Full HTTP integration testing
+    //   MockMvc - Web layer testing without starting server
 }

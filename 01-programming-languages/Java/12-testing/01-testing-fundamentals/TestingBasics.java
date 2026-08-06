@@ -1,149 +1,137 @@
-package testing;
+package academy.javaengineering.testing;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * TestingBasics - Why test, test types
+ * Testing fundamentals - Why test, test types, TDD
  *
- * Covers:
+ * This file covers:
  * - Why testing is important
  * - Testing pyramid
  * - Unit vs Integration vs E2E tests
  * - Test-driven development (TDD)
+ * - Writing your first test with JUnit 5
  */
-public class TestingBasics {
+class TestingBasicsTest {
 
-    private String name;
-    private int age;
+    // =========================================================
+    // 1. SIMPLE CLASS UNDER TEST
+    // =========================================================
 
-    public TestingBasics(String name, int age) {
-        this.name = name;
-        this.age = age;
+    static class User {
+        private final String name;
+        private final int age;
+
+        User(String name, int age) {
+            if (name == null || name.isBlank()) {
+                throw new IllegalArgumentException("Name required");
+            }
+            if (age < 0 || age > 150) {
+                throw new IllegalArgumentException("Invalid age: " + age);
+            }
+            this.name = name;
+            this.age = age;
+        }
+
+        String getName() { return name; }
+        int getAge() { return age; }
+        boolean isAdult() { return age >= 18; }
+
+        String greet() {
+            return "Hello, " + name + "!";
+        }
     }
 
-    public String getName() {
-        return name;
+    // =========================================================
+    // 2. UNIT TESTS - Test individual methods
+    // =========================================================
+
+    @Test
+    @DisplayName("User constructor stores name correctly")
+    void shouldStoreName() {
+        User user = new User("Alice", 25);
+        assertEquals("Alice", user.getName());
     }
 
-    public int getAge() {
-        return age;
+    @Test
+    @DisplayName("User constructor stores age correctly")
+    void shouldStoreAge() {
+        User user = new User("Alice", 25);
+        assertEquals(25, user.getAge());
     }
 
-    public boolean isAdult() {
-        return age >= 18;
+    @Test
+    @DisplayName("isAdult returns true for age >= 18")
+    void shouldIdentifyAdults() {
+        User adult = new User("Alice", 25);
+        assertTrue(adult.isAdult());
+
+        User boundary = new User("Bob", 18);
+        assertTrue(boundary.isAdult());
     }
 
-    public String greet() {
-        return "Hello, " + name + "!";
+    @Test
+    @DisplayName("isAdult returns false for age < 18")
+    void shouldIdentifyMinors() {
+        User minor = new User("Jane", 15);
+        assertFalse(minor.isAdult());
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== Why Testing? ===");
-        whyTesting();
-
-        System.out.println("\n=== Testing Pyramid ===");
-        testingPyramid();
-
-        System.out.println("\n=== Test Types ===");
-        testTypes();
-
-        System.out.println("\n=== TDD Cycle ===");
-        tddCycle();
-
-        System.out.println("\n=== Simple Test Example ===");
-        simpleTestExample();
+    @Test
+    @DisplayName("greet returns personalized greeting")
+    void shouldGreetUser() {
+        User user = new User("Alice", 25);
+        assertEquals("Hello, Alice!", user.greet());
     }
 
-    static void whyTesting() {
-        System.out.println("Benefits of Testing:");
-        System.out.println("1. Catch bugs early");
-        System.out.println("2. Enable refactoring with confidence");
-        System.out.println("3. Document code behavior");
-        System.out.println("4. Reduce debugging time");
-        System.out.println("5. Improve code design");
-        System.out.println("6. Facilitate collaboration");
+    // =========================================================
+    // 3. EDGE CASES - Test boundaries
+    // =========================================================
+
+    @Test
+    @DisplayName("Constructor rejects null name")
+    void shouldRejectNullName() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new User(null, 25));
     }
 
-    static void testingPyramid() {
-        System.out.println("Testing Pyramid:");
-        System.out.println();
-        System.out.println("        /\\");
-        System.out.println("       /  \\      E2E Tests");
-        System.out.println("      /    \\     (Few, slow, expensive)");
-        System.out.println("     /------\\");
-        System.out.println("    /        \\   Integration Tests");
-        System.out.println("   /          \\  (Moderate number)");
-        System.out.println("  /------------\\");
-        System.out.println(" /              \\ Unit Tests");
-        System.out.println("/                \\(Many, fast, cheap)");
-        System.out.println();
-        System.out.println("Ideal ratio: 70% Unit, 20% Integration, 10% E2E");
+    @Test
+    @DisplayName("Constructor rejects blank name")
+    void shouldRejectBlankName() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new User("  ", 25));
     }
 
-    static void testTypes() {
-        System.out.println("1. Unit Tests:");
-        System.out.println("   - Test individual methods/classes");
-        System.out.println("   - Fast execution");
-        System.out.println("   - Isolated (no external dependencies)");
-        System.out.println();
-        System.out.println("2. Integration Tests:");
-        System.out.println("   - Test component interactions");
-        System.out.println("   - May use databases, APIs");
-        System.out.println("   - Slower than unit tests");
-        System.out.println();
-        System.out.println("3. End-to-End (E2E) Tests:");
-        System.out.println("   - Test complete workflows");
-        System.out.println("   - Simulate real user scenarios");
-        System.out.println("   - Slowest and most expensive");
-        System.out.println();
-        System.out.println("4. Functional Tests:");
-        System.out.println("   - Test specific functionality");
-        System.out.println("   - Black-box testing");
-        System.out.println();
-        System.out.println("5. Regression Tests:");
-        System.out.println("   - Ensure bugs don't reappear");
-        System.out.println("   - Run after code changes");
+    @Test
+    @DisplayName("Constructor rejects negative age")
+    void shouldRejectNegativeAge() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new User("Alice", -1));
     }
 
-    static void tddCycle() {
-        System.out.println("Test-Driven Development (TDD):");
-        System.out.println();
-        System.out.println("1. RED: Write a failing test");
-        System.out.println("   - Define expected behavior");
-        System.out.println("   - Test should fail initially");
-        System.out.println();
-        System.out.println("2. GREEN: Write minimal code to pass");
-        System.out.println("   - Just enough to make test pass");
-        System.out.println("   - Don't over-engineer");
-        System.out.println();
-        System.out.println("3. REFACTOR: Improve code");
-        System.out.println("   - Clean up while tests pass");
-        System.out.println("   - Improve design");
-        System.out.println();
-        System.out.println("Repeat cycle for each feature.");
+    @Test
+    @DisplayName("Constructor rejects age > 150")
+    void shouldRejectUnreasonableAge() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new User("Alice", 151));
     }
 
-    static void simpleTestExample() {
-        // Simple assertion-like test
-        TestingBasics person = new TestingBasics("John", 25);
-
-        // Test 1: Name
-        boolean testName = "John".equals(person.getName());
-        System.out.println("Test getName(): " + (testName ? "PASS" : "FAIL"));
-
-        // Test 2: Age
-        boolean testAge = person.getAge() == 25;
-        System.out.println("Test getAge(): " + (testAge ? "PASS" : "FAIL"));
-
-        // Test 3: isAdult
-        boolean testAdult = person.isAdult();
-        System.out.println("Test isAdult(): " + (testAdult ? "PASS" : "FAIL"));
-
-        // Test 4: greet
-        boolean testGreet = "Hello, John!".equals(person.greet());
-        System.out.println("Test greet(): " + (testGreet ? "PASS" : "FAIL"));
-
-        // Edge case: Minor
-        TestingBasics minor = new TestingBasics("Jane", 15);
-        boolean testMinor = !minor.isAdult();
-        System.out.println("Test isAdult (minor): " + (testMinor ? "PASS" : "FAIL"));
-    }
+    // =========================================================
+    // 4. TESTING PYRAMID GUIDE (reference)
+    // =========================================================
+    //
+    //        /\
+    //       /  \      E2E Tests (Few, slow, expensive)
+    //      /    \     - Test complete workflows
+    //     /------\    - Simulate real user scenarios
+    //    /        \   Integration Tests (Moderate number)
+    //   /          \  - Test component interactions
+    //  /------------\ - May use databases, APIs
+    // /              \ Unit Tests (Many, fast, cheap)
+    // /                \ - Test individual methods/classes
+    //
+    // Ideal ratio: 70% Unit, 20% Integration, 10% E2E
 }

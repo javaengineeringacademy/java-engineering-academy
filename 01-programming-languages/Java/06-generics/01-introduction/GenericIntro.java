@@ -6,6 +6,7 @@ public class GenericIntro {
         genericMethodDemo();
     }
 
+    @SuppressWarnings("rawtypes") // Intentional: demonstrates the problem with raw types
     public static void withoutGenerics() {
         System.out.println("=== Without Generics ===");
         java.util.List list = new java.util.ArrayList();
