@@ -1,128 +1,109 @@
-# CompletableFuture Deep Dive
+# CompletableFuture Patterns Guide
 
-## API Reference
+## Real-World Patterns
 
-### Creation Methods
-
-| Method | Description |
-|--------|-------------|
-| `completedFuture(value)` | Creates an already-completed future |
-| `supplyAsync(Supplier)` | Runs supplier on ForkJoinPool.commonPool |
-| `supplyAsync(Supplier, Executor)` | Runs supplier on custom executor |
-| `runAsync(Runnable)` | Runs runnable, returns Void future |
-| `failedFuture(ex)` | Creates an already-failed future |
-
-### Chaining Methods
-
-| Method | Input | Output | Use Case |
-|--------|-------|--------|----------|
-| `thenApply(Function)` | Result | Mapped result | Transform values |
-| `thenApplyAsync(Function)` | Result | Mapped result | Offload to another thread |
-| `thenAccept(Consumer)` | Result | Void | Side-effect processing |
-| `thenCompose(Function)` | Result | Future | Flat-map / chain async |
-| `thenCombine(Future, BiFunction)` | Two results | Combined | Merge parallel results |
-| `thenAcceptAll(Future... )` | All results | Void | Process all results |
-
-### Exception Handling
-
-| Method | Behavior |
-|--------|----------|
-| `exceptionally(Function)` | Returns fallback on exception, swallows error |
-| `handle(BiFunction)` | Always runs; receives (result, exception) |
-| `whenComplete(BiConsumer)` | Always runs; cannot transform result |
-| `completeExceptionally(ex)` | Complete exceptionally from outside |
-
-### Timeout Methods
-
-| Method | Description |
-|--------|-------------|
-| `orTimeout(timeout, unit)` | Fails with TimeoutException |
-| `completeOnTimeout(value, timeout, unit)` | Returns default on timeout |
-
-### Composition
-
-| Method | Description |
-|--------|-------------|
-| `allOf(Future...)` | Waits for all futures |
-| `anyOf(Future...)` | Resolves when first completes |
-
----
-
-## When to Use Which Method
-
-### thenApply vs thenCompose
-
+### Parallel API Calls with Timeout
+Fetch multiple resources concurrently with a global timeout:
 ```java
-// thenApply: synchronous transformation
-future.thenApply(x -> x * 2);
+CompletableFuture<String> api1 = CompletableFuture.supplyAsync(() -> callApi1());
+CompletableFuture<String> api2 = CompletableFuture.supplyAsync(() -> callApi2());
 
-// thenCompose: returns a new CompletableFuture (flat-map)
-future.thenCompose(x -> anotherAsyncOperation(x));
-```
+CompletableFuture<List<String>> all = CompletableFuture
+    .allOf(api1, api2)
+    .thenApply(v -> List.of(api1.join(), api2.join()));
 
-Use `thenApply` for simple transformations. Use `thenCompose` when the
-transformation itself returns a `CompletableFuture`.
-
-### thenCombine vs allOf
-
-- `thenCombine`: merges exactly two futures into one result
-- `allOf`: waits for N futures, returns `CompletableFuture<Void>`
-
-### handle vs exceptionally
-
-- `exceptionally`: only handles errors, cannot access success path
-- `handle`: always invoked, can inspect both result and exception
-
----
-
-## Common Patterns
-
-### Parallel API Aggregation
-
-```java
-CompletableFuture<User> userF = fetchUser(id);
-CompletableFuture<Orders> ordersF = fetchOrders(id);
-CompletableFuture<Balance> balanceF = fetchBalance(id);
-
-return CompletableFuture.allOf(userF, ordersF, balanceF)
-    .thenApply(v -> new Dashboard(userF.join(), ordersF.join(), balanceF.join()));
+List<String> results = all.get(5, TimeUnit.SECONDS);
 ```
 
 ### Fallback Chain
-
+Try primary service, fall back to alternatives:
 ```java
-CompletableFuture.supplyAsync(() -> primaryService.call())
-    .exceptionally(ex -> cache.get(key))
-    .exceptionally(ex -> defaultService.call())
-    .thenAccept(result -> saveToLocal(result));
+CompletableFuture<String> result = primaryService()
+    .exceptionallyCompose(ex -> fallbackService1())
+    .exceptionallyCompose(ex -> fallbackService2())
+    .exceptionallyCompose(ex -> CompletableFuture.completedFuture("default"));
 ```
 
-### Timeout + Fallback
-
+### Retry with Exponential Backoff
 ```java
-CompletableFuture.supplyAsync(() -> slowService.call())
-    .orTimeout(2, TimeUnit.SECONDS)
-    .exceptionally(ex -> "fallback")
-    .thenAccept(this::process);
+public static <T> CompletableFuture<T> retry(Supplier<CompletableFuture<T>> task,
+        int maxRetries, long delayMs) {
+    return task.get()
+        .exceptionallyCompose(ex -> {
+            if (maxRetries <= 0) return failedFuture(ex);
+            return delayedExecutor(delayMs, MILLISECONDS)
+                .thenCompose(v -> retry(task, maxRetries - 1, delayMs * 2));
+        });
+}
 ```
 
----
+## Production Usage
 
-## Error Handling Strategies
+### Circuit Breaker Pattern
+```java
+private final AtomicInteger failures = new AtomicInteger(0);
+private final AtomicLong lastFailureTime = new AtomicLong(0);
 
-1. **Always provide a fallback** for external calls
-2. **Log exceptions** in `whenComplete` before applying fallback
-3. **Use `handle`** when you need both success and error paths
-4. **Avoid `join()`** without timeout in production code
-5. **Use `completeOnTimeout`** for graceful degradation
-6. **Chain exceptionally calls** for multi-level fallbacks
+public CompletableFuture<String> callWithCircuitBreaker() {
+    if (failures.get() >= 5 && System.currentTimeMillis() - lastFailureTime.get() < 30000) {
+        return CompletableFuture.failedFuture(new RuntimeException("Circuit open"));
+    }
+    return callService()
+        .whenComplete((r, ex) -> {
+            if (ex != null) {
+                failures.incrementAndGet();
+                lastFailureTime.set(System.currentTimeMillis());
+            } else {
+                failures.set(0);
+            }
+        });
+}
+```
 
----
+### Rate Limiting with Semaphore
+```java
+private final Semaphore semaphore = new Semaphore(10);
+
+public CompletableFuture<String> callWithRateLimit() {
+    return CompletableFuture.supplyAsync(() -> {
+        semaphore.acquire();
+        try {
+            return callExternalService();
+        } finally {
+            semaphore.release();
+        }
+    });
+}
+```
+
+### Combining Results
+```java
+CompletableFuture<User> userFuture = fetchUser(userId);
+CompletableFuture<List<Order>> ordersFuture = fetchOrders(userId);
+CompletableFuture<Profile> profileFuture = fetchProfile(userId);
+
+CompletableFuture<UserProfile> combined = userFuture
+    .thenCombine(ordersFuture, (user, orders) -> new UserWithOrders(user, orders))
+    .thenCombine(profileFuture, (userWithOrders, profile) -> new UserProfile(userWithOrders, profile));
+```
+
+## Best Practices
+
+1. **Always set timeouts** on `get()` calls
+2. **Use `exceptionally`** not try-catch for async errors
+3. **Prefer `thenCompose`** over `thenApply` for async chaining
+4. **Use `allOf`** for parallel independent tasks
+5. **Handle cancellation** in long-running tasks
+6. **Avoid blocking** in async callbacks
+7. **Use custom executors** for different workload types
+8. **Log errors** in `exceptionally` and `handle` blocks
 
 ## Common Pitfalls
 
-- Blocking inside `supplyAsync` defeats the purpose
-- Forgetting to handle exceptions causes silent failures
-- Not using custom executors for I/O-bound work
-- Using `get()` instead of `join()` (checked vs unchecked exception)
-- Creating too many futures without composition (fan-out without fan-in)
+| Pitfall | Solution |
+|---------|----------|
+| Blocking on `get()` inside async | Use `thenCompose` chain |
+| Ignoring exceptions | Always add `exceptionally` |
+| Creating too many threads | Use shared executor |
+| No timeout on external calls | Use `orTimeout()` |
+| Swallowing errors silently | Log in `handle()` |
