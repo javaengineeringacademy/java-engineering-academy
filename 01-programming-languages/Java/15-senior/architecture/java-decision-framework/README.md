@@ -455,3 +455,50 @@ We are running a Java monolith because it was the fastest way to market. This im
 This framework provides a structured approach to Java decisions. By following the process and using the examples as templates, CTOs can make informed, data-driven decisions that balance cost, performance, risk, and business goals.
 
 **Key Takeaway:** Good decisions come from good processes. Use this framework to ensure consistency, transparency, and accountability in your Java technology decisions.
+
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

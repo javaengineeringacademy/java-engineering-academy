@@ -35,3 +35,31 @@ public class FlyweightFactory {
 1. What is the difference between Flyweight and Singleton patterns?
 2. How does Flyweight reduce memory usage?
 3. When would you NOT use the Flyweight pattern?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

@@ -72,6 +72,49 @@ Netflix Hystrix popularized this pattern but is now in maintenance mode. Migrate
 - [Retry](../retry/) — Handling transient failures alongside circuit breakers
 - JWT — Auth token handling when services degrade
 
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Overview
+
+[Brief description of the topic]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
 ## References
 
 - [Resilience4j Documentation](https://resilience4j.readme.io/)

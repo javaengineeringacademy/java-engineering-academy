@@ -54,3 +54,31 @@ public enum Singleton {
 3. What is the advantage of enum Singleton?
 4. When should you avoid Singleton?
 5. How does Static Holder pattern achieve lazy initialization?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

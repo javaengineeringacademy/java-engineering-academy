@@ -318,3 +318,54 @@ The bank's Java 8 to Java 21 migration was a success, achieving:
 - **Improved developer productivity**
 
 The key to success was a phased approach, automated tooling, comprehensive testing, and strong executive sponsorship. Other financial institutions can replicate this success by following the recommended best practices and avoiding common pitfalls.
+
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

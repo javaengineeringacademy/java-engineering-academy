@@ -33,3 +33,31 @@ restore(Memento)          manages undo/redo
 2. How does Memento preserve encapsulation?
 3. What is the difference between Memento and Command?
 4. How would you implement redo functionality?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

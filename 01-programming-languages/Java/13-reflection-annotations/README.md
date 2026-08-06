@@ -33,6 +33,22 @@ This module covers Java Reflection API and Annotations, enabling runtime inspect
 - `DynamicProxyExample.java` - Dynamic proxy pattern
 - `RealWorldReflection.java` - Practical applications
 
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
 ## Code References
 - `ReflectionBasics.java` - Comprehensive reflection examples
 
@@ -49,3 +65,15 @@ This module covers Java Reflection API and Annotations, enabling runtime inspect
 4. How do you create custom annotations?
 5. What is Dynamic Proxy and when would you use it?
 6. What are the performance implications of reflection?
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

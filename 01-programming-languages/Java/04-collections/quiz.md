@@ -1,261 +1,179 @@
-# Collections Quiz
+# Collections Framework Quiz
 
-## Quiz 1: List Interface
-
-### Question 1
-What is the difference between ArrayList and LinkedList?
-- A) ArrayList is array-based, LinkedList is node-based
-- B) ArrayList is node-based, LinkedList is array-based
-- C) Both are array-based
-- D) Both are node-based
-
-**Answer: A**
-
-### Question 2
-What is the default capacity of ArrayList?
-- A) 10
-- B) 16
-- C) 32
-- D) 64
-
-**Answer: A**
-
-### Question 3
-Which method is used to add elements to ArrayList?
-- A) add()
-- B) put()
-- C) insert()
-- D) append()
-
-**Answer: A**
-
-### Question 4
-Can ArrayList store primitive types?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with wrappers
-
-**Answer: B**
-
-### Question 5
-What is the time complexity of get() in ArrayList?
-- A) O(1)
-- B) O(n)
-- C) O(log n)
-- D) O(n^2)
-
-**Answer: A**
-
----
-
-## Quiz 2: Set Interface
-
-### Question 1
-What is the difference between HashSet and TreeSet?
-- A) HashSet is unordered, TreeSet is sorted
-- B) HashSet is sorted, TreeSet is unordered
-- C) Both are unordered
-- D) Both are sorted
-
-**Answer: A**
-
-### Question 2
-Can a Set contain duplicate elements?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with HashSet
-
-**Answer: B**
-
-### Question 3
-What is the time complexity of contains() in HashSet?
-- A) O(1)
-- B) O(n)
-- C) O(log n)
-- D) O(n^2)
-
-**Answer: A**
-
-### Question 4
-What is LinkedHashSet?
-- A) HashSet with insertion order
-- B) TreeSet with insertion order
-- C) HashSet with sorted order
-- D) TreeSet with sorted order
-
-**Answer: A**
-
-### Question 5
-How do you create an immutable Set?
-- A) Set.of()
-- B) Collections.unmodifiableSet()
-- C) Both A and B
-- D) Neither
+## Question 1 (MCQ)
+What is the time complexity of get() and set() operations on ArrayList?
+- A) O(n)
+- B) O(log n)
+- C) O(1)
+- D) O(n²)
 
 **Answer: C**
+**Explanation:** ArrayList is backed by an array, so index-based access (get and set) is O(1) since the memory address can be calculated directly.
 
 ---
 
-## Quiz 3: Map Interface
+## Question 2 (MCQ)
+Which collection maintains insertion order and does not allow duplicates?
+- A) HashSet
+- B) TreeSet
+- C) LinkedHashSet
+- D) PriorityQueue
 
-### Question 1
-What is the difference between HashMap and TreeMap?
-- A) HashMap is unordered, TreeMap is sorted
-- B) HashMap is sorted, TreeMap is unordered
-- C) Both are unordered
-- D) Both are sorted
-
-**Answer: A**
-
-### Question 2
-What is the time complexity of get() in HashMap?
-- A) O(1)
-- B) O(n)
-- C) O(log n)
-- D) O(n^2)
-
-**Answer: A**
-
-### Question 3
-Can a Map have null keys?
-- A) Yes, in HashMap
-- B) No, never
-- C) Only in Java 8+
-- D) Only in TreeMap
-
-**Answer: A**
-
-### Question 4
-What is ConcurrentHashMap?
-- A) Thread-safe HashMap
-- B) Sorted HashMap
-- C) Unordered HashMap
-- D) Synchronized HashMap
-
-**Answer: A**
-
-### Question 5
-What is the difference between HashMap and Hashtable?
-- A) HashMap is not synchronized, Hashtable is synchronized
-- B) HashMap is synchronized, Hashtable is not
-- C) Both are synchronized
-- D) Neither is synchronized
-
-**Answer: A**
+**Answer: C**
+**Explanation:** LinkedHashSet uses a linked list to maintain insertion order while using a hash table for O(1) lookups. HashSet is unordered, TreeSet is sorted, and PriorityQueue has no guaranteed order.
 
 ---
 
-## Quiz 4: Queue Interface
+## Question 3 (MCQ)
+What is the default load factor of a HashMap?
+- A) 0.5
+- B) 0.75
+- C) 1.0
+- D) 0.25
 
-### Question 1
-What is the difference between Queue and Deque?
-- A) Queue is FIFO, Deque is FIFO and LIFO
-- B) Queue is LIFO, Deque is FIFO
-- C) Both are FIFO
-- D) Both are LIFO
-
-**Answer: A**
-
-### Question 2
-What is PriorityQueue?
-- A) Queue with natural ordering
-- B) Queue with insertion order
-- C) Queue with custom ordering
-- D) Queue with no ordering
-
-**Answer: A**
-
-### Question 3
-What is the time complexity of poll() in PriorityQueue?
-- A) O(log n)
-- B) O(1)
-- C) O(n)
-- D) O(n^2)
-
-**Answer: A**
-
-### Question 4
-What is ArrayDeque?
-- A) Deque implementation using array
-- B) Deque implementation using linked list
-- C) Queue implementation using array
-- D) Stack implementation using array
-
-**Answer: A**
-
-### Question 5
-When should you use Deque over Stack?
-- A) When you need faster performance
-- B) When you need slower performance
-- C) When you need more memory
-- D) When you need less memory
-
-**Answer: A**
+**Answer: B**
+**Explanation:** The default load factor is 0.75, meaning the HashMap resizes when 75% of buckets are filled. This balances memory usage and collision probability.
 
 ---
 
-## Quiz 5: Iterator and Comparable
+## Question 4 (MCQ)
+When should you use a LinkedList over an ArrayList?
+- A) For random access by index
+- B) For frequent insertions and deletions at the beginning
+- C) For iterating over elements
+- D) For storing primitive types
 
-### Question 1
-What is the difference between Iterator and ListIterator?
-- A) Iterator is for single direction, ListIterator is for bidirectional
-- B) Iterator is for bidirectional, ListIterator is for single direction
-- C) Both are for single direction
-- D) Both are for bidirectional
-
-**Answer: A**
-
-### Question 2
-What is the use of Comparable interface?
-- A) Define natural ordering
-- B) Define custom ordering
-- C) Define equality
-- D) Define hashing
-
-**Answer: A**
-
-### Question 3
-What is the difference between Comparable and Comparator?
-- A) Comparable is for natural ordering, Comparator is for custom ordering
-- B) Comparable is for custom ordering, Comparator is for natural ordering
-- C) Both are for natural ordering
-- D) Both are for custom ordering
-
-**Answer: A**
-
-### Question 4
-What is the use of Collections.sort()?
-- A) Sort a list
-- B) Reverse a list
-- C) Shuffle a list
-- D) Copy a list
-
-**Answer: A**
-
-### Question 5
-What is the time complexity of Collections.sort()?
-- A) O(n log n)
-- B) O(n)
-- C) O(n^2)
-- D) O(log n)
-
-**Answer: A**
+**Answer: B**
+**Explanation:** LinkedList has O(1) insertion/deletion at the head (no element shifting), while ArrayList requires O(n) shifting. However, ArrayList is preferred for random access due to O(1) index operations.
 
 ---
 
-## Score Sheet
+## Question 5 (Code Output)
+What does this code print?
 
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| List Interface | 5 | /5 | % |
-| Set Interface | 5 | /5 | % |
-| Map Interface | 5 | /5 | % |
-| Queue Interface | 5 | /5 | % |
-| Iterator and Comparable | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>(Arrays.asList("C", "A", "B"));
+        Collections.sort(list);
+        System.out.println(list);
+
+        Set<String> set = new TreeSet<>(list);
+        System.out.println(set);
+    }
+}
+```
+
+**Answer:** [A, B, C] and [A, B, C]
+**Explanation:** `Collections.sort()` sorts ArrayList in natural order. `TreeSet` maintains elements in sorted (natural) order. Both produce [A, B, C].
 
 ---
 
-## Passing Score: 80% (20/25)
+## Question 6 (Code Output)
+What does this code print?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("Alice", 90);
+        map.put("Bob", 85);
+        map.put("Charlie", 92);
+        map.put("Alice", 95);
+
+        System.out.println(map.get("Alice"));
+        System.out.println(map.size());
+    }
+}
+```
+
+**Answer:** 95 and 3
+**Explanation:** HashMap allows only one value per key. The second `put("Alice", 95)` overwrites the first value. So `get("Alice")` returns 95, and the map has 3 entries.
+
+---
+
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+        for (String s : list) {
+            if (s.equals("B")) {
+                list.remove(s);
+            }
+        }
+        System.out.println(list);
+    }
+}
+```
+
+**Bug:** Modifying a collection during for-each iteration throws `ConcurrentModificationException`. The for-each loop uses an iterator internally, and structural modifications invalidate it.
+**Fix:** Use an iterator explicitly:
+```java
+Iterator<String> it = list.iterator();
+while (it.hasNext()) {
+    if (it.next().equals("B")) {
+        it.remove();
+    }
+}
+```
+Or use `list.removeIf(s -> s.equals("B"))` (Java 8+).
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Set<String> set = new HashSet<>();
+        set.add("hello");
+        set.add("Hello");
+        set.add("HELLO");
+        System.out.println(set.size());
+    }
+}
+```
+
+**Bug:** HashSet is case-sensitive. The bug is not in the code itself but in the developer's assumption — if the intent was to store unique words regardless of case, this code produces 3 entries instead of 1.
+**Fix:** If case-insensitive matching is desired, use a TreeSet with a case-insensitive comparator:
+```java
+Set<String> set = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+```
+
+---
+
+## Question 9 (Scenario-based)
+You need a collection to store student records where you frequently need to find students by ID, iterate in insertion order, and occasionally sort by name. Which approach is best?
+
+- A) Use TreeMap with student ID as key
+- B) Use LinkedHashMap for insertion order, maintain a separate TreeMap for sorted access
+- C) Use a single ArrayList with manual searching
+- D) Use HashSet for fast lookup
+
+**Answer: B**
+**Explanation:** LinkedHashMap preserves insertion order with O(1) lookup. A separate TreeMap provides sorted access. This composite approach optimizes for the different access patterns without compromising on any requirement.
+
+---
+
+## Question 10 (Architecture Decision)
+You are building a caching system that needs to: (1) store up to 10,000 entries, (2) evict the least recently used entries when full, (3) support O(1) get and put. Which data structure should you use?
+
+- A) HashMap
+- B) LinkedHashMap with accessOrder=true
+- C) TreeMap
+- D) ArrayList
+
+**Answer: B**
+**Explanation:** LinkedHashMap with `accessOrder=true` maintains access order, making it suitable for LRU cache implementation. Override `removeEldestEntry()` to automatically evict the oldest entry when size exceeds the threshold. This provides O(1) get/put with LRU eviction.

@@ -165,6 +165,45 @@ OpenJDK releases follow a rapid release model:
 - You require commercial support
 - You need extended LTS beyond community updates
 
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
 ## Further Reading
 
 - [OpenJDK Project](https://openjdk.org/)
@@ -172,3 +211,11 @@ OpenJDK releases follow a rapid release model:
 - [OpenJDK Bug Database](https://bugs.openjdk.java.net/)
 - [JDK Enhancement Proposals](https://openjdk.org/jeps/0)
 - [Oracle OpenJDK Builds](https://jdk.java.net/)
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

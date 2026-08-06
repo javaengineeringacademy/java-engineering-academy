@@ -34,3 +34,31 @@ JSONDataMiner        implemented by subclasses
 2. How does Template Method differ from Strategy pattern?
 3. Can you override a final template method?
 4. When should you use Template Method over composition?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

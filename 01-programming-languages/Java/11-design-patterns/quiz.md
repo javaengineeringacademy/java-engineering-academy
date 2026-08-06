@@ -1,261 +1,226 @@
 # Design Patterns Quiz
 
-## Quiz 1: Creational Patterns
+## Question 1 (MCQ)
+Which pattern ensures only one instance of a class exists throughout the application?
+- A) Factory Method
+- B) Singleton
+- C) Builder
+- D) Prototype
 
-### Question 1
-What is the Singleton pattern?
-- A) Ensures only one instance of a class
-- B) Creates multiple instances
-- C) Destroys instances
-- D) Copies instances
-
-**Answer: A**
-
-### Question 2
-What is the Factory pattern?
-- A) Creates objects without specifying exact class
-- B) Destroys objects
-- C) Copies objects
-- D) Modifies objects
-
-**Answer: A**
-
-### Question 3
-What is the Builder pattern?
-- A) Constructs complex objects step by step
-- B) Destroys objects
-- C) Copies objects
-- D) Modifies objects
-
-**Answer: A**
-
-### Question 4
-What is the Prototype pattern?
-- A) Creates new objects by cloning existing ones
-- B) Creates new objects from scratch
-- C) Destroys objects
-- D) Modifies objects
-
-**Answer: A**
-
-### Question 5
-What is the difference between Factory and Abstract Factory?
-- A) Factory creates one product, Abstract Factory creates families
-- B) Factory creates families, Abstract Factory creates one product
-- C) Both create one product
-- D) Both create families
-
-**Answer: A**
+**Answer: B**
+**Explanation:** The Singleton pattern restricts instantiation to a single object, providing a global point of access. It's commonly used for configuration management, logging, and connection pooling.
 
 ---
 
-## Quiz 2: Structural Patterns
+## Question 2 (MCQ)
+What is the primary purpose of the Adapter pattern?
+- A) Adds behavior to objects dynamically
+- B) Converts one interface to another expected by clients
+- C) Provides a simplified interface to complex subsystems
+- D) Creates objects without specifying their exact class
 
-### Question 1
-What is the Adapter pattern?
-- A) Converts interface of one class to another
-- B) Creates new interface
-- C) Destroys interface
-- D) Modifies interface
-
-**Answer: A**
-
-### Question 2
-What is the Decorator pattern?
-- A) Adds responsibilities to objects dynamically
-- B) Removes responsibilities from objects
-- C) Static responsibilities
-- D) Fixed responsibilities
-
-**Answer: A**
-
-### Question 3
-What is the Proxy pattern?
-- A) Provides surrogate for another object
-- B) Creates new object
-- C) Destroys object
-- D) Modifies object
-
-**Answer: A**
-
-### Question 4
-What is the Facade pattern?
-- A) Provides simplified interface to complex system
-- B) Provides complex interface to simple system
-- C) Provides no interface
-- D) Provides multiple interfaces
-
-**Answer: A**
-
-### Question 5
-What is the difference between Adapter and Facade?
-- A) Adapter converts interface, Facade simplifies interface
-- B) Adapter simplifies interface, Facade converts interface
-- C) Both convert interface
-- D) Both simplify interface
-
-**Answer: A**
+**Answer: B**
+**Explanation:** The Adapter pattern allows classes with incompatible interfaces to work together by wrapping one interface into another the client expects.
 
 ---
 
-## Quiz 3: Behavioral Patterns
+## Question 3 (MCQ)
+What is the Open/Closed Principle?
+- A) Classes should be open for modification, closed for extension
+- B) Classes should be open for extension, closed for modification
+- C) Classes should be open for both
+- D) Classes should be closed for both
 
-### Question 1
-What is the Observer pattern?
-- A) Defines one-to-many dependency
-- B) Defines many-to-one dependency
-- C) Defines one-to-one dependency
-- D) Defines many-to-many dependency
-
-**Answer: A**
-
-### Question 2
-What is the Strategy pattern?
-- A) Defines family of algorithms
-- B) Defines single algorithm
-- C) No algorithm
-- D) Fixed algorithm
-
-**Answer: A**
-
-### Question 3
-What is the Command pattern?
-- A) Encapsulates request as object
-- B) Destroys request
-- C) Modifies request
-- D) Copies request
-
-**Answer: A**
-
-### Question 4
-What is the Iterator pattern?
-- A) Provides way to access elements sequentially
-- B) Provides way to access elements randomly
-- C) Provides way to modify elements
-- D) Provides way to delete elements
-
-**Answer: A**
-
-### Question 5
-What is the Template Method pattern?
-- A) Defines skeleton of algorithm
-- B) Defines complete algorithm
-- C) No algorithm
-- D) Fixed algorithm
-
-**Answer: A**
+**Answer: B**
+**Explanation:** The Open/Closed Principle states that software entities should be open for extension (adding new functionality) but closed for modification (changing existing code).
 
 ---
 
-## Quiz 4: SOLID Principles
-
-### Question 1
-What is Single Responsibility Principle?
-- A) Class should have only one reason to change
-- B) Class should have multiple reasons to change
-- C) Class should have no reason to change
-- D) Class should have any reason to change
+## Question 4 (MCQ)
+Which pattern defines a family of algorithms and makes them interchangeable?
+- A) Strategy
+- B) Observer
+- C) Command
+- D) State
 
 **Answer: A**
-
-### Question 2
-What is Open/Closed Principle?
-- A) Open for extension, closed for modification
-- B) Open for modification, closed for extension
-- C) Open for both
-- D) Closed for both
-
-**Answer: A**
-
-### Question 3
-What is Liskov Substitution Principle?
-- A) Subtypes must be substitutable for base types
-- B) Subtypes must not be substitutable
-- C) Base types must be substitutable
-- D) No substitution allowed
-
-**Answer: A**
-
-### Question 4
-What is Interface Segregation Principle?
-- A) Clients should not depend on unused methods
-- B) Clients should depend on all methods
-- C) No methods should exist
-- D) All methods should be used
-
-**Answer: A**
-
-### Question 5
-What is Dependency Inversion Principle?
-- A) Depend on abstractions, not concretions
-- B) Depend on concretions, not abstractions
-- C) Depend on both
-- D) Depend on neither
-
-**Answer: A**
+**Explanation:** The Strategy pattern encapsulates algorithms in separate classes and makes them interchangeable at runtime. This allows selecting algorithms without modifying the client code.
 
 ---
 
-## Quiz 5: Anti-Patterns
+## Question 5 (Code Output)
+What pattern does this code demonstrate?
 
-### Question 1
-What is a God Object?
-- A) Class that does too much
-- B) Class that does nothing
-- C) Class that does one thing
-- D) Class that does two things
+```java
+interface PaymentProcessor {
+    PaymentResult process(double amount);
+}
 
-**Answer: A**
+class CreditCardProcessor implements PaymentProcessor {
+    public PaymentResult process(double amount) {
+        return new PaymentResult(true, "Credit card charged: $" + amount);
+    }
+}
 
-### Question 2
-What is Spaghetti Code?
-- A) Unstructured, tangled code
-- B) Well-structured code
-- C) Short code
-- D) Long code
+class PayPalProcessor implements PaymentProcessor {
+    public PaymentResult process(double amount) {
+        return new PaymentResult(true, "PayPal charged: $" + amount);
+    }
+}
 
-**Answer: A**
+class OrderService {
+    private PaymentProcessor processor;
 
-### Question 3
-What is Magic Number?
-- A) Unexplained literal values
-- B) Explained values
-- C) Named constants
-- D) Variables
+    OrderService(PaymentProcessor processor) {
+        this.processor = processor;
+    }
 
-**Answer: A**
+    void checkout(double amount) {
+        processor.process(amount);
+    }
+}
+```
 
-### Question 4
-What is the benefit of avoiding anti-patterns?
-- A) Maintainable code
-- B) Readable code
-- C) Both A and B
-- D) Neither
+**Answer:** Strategy pattern (also demonstrates Dependency Injection)
+**Explanation:** Different payment processors implement the same interface. The OrderService depends on the abstraction, not concrete classes. The processor can be swapped at runtime, demonstrating the Strategy pattern.
+
+---
+
+## Question 6 (Code Output)
+What does this code demonstrate?
+
+```java
+abstract class Shape {
+    abstract void draw();
+}
+
+class Circle extends Shape {
+    void draw() { System.out.println("Drawing circle"); }
+}
+
+class Rectangle extends Shape {
+    void draw() { System.out.println("Drawing rectangle"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Shape s1 = new Circle();
+        Shape s2 = new Rectangle();
+        s1.draw();
+        s2.draw();
+    }
+}
+```
+
+**Answer:** Polymorphism (runtime) — the correct draw() method is called based on the actual object type at runtime
+**Explanation:** This demonstrates runtime polymorphism through method overriding. The reference type is Shape, but the actual objects are Circle and Rectangle, so their respective draw() methods are called.
+
+---
+
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+```
+
+**Bug:** This Singleton implementation is not thread-safe. In a multithreaded environment, two threads could simultaneously pass the null check and create two instances.
+**Fix:** Use double-checked locking or an enum:
+```java
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+public class OrderProcessor {
+    public void processOrder(String type) {
+        if (type.equals("standard")) {
+            // process standard order
+        } else if (type.equals("express")) {
+            // process express order
+        } else if (type.equals("international")) {
+            // process international order
+        }
+    }
+}
+```
+
+**Bug:** This violates the Open/Closed Principle. Adding a new order type requires modifying the processOrder method. It also violates the Single Responsibility Principle — the method knows about all order types.
+**Fix:** Use the Strategy pattern:
+```java
+interface OrderStrategy {
+    void process();
+}
+
+class StandardOrder implements OrderStrategy {
+    public void process() { /* ... */ }
+}
+
+class OrderProcessor {
+    private OrderStrategy strategy;
+
+    OrderProcessor(OrderStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    void processOrder() {
+        strategy.process();
+    }
+}
+```
+
+---
+
+## Question 9 (Scenario-based)
+You are building a system where objects need to be created with different configurations (size, color, material). The construction process is complex with many optional parameters. Which creational pattern should you use?
+
+- A) Singleton
+- B) Factory Method
+- C) Builder
+- D) Prototype
 
 **Answer: C**
-
-### Question 5
-What is the difference between pattern and anti-pattern?
-- A) Pattern is good practice, anti-pattern is bad practice
-- B) Pattern is bad practice, anti-pattern is good practice
-- C) Both are good
-- D) Both are bad
-
-**Answer: A**
+**Explanation:** The Builder pattern is ideal for constructing complex objects step by step, especially when there are many optional parameters. It provides a fluent API for configuration and produces immutable objects.
 
 ---
 
-## Score Sheet
+## Question 10 (Architecture Decision)
+You need to design a middleware pipeline for an HTTP server where each request passes through multiple processing steps (authentication, logging, validation, rate limiting). Steps may be added or removed. How should you architect this?
 
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| Creational Patterns | 5 | /5 | % |
-| Structural Patterns | 5 | /5 | % |
-| Behavioral Patterns | 5 | /5 | % |
-| SOLID Principles | 5 | /5 | % |
-| Anti-Patterns | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
+- A) Create a single method with all steps hardcoded
+- B) Implement the Chain of Responsibility pattern where each middleware processes the request and passes it to the next handler
+- C) Use inheritance to create middleware classes
+- D) Store middleware configuration in a database
 
----
-
-## Passing Score: 80% (20/25)
+**Answer: B**
+**Explanation:** Chain of Responsibility allows flexible composition of processing steps. Each handler decides whether to process the request and pass it forward. New middleware can be added without modifying existing ones, following the Open/Closed Principle.

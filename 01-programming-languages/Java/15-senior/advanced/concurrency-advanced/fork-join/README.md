@@ -91,3 +91,54 @@ customPool.invoke(new ParallelSum(array, 0, array.length));
 3. **Returning null from compute** - use `RecursiveAction` instead
 4. **Not joining forked tasks** - leads to incomplete results
 5. **Sharing mutable state** between tasks without synchronization
+
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

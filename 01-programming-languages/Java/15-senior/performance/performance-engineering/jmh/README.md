@@ -205,6 +205,49 @@ java -jar benchmarks.jar -prof gc StringConcatBenchmark
 - [Profiling](../profiling/) — When and how to profile beyond microbenchmarks
 - [Performance Patterns](../performance-patterns/) — Broader optimization strategies
 
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
 ## References
 
 - [JMH Official Samples](https://hg.openjdk.java.net/jdk/sandbox/file/tip/test/micro/org/openjdk/jmh/samples/)

@@ -48,3 +48,31 @@ public class Directory extends FileSystemItem {
 1. What is the difference between Composite and Decorator patterns?
 2. When would you use a leaf vs a composite node?
 3. How do you prevent adding children to leaf nodes?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

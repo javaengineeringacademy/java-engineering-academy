@@ -1,261 +1,184 @@
 # Functional Programming Quiz
 
-## Quiz 1: Lambda Expressions
-
-### Question 1
-What is a lambda expression?
-- A) Anonymous function
-- B) Named function
-- C) Static function
-- D) Abstract function
+## Question 1 (MCQ)
+What is a functional interface in Java?
+- A) An interface with exactly one abstract method
+- B) An interface with no methods
+- C) An interface with multiple abstract methods
+- D) An abstract class with one method
 
 **Answer: A**
-
-### Question 2
-What is the syntax of lambda expression?
-- A) (parameters) -> expression
-- B) (parameters) => expression
-- C) parameters -> expression
-- D) (parameters) -> { expression }
-
-**Answer: A**
-
-### Question 3
-Can lambda expressions be assigned to variables?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with functional interfaces
-
-**Answer: A**
-
-### Question 4
-What is the type of lambda expression?
-- A) Functional interface
-- B) Abstract class
-- C) Concrete class
-- D) Interface
-
-**Answer: A**
-
-### Question 5
-What is the benefit of lambda expressions?
-- A) Concise code
-- B) Functional programming
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
+**Explanation:** A functional interface has exactly one abstract method (SAM - Single Abstract Method). It can have multiple default and static methods. The `@FunctionalInterface` annotation ensures this contract at compile time.
 
 ---
 
-## Quiz 2: Functional Interfaces
+## Question 2 (MCQ)
+What is the difference between `map()` and `flatMap()` in Stream API?
+- A) They are identical
+- B) `map()` transforms each element one-to-one; `flatMap()` transforms each element to a stream and flattens results
+- C) `map()` is faster than `flatMap()`
+- D) `flatMap()` is for primitive types only
 
-### Question 1
-What is a functional interface?
-- A) Interface with one abstract method
-- B) Interface with no methods
-- C) Interface with multiple methods
-- D) Abstract class
-
-**Answer: A**
-
-### Question 2
-What is the @FunctionalInterface annotation?
-- A) Marks interface as functional interface
-- B) Marks class as functional interface
-- C) Marks method as functional interface
-- D) Marks variable as functional interface
-
-**Answer: A**
-
-### Question 3
-What is Predicate?
-- A) Functional interface that takes one argument and returns boolean
-- B) Functional interface that takes no arguments and returns boolean
-- C) Functional interface that takes two arguments and returns boolean
-- D) Functional interface that takes one argument and returns void
-
-**Answer: A**
-
-### Question 4
-What is Function?
-- A) Functional interface that takes one argument and returns result
-- B) Functional interface that takes no arguments and returns result
-- C) Functional interface that takes two arguments and returns result
-- D) Functional interface that takes one argument and returns void
-
-**Answer: A**
-
-### Question 5
-What is Consumer?
-- A) Functional interface that takes one argument and returns void
-- B) Functional interface that takes no arguments and returns void
-- C) Functional interface that takes two arguments and returns void
-- D) Functional interface that takes one argument and returns result
-
-**Answer: A**
+**Answer: B**
+**Explanation:** `map()` applies a function to each element producing one output element. `flatMap()` applies a function that returns a stream for each element, then flattens all streams into a single stream.
 
 ---
 
-## Quiz 3: Stream API
-
-### Question 1
-What is a Stream?
-- A) Sequence of elements
-- B) Single element
-- C) Collection of elements
-- D) Array of elements
-
-**Answer: A**
-
-### Question 2
-What is the difference between intermediate and terminal operations?
-- A) Intermediate returns Stream, terminal returns value
-- B) Intermediate returns value, terminal returns Stream
-- C) Both return Stream
-- D) Both return value
-
-**Answer: A**
-
-### Question 3
-Which is an intermediate operation?
-- A) filter()
-- B) collect()
-- C) forEach()
-- D) count()
-
-**Answer: A**
-
-### Question 4
-Which is a terminal operation?
-- A) map()
-- B) filter()
-- C) sorted()
-- D) reduce()
-
-**Answer: D**
-
-### Question 5
+## Question 3 (MCQ)
 What is lazy evaluation in Streams?
-- A) Operations are not executed until terminal operation
+- A) Operations are not executed until a terminal operation is invoked
 - B) Operations are executed immediately
 - C) Operations are executed in parallel
-- D) Operations are executed sequentially
+- D) Operations are executed in reverse order
 
 **Answer: A**
+- **Explanation:** Intermediate operations (filter, map, etc.) are deferred. Processing only begins when a terminal operation (collect, forEach, etc.) is called, enabling optimizations like short-circuiting.
 
 ---
 
-## Quiz 4: Collectors
+## Question 4 (MCQ)
+What is the difference between `reduce()` and `collect()`?
+- A) They are identical
+- B) `reduce()` combines elements into a single value; `collect()` accumulates into a mutable container
+- C) `reduce()` is for parallel streams only
+- D) `collect()` is slower than `reduce()`
 
-### Question 1
-What is a Collector?
-- A) Terminal operation that accumulates elements
-- B) Intermediate operation that accumulates elements
-- C) Terminal operation that filters elements
-- D) Intermediate operation that filters elements
-
-**Answer: A**
-
-### Question 2
-What is Collectors.toList()?
-- A) Collector that accumulates elements into List
-- B) Collector that accumulates elements into Set
-- C) Collector that accumulates elements into Map
-- D) Collector that accumulates elements into Queue
-
-**Answer: A**
-
-### Question 3
-What is Collectors.groupingBy()?
-- A) Collector that groups elements by classifier
-- B) Collector that sorts elements
-- C) Collector that filters elements
-- D) Collector that maps elements
-
-**Answer: A**
-
-### Question 4
-What is Collectors.partitioningBy()?
-- A) Collector that partitions elements by predicate
-- B) Collector that groups elements by classifier
-- C) Collector that sorts elements
-- D) Collector that filters elements
-
-**Answer: A**
-
-### Question 5
-What is the benefit of using Collectors?
-- A) Efficient accumulation
-- B) Readable code
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
+**Answer: B**
+**Explanation:** `reduce()` uses a BinaryOperator to combine elements into one value (e.g., sum). `collect()` uses a Collector to accumulate elements into a mutable container like a List, Set, or Map.
 
 ---
 
-## Quiz 5: Optional
+## Question 5 (Code Output)
+What does this code print?
 
-### Question 1
-What is Optional?
-- A) Container object that may or may not contain value
-- B) Collection object
-- C) Stream object
-- D) Function object
+```java
+import java.util.*;
+import java.util.stream.*;
 
-**Answer: A**
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-### Question 2
-What is Optional.empty()?
-- A) Optional with no value
-- B) Optional with value
-- C) Optional with null
-- D) Optional with default value
+        int sum = numbers.stream()
+            .filter(n -> n % 2 == 0)
+            .mapToInt(Integer::intValue)
+            .sum();
 
-**Answer: A**
+        System.out.println(sum);
+    }
+}
+```
 
-### Question 3
-What is Optional.of()?
-- A) Optional with non-null value
-- B) Optional with null value
-- C) Optional with no value
-- D) Optional with default value
-
-**Answer: A**
-
-### Question 4
-What is Optional.orElse()?
-- A) Returns value or default value
-- B) Returns value or throws exception
-- C) Returns value or null
-- D) Returns value or Optional
-
-**Answer: A**
-
-### Question 5
-What is the benefit of using Optional?
-- A) Avoid NullPointerException
-- B) Readable code
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
+**Answer:** 30
+**Explanation:** The stream filters even numbers (2, 4, 6, 8, 10), maps them to int values, and sums them: 2 + 4 + 6 + 8 + 10 = 30.
 
 ---
 
-## Score Sheet
+## Question 6 (Code Output)
+What does this code print?
 
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| Lambda Expressions | 5 | /5 | % |
-| Functional Interfaces | 5 | /5 | % |
-| Stream API | 5 | /5 | % |
-| Collectors | 5 | /5 | % |
-| Optional | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> wordLengths = Stream.of("apple", "banana", "cherry")
+            .collect(Collectors.toMap(
+                s -> s,
+                String::length
+            ));
+
+        System.out.println(wordLengths);
+    }
+}
+```
+
+**Answer:** {banana=6, apple=5, cherry=6}
+**Explanation:** The stream collects into a Map where keys are the strings and values are their lengths. The order may vary since HashMap is unordered.
 
 ---
 
-## Passing Score: 80% (20/25)
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> names = List.of("Alice", "Bob", "Charlie", "David");
+
+        Optional<String> result = names.stream()
+            .filter(n -> n.length() > 3)
+            .findFirst();
+
+        result.ifPresent(n -> System.out.println(n.toUpperCase()));
+
+        // Try to use the stream again
+        long count = names.stream()
+            .filter(n -> n.length() > 3)
+            .count();
+
+        System.out.println(count);
+    }
+}
+```
+
+**Bug:** There's no bug — the code correctly creates a new stream from the collection for each operation. However, a common mistake is trying to reuse a single stream instance. Streams are single-use and cannot be reused after a terminal operation.
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5);
+
+        int sum = numbers.parallelStream()
+            .reduce(0, (a, b) -> a + b);
+
+        System.out.println(sum);
+    }
+}
+```
+
+**Bug:** The code works correctly, but using `reduce(0, (a, b) -> a + b)` with parallel streams creates unnecessary boxing. A better approach uses `mapToInt().sum()` for primitive streams:
+**Fix:**
+```java
+int sum = numbers.parallelStream()
+    .mapToInt(Integer::intValue)
+    .sum();
+```
+
+---
+
+## Question 9 (Scenario-based)
+You need to process a list of orders and group them by status (COMPLETED, PENDING, CANCELLED), then find the total revenue for COMPLETED orders. Which stream approach is most appropriate?
+
+- A) Iterate with a for loop, use if-else for grouping
+- B) Use `Collectors.groupingBy()` to group by status, then `filter` and `mapToDouble` for revenue
+- C) Sort the list, then manually group
+- D) Use parallel streams for all operations
+
+**Answer: B**
+**Explanation:** `Collectors.groupingBy()` provides a clean, declarative way to group elements. Combined with filtering and aggregation operations, this approach is concise, readable, and efficient.
+
+---
+
+## Question 10 (Architecture Decision)
+You are designing a data transformation pipeline that needs to: (1) read CSV data, (2) validate records, (3) transform to domain objects, (4) aggregate statistics, and (5) write results. How should you design this?
+
+- A) Process each step entirely before moving to the next
+- B) Use a Stream pipeline with intermediate operations for validation and transformation, and terminal operations for aggregation
+- C) Load all data into memory, process, then output
+- D) Use separate threads for each step without coordination
+
+**Answer: B**
+**Explanation:** A Stream pipeline provides lazy evaluation, so each record flows through all steps before the next record is processed. This minimizes memory usage and allows the JVM to optimize the pipeline. Intermediate operations are fused for efficiency.

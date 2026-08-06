@@ -3030,3 +3030,71 @@ knowledge_graph:
     next: [architecture-general, backend-engineering]
     deep_dive: [java.02-oop.solid-principles, java.11-design-patterns]
     tags: [design, principles, patterns]
+
+# ============================================================
+# LEARNING METRICS
+# ============================================================
+
+metrics:
+  # Content metrics
+  java:
+    files: 503
+    lines_of_code: 56610
+    readme_files: 509
+    readme_lines: 116786
+    
+  # Educational content
+  quizzes:
+    files: 14
+    total_questions: 155
+    question_types:
+      - mcq
+      - code-output
+      - bug-finding
+      - scenario-based
+      - architecture-decision
+    
+  exercises:
+    files: 17
+    modules_covered:
+      - 01-fundamentals
+      - 02-oop
+      - 04-collections
+      - 07-functional-programming
+      - 09-multithreading
+    
+  interview_questions:
+    total: 239
+    format: question-with-answer
+    
+  # Structure metrics
+  modules:
+    total: 31
+    java_modules: 16
+    java_topics: 100+
+    
+  design_patterns:
+    total: 22
+    creational: 5
+    structural: 7
+    behavioral: 10
+    
+  knowledge_atoms: 7
+  
+  war_stories: 5
+  
+  java_21_features: 5
+  
+  # Estimated learning time
+  estimated_hours:
+    beginner: "50-70 hours"
+    intermediate: "80-120 hours"
+    advanced: "60-80 hours"
+    senior: "40-60 hours"
+    total: "230-330 hours"
+    
+  # Progress tracking
+  progress:
+    tracked_by: module
+    storage: local
+    export_format: json

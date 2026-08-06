@@ -33,6 +33,22 @@ Constructor<?> ctor = clazz.getConstructor(String.class);
 Object instance = ctor.newInstance("value");
 ```
 
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
 ## Code References
 - `ReflectionBasics.java` - Main demonstration class
 - `ReflectionBasicsTest.java` - Unit tests
@@ -48,3 +64,15 @@ Object instance = ctor.newInstance("value");
 2. How do you access private fields?
 3. What exceptions can reflection throw?
 4. When should you avoid using reflection?
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

@@ -42,3 +42,31 @@ public class Circle extends Shape {
 1. What is the difference between Bridge and Strategy patterns?
 2. How does Bridge pattern help with platform independence?
 3. When would you choose Bridge over multiple inheritance?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

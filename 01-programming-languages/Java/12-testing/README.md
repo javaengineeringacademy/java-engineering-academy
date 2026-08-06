@@ -459,6 +459,18 @@ public class DebuggingEnterpriseExample {
 ## Summary
 Effective debugging is essential for software quality. Master IDE tools, logging, and systematic analysis.
 
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
 ## References
 - Debugging by David Agans
 - Java Debugging Guide

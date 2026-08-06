@@ -404,7 +404,58 @@ Long-term support release focusing on enterprise features, performance, and remo
 
 **Continue to Part 2**: README-part2.md | Part 3
 
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
 ## Related Topics
 - [Java Philosophy](../java-philosophy/) — Why features were introduced
 - [JEPs](../openjdk/jeps/) — How features are proposed
 - [JDK Distributions](../jdk-distributions/) — Which JDK to use
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

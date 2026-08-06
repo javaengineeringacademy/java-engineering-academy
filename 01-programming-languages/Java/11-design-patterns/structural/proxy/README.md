@@ -39,3 +39,31 @@ public class ProxyImage implements Image {
 1. What are the different types of proxies?
 2. How does Proxy pattern differ from Decorator pattern?
 3. When would you use a virtual proxy vs a protection proxy?
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

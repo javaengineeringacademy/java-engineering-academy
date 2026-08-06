@@ -1,261 +1,191 @@
 # Generics Quiz
 
-## Quiz 1: Generic Classes
-
-### Question 1
-What is the benefit of using generics?
-- A) Type safety at compile time
-- B) No casting required
-- C) Code reusability
-- D) All of the above
-
-**Answer: D**
-
-### Question 2
-How do you declare a generic class?
-- A) class Box<T> { }
-- B) class Box<T> { }
-- C) class Box<T> { }
-- D) class Box<T> { }
-
-**Answer: A**
-
-### Question 3
-Can a generic class have multiple type parameters?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with interfaces
-
-**Answer: A**
-
-### Question 4
-What is type erasure?
+## Question 1 (MCQ)
+What is type erasure in Java generics?
 - A) Removing generic type information at compile time
 - B) Adding generic type information at compile time
 - C) Keeping generic type information at runtime
 - D) Removing generic type information at runtime
 
 **Answer: A**
-
-### Question 5
-What is the raw type?
-- A) Generic type without type parameter
-- B) Non-generic type
-- C) Primitive type
-- D) Wrapper type
-
-**Answer: A**
+**Explanation:** Type erasure removes generic type parameters during compilation, converting `List<String>` to `List`. This ensures backward compatibility with pre-generics code.
 
 ---
 
-## Quiz 2: Generic Methods
-
-### Question 1
-How do you declare a generic method?
-- A) <T> void print(T element) { }
-- B) void print<T>(T element) { }
-- C) void print(T element) { }
-- D) T void print(T element) { }
-
-**Answer: A**
-
-### Question 2
-Can generic methods be static?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with classes
-
-**Answer: A**
-
-### Question 3
-What is the scope of type parameter in generic method?
-- A) Method only
-- B) Class only
-- C) Both method and class
-- D) Neither
-
-**Answer: A**
-
-### Question 4
-Can generic methods be overloaded?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with generics
-
-**Answer: A**
-
-### Question 5
-What is the benefit of generic methods?
-- A) Type safety
-- B) Code reusability
-- C) No casting
-- D) All of the above
-
-**Answer: D**
-
----
-
-## Quiz 3: Bounded Types
-
-### Question 1
-What is an upper bound?
-- A) T extends Number
-- B) T super Number
-- C) T implements Number
-- D) T imports Number
-
-**Answer: A**
-
-### Question 2
-What is a lower bound?
-- A) T extends Number
-- B) T super Number
-- C) T implements Number
-- D) T imports Number
-
-**Answer: B**
-
-### Question 3
-Can a type parameter have multiple bounds?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with classes
-
-**Answer: A**
-
-### Question 4
-What is the keyword for multiple bounds?
-- A) &
-- B) |
-- C) ,
-- D) ;
-
-**Answer: A**
-
-### Question 5
-What is the benefit of bounded types?
-- A) Restrict types
-- B) Provide methods
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
-
----
-
-## Quiz 4: Wildcards
-
-### Question 1
-What is an unbounded wildcard?
-- A) <?>
-- B) <? extends T>
-- C) <? super T>
-- D) <T>
-
-**Answer: A**
-
-### Question 2
-What is an upper bounded wildcard?
-- A) <?>
-- B) <? extends T>
-- C) <? super T>
-- D) <T>
-
-**Answer: B**
-
-### Question 3
-What is a lower bounded wildcard?
-- A) <?>
-- B) <? extends T>
-- C) <? super T>
-- D) <T>
-
-**Answer: C**
-
-### Question 4
-What is PECS principle?
+## Question 2 (MCQ)
+What does the PECS principle stand for?
 - A) Producer Extends, Consumer Super
 - B) Producer Super, Consumer Extends
-- C) Both A and B
-- D) Neither
+- C) Parameter Extends, Collection Super
+- D) Public Extends, Private Super
 
 **Answer: A**
-
-### Question 5
-When should you use <? extends T>?
-- A) When reading from collection
-- B) When writing to collection
-- C) Both A and B
-- D) Neither
-
-**Answer: A**
+**Explanation:** Producer Extends, Consumer Super. Use `? extends T` when reading from a collection (producer), and `? super T` when writing to it (consumer).
 
 ---
 
-## Quiz 5: Advanced Topics
-
-### Question 1
-What is a generic interface?
-- A) Interface with type parameter
-- B) Interface without type parameter
-- C) Abstract class
-- D) Concrete class
-
-**Answer: A**
-
-### Question 2
-Can we create generic enum?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with classes
-
-**Answer: B**
-
-### Question 3
-What is recursive type bound?
-- A) <T extends Comparable<T>>
-- B) <T extends Object>
-- C) <T>
-- D) <?>
-
-**Answer: A**
-
-### Question 4
-What is the benefit of wildcards?
-- A) Flexibility
-- B) Type safety
-- C) Both A and B
-- D) Neither
+## Question 3 (MCQ)
+Which of the following is NOT valid in Java generics?
+- A) `List<String>`
+- B) `new ArrayList<String>()`
+- C) `new T()`
+- D) `<T extends Comparable<T>>`
 
 **Answer: C**
-
-### Question 5
-What is the difference between <?> and <? extends Object>?
-- A) No difference
-- B) <?> is more restrictive
-- C) <? extends Object> is more restrictive
-- D) Neither is restrictive
-
-**Answer: A**
+**Explanation:** Due to type erasure, you cannot create an instance of a type parameter (`new T()`). The compiler has no way to know what concrete type T represents at runtime.
 
 ---
 
-## Score Sheet
+## Question 4 (MCQ)
+What is the benefit of using bounded type parameters like `<T extends Number>`?
+- A) Allows any type to be passed
+- B) Restricts the type to Number and its subclasses, allowing access to Number methods
+- C) Makes the code run faster
+- D) Prevents null values
 
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| Generic Classes | 5 | /5 | % |
-| Generic Methods | 5 | /5 | % |
-| Bounded Types | 5 | /5 | % |
-| Wildcards | 5 | /5 | % |
-| Advanced Topics | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
+**Answer: B**
+**Explanation:** Bounded types restrict the generic to a specific hierarchy, allowing you to call methods on the bound type (e.g., `doubleValue()` from Number) while maintaining type safety.
 
 ---
 
-## Passing Score: 80% (20/25)
+## Question 5 (Code Output)
+What does this code print?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static <T extends Comparable<T>> T findMax(List<T> list) {
+        T max = list.get(0);
+        for (T item : list) {
+            if (item.compareTo(max) > 0) {
+                max = item;
+            }
+        }
+        return max;
+    }
+
+    public static void main(String[] args) {
+        List<Integer> numbers = Arrays.asList(3, 1, 4, 1, 5, 9);
+        System.out.println(findMax(numbers));
+    }
+}
+```
+
+**Answer:** 9
+**Explanation:** The method uses a bounded type parameter `<T extends Comparable<T>>` ensuring T implements Comparable. It iterates through the list comparing elements, finding the maximum value 9.
+
+---
+
+## Question 6 (Code Output)
+What does this code print?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void printList(List<?> list) {
+        for (Object item : list) {
+            System.out.print(item + " ");
+        }
+    }
+
+    public static void main(String[] args) {
+        List<String> strings = Arrays.asList("A", "B", "C");
+        List<Integer> integers = Arrays.asList(1, 2, 3);
+        printList(strings);
+        System.out.println();
+        printList(integers);
+    }
+}
+```
+
+**Answer:** A B C and 1 2 3
+**Explanation:** The unbounded wildcard `List<?>` accepts lists of any type. The method treats elements as Objects, which all types extend. This provides type-safe read-only access to heterogeneous list types.
+
+---
+
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+public class Box<T> {
+    private T value;
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public static void main(String[] args) {
+        Box<Integer> box = new Box<>();
+        box.setValue(42);
+        Object val = box.getValue();
+        Integer num = (Integer) val;
+        System.out.println(num + 1);
+    }
+}
+```
+
+**Bug:** The code actually works correctly, but the explicit cast `(Integer) val` is redundant and indicates a misunderstanding. Due to type erasure, the cast happens implicitly. However, there's a subtle issue: if someone changes the code to use raw types later, the cast will be needed.
+**Fix:** Remove the unnecessary cast:
+```java
+Integer num = box.getValue();
+```
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void addNumber(List<? extends Number> list, Number num) {
+        list.add(num);
+    }
+
+    public static void main(String> args) {
+        List<Integer> integers = new ArrayList<>();
+        addNumber(integers, 42);
+    }
+}
+```
+
+**Bug:** You cannot add elements to a collection with an upper-bounded wildcard (`? extends Number`). The compiler doesn't know the exact type, so it prevents adding to maintain type safety. Also, there's a syntax error: `List<Integer>` should be `List<Integer>`.
+**Fix:** Change the method signature to use a lower bound for writing:
+```java
+public static void addNumber(List<? super Integer> list, Integer num) {
+    list.add(num);
+}
+```
+
+---
+
+## Question 9 (Scenario-based)
+You're building a data processing framework that accepts lists of any Comparable type and sorts them. Which generic approach is best?
+
+- A) Use `List<Object>` and cast elements to Comparable
+- B) Use `List<? extends Comparable>` to accept any list of Comparable types
+- C) Create separate methods for each type
+- D) Use raw types without generics
+
+**Answer: B**
+**Explanation:** `List<? extends Comparable>` (or more precisely `List<? extends Comparable<?>>`) accepts any list of Comparable types while maintaining type safety. This leverages generics for reusability without losing compile-time checks.
+
+---
+
+## Question 10 (Architecture Decision)
+You need to design a generic repository pattern for a data access layer. The repository must support CRUD operations for any entity type and should be type-safe. How should you design it?
+
+- A) Create a separate repository class for each entity type
+- B) Define `interface Repository<T, ID>` with methods like `findById(ID id)`, `save(T entity)`, `delete(T entity)`
+- C) Use Object for all entity types and cast as needed
+- D) Use a single Repository class with string-based entity names
+
+**Answer: B**
+**Explanation:** A generic Repository interface provides type-safe CRUD operations for any entity. Each entity gets its own implementation or uses a single implementation with type parameters. This reduces code duplication while maintaining compile-time type safety.

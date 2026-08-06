@@ -31,6 +31,22 @@ for (Annotation annotation : annotations) {
 }
 ```
 
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
 ## Code References
 - `AnnotationsDemo.java` - Main demonstration class
 - `AnnotationsDemoTest.java` - Unit tests
@@ -46,3 +62,15 @@ for (Annotation annotation : annotations) {
 2. How do you create a custom annotation?
 3. How do you process annotations at runtime?
 4. What are meta-annotations?
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

@@ -199,3 +199,54 @@ Java 25 (2025) ──── Next LTS (projected)
 Java remains a strategic technology choice for enterprise applications, particularly in regulated industries, large team environments, and long-lived systems. The key is understanding when Java's strengths (maturity, ecosystem, type safety) outweigh its weaknesses (verbosity, startup time, memory overhead).
 
 **Bottom Line:** Choose Java when you need reliability, scale, and enterprise support. Avoid Java when you need rapid prototyping, ML capabilities, or minimal deployment footprint. The language continues to evolve and remains relevant for the foreseeable future.
+
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

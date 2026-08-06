@@ -1,261 +1,171 @@
 # Exception Handling Quiz
 
-## Quiz 1: Exception Basics
-
-### Question 1
-What is an exception?
-- A) An error that occurs during runtime
-- B) A compile-time error
-- C) A syntax error
-- D) A logical error
-
-**Answer: A**
-
-### Question 2
-What is the difference between Error and Exception?
-- A) Error is unrecoverable, Exception is recoverable
-- B) Error is recoverable, Exception is unrecoverable
-- C) Both are recoverable
-- D) Both are unrecoverable
-
-**Answer: A**
-
-### Question 3
-What is a checked exception?
-- A) Exception that must be handled
-- B) Exception that can be ignored
-- C) Runtime exception
-- D) Error
-
-**Answer: A**
-
-### Question 4
-What is an unchecked exception?
-- A) Exception that must be handled
-- B) Exception that can be ignored
-- C) Compile-time exception
-- D) Syntax error
-
-**Answer: B**
-
-### Question 5
-What is the root class of all exceptions?
-- A) Throwable
-- B) Exception
-- C) Error
-- D) RuntimeException
-
-**Answer: A**
-
----
-
-## Quiz 2: Try-Catch-Finally
-
-### Question 1
-What is the purpose of try block?
-- A) To enclose code that might throw exception
-- B) To catch exception
-- C) To handle exception
-- D) To close resources
-
-**Answer: A**
-
-### Question 2
-What is the purpose of catch block?
-- A) To enclose code that might throw exception
-- B) To catch and handle exception
-- C) To close resources
-- D) To throw exception
-
-**Answer: B**
-
-### Question 3
-What is the purpose of finally block?
-- A) To catch exception
-- B) To handle exception
-- C) To execute code regardless of exception
-- D) To throw exception
+## Question 1 (MCQ)
+Which of the following is a checked exception in Java?
+- A) NullPointerException
+- B) ArrayIndexOutOfBoundsException
+- C) IOException
+- D) ClassCastException
 
 **Answer: C**
-
-### Question 4
-Can we have multiple catch blocks?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with finally
-
-**Answer: A**
-
-### Question 5
-What happens if exception is not caught?
-- A) Program terminates
-- B) Program continues
-- C) Exception is ignored
-- D) Nothing happens
-
-**Answer: A**
+**Explanation:** Checked exceptions (like IOException, SQLException) must be declared in the method signature or caught. Unchecked exceptions (RuntimeException subclasses) don't require explicit handling.
 
 ---
 
-## Quiz 3: Throw and Throws
-
-### Question 1
-What is the difference between throw and throws?
-- A) throw is used to throw exception, throws is used to declare exception
-- B) throw is used to declare exception, throws is used to throw exception
-- C) Both are same
-- D) Neither is used
-
-**Answer: A**
-
-### Question 2
-When do we use throws keyword?
-- A) In method signature
-- B) In method body
-- C) In constructor
-- D) In static block
-
-**Answer: A**
-
-### Question 3
-Can we throw multiple exceptions?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with try-catch
-
-**Answer: A**
-
-### Question 4
-What is exception chaining?
-- A) Linking multiple exceptions
-- B) Catching multiple exceptions
-- C) Throwing multiple exceptions
-- D) Ignoring exceptions
-
-**Answer: A**
-
-### Question 5
-Can we throw an object that is not an Exception?
-- A) Yes
-- B) No
-- C) Only in Java 8+
-- D) Only with Throwable
-
-**Answer: B**
-
----
-
-## Quiz 4: Custom Exceptions
-
-### Question 1
-How do you create a custom exception?
-- A) extends Exception
-- B) implements Exception
-- C) new Exception
-- D) import Exception
-
-**Answer: A**
-
-### Question 2
-What is the benefit of custom exceptions?
-- A) Meaningful error messages
-- B) Better debugging
-- C) Code readability
-- D) All of the above
-
-**Answer: D**
-
-### Question 3
-When should you create custom exceptions?
-- A) Always
-- B) Never
-- C) When standard exceptions are not sufficient
-- D) Only for checked exceptions
+## Question 2 (MCQ)
+What is the correct order of blocks in a try-catch-finally statement?
+- A) try → finally → catch
+- B) catch → try → finally
+- C) try → catch → finally
+- D) finally → try → catch
 
 **Answer: C**
+**Explanation:** The order is always: `try` block first, then one or more `catch` blocks, and optionally `finally` at the end. The `finally` block always executes regardless of whether an exception is thrown.
 
-### Question 4
-Can custom exceptions have constructors?
-- A) Yes
-- B) No
-- C) Only default constructor
-- D) Only in Java 8+
+---
 
-**Answer: A**
-
-### Question 5
-What is the best practice for exception handling?
-- A) Catch generic Exception
-- B) Catch specific exceptions
-- C) Ignore exceptions
-- D) Print stack trace only
+## Question 3 (MCQ)
+What happens if an exception is thrown inside a finally block?
+- A) It is ignored
+- B) It replaces any exception from the try block
+- C) The program terminates immediately
+- D) It is caught by the catch block
 
 **Answer: B**
+**Explanation:** If a finally block throws an exception, it masks any exception from the try/catch block. This is why code inside finally should be kept simple and not throw exceptions.
 
 ---
 
-## Quiz 5: Advanced Topics
-
-### Question 1
-What is try-with-resources?
-- A) Automatic resource management
-- B) Manual resource management
-- C) No resource management
-- D) Resource deletion
-
-**Answer: A**
-
-### Question 2
-What is the AutoCloseable interface?
-- A) Interface for automatic resource cleanup
-- B) Interface for manual cleanup
-- C) Interface for exceptions
-- D) Interface for logging
-
-**Answer: A**
-
-### Question 3
-What is the difference between finally and try-with-resources?
-- A) finally is manual, try-with-resources is automatic
-- B) Both are automatic
-- C) Both are manual
-- D) Neither is automatic
-
-**Answer: A**
-
-### Question 4
-Can we have try without catch or finally?
-- A) Yes, with try-with-resources
-- B) No, never
-- C) Only in Java 8+
-- D) Only with finally
-
-**Answer: A**
-
-### Question 5
-What is the best practice for resource cleanup?
-- A) Use finally block
-- B) Use try-with-resources
-- C) Use finalize method
-- D) Use System.gc()
+## Question 4 (MCQ)
+What is the purpose of try-with-resources?
+- A) To manually close resources
+- B) To automatically close resources implementing AutoCloseable
+- C) To catch exceptions automatically
+- D) To prevent exceptions from occurring
 
 **Answer: B**
+**Explanation:** try-with-resources automatically calls `close()` on resources declared in the parentheses after the try block exits, even if an exception occurs. This prevents resource leaks.
 
 ---
 
-## Score Sheet
+## Question 5 (Code Output)
+What does this code print?
 
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| Exception Basics | 5 | /5 | % |
-| Try-Catch-Finally | 5 | /5 | % |
-| Throw and Throws | 5 | /5 | % |
-| Custom Exceptions | 5 | /5 | % |
-| Advanced Topics | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
+```java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.print("A ");
+            int result = 10 / 0;
+            System.out.print("B ");
+        } catch (ArithmeticException e) {
+            System.out.print("C ");
+        } finally {
+            System.out.print("D ");
+        }
+        System.out.print("E ");
+    }
+}
+```
+
+**Answer:** A C D E
+**Explanation:** "A" prints before the division. Division by zero throws ArithmeticException, so "B" is skipped. The catch block prints "C". The finally block always runs, printing "D". Execution continues after the try-catch-finally, printing "E".
 
 ---
 
-## Passing Score: 80% (20/25)
+## Question 6 (Code Output)
+What does this code print?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.println("try");
+            return;
+        } finally {
+            System.out.println("finally");
+        }
+    }
+}
+```
+
+**Answer:** try finally
+**Explanation:** The `finally` block executes even when a `return` statement is encountered in the try block. The method returns after the finally block completes.
+
+---
+
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+public void readFile(String path) {
+    FileInputStream fis = new FileInputStream(path);
+    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+    String line = br.readLine();
+    System.out.println(line);
+    fis.close();
+}
+```
+
+**Bug:** Resources are not properly managed. If an exception occurs before `fis.close()`, the file handle leaks. Also, there's no try-catch to handle IOException.
+**Fix:** Use try-with-resources:
+```java
+public void readFile(String path) throws IOException {
+    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        String line = br.readLine();
+        System.out.println(line);
+    }
+}
+```
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+public void process() {
+    try {
+        riskyOperation();
+    } catch (Exception e) {
+        // handle silently
+    } finally {
+        cleanup();
+    }
+}
+```
+
+**Bug:** The catch block swallows the exception silently without logging or rethrowing. This makes debugging nearly impossible because failures are hidden from the caller and logs.
+**Fix:** At minimum, log the exception or rethrow it:
+```java
+} catch (Exception e) {
+    logger.error("Error during processing", e);
+    throw new ServiceException("Processing failed", e);
+}
+```
+
+---
+
+## Question 9 (Scenario-based)
+You are writing a method that reads a file and parses JSON. The file might not exist, and the JSON might be malformed. How should you handle exceptions?
+
+- A) Catch Exception and return null
+- B) Catch FileNotFoundException and JsonParseException separately, and wrap JsonParseException in a custom exception
+- C) Declare throws Exception on the method signature
+- D) Use a global try-catch in main()
+
+**Answer: B**
+**Explanation:** Catching specific exceptions allows differentiated handling (e.g., file not found → use default, malformed JSON → report parsing error). Wrapping in a custom exception provides meaningful context while preserving the original cause.
+
+---
+
+## Question 10 (Architecture Decision)
+You are building a microservice that calls 3 external APIs. Each API can fail independently. How should you design the exception handling?
+
+- A) Let all exceptions propagate to the caller
+- B) Create a custom exception hierarchy with specific exceptions for each API, implement retry logic with circuit breaker pattern
+- C) Catch all exceptions and return null
+- D) Use a single global catch-all exception handler
+
+**Answer: B**
+**Explanation:** A custom exception hierarchy allows targeted recovery strategies per API. Retry logic handles transient failures, and the circuit breaker pattern prevents cascading failures when an API is consistently unavailable. This is the industry standard for resilient microservices.

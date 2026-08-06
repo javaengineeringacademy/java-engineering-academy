@@ -108,9 +108,60 @@ CompletableFuture<UserProfile> combined = userFuture
 | No timeout on external calls | Use `orTimeout()` |
 | Swallowing errors silently | Log in `handle()` |
 
+## Interview Questions
+
+[5-10 interview questions with answers]
+
+1. **What is this concept?**
+   [Answer]
+
+2. **When would you use it?**
+   [Answer]
+
+3. **What are the alternatives?**
+   [Answer]
+
+4. **What are common mistakes?**
+   [Answer]
+
+5. **How does it perform compared to alternatives?**
+   [Answer]
+
+## Performance
+
+[Performance considerations and benchmarks]
+
+## Examples
+
+[Code examples demonstrating the concept]
+
+## Internal Working
+
+[How this works under the hood]
+
+## Why This Concept Exists
+
+[Problem this concept solves and motivation behind it]
+
+## Overview
+
+[Brief description of the topic]
+
 ## Related Topics
 - [Virtual Threads](../virtual-threads/) — Simpler concurrency alternative
 - [Fork/Join](../fork-join/) — Parallel processing
 - Thread Pools — ExecutorService basics
 - [Structured Concurrency](../structured-concurrency/) — Future of async
 - JMM — Memory visibility in async
+
+## Pitfalls
+
+[Common mistakes and anti-patterns]
+
+## References
+
+[Links to official docs, tutorials, and related topics]
+
+- [Official Documentation](#)
+- [Related: topic1](#)
+- [Related: topic2](#)

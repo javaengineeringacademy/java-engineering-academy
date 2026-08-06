@@ -1,261 +1,213 @@
 # Multithreading Quiz
 
-## Quiz 1: Thread Basics
-
-### Question 1
-What is a thread?
-- A) Lightweight process
-- B) Heavy process
-- C) Single process
-- D) No process
+## Question 1 (MCQ)
+What is the difference between start() and run() methods?
+- A) start() creates a new thread and calls run(); run() executes in the current thread
+- B) start() calls run() directly; run() creates a new thread
+- C) Both create new threads
+- D) Both execute in the current thread
 
 **Answer: A**
-
-### Question 2
-What is the difference between Thread and Runnable?
-- A) Thread is class, Runnable is interface
-- B) Thread is interface, Runnable is class
-- C) Both are classes
-- D) Both are interfaces
-
-**Answer: A**
-
-### Question 3
-How do you create a thread?
-- A) extends Thread
-- B) implements Runnable
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
-
-### Question 4
-What is the start() method?
-- A) Creates new thread and calls run()
-- B) Calls run() directly
-- C) Creates new process
-- D) Calls main() method
-
-**Answer: A**
-
-### Question 5
-What is the difference between start() and run()?
-- A) start() creates new thread, run() doesn't
-- B) start() calls run(), run() creates new thread
-- C) Both create new thread
-- D) Both don't create new thread
-
-**Answer: A**
+**Explanation:** `start()` creates a new OS thread and invokes `run()` in that thread. `run()` is just a regular method call in the current thread — it does not create any new thread.
 
 ---
 
-## Quiz 2: Synchronization
+## Question 2 (MCQ)
+What does the volatile keyword guarantee?
+- A) Atomicity of compound operations
+- B) Visibility of writes to all threads and prevents instruction reordering
+- C) Mutual exclusion for synchronized blocks
+- D) Thread-safe iteration over collections
 
-### Question 1
-What is synchronization?
-- A) Controlling access to shared resources
-- B) Creating new threads
-- C) Deleting threads
-- D) Starting threads
-
-**Answer: A**
-
-### Question 2
-What is the synchronized keyword?
-- A) Method or block can be accessed by one thread at a time
-- B) Method or block can be accessed by multiple threads
-- C) Method or block can't be accessed
-- D) Method or block can be accessed by any thread
-
-**Answer: A**
-
-### Question 3
-What is a deadlock?
-- A) Two threads waiting for each other
-- B) One thread waiting
-- C) Multiple threads waiting
-- D) No threads waiting
-
-**Answer: A**
-
-### Question 4
-What is the volatile keyword?
-- A) Variable is always read from main memory
-- B) Variable is always read from cache
-- C) Variable is always written to main memory
-- D) Variable is always written to cache
-
-**Answer: A**
-
-### Question 5
-What is the difference between synchronized and volatile?
-- A) synchronized is for methods, volatile is for variables
-- B) synchronized is for variables, volatile is for methods
-- C) Both are for methods
-- D) Both are for variables
-
-**Answer: A**
+**Answer: B**
+**Explanation:** `volatile` ensures that reads and writes to a variable go directly to main memory, not CPU caches. It prevents instruction reordering but does NOT provide atomicity for compound operations like `count++`.
 
 ---
 
-## Quiz 3: Wait and Notify
-
-### Question 1
-What is the wait() method?
-- A) Thread releases lock and waits
-- B) Thread acquires lock and waits
-- C) Thread releases lock and continues
-- D) Thread acquires lock and continues
-
-**Answer: A**
-
-### Question 2
-What is the notify() method?
-- A) Wakes up one waiting thread
-- B) Wakes up all waiting threads
-- C) Puts thread to sleep
-- D) Stops thread
-
-**Answer: A**
-
-### Question 3
+## Question 3 (MCQ)
 What is the difference between wait() and sleep()?
-- A) wait() releases lock, sleep() doesn't
-- B) wait() doesn't release lock, sleep() does
-- C) Both release lock
-- D) Neither releases lock
+- A) wait() releases the object lock; sleep() does not
+- B) wait() does not release the lock; sleep() does
+- C) Both release the lock
+- D) Neither releases the lock
 
 **Answer: A**
-
-### Question 4
-Can we call wait() without synchronized block?
-- A) No
-- B) Yes
-- C) Only in Java 8+
-- D) Only with notify()
-
-**Answer: A**
-
-### Question 5
-What is the difference between notify() and notifyAll()?
-- A) notify() wakes one thread, notifyAll() wakes all
-- B) notify() wakes all, notifyAll() wakes one
-- C) Both wake one thread
-- D) Both wake all threads
-
-**Answer: A**
+**Explanation:** `wait()` releases the monitor lock on the object and waits until notified. `sleep()` pauses the thread for a specified time but does NOT release any locks it holds.
 
 ---
 
-## Quiz 4: Executor Framework
+## Question 4 (MCQ)
+What is a deadlock?
+- A) A thread that runs too slowly
+- B) Two or more threads waiting for each other's locks indefinitely
+- C) A thread that throws an exception
+- D) A thread that is interrupted
 
-### Question 1
-What is Executor?
-- A) Interface for executing tasks
-- B) Class for executing tasks
-- C) Thread for executing tasks
-- D) Process for executing tasks
+**Answer: B**
+**Explanation:** Deadlock occurs when Thread A holds Lock1 and waits for Lock2, while Thread B holds Lock2 and waits for Lock1. Both threads are stuck forever in a circular dependency.
 
-**Answer: A**
+---
 
-### Question 2
-What is ExecutorService?
-- A) Interface for managing threads
-- B) Class for managing threads
-- C) Thread for managing threads
-- D) Process for managing threads
+## Question 5 (Code Output)
+What does this code print?
 
-**Answer: A**
+```java
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -> {
+            for (int i = 0; i < 3; i++) {
+                System.out.print("Worker ");
+            }
+        });
 
-### Question 3
-What is the difference between submit() and execute()?
-- A) submit() returns Future, execute() doesn't
-- B) submit() doesn't return Future, execute() does
-- C) Both return Future
-- D) Neither returns Future
+        t.start();
+        t.join();
 
-**Answer: A**
+        for (int i = 0; i < 3; i++) {
+            System.out.print("Main ");
+        }
+    }
+}
+```
 
-### Question 4
-What is a Thread Pool?
-- A) Collection of reusable threads
-- B) Single thread
-- C) Multiple processes
-- D) Single process
+**Answer:** Worker Worker Worker Main Main Main
+**Explanation:** `t.join()` causes the main thread to wait until thread `t` completes. So all "Worker" prints happen first, followed by all "Main" prints.
 
-**Answer: A**
+---
 
-### Question 5
-What is the benefit of using Thread Pool?
-- A) Reduced overhead
-- B) Better performance
-- C) Both A and B
-- D) Neither
+## Question 6 (Code Output)
+What does this code print?
+
+```java
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        Future<Integer> future1 = executor.submit(() -> 10 + 20);
+        Future<Integer> future2 = executor.submit(() -> 30 + 40);
+
+        System.out.println(future1.get() + future2.get());
+
+        executor.shutdown();
+    }
+}
+```
+
+**Answer:** 100
+**Explanation:** future1 returns 30 (10+20), future2 returns 70 (30+40). `get()` retrieves the results, so 30 + 70 = 100.
+
+---
+
+## Question 7 (Bug Finding)
+Find the bug:
+
+```java
+public class Counter {
+    private int count = 0;
+
+    public void increment() {
+        count++;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Counter counter = new Counter();
+        Thread[] threads = new Thread[100];
+
+        for (int i = 0; i < 100; i++) {
+            threads[i] = new Thread(() -> {
+                for (int j = 0; j < 1000; j++) {
+                    counter.increment();
+                }
+            });
+            threads[i].start();
+        }
+
+        for (Thread t : threads) {
+            t.join();
+        }
+
+        System.out.println(counter.getCount()); // Expected: 100000
+    }
+}
+```
+
+**Bug:** Race condition — `count++` is not atomic. Multiple threads can read the same value, increment it, and write back simultaneously, causing lost updates.
+**Fix:** Use synchronization or AtomicInteger:
+```java
+private final AtomicInteger count = new AtomicInteger(0);
+
+public void increment() {
+    count.incrementAndGet();
+}
+```
+
+---
+
+## Question 8 (Bug Finding)
+Find the bug:
+
+```java
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.submit(() -> {
+            System.out.println("Task 1");
+            throw new RuntimeException("Error");
+        });
+
+        executor.submit(() -> {
+            System.out.println("Task 2");
+        });
+
+        executor.shutdown();
+    }
+}
+```
+
+**Bug:** When a task throws an uncaught exception in a thread pool, the thread dies silently. The second task may or may not execute depending on timing. The exception is swallowed without logging.
+**Fix:** Add exception handling:
+```java
+executor.submit(() -> {
+    try {
+        System.out.println("Task 1");
+        throw new RuntimeException("Error");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+});
+```
+
+---
+
+## Question 9 (Scenario-based)
+You need to implement a producer-consumer pattern where producers add items to a buffer and consumers process them. The buffer has a fixed capacity. Which concurrent collection is best?
+
+- A) ArrayList with synchronized methods
+- B) BlockingQueue (e.g., ArrayBlockingQueue)
+- C) HashMap with locks
+- D) LinkedList with manual synchronization
+
+**Answer: B**
+**Explanation:** BlockingQueue provides built-in thread safety with `put()` blocking when full and `take()` blocking when empty. This eliminates the need for manual wait/notify coordination, reducing complexity and potential bugs.
+
+---
+
+## Question 10 (Architecture Decision)
+You are building a web server that needs to handle 10,000 concurrent connections. Each connection requires minimal processing (read request, send response). How should you design the threading model?
+
+- A) Create a new thread for each connection
+- B) Use a fixed thread pool with a size equal to the number of CPU cores
+- C) Use a cached thread pool or virtual threads (Java 21+) to handle concurrent I/O efficiently
+- D) Use a single thread for all connections
 
 **Answer: C**
-
----
-
-## Quiz 5: Concurrent Collections
-
-### Question 1
-What is ConcurrentHashMap?
-- A) Thread-safe HashMap
-- B) Sorted HashMap
-- C) Unordered HashMap
-- D) Synchronized HashMap
-
-**Answer: A**
-
-### Question 2
-What is CopyOnWriteArrayList?
-- A) Thread-safe ArrayList
-- B) Sorted ArrayList
-- C) Unordered ArrayList
-- D) Synchronized ArrayList
-
-**Answer: A**
-
-### Question 3
-What is BlockingQueue?
-- A) Queue that blocks when empty or full
-- B) Queue that doesn't block
-- C) Queue that blocks when empty
-- D) Queue that blocks when full
-
-**Answer: A**
-
-### Question 4
-What is the difference between BlockingQueue and Queue?
-- A) BlockingQueue blocks, Queue doesn't
-- B) BlockingQueue doesn't block, Queue blocks
-- C) Both block
-- D) Neither blocks
-
-**Answer: A**
-
-### Question 5
-What is the benefit of using Concurrent Collections?
-- A) Thread safety
-- B) Better performance
-- C) Both A and B
-- D) Neither
-
-**Answer: C**
-
----
-
-## Score Sheet
-
-| Quiz | Questions | Correct | Score |
-|------|-----------|---------|-------|
-| Thread Basics | 5 | /5 | % |
-| Synchronization | 5 | /5 | % |
-| Wait and Notify | 5 | /5 | % |
-| Executor Framework | 5 | /5 | % |
-| Concurrent Collections | 5 | /5 | % |
-| **Total** | **25** | **/25** | **%** |
-
----
-
-## Passing Score: 80% (20/25)
+**Explanation:** I/O-bound operations (like network I/O) benefit from many threads. A cached thread pool creates threads as needed, and virtual threads (Java 21+) handle millions of concurrent connections with minimal overhead. Fixed thread pools are better for CPU-bound work.
