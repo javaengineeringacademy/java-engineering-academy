@@ -46,4 +46,4 @@ JWT consists of three parts separated by dots:
 ## See Also
 - [Encryption](../encryption/) — Underlying crypto for JWT signing
 - [SSL/TLS](../ssl/) — Transport security for token delivery
-- [Circuit Breaker](../../production/production-patterns/circuit-breaker/) — Resilience when auth service is down
+- Circuit Breaker — Resilience when auth service is down

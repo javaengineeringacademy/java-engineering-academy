@@ -420,11 +420,11 @@ module-name/
 
 ## Additional Resources
 
-- [Learning Roadmap](../learning-roadmap/README.md) - Your learning path
-- [Developer Setup](../developer-setup/README.md) - Environment configuration
+- [Learning Roadmap](../../README.md) - Your learning path
+- [Developer Setup](../../README.md) - Environment configuration
 - [Glossary](../glossary/README.md) - Term definitions
-- [FAQs](../faqs/README.md) - Common questions
-- [Cheat Sheets](../cheat-sheets/README.md) - Quick references
+- [FAQs](../../README.md) - Common questions
+- [Cheat Sheets](../../README.md) - Quick references
 
 ---
 

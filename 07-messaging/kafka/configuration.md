@@ -239,5 +239,5 @@ KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
 
 ---
 **Prerequisites:** [Kafka core-concepts](core-concepts.md)
-**Related:** [Kafka performance](performance.md) | [Kafka production](production.md)
+**Related:** [Kafka performance](../../14-cloud/azure/performance.md) | [Kafka production](../../14-cloud/azure/production.md)
 **Next:** [Kafka installation](installation.md)

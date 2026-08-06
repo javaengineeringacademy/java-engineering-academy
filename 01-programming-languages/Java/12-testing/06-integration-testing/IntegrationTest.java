@@ -54,7 +54,7 @@ class IntegrationTestTest {
             try {
                 userService.delete(id);
                 return "User deleted: " + id;
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 return "Failed to delete: " + e.getMessage();
             }
         }

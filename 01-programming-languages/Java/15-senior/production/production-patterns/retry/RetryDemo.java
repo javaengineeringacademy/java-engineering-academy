@@ -16,7 +16,7 @@ public class RetryDemo {
             try {
                 System.out.println("Attempt " + attempt + " (fixed delay)");
                 return action.get();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 lastException = e;
                 System.out.println("Failed: " + e.getMessage());
                 if (attempt < maxAttempts) {
@@ -35,7 +35,7 @@ public class RetryDemo {
             try {
                 System.out.println("Attempt " + attempt + " (exponential backoff)");
                 return action.get();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 lastException = e;
                 System.out.println("Failed: " + e.getMessage());
                 if (attempt < maxAttempts) {
@@ -56,7 +56,7 @@ public class RetryDemo {
             try {
                 System.out.println("Attempt " + attempt + " (backoff + jitter)");
                 return action.get();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 lastException = e;
                 System.out.println("Failed: " + e.getMessage());
                 if (attempt < maxAttempts) {

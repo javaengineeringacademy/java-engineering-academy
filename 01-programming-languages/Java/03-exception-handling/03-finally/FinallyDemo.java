@@ -35,7 +35,7 @@ public class FinallyDemo {
         try {
             String data = "Hello";
             System.out.println("Data: " + data);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("Exception: " + e.getMessage());
         } finally {
             resourceReleased = true;

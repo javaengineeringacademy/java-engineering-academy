@@ -928,12 +928,12 @@ private void validateOrder(Order order) {
 
 ## Additional Resources
 
-- [SOLID](../solid/README.md) - Detailed SOLID examples
-- [DRY](../dry/README.md) - DRY principle deep dive
-- [KISS](../kiss/README.md) - KISS principle deep dive
-- [YAGNI](../yagni/README.md) - YAGNI principle deep dive
-- [Clean Code](../clean-code/README.md) - Writing quality code
-- [Books](../books/README.md) - Recommended reading
+- [SOLID](../../README.md) - Detailed SOLID examples
+- [DRY](../../README.md) - DRY principle deep dive
+- [KISS](../../README.md) - KISS principle deep dive
+- [YAGNI](../../README.md) - YAGNI principle deep dive
+- [Clean Code](../../README.md) - Writing quality code
+- [Books](../../README.md) - Recommended reading
 
 ---
 

@@ -428,18 +428,18 @@ V value = map.computeIfAbsent(key, k -> createValue(k));
 
 ## 📑 Continue Reading
 
-**Part 1** of 3 | [Part 2](README-part2.md) | [Part 3](README-part3.md)
+**Part 1** of 3 | Part 2 | Part 3
 
 ## Related Topics
-- [equals() and hashCode](../../00-knowledge-atoms/equals-hashcode/) — Contract for HashMap keys
-- [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — Where HashMap objects live in heap
-- [Immutability](../../00-knowledge-atoms/immutability/) — Immutable keys are safer
-- [Garbage Collection](../../00-knowledge-atoms/garbage-collection/) — GC manages HashMap heap memory
-- [Concurrency](../../09-multithreading/) — Use ConcurrentHashMap for thread safety
-- [OpenJDK](../../15-senior/java-platform/openjdk/) — Where HashMap source code lives
-- [Generics](../../06-generics/) — Type-safe map operations
-- [Load Factor Deep Dive](../31-hashmap-internals/) — Internal implementation details
-- [Why Not Hashtable](../35-why-not/) — Legacy alternatives
+- equals() and hashCode — Contract for HashMap keys
+- Java Memory Model — Where HashMap objects live in heap
+- Immutability — Immutable keys are safer
+- Garbage Collection — GC manages HashMap heap memory
+- Concurrency — Use ConcurrentHashMap for thread safety
+- OpenJDK — Where HashMap source code lives
+- Generics — Type-safe map operations
+- Load Factor Deep Dive — Internal implementation details
+- Why Not Hashtable — Legacy alternatives
 
 ## Why HashMap Over Alternatives?
 

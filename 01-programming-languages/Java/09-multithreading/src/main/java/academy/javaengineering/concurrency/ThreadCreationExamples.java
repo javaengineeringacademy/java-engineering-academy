@@ -104,7 +104,7 @@ public class ThreadCreationExamples {
         try {
             String result = future.get();
             System.out.println(result);
-        } catch (Exception e) {
+        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             System.err.println("Error: " + e.getMessage());
         }
         executor.shutdown();

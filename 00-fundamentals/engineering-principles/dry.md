@@ -688,11 +688,11 @@ public class QueryBuilder {
 
 ## Additional Resources
 
-- [SOLID Principles](../solid/README.md) - Design principles
-- [KISS Principle](../kiss/README.md) - Keep it simple
-- [Clean Code](../clean-code/README.md) - Writing quality code
+- [SOLID Principles](../../README.md) - Design principles
+- [KISS Principle](../../README.md) - Keep it simple
+- [Clean Code](../../README.md) - Writing quality code
 - [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Books](../../README.md) - Recommended reading
 
 ---
 

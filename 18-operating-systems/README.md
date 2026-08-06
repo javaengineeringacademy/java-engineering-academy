@@ -52,7 +52,7 @@ After completing this module, you should be able to:
 
 - [13-devops](../13-devops/README.md) - DevOps practices and automation
 - [14-cloud](../14-cloud/README.md) - Cloud platform services
-- [28-application-servers-runtime](../28-application-servers-runtime/README.md) - Runtime environments
+- [28-application-servers-runtime](../README.md) - Runtime environments
 
 ## References
 

@@ -402,4 +402,4 @@ Java, despite its maturity and widespread adoption, carries significant risks th
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md)
+**Continue to Part 2**: README-part2.md

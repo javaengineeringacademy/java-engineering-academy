@@ -56,7 +56,7 @@ public class LoggingBasics {
         // Logging with exception
         try {
             throw new RuntimeException("Something went wrong");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.SEVERE, "Error occurred", e);
         }
     }

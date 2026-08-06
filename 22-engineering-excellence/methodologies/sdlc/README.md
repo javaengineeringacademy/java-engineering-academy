@@ -496,10 +496,10 @@ Coding → Unit Testing
 ## Additional Resources
 
 - [Agile](../agile/README.md) - Detailed Agile practices
-- [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Clean Code](../clean-code/README.md) - Writing quality code
-- [Developer Setup](../developer-setup/README.md) - Environment setup
-- [Books](../books/README.md) - Recommended reading
+- [Engineering Principles](../../../README.md) - Core principles
+- [Clean Code](../../../README.md) - Writing quality code
+- [Developer Setup](../../../README.md) - Environment setup
+- [Books](../../../README.md) - Recommended reading
 
 ---
 

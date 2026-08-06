@@ -93,5 +93,5 @@ Key takeaways on synchronization:
 
 ### Related Topics
 - [Locks](../05-locks/README.md)
-- [Atomic Variables](../06-atomic-variables/README.md)
+- [Atomic Variables](../../../../README.md)
 - [Thread Lifecycle](../03-thread-lifecycle/README.md)

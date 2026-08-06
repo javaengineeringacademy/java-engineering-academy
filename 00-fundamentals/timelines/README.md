@@ -15,8 +15,8 @@ This module provides chronological perspectives on the evolution of software eng
 | [DevOps Evolution](devops-evolution.md) | Culture, practices, and toolchain development |
 | [Data Evolution](data-evolution.md) | Database technologies and data management |
 | [Cloud Evolution](cloud-evolution.md) | Computing infrastructure transformation |
-| [Java Timeline](java-timeline.md) | Java platform milestones |
-| [Spring Timeline](spring-timeline.md) | Spring ecosystem development |
+| Java Timeline | Java platform milestones |
+| Spring Timeline | Spring ecosystem development |
 | [Container Evolution](container-evolution.md) | Isolation and deployment technologies |
 | [AI Evolution](ai-evolution.md) | Artificial intelligence progression |
 

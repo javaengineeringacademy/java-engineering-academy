@@ -26,7 +26,7 @@ public class BestPractices {
     public static void preserveCause() {
         try {
             riskyOperation();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("Cause: " + e.getCause());
         }
     }
@@ -38,18 +38,18 @@ public class BestPractices {
         System.out.println("Processing order: " + orderId);
     }
 
-    public static void riskyOperation() throws Exception {
+    public static void riskyOperation() throws RuntimeException {
         try {
             throw new RuntimeException("Database error");
         } catch (RuntimeException e) {
-            throw new Exception("Service unavailable", e);
+            throw new RuntimeException("Service unavailable", e);
         }
     }
 
     public static void useTryWithResources() {
         try (var resource = new AutoCloseableResource()) {
             resource.doWork();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }

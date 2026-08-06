@@ -434,5 +434,5 @@ Lambda Object:
 - [Functional Interfaces](../03-functional-interfaces/) — Lambda target types
 - [Method References](../04-method-references/) — Shorthand for lambdas
 - [Streams](../05-stream-api/) — Lambdas in stream operations
-- [Generics](../../05-generics/) — Type inference with lambdas
-- [Virtual Threads](../../15-senior/concurrency-advanced/virtual-threads/) — Async lambdas
+- Generics — Type inference with lambdas
+- Virtual Threads — Async lambdas

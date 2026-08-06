@@ -736,4 +736,4 @@ xtrabackup --backup --target-dir=/backup/
 
 - [MySQL Optimization](../optimization/) - Performance tuning
 - [MySQL Replication](../replication/) - Detailed replication setup
-- [HA Concepts](../../../replication/) - General HA concepts
+- HA Concepts - General HA concepts

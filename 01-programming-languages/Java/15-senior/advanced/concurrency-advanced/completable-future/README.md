@@ -111,6 +111,6 @@ CompletableFuture<UserProfile> combined = userFuture
 ## Related Topics
 - [Virtual Threads](../virtual-threads/) — Simpler concurrency alternative
 - [Fork/Join](../fork-join/) — Parallel processing
-- [Thread Pools](../../09-multithreading/07-thread-pools/) — ExecutorService basics
+- Thread Pools — ExecutorService basics
 - [Structured Concurrency](../structured-concurrency/) — Future of async
-- [JMM](../../00-knowledge-atoms/java-memory-model/) — Memory visibility in async
+- JMM — Memory visibility in async

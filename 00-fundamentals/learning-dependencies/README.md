@@ -66,11 +66,11 @@ This roadmap provides a structured path for software engineering mastery. It's d
 - [ ] Build tools (Maven/Gradle)
 
 **Software Engineering Basics**
-- [ ] [SDLC overview](../sdlc/README.md)
-- [ ] [Agile introduction](../agile/README.md)
-- [ ] [Coding standards](../coding-standards/README.md)
-- [ ] [Naming conventions](../naming-conventions/README.md)
-- [ ] [Code style guide](../code-style-guide/README.md)
+- [ ] [SDLC overview](../../README.md)
+- [ ] [Agile introduction](../../README.md)
+- [ ] [Coding standards](../../README.md)
+- [ ] [Naming conventions](../../README.md)
+- [ ] [Code style guide](../../README.md)
 
 ### Recommended Learning Order
 
@@ -116,11 +116,11 @@ This roadmap provides a structured path for software engineering mastery. It's d
 - [ ] NoSQL introduction
 
 **Software Design**
-- [ ] [SOLID principles](../solid/README.md)
-- [ ] [Design patterns](../08-design-patterns/README.md)
-- [ ] [Clean code](../clean-code/README.md)
-- [ ] [DRY principle](../dry/README.md)
-- [ ] [KISS principle](../kiss/README.md)
+- [ ] [SOLID principles](../../README.md)
+- [ ] [Design patterns](../../README.md)
+- [ ] [Clean code](../../README.md)
+- [ ] [DRY principle](../../README.md)
+- [ ] [KISS principle](../../README.md)
 
 **Testing**
 - [ ] Unit testing
@@ -166,7 +166,7 @@ This roadmap provides a structured path for software engineering mastery. It's d
 - [ ] Infrastructure as Code
 
 **System Design**
-- [ ] [System design patterns](../09-system-design/README.md)
+- [ ] [System design patterns](../../README.md)
 - [ ] Scalability concepts
 - [ ] High availability
 - [ ] Performance optimization
@@ -496,10 +496,10 @@ This roadmap provides a structured path for software engineering mastery. It's d
 ## Additional Resources
 
 - [Repository Guide](../repository-guide/README.md) - Navigate the repo
-- [Developer Setup](../developer-setup/README.md) - Configure your environment
+- [Developer Setup](../../README.md) - Configure your environment
 - [Engineering Mindset](../engineering-mindset/README.md) - Develop the right mindset
-- [Books](../books/README.md) - Recommended reading
-- [Cheat Sheets](../cheat-sheets/README.md) - Quick references
+- [Books](../../README.md) - Recommended reading
+- [Cheat Sheets](../../README.md) - Quick references
 
 ---
 

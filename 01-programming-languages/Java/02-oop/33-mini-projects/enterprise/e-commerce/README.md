@@ -120,4 +120,4 @@ mvn test -Dtest=ClassName
 - [Reference 1]
 - [Reference 2]
 
-**Next Project**: [Next Project Name](../next-project/)
+**Next Project**: Next Project Name

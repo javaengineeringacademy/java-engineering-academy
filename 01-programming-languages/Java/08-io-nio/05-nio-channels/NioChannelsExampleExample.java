@@ -33,7 +33,7 @@ public final class NioChannelsExampleExample {
             .sorted(java.util.Comparator.reverseOrder())
             .forEach(path -> {
                 try { Files.deleteIfExists(path); }
-                catch (Exception ignored) {}
+                catch (IOException ignored) {}
             });
     }
 

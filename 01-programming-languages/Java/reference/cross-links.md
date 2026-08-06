@@ -93,6 +93,6 @@ Java Core → JVM Internals → GC Tuning → Profiling → JMH Benchmarks
 | 14-cloud | AWS, GCP, Azure SDKs |
 
 ---
-**Prerequisites:** [Java README](README.md)
+**Prerequisites:** [Java README](../../../README.md)
 **Related:** [Java roadmap](roadmap.md) | [Java references](references.md)
 **Next:** [Java references](references.md)

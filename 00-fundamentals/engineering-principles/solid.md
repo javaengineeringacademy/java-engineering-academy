@@ -632,10 +632,10 @@ public class UserService {
 ## Additional Resources
 
 - [Engineering Principles](../engineering-principles/README.md) - Core principles overview
-- [Clean Code](../clean-code/README.md) - Writing quality code
-- [Design Patterns](../08-design-patterns/README.md) - Common patterns
-- [Books](../books/README.md) - Recommended reading
-- [FAQs](../faqs/README.md) - Common questions
+- [Clean Code](../../README.md) - Writing quality code
+- [Design Patterns](../../README.md) - Common patterns
+- [Books](../../README.md) - Recommended reading
+- [FAQs](../../README.md) - Common questions
 
 ---
 

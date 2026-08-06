@@ -23,7 +23,7 @@ graph LR
 
 **Goal:** Learn fundamentals, build projects, get first job.
 
-**Start here:** [00-Fundamentals](../00-fundamentals/) → [01-Programming Languages](../01-programming-languages/) → [02-Computer Science](../02-computer-science/)
+**Start here:** [00-Fundamentals](00-fundamentals/) → [01-Programming Languages](01-programming-languages/) → [02-Computer Science](02-computer-science/)
 
 **Focus areas:**
 | Priority | Module | Why |
@@ -49,7 +49,7 @@ graph LR
 
 **Goal:** Write production code, understand codebase, ship features.
 
-**Start here:** [00-Fundamentals](../00-fundamentals/) → [03-Software Design](../03-software-design/) → [04-Backend Engineering](../04-backend-engineering/)
+**Start here:** [00-Fundamentals](00-fundamentals/) → [03-Software Design](03-software-design/) → [04-Backend Engineering](04-backend-engineering/)
 
 **Focus areas:**
 | Priority | Module | Why |
@@ -75,7 +75,7 @@ graph LR
 
 **Goal:** Own features, mentor juniors, make technical decisions.
 
-**Start here:** [11-Architecture](../11-architecture/) → [10-Security](../10-security/) → [13-DevOps](../13-devops/)
+**Start here:** [11-Architecture](11-architecture/) → [10-Security](10-security/) → [13-DevOps](13-devops/)
 
 **Focus areas:**
 | Priority | Module | Why |
@@ -101,7 +101,7 @@ graph LR
 
 **Goal:** Own systems, drive architecture, mentor team, influence direction.
 
-**Start here:** All of [00-Fundamentals](../00-fundamentals/) deeply → [22-Engineering Excellence](../22-engineering-excellence/) → [23-Reference Implementations](../23-reference-implementations/)
+**Start here:** All of [00-Fundamentals](00-fundamentals/) deeply → [22-Engineering Excellence](22-engineering-excellence/) → [23-Reference Implementations](23-reference-implementations/)
 
 **Focus areas:**
 | Priority | Module | Why |
@@ -137,9 +137,9 @@ graph LR
 | 5 | Industry patterns | Learn from best companies |
 
 **Reference:**
-- [24-Case Studies](../24-case-studies/) — How Netflix, Uber, Amazon do it
-- [25-Playbooks](../25-engineering-playbooks/) — Company-specific approaches
-- [22-Excellence](../22-engineering-excellence/) — Engineering culture
+- [24-Case Studies](24-case-studies/) — How Netflix, Uber, Amazon do it
+- [25-Playbooks](25-engineering-playbooks/) — Company-specific approaches
+- [22-Excellence](22-engineering-excellence/) — Engineering culture
 
 ---
 
@@ -157,9 +157,9 @@ graph LR
 | 5 | Stakeholder communication | Bridge business and tech |
 
 **Reference:**
-- [22-Excellence](../22-engineering-excellence/) — Methodologies, quality, culture
-- [28-Career](../28-career-roadmap/) — Growth paths
-- [00-Fundamentals/economics](../00-fundamentals/economics/) — Cost decisions
+- [22-Excellence](22-engineering-excellence/) — Methodologies, quality, culture
+- [28-Career](28-career-roadmap/) — Growth paths
+- [00-Fundamentals/economics](00-fundamentals/economics/) — Cost decisions
 
 ---
 
@@ -177,10 +177,10 @@ graph LR
 | 5 | Innovation pipeline | Stay ahead |
 
 **Reference:**
-- [00-Fundamentals/economics](../00-fundamentals/economics/) — TCO, ROI, cost of delay
-- [24-Case Studies](../24-case-studies/) — How companies scale
-- [30-Certifications](../30-certifications/) — Team capabilities
-- [14-Cloud](../14-cloud/) — Platform strategy
+- [00-Fundamentals/economics](00-fundamentals/economics/) — TCO, ROI, cost of delay
+- [24-Case Studies](24-case-studies/) — How companies scale
+- [30-Certifications](30-certifications/) — Team capabilities
+- [14-Cloud](14-cloud/) — Platform strategy
 
 ---
 

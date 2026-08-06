@@ -68,12 +68,12 @@ A comprehensive guide to software design principles, patterns, and architecture 
 |-------|-------------|
 | [Layered Architecture](architecture-styles/layered/README.md) | Presentation/business/data layers |
 | [N-Tier Architecture](architecture-styles/n-tier/README.md) | Physical separation of tiers |
-| [Client-Server](architecture-styles/client-server/README.md) | Client-server model, request-response |
-| [Service-Oriented Architecture](architecture-styles/soa/README.md) | SOA, ESB, contracts |
+| [Client-Server](../README.md) | Client-server model, request-response |
+| [Service-Oriented Architecture](../README.md) | SOA, ESB, contracts |
 | [Microservices](architecture-styles/microservices/README.md) | Bounded contexts, decomposition, independence |
 | [Modular Monolith](architecture-styles/modular-monolith/README.md) | Modules, boundaries within a single deployable |
 | [Hexagonal Architecture](architecture-styles/hexagonal/README.md) | Ports and adapters, pluggable infrastructure |
-| [Onion Architecture](architecture-styles/onion/README.md) | Concentric layers, dependency inversion |
+| [Onion Architecture](../README.md) | Concentric layers, dependency inversion |
 | [Clean Architecture](architecture-styles/clean/README.md) | Entities, use cases, adapters, frameworks |
 | [Event-Driven Architecture](architecture-styles/event-driven/README.md) | Events, event sourcing, CQRS |
 | [Serverless Architecture](architecture-styles/serverless/README.md) | FaaS, BaaS, event triggers |

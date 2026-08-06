@@ -93,4 +93,4 @@ Key takeaways on thread lifecycle:
 ### Related Topics
 - [Synchronization](../04-synchronization/README.md)
 - [Locks](../05-locks/README.md)
-- [Best Practices](../12-best-practices/README.md)
+- [Best Practices](../../../../README.md)

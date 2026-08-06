@@ -610,4 +610,4 @@ CREATE INDEX idx_emp_dept ON employees (department_id);
 ## Next Steps
 
 - [Oracle PL/SQL](../plsql/) - Advanced PL/SQL
-- [Oracle Performance](../performance/) - Performance tuning
+- Oracle Performance - Performance tuning

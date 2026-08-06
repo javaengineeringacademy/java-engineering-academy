@@ -231,5 +231,5 @@ public class TopicConfig {
 
 ---
 **Prerequisites:** [Kafka installation](installation.md)
-**Related:** [Kafka configuration](configuration.md) | [Kafka best-practices](best-practices.md)
-**Next:** [Kafka performance](performance.md)
+**Related:** [Kafka configuration](configuration.md) | [Kafka best-practices](../../14-cloud/azure/best-practices.md)
+**Next:** [Kafka performance](../../14-cloud/azure/performance.md)

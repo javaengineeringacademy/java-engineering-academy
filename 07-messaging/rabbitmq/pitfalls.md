@@ -208,5 +208,5 @@ cluster_partition_handling = autoheal
 
 ---
 **Prerequisites:** [RabbitMQ best-practices](best-practices.md)
-**Related:** [RabbitMQ debugging](debugging.md) | [RabbitMQ troubleshooting](troubleshooting.md)
+**Related:** [RabbitMQ debugging](debugging.md) | [RabbitMQ troubleshooting](../../14-cloud/azure/troubleshooting.md)
 **Next:** [RabbitMQ debugging](debugging.md)

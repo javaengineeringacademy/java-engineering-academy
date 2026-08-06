@@ -20,7 +20,7 @@ class ThrowsTest {
 
     @Test
     void testMethodChainingInvalidData() {
-        assertThrows(Exception.class, () -> ThrowsDemo.processData(""));
+        assertThrows(IllegalArgumentException.class, () -> ThrowsDemo.processData(""));
     }
 
     @Test
@@ -39,7 +39,7 @@ class ThrowsTest {
 
     @Test
     void testProcessDataNull() {
-        assertThrows(Exception.class, () -> ThrowsDemo.processData(null));
+        assertThrows(IllegalArgumentException.class, () -> ThrowsDemo.processData(null));
     }
 
     @Test
@@ -47,7 +47,7 @@ class ThrowsTest {
         try {
             ThrowsDemo.processData("");
             fail("Should throw");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("validation"));
         }
     }

@@ -79,7 +79,7 @@ public class ExecutorServiceDemo {
 
         try {
             System.out.println("Future.get() = " + future.get(2, TimeUnit.SECONDS));
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             System.out.println("Exception: " + e.getMessage());
         }
         pool.shutdown();
@@ -98,7 +98,7 @@ public class ExecutorServiceDemo {
         Future<Integer> future = pool.submit(callable);
         try {
             System.out.println("Sum 1..100 = " + future.get());
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.out.println("Exception: " + e.getMessage());
         }
 
@@ -111,7 +111,7 @@ public class ExecutorServiceDemo {
         for (Future<String> f : futures) {
             try {
                 System.out.println("Callable result: " + f.get());
-            } catch (Exception e) {
+            } catch (InterruptedException | ExecutionException e) {
                 System.out.println("Exception: " + e.getMessage());
             }
         }
@@ -140,7 +140,7 @@ public class ExecutorServiceDemo {
 
             String anyResult = pool.invokeAny(tasks);
             System.out.println("invokeAny() first result: " + anyResult);
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.out.println("Exception: " + e.getMessage());
         }
         pool.shutdown();

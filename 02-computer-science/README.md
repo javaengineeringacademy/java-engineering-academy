@@ -19,8 +19,8 @@
 
 | Topic | Description |
 |-------|-------------|
-| [OOP](./programming-approachs/oop/README.md) | Classes, objects, inheritance, polymorphism, SOLID principles |
-| [Functional Programming](./programming-approachs/functional/README.md) | Pure functions, immutability, higher-order functions, monads |
+| [OOP](../README.md) | Classes, objects, inheritance, polymorphism, SOLID principles |
+| [Functional Programming](../README.md) | Pure functions, immutability, higher-order functions, monads |
 
 ## Data Structures
 
@@ -41,72 +41,72 @@
 |-------|-------------|
 | [Sorting](./algorithms/sorting/README.md) | Bubble, merge, quick, heap, radix sort |
 | [Searching](./algorithms/searching/README.md) | Linear, binary, interpolation search |
-| [Graph Algorithms](./algorithms/graph/README.md) | BFS, DFS, Dijkstra, Prim, Kruskal |
-| [Dynamic Programming](./algorithms/dynamic-programming/README.md) | Memoization, tabulation, classic problems |
-| [Greedy Algorithms](./algorithms/greedy/README.md) | Activity selection, Huffman coding |
-| [Backtracking](./algorithms/backtracking/README.md) | N-Queens, Sudoku, permutations |
+| [Graph Algorithms](../README.md) | BFS, DFS, Dijkstra, Prim, Kruskal |
+| [Dynamic Programming](../README.md) | Memoization, tabulation, classic problems |
+| [Greedy Algorithms](../README.md) | Activity selection, Huffman coding |
+| [Backtracking](../README.md) | N-Queens, Sudoku, permutations |
 
 ## Operating Systems
 
 | Topic | Description |
 |-------|-------------|
-| [Processes](./operating-systems/processes/README.md) | Process lifecycle, scheduling, IPC |
-| [Threads](./operating-systems/threads/README.md) | Thread lifecycle, synchronization, deadlocks |
-| [Memory Management](./operating-systems/memory/README.md) | Virtual memory, paging, segmentation |
-| [I/O Systems](./operating-systems/io/README.md) | Blocking/non-blocking I/O, async I/O |
-| [File Systems](./operating-systems/file-systems/README.md) | File system types, inodes, journaling |
+| [Processes](../README.md) | Process lifecycle, scheduling, IPC |
+| [Threads](../README.md) | Thread lifecycle, synchronization, deadlocks |
+| [Memory Management](../README.md) | Virtual memory, paging, segmentation |
+| [I/O Systems](../README.md) | Blocking/non-blocking I/O, async I/O |
+| [File Systems](../README.md) | File system types, inodes, journaling |
 
 ## Computer Networks
 
 | Topic | Description |
 |-------|-------------|
-| [TCP/IP](./computer-networks/tcp-ip/README.md) | TCP/IP model, TCP vs UDP, handshake |
-| [HTTP](./computer-networks/http/README.md) | HTTP/1.1, HTTP/2, HTTP/3, methods |
-| [DNS](./computer-networks/dns/README.md) | DNS resolution, record types, caching |
-| [SSL/TLS](./computer-networks/ssl-tls/README.md) | TLS handshake, certificates, PKI |
+| [TCP/IP](../README.md) | TCP/IP model, TCP vs UDP, handshake |
+| [HTTP](../README.md) | HTTP/1.1, HTTP/2, HTTP/3, methods |
+| [DNS](../README.md) | DNS resolution, record types, caching |
+| [SSL/TLS](../README.md) | TLS handshake, certificates, PKI |
 
 ## Database Internals
 
 | Topic | Description |
 |-------|-------------|
-| [Storage](./database-internals/storage/README.md) | B-trees, LSM trees, buffer pool |
-| [Query Execution](./database-internals/query-execution/README.md) | Parsing, optimization, join algorithms |
-| [Transactions](./database-internals/transactions/README.md) | ACID, isolation levels, MVCC |
-| [Replication](./database-internals/replication/README.md) | Master-slave, multi-master, consistency |
+| [Storage](../README.md) | B-trees, LSM trees, buffer pool |
+| [Query Execution](../README.md) | Parsing, optimization, join algorithms |
+| [Transactions](../README.md) | ACID, isolation levels, MVCC |
+| [Replication](../README.md) | Master-slave, multi-master, consistency |
 
 ## Distributed Systems
 
 | Topic | Description |
 |-------|-------------|
-| [Consensus](./distributed-systems/consensus/README.md) | Paxos, Raft, ZAB, leader election |
-| [Consistency](./distributed-systems/consistency/README.md) | CAP, eventual consistency, CRDTs |
-| [CAP Theorem](./distributed-systems/cap-theorem/README.md) | CAP proof, PACELC, trade-offs |
-| [MapReduce](./distributed-systems/map-reduce/README.md) | MapReduce approach, Hadoop, Spark |
+| [Consensus](../README.md) | Paxos, Raft, ZAB, leader election |
+| [Consistency](../README.md) | CAP, eventual consistency, CRDTs |
+| [CAP Theorem](../README.md) | CAP proof, PACELC, trade-offs |
+| [MapReduce](../README.md) | MapReduce approach, Hadoop, Spark |
 
 ## Compiler Design
 
 | Topic | Description |
 |-------|-------------|
-| [Lexing](./compiler-design/lexing/README.md) | Tokenization, regex, finite automata |
-| [Parsing](./compiler-design/parsing/README.md) | LL, LR, recursive descent, AST |
-| [Code Generation](./compiler-design/code-generation/README.md) | Three-address code, register allocation |
+| [Lexing](../README.md) | Tokenization, regex, finite automata |
+| [Parsing](../README.md) | LL, LR, recursive descent, AST |
+| [Code Generation](../README.md) | Three-address code, register allocation |
 
 ## Concurrency
 
 | Topic | Description |
 |-------|-------------|
-| [Locks](./concurrency/locks/README.md) | Mutex, semaphore, read-write lock |
-| [Atomics](./concurrency/atomics/README.md) | CAS, atomic variables, memory barriers |
-| [Channels](./concurrency/channels/README.md) | CSP, Go channels, buffered/unbuffered |
-| [Async/Await](./concurrency/async/README.md) | Event loop, futures, promises |
+| [Locks](../README.md) | Mutex, semaphore, read-write lock |
+| [Atomics](../README.md) | CAS, atomic variables, memory barriers |
+| [Channels](../README.md) | CSP, Go channels, buffered/unbuffered |
+| [Async/Await](../README.md) | Event loop, futures, promises |
 
 ## Parallel Computing
 
 | Topic | Description |
 |-------|-------------|
-| [MapReduce](./parallel-computing/map-reduce/README.md) | Parallel patterns, fork-join |
-| [Spark](./parallel-computing/spark/README.md) | RDD, DataFrames, Spark SQL |
-| [Fork-Join](./parallel-computing/fork-join/README.md) | ForkJoinPool, recursive tasks |
+| [MapReduce](../README.md) | Parallel patterns, fork-join |
+| [Spark](../README.md) | RDD, DataFrames, Spark SQL |
+| [Fork-Join](../README.md) | ForkJoinPool, recursive tasks |
 
 ---
 

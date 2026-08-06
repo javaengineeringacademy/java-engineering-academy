@@ -24,7 +24,7 @@ Machine learning is a subset of artificial intelligence that enables systems to 
 | [Clustering](unsupervised-learning/clustering/README.md) | K-means, DBSCAN, hierarchical |
 | [Dimensionality Reduction](unsupervised-learning/dimensionality-reduction/README.md) | PCA, t-SNE, UMAP |
 | [Anomaly Detection](unsupervised-learning/anomaly-detection/README.md) | Isolation forest, autoencoders |
-| [Pattern Mining](unsupervised-learning/pattern-mining/README.md) | Association rules, FP-Growth |
+| [Pattern Mining](../README.md) | Association rules, FP-Growth |
 
 ### Reinforcement Learning
 | Topic | Description |
@@ -39,7 +39,7 @@ Machine learning is a subset of artificial intelligence that enables systems to 
 | [Text Preprocessing](nlp/text-preprocessing/README.md) | Tokenization, stemming |
 | [Sentiment Analysis](nlp/sentiment-analysis/README.md) | Positive/negative classification |
 | [NER](nlp/named-entity-recognition/README.md) | Named entity recognition |
-| [Machine Translation](nlp/machine-translation/README.md) | Seq2seq, transformers |
+| [Machine Translation](../README.md) | Seq2seq, transformers |
 | [Text Classification](nlp/text-classification/README.md) | Topic classification |
 | [LLM](nlp/llm/README.md) | Large language models |
 | [Embeddings](nlp/embeddings/README.md) | Word2Vec, GloVe, BERT |
@@ -63,60 +63,60 @@ Machine learning is a subset of artificial intelligence that enables systems to 
 | [Model Deployment](mlops/model-deployment/README.md) | Serving, TensorFlow Serving |
 | [Feature Engineering](mlops/feature-engineering/README.md) | Feature stores, pipelines |
 | [Model Monitoring](mlops/model-monitoring/README.md) | Drift detection |
-| [AutoML](mlops/automl/README.md) | Hyperparameter tuning |
-| [ML Pipeline](mlops/pipeline/README.md) | Orchestration |
+| [AutoML](../README.md) | Hyperparameter tuning |
+| [ML Pipeline](../README.md) | Orchestration |
 
 ### Time Series
 | Topic | Description |
 |-------|-------------|
-| [Forecasting](time-series/forecasting/README.md) | ARIMA, Prophet, LSTM |
-| [Anomaly Detection](time-series/anomaly/README.md) | Time series anomalies |
-| [Classification](time-series/classification/README.md) | Time series classification |
+| [Forecasting](../README.md) | ARIMA, Prophet, LSTM |
+| [Anomaly Detection](../README.md) | Time series anomalies |
+| [Classification](../README.md) | Time series classification |
 
 ### Recommendation Systems
 | Topic | Description |
 |-------|-------------|
-| [Collaborative Filtering](recommendation/collaborative/README.md) | User/item-based |
-| [Content-Based](recommendation/content-based/README.md) | Feature-based |
-| [Hybrid](recommendation/hybrid/README.md) | Combined approaches |
+| [Collaborative Filtering](../README.md) | User/item-based |
+| [Content-Based](../README.md) | Feature-based |
+| [Hybrid](../README.md) | Combined approaches |
 
 ### Explainable AI (XAI)
 | Topic | Description |
 |-------|-------------|
-| [SHAP](xai/shap/README.md) | SHAP values |
-| [LIME](xai/lime/README.md) | Local explanations |
-| [Attention Visualization](xai/attention-viz/README.md) | Attention maps |
+| [SHAP](../README.md) | SHAP values |
+| [LIME](../README.md) | Local explanations |
+| [Attention Visualization](../README.md) | Attention maps |
 
 ### Ethics in ML
 | Topic | Description |
 |-------|-------------|
-| [Bias](ethics/bias/README.md) | Bias detection |
-| [Fairness](ethics/fairness/README.md) | Fairness metrics |
-| [Interpretability](ethics/interpretability/README.md) | Model interpretability |
+| [Bias](../README.md) | Bias detection |
+| [Fairness](../README.md) | Fairness metrics |
+| [Interpretability](../README.md) | Model interpretability |
 
 ### Data Preprocessing
 | Topic | Description |
 |-------|-------------|
-| [Data Cleaning](data-preprocessing/cleaning/README.md) | Missing values, outliers |
-| [Feature Selection](data-preprocessing/feature-selection/README.md) | Feature importance |
-| [Feature Scaling](data-preprocessing/scaling/README.md) | Normalization, standardization |
-| [Feature Encoding](data-preprocessing/encoding/README.md) | One-hot, label encoding |
+| [Data Cleaning](../README.md) | Missing values, outliers |
+| [Feature Selection](../README.md) | Feature importance |
+| [Feature Scaling](../README.md) | Normalization, standardization |
+| [Feature Encoding](../README.md) | One-hot, label encoding |
 
 ### Model Selection
 | Topic | Description |
 |-------|-------------|
-| [Cross-Validation](model-selection/cross-validation/README.md) | K-fold, stratified |
-| [Hyperparameter Tuning](model-selection/hyperparameter-tuning/README.md) | Grid search, Bayesian |
-| [Evaluation Metrics](model-selection/metrics/README.md) | Accuracy, F1, AUC |
+| [Cross-Validation](../README.md) | K-fold, stratified |
+| [Hyperparameter Tuning](../README.md) | Grid search, Bayesian |
+| [Evaluation Metrics](../README.md) | Accuracy, F1, AUC |
 
 ### Frameworks
 | Topic | Description |
 |-------|-------------|
-| [PyTorch](frameworks/pytorch/README.md) | Dynamic computation graphs |
-| [TensorFlow](frameworks/tensorflow/README.md) | Static graphs, Keras |
-| [Scikit-learn](frameworks/scikit-learn/README.md) | Classical ML |
-| [XGBoost](frameworks/xgboost/README.md) | Gradient boosting |
-| [Hugging Face](frameworks/hugging-face/README.md) | Transformers, models |
+| [PyTorch](../README.md) | Dynamic computation graphs |
+| [TensorFlow](../README.md) | Static graphs, Keras |
+| [Scikit-learn](../README.md) | Classical ML |
+| [XGBoost](../README.md) | Gradient boosting |
+| [Hugging Face](../README.md) | Transformers, models |
 
 ## Key Concepts
 

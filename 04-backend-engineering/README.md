@@ -47,14 +47,14 @@ This module covers the complete spectrum of backend engineering topics, from fou
 - [RESTful Principles](api-design/restful/README.md) - RESTful principles, resource naming, HTTP semantics
 - [Versioning Strategies](api-design/versioning/README.md) - Versioning strategies, breaking changes, deprecation
 - [Pagination](api-design/pagination/README.md) - Offset, cursor, keyset pagination
-- [Filtering](api-design/filtering/README.md) - Query parameters, filtering patterns, sorting
+- [Filtering](../README.md) - Query parameters, filtering patterns, sorting
 - [Error Handling](api-design/error-handling/README.md) - Error responses, Problem Details, error codes
 
 ### [Authentication](#authentication)
 - [OAuth2](authentication/oauth2/README.md) - OAuth2 flows, authorization code, client credentials, PKCE
 - [OpenID Connect](authentication/oidc/README.md) - OpenID Connect, ID tokens, userinfo, session management
 - [JWT](authentication/jwt/README.md) - JWT structure, signing, validation, refresh tokens
-- [SAML](authentication/saml/README.md) - SAML assertions, SSO, identity providers
+- [SAML](../README.md) - SAML assertions, SSO, identity providers
 - [LDAP](authentication/ldap/README.md) - LDAP directory, bind, search, authentication
 
 ### [Authorization](#authorization)
@@ -68,8 +68,8 @@ This module covers the complete spectrum of backend engineering topics, from fou
 
 ### [Dependency Injection](#dependency-injection)
 - [Constructor Injection](dependency-injection/constructor/README.md) - Constructor injection, benefits, testing
-- [Setter Injection](dependency-injection/setter/README.md) - Setter injection, optional dependencies
-- [Field Injection](dependency-injection/field/README.md) - Field injection, @Autowired, downsides
+- [Setter Injection](../README.md) - Setter injection, optional dependencies
+- [Field Injection](../README.md) - Field injection, @Autowired, downsides
 - [Profiles](dependency-injection/profiles/README.md) - Spring profiles, @Profile, environment-specific beans
 
 ### [Hibernate](#hibernate)
@@ -88,7 +88,7 @@ This module covers the complete spectrum of backend engineering topics, from fou
 
 ### [ORM Patterns](#orm-patterns)
 - [ORM Patterns](orm/patterns/README.md) - DAO, Repository, Unit of Work, Identity Map
-- [ORM Anti-Patterns](orm/anti-patterns/README.md) - N+1, god entities, lazy loading pitfalls
+- [ORM Anti-Patterns](../README.md) - N+1, god entities, lazy loading pitfalls
 - [ORM Transactions](orm/transactions/README.md) - ACID, propagation, isolation, rollback
 
 ---

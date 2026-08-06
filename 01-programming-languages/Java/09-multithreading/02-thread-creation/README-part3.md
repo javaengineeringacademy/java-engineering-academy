@@ -154,5 +154,5 @@ Key takeaways on thread creation:
 
 ### Related Topics
 - [Thread Lifecycle](../03-thread-lifecycle/README.md)
-- [Executor Framework](../08-executor-framework/README.md)
-- [Virtual Threads](../11-virtual-threads/README.md)
+- [Executor Framework](../../../../README.md)
+- [Virtual Threads](../../../../README.md)

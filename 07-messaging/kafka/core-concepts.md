@@ -272,5 +272,5 @@ public class JsonSerde<T> implements Serializer<T>, Deserializer<T> {
 
 ---
 **Prerequisites:** [Kafka architecture](architecture.md)
-**Related:** [Kafka performance](performance.md) | [Kafka configuration](configuration.md)
+**Related:** [Kafka performance](../../14-cloud/azure/performance.md) | [Kafka configuration](configuration.md)
 **Next:** [Kafka configuration](configuration.md)

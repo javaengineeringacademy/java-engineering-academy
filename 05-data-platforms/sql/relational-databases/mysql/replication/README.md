@@ -708,4 +708,4 @@ SELECT @@enforce_gtid_consistency;
 
 - [MySQL High Availability](../HA/) - InnoDB Cluster and Group Replication
 - [MySQL Optimization](../optimization/) - Performance tuning
-- [Replication Concepts](../../../replication/) - General replication concepts
+- Replication Concepts - General replication concepts

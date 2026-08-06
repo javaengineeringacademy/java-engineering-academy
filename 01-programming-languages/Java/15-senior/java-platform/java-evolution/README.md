@@ -402,7 +402,7 @@ Long-term support release focusing on enterprise features, performance, and remo
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md) | [Part 3](README-part3.md)
+**Continue to Part 2**: README-part2.md | Part 3
 
 ## Related Topics
 - [Java Philosophy](../java-philosophy/) — Why features were introduced

@@ -601,11 +601,11 @@ public class OrderProcessor {
 
 ## Additional Resources
 
-- [DRY Principle](../dry/README.md) - Don't repeat yourself
-- [YAGNI Principle](../yagni/README.md) - You aren't gonna need it
-- [Clean Code](../clean-code/README.md) - Writing quality code
+- [DRY Principle](../../README.md) - Don't repeat yourself
+- [YAGNI Principle](../../README.md) - You aren't gonna need it
+- [Clean Code](../../README.md) - Writing quality code
 - [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Books](../../README.md) - Recommended reading
 
 ---
 

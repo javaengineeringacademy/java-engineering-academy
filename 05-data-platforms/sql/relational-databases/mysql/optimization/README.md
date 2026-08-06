@@ -753,4 +753,4 @@ SHOW STATUS LIKE 'Queries';
 
 - [MySQL Replication](../replication/) - High availability
 - [MySQL High Availability](../HA/) - Cluster setup
-- [Query Optimization](../../query-optimization/) - General optimization concepts
+- Query Optimization - General optimization concepts

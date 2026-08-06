@@ -22,7 +22,7 @@ public class ThrowsDemo {
         System.out.println("\n=== Method Chaining Demo ===");
         try {
             processData("valid");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Exception propagated: " + e.getMessage());
         }
     }
@@ -50,15 +50,15 @@ public class ThrowsDemo {
         transformData(data);
     }
 
-    private static void validateData(String data) throws Exception {
+    private static void validateData(String data) throws IllegalArgumentException {
         if (data == null || data.isEmpty()) {
-            throw new Exception("Data validation failed");
+            throw new IllegalArgumentException("Data validation failed");
         }
     }
 
-    private static void transformData(String data) throws Exception {
+    private static void transformData(String data) throws IllegalArgumentException {
         if (data.length() < 3) {
-            throw new Exception("Data too short for transformation");
+            throw new IllegalArgumentException("Data too short for transformation");
         }
         System.out.println("Transformed: " + data.toUpperCase());
     }

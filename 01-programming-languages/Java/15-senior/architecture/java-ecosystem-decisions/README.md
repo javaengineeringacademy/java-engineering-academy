@@ -402,4 +402,4 @@ The Java ecosystem offers numerous choices for build tools, frameworks, JDK dist
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md)
+**Continue to Part 2**: README-part2.md

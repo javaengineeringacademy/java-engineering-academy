@@ -402,4 +402,4 @@ flowchart TD
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md) | [Part 3](README-part3.md) | [Part 4](README-part4.md)
+**Continue to Part 2**: README-part2.md | Part 3 | Part 4

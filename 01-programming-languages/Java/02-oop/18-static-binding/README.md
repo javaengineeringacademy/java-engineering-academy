@@ -16,7 +16,7 @@ By the end of this topic, you will be able to:
 ## Prerequisites
 
 - [17-dynamic-binding](../17-dynamic-binding/README.md) - Understanding runtime method resolution through dynamic dispatch
-- [07-static-members](../07-static-members/README.md) - Static methods and their characteristics
+- [07-static-members](../../../../README.md) - Static methods and their characteristics
 - [15-method-overloading](../15-method-overloading/README.md) - Compile-time method resolution through overloading
 - [05-methods](../05-methods/README.md) - Method declaration, invocation, and resolution
 
@@ -403,6 +403,6 @@ public class StringUtilsDemo {
 
 ## Continue Reading
 
-- [Part 2](README-part2.md)
-- [Part 3](README-part3.md)
-- [Part 4](README-part4.md)
+- Part 2
+- Part 3
+- Part 4

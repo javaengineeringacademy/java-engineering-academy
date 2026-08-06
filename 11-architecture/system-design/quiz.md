@@ -1,52 +1,51 @@
-# Module Quiz
+# System Design Quiz
 
 ## Question 1
-What is the main concept of this module?
-- A) Concept A
-- B) Concept B
-- C) Concept C
-- D) Concept D
+What does the CAP theorem state about distributed systems?
+- A) A system can have Consistency, Availability, and Partition tolerance simultaneously
+- B) A distributed system can only guarantee two out of three: Consistency, Availability, and Partition tolerance
+- C) Partition tolerance is always optional
+- D) Consistency is less important than availability
 
-**Answer: A**
+**Answer: B**
+**Explanation:** The CAP theorem states that a distributed system can provide at most two of three guarantees: Consistency (all nodes see the same data), Availability (every request gets a response), and Partition Tolerance (system works despite network failures).
 
 ## Question 2
-Which annotation is used for this?
-- A) @Annotation1
-- B) @Annotation2
-- C) @Annotation3
-- D) @Annotation4
+What is the purpose of a load balancer in a system architecture?
+- A) To encrypt data
+- B) To distribute incoming network traffic across multiple servers to ensure no single server is overwhelmed
+- C) To store user data
+- D) To compile source code
 
-**Answer: A**
+**Answer: B**
+**Explanation:** A load balancer distributes client requests across multiple backend servers, improving availability, reliability, and scalability by preventing any single server from becoming a bottleneck.
 
 ## Question 3
-What is the benefit of this?
-- A) Benefit 1
-- B) Benefit 2
-- C) Benefit 3
-- D) Benefit 4
+What is the difference between horizontal and vertical scaling?
+- A) Horizontal adds more power to existing servers, vertical adds more servers
+- B) Horizontal adds more servers, vertical adds more power (CPU/RAM) to existing servers
+- C) They are the same thing
+- D) Horizontal is only for databases
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Horizontal scaling (scaling out) adds more machines to handle load. Vertical scaling (scaling up) increases resources (CPU, RAM, disk) on existing machines. Horizontal provides better fault tolerance.
 
 ## Question 4
-When should you use this?
-- A) Always
-- B) Sometimes
-- C) Never
-- D) Only in specific cases
+What is the primary benefit of using a CDN (Content Delivery Network)?
+- A) It provides database hosting
+- B) It caches static content at edge locations closer to users, reducing latency and server load
+- C) It encrypts all traffic
+- D) It manages user authentication
 
-**Answer: D**
+**Answer: B**
+**Explanation:** A CDN caches static assets (images, CSS, JS) at geographically distributed edge servers. Users get content from the nearest location, reducing latency and offloading traffic from the origin server.
 
 ## Question 5
-What is the best practice?
-- A) Practice 1
-- B) Practice 2
-- C) Practice 3
-- D) Practice 4
+What is eventual consistency?
+- A) Data is always immediately consistent across all nodes
+- B) Data will become consistent across all nodes after a period of time, but reads may return stale data temporarily
+- C) Consistency is never achieved
+- D) Only write operations are eventually consistent
 
-**Answer: A**
-
----
-
-## Score: /5
-
-## Passing Score: 80% (4/5)
+**Answer: B**
+**Explanation:** Eventual consistency is a consistency model where, after a write operation, all replicas will eventually have the same data. There may be a window where different nodes return different values, but the system converges to consistency.

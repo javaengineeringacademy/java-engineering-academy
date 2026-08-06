@@ -1,52 +1,51 @@
-# Module Quiz
+# Coding Challenges Quiz
 
 ## Question 1
-What is the main concept of this module?
-- A) Concept A
-- B) Concept B
-- C) Concept C
-- D) Concept D
+When approaching a coding challenge, what should you do first?
+- A) Start writing code immediately
+- B) Clarify the problem, ask edge cases, and discuss the approach before coding
+- C) Skip the problem if it seems hard
+- D) Look at the solution immediately
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Before coding, clarify requirements, discuss constraints, identify edge cases, and outline your approach. This demonstrates problem-solving skills and prevents wasting time on incorrect solutions.
 
 ## Question 2
-Which annotation is used for this?
-- A) @Annotation1
-- B) @Annotation2
-- C) @Annotation3
-- D) @Annotation4
+What is the time complexity of binary search on a sorted array of n elements?
+- A) O(n)
+- B) O(log n)
+- C) O(n²)
+- D) O(1)
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Binary search halves the search space with each comparison, resulting in O(log n) time complexity. It requires the array to be sorted and is one of the most efficient search algorithms.
 
 ## Question 3
-What is the benefit of this?
-- A) Benefit 1
-- B) Benefit 2
-- C) Benefit 3
-- D) Benefit 4
+When should you use a hash map (HashMap) in a coding problem?
+- A) When you need to sort data
+- B) When you need O(1) average-time lookup, insert, and delete by key
+- C) When you need to store ordered data
+- D) When memory is extremely limited
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Hash maps provide O(1) average-case time for get, put, and remove operations. They're ideal for problems requiring fast lookups, counting frequencies, or detecting duplicates.
 
 ## Question 4
-When should you use this?
-- A) Always
-- B) Sometimes
-- C) Never
-- D) Only in specific cases
+What is the two-pointer technique commonly used for?
+- A) Managing two variables
+- B) Solving problems on sorted arrays/linked lists by using two indices that move toward each other
+- C) Threading
+- D) Network requests
 
-**Answer: D**
+**Answer: B**
+**Explanation:** The two-pointer technique uses two indices (often left and right) that traverse a data structure in opposite directions or at different speeds. It's effective for problems like finding pairs with a target sum in sorted arrays.
 
 ## Question 5
-What is the best practice?
-- A) Practice 1
-- B) Practice 2
-- C) Practice 3
-- D) Practice 4
+What is the best way to handle edge cases in coding challenges?
+- A) Ignore them, they rarely matter
+- B) Identify them before coding (empty input, single element, large inputs, duplicates) and handle them explicitly
+- C) Only handle them if the interviewer asks
+- D) Use try-catch for everything
 
-**Answer: A**
-
----
-
-## Score: /5
-
-## Passing Score: 80% (4/5)
+**Answer: B**
+**Explanation:** Edge cases often reveal bugs. Before coding, explicitly identify: empty/null inputs, single elements, maximum/minimum values, duplicates, and duplicates. Handle each case to show thoroughness and prevent bugs.

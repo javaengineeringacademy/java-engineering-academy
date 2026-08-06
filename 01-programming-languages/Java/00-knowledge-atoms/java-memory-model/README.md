@@ -716,5 +716,5 @@ The JMM is not just theoretical — it directly impacts the correctness of every
 - [Volatile & Synchronized](../../09-multithreading/) — Memory visibility and locking
 - [Happens-Before Order](#4-happens-before-order) — Core ordering guarantee (this document)
 - [JVM Internals](../../10-jvm-internals/) — JVM memory architecture
-- [Performance](../../15-senior/performance-engineering/) — Memory performance
+- Performance — Memory performance
 - [HashMap Internals](../../04-collections/31-hashmap-internals/) — Object layout in memory

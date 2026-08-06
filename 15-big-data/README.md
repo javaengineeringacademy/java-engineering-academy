@@ -26,13 +26,13 @@ Comprehensive guide to big data technologies, frameworks, and platforms for dist
 
 ### Apache Pig
 - [Fundamentals](pig/fundamentals/README.md) - Pig Latin basics
-- [UDF](pig/udf/README.md) - User-defined functions
+- [UDF](../README.md) - User-defined functions
 
 ### Apache HBase
 - [Fundamentals](hbase/fundamentals/README.md) - Column-family NoSQL
 - [Queries](hbase/queries/README.md) - Scan and filter patterns
 - [Optimization](hbase/optimization/README.md) - Performance tuning
-- [Schema](hbase/schema/README.md) - Table design patterns
+- [Schema](../README.md) - Table design patterns
 
 ### Presto/Trino
 - [Fundamentals](presto/fundamentals/README.md) - Distributed SQL engine
@@ -42,12 +42,12 @@ Comprehensive guide to big data technologies, frameworks, and platforms for dist
 ### Apache Druid
 - [Fundamentals](druid/fundamentals/README.md) - Real-time analytics
 - [Queries](druid/queries/README.md) - Druid SQL and aggregations
-- [Indexing](druid/indexing/README.md) - Data ingestion
+- [Indexing](../README.md) - Data ingestion
 
 ### Apache Pinot
 - [Fundamentals](pinot/fundamentals/README.md) - Real-time OLAP
 - [Queries](pinot/queries/README.md) - Query patterns
-- [Indexing](pinot/indexing/README.md) - Segment management
+- [Indexing](../README.md) - Segment management
 
 ### Apache Iceberg
 - [Fundamentals](iceberg/fundamentals/README.md) - Open table format
@@ -56,40 +56,40 @@ Comprehensive guide to big data technologies, frameworks, and platforms for dist
 
 ### Delta Lake
 - [Fundamentals](delta-lake/fundamentals/README.md) - ACID transactions
-- [Schema](delta-lake/schema/README.md) - Schema evolution
+- [Schema](../README.md) - Schema evolution
 - [Operations](delta-lake/operations/README.md) - Merge, update, delete
 
 ### Apache Hudi
 - [Fundamentals](hudi/fundamentals/README.md) - Incremental processing
-- [Schema](hudi/schema/README.md) - Schema and types
+- [Schema](../README.md) - Schema and types
 - [Operations](hudi/operations/README.md) - COW and MOR tables
 
 ### Columnar Formats
 - [Parquet](parquet/fundamentals/README.md) - Columnar storage format
-- [Parquet Schema](parquet/schema/README.md) - Schema design
-- [Parquet Optimization](parquet/optimization/README.md) - Performance tuning
+- [Parquet Schema](../README.md) - Schema design
+- [Parquet Optimization](../README.md) - Performance tuning
 - [Avro](avro/fundamentals/README.md) - Row-based serialization
-- [Avro Schema](avro/schema/README.md) - Schema design
-- [Avro Optimization](avro/optimization/README.md) - Performance tuning
+- [Avro Schema](../README.md) - Schema design
+- [Avro Optimization](../README.md) - Performance tuning
 - [ORC](orc/fundamentals/README.md) - Optimized Row Columnar
-- [ORC Schema](orc/schema/README.md) - Schema and stripes
-- [ORC Optimization](orc/optimization/README.md) - Performance tuning
+- [ORC Schema](../README.md) - Schema and stripes
+- [ORC Optimization](../README.md) - Performance tuning
 
 ### Data Format Comparison
 - [Comparison](data-formats/comparison/README.md) - Format comparison
-- [Selection Guide](data-formats/selection/README.md) - Choosing the right format
+- [Selection Guide](../README.md) - Choosing the right format
 
 ### Data Warehouses
 - [Redshift](data-warehouse/redshift/README.md) - Amazon Redshift
-- [BigQuery](data-warehouse/bigquery/README.md) - Google BigQuery
+- [BigQuery](../README.md) - Google BigQuery
 - [Snowflake](data-warehouse/snowflake/README.md) - Snowflake
-- [Synapse](data-warehouse/synapse/README.md) - Azure Synapse Analytics
+- [Synapse](../README.md) - Azure Synapse Analytics
 - [ClickHouse](data-warehouse/clickhouse/README.md) - ClickHouse
 
 ### ML Platforms
 - [MLflow](ml-platforms/mlflow/README.md) - Experiment tracking
 - [Kubeflow](ml-platforms/kubeflow/README.md) - ML on Kubernetes
-- [Airflow for ML](ml-platforms/airflow-ml/README.md) - ML pipeline orchestration
+- [Airflow for ML](../README.md) - ML pipeline orchestration
 - [Feature Store](ml-platforms/feature-store/README.md) - Feast and feature management
 
 ## Architecture Overview

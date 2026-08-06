@@ -889,11 +889,11 @@ private Order createValidOrder() {
 
 ## Additional Resources
 
-- [Naming Conventions](../naming-conventions/README.md) - Naming guidelines
-- [Code Style Guide](../code-style-guide/README.md) - Formatting guidelines
-- [Coding Standards](../coding-standards/README.md) - Overall standards
-- [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Naming Conventions](../../../../README.md) - Naming guidelines
+- [Code Style Guide](../../../../README.md) - Formatting guidelines
+- [Coding Standards](../../../../README.md) - Overall standards
+- [Engineering Principles](../../../../README.md) - Core principles
+- [Books](../../../../README.md) - Recommended reading
 
 ---
 

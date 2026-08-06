@@ -70,7 +70,7 @@ Netflix Hystrix popularized this pattern but is now in maintenance mode. Migrate
 ## See Also
 - [Rate Limiting](../rate-limiting/) — Complementary pattern for traffic control
 - [Retry](../retry/) — Handling transient failures alongside circuit breakers
-- [JWT](../../advanced/security/jwt/) — Auth token handling when services degrade
+- JWT — Auth token handling when services degrade
 
 ## References
 

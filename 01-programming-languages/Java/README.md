@@ -38,9 +38,9 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 | # | Module | What You'll Learn |
 |---|--------|-------------------|
 | 03 | [Collections](04-collections/) | List, Set, Map, Queue — internals, when to use which |
-| 04 | [Generics](05-generics/) | Type safety, wildcards, type erasure |
+| 04 | Generics | Type safety, wildcards, type erasure |
 | 05 | [Exceptions](03-exception-handling/) | Try-catch, custom exceptions, best practices |
-| 06 | [Strings](06-strings/) | String pool, immutability, StringBuilder |
+| 06 | Strings | String pool, immutability, StringBuilder |
 | 07 | [Functional Programming](07-functional-programming/) | Lambdas, streams, Optional |
 | 08 | [IO/NIO](08-io-nio/) | Files, streams, buffers, channels |
 
@@ -102,7 +102,7 @@ graph TD
 ## For Junior Developers
 
 **Start here:** [03-Collections](04-collections/)
-**Then:** [04-Generics](05-generics/) → [07-Functional Programming](07-functional-programming/)
+**Then:** 04-Generics → [07-Functional Programming](07-functional-programming/)
 **Goal:** Write production-quality code
 
 **Time:** 3-6 months
@@ -132,23 +132,23 @@ graph TD
 ## For Architects
 
 **Focus on:**
-- [Java Strategy](15-senior/java-strategy/) — When to choose Java
-- [Cost Analysis](15-senior/java-cost-analysis/) — ROI and TCO
-- [Architecture Decisions](15-senior/architecture-decisions/) — ADRs
-- [System Design](15-senior/system-design/) — Architectural patterns
-- [Production War Stories](15-senior/production-war-stories/) — Real failures
+- Java Strategy — When to choose Java
+- Cost Analysis — ROI and TCO
+- Architecture Decisions — ADRs
+- System Design — Architectural patterns
+- Production War Stories — Real failures
 
 ---
 
 ## For CTOs
 
 **Focus on:**
-- [Java Strategy](15-senior/java-strategy/) — Market position, when to use
-- [Cost Analysis](15-senior/java-cost-analysis/) — Java vs Go vs Python
-- [Ecosystem Decisions](15-senior/java-ecosystem-decisions/) — Spring vs Quarkus, Maven vs Gradle
-- [Java at Scale](15-senior/java-at-scale/) — Netflix, Amazon, Google
-- [Risk Management](15-senior/java-risk-management/) — Security, vendor lock-in
-- [Roadmap](15-senior/java-roadmap/) — Java 21/25, future
+- Java Strategy — Market position, when to use
+- Cost Analysis — Java vs Go vs Python
+- Ecosystem Decisions — Spring vs Quarkus, Maven vs Gradle
+- Java at Scale — Netflix, Amazon, Google
+- Risk Management — Security, vendor lock-in
+- Roadmap — Java 21/25, future
 
 ---
 

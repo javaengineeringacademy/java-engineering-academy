@@ -677,4 +677,4 @@ WHERE NOT blocked_locks.granted;
 
 - [PostgreSQL Replication](../replication/) - High availability
 - [PostgreSQL Extensions](../extensions/) - Extension ecosystem
-- [Query Optimization](../../query-optimization/) - General optimization concepts
+- Query Optimization - General optimization concepts

@@ -22,20 +22,20 @@ Comprehensive guide to data platforms covering relational databases, NoSQL datab
 | [MongoDB](nosql/mongodb/) | Fundamentals, Queries, Aggregation, Replication, Sharding |
 | [Cassandra](nosql/cassandra/) | Fundamentals, Data Model, Queries, Consistency, Repair |
 | [DynamoDB](nosql/dynamodb/) | Fundamentals, Queries, GSI, LSI, Streams |
-| [Document Databases](nosql/document-databases/) | Fundamentals, Patterns |
-| [Key-Value Databases](nosql/key-value-databases/) | Fundamentals, Patterns |
-| [Column-Family Databases](nosql/column-family-databases/) | Fundamentals, Patterns |
+| Document Databases | Fundamentals, Patterns |
+| Key-Value Databases | Fundamentals, Patterns |
+| Column-Family Databases | Fundamentals, Patterns |
 | [Neo4j](nosql/graph-databases/neo4j/) | Fundamentals, Queries, Cypher, Optimization |
 | [InfluxDB](nosql/time-series-databases/influxdb/) | Fundamentals, Queries, Retention |
-| [Elasticsearch](nosql/search-engines/elasticsearch/) | Fundamentals, Queries, Analysis, Cluster, Plugins |
-| [OpenSearch](nosql/search-engines/opensearch/) | Fundamentals, Queries, Plugins |
+| Elasticsearch | Fundamentals, Queries, Analysis, Cluster, Plugins |
+| OpenSearch | Fundamentals, Queries, Plugins |
 
 ### Caching
 
 | System | Topics |
 |--------|--------|
 | [Redis](caching/redis/) | Fundamentals, Data Structures, Pub/Sub, Clustering, Persistence |
-| [Memcached](caching/memcached/) | Fundamentals, Optimization |
+| Memcached | Fundamentals, Optimization |
 
 ### Core Concepts
 

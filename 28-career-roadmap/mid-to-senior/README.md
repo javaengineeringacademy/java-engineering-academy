@@ -1002,4 +1002,4 @@ innovative software solutions.
 
 ---
 
-**Next**: Learn about [Senior to Staff Level](senior-to-staff/README.md) progression.
+**Next**: Learn about [Senior to Staff Level](../../README.md) progression.

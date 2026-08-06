@@ -740,5 +740,5 @@ class ExtractionMonitor:
 
 - [ETL Transform](../transform/) - Data transformation patterns
 - [ETL Load](../load/) - Loading strategies
-- [Kafka Connect](../../07-messaging/kafka/connect/) - Stream-based extraction
+- Kafka Connect - Stream-based extraction
 - [Apache NiFi](../../../08-integration-engineering/protocols/file/) - Data flow automation

@@ -71,7 +71,7 @@ public class PerformanceLogging {
                     .addKeyValue("duration", duration)
                     .addKeyValue("status", "SUCCESS")
                     .log("Performance metric recorded");
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             long duration = System.currentTimeMillis() - startTime;
             logger.error("Operation failed after {}ms", duration, e);
         }

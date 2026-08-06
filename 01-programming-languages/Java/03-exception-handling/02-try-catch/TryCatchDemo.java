@@ -27,7 +27,7 @@ public class TryCatchDemo {
             System.out.println("Number format: " + e.getMessage());
         } catch (ArithmeticException e) {
             System.out.println("Arithmetic: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (ArithmeticException e) {
             System.out.println("General: " + e.getMessage());
         }
     }

@@ -32,9 +32,9 @@ The software engineering career is dynamic and offers multiple progression paths
 
 - [Junior to Mid-Level](junior-to-mid/README.md)
 - [Mid to Senior Level](mid-to-senior/README.md)
-- [Senior to Staff Level](senior-to-staff/README.md)
-- [Staff to Principal Level](staff-to-principal/README.md)
-- [Principal to Fellow Level](principal-to-fellow/README.md)
+- [Senior to Staff Level](../README.md)
+- [Staff to Principal Level](../README.md)
+- [Principal to Fellow Level](../README.md)
 
 ## Career Paths
 
@@ -49,8 +49,8 @@ The software engineering career is dynamic and offers multiple progression paths
 
 ### Navigation
 
-- [Engineering Management](engineering-management/README.md)
-- [Technical Specialist](technical-specialist/README.md)
+- [Engineering Management](../README.md)
+- [Technical Specialist](../README.md)
 
 ## Building Your Brand
 
@@ -64,11 +64,11 @@ The software engineering career is dynamic and offers multiple progression paths
 
 ### Navigation
 
-- [Building a Portfolio](portfolio/README.md)
-- [Open Source Contributions](open-source-contributions/README.md)
-- [Technical Blogging](blogging/README.md)
-- [Conference Speaking](speaking/README.md)
-- [Professional Networking](networking/README.md)
+- [Building a Portfolio](../README.md)
+- [Open Source Contributions](../README.md)
+- [Technical Blogging](../README.md)
+- [Conference Speaking](../README.md)
+- [Professional Networking](../README.md)
 
 ## Job Search
 
@@ -81,10 +81,10 @@ The software engineering career is dynamic and offers multiple progression paths
 
 ### Navigation
 
-- [Salary Negotiation](salary-negotiation/README.md)
-- [Job Search Strategies](job-search/README.md)
-- [Resume Building](resume/README.md)
-- [LinkedIn Optimization](linkedin/README.md)
+- [Salary Negotiation](../README.md)
+- [Job Search Strategies](../README.md)
+- [Resume Building](../README.md)
+- [LinkedIn Optimization](../README.md)
 
 ## Continuous Learning
 

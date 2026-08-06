@@ -207,8 +207,8 @@ Java Engineering Academy
 
 ### Available Diagrams
 
-- [OOP Concepts Overview](modules/02-object-oriented-programming/diagrams/oop-concepts.md) — Comprehensive OOP visual summary
-- [Class Hierarchy](modules/02-object-oriented-programming/diagrams/class-hierarchy.md) — Inheritance and interface implementation trees
+- OOP Concepts Overview — Comprehensive OOP visual summary
+- Class Hierarchy — Inheritance and interface implementation trees
 
 ### How to Use Diagrams
 

@@ -466,5 +466,5 @@ public ResponseEntity<Page<User>> listUsers(
 
 - [Pagination Design Patterns](https://slack.engineering/evolving-api-pagination-backwards-compatible/)
 - [Cursor Pagination](https://graphql.org/learn/pagination/)
-- [Keyset Pagination](://use-the-index-luke.com/no-offset)
+- Keyset Pagination
 - [Facebook GraphQL Pagination](https://facebook.github.io/relay/docs/connections.htm)

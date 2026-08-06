@@ -409,11 +409,11 @@ public class User {
 
 ## Additional Resources
 
-- [KISS Principle](../kiss/README.md) - Keep it simple
-- [DRY Principle](../dry/README.md) - Don't repeat yourself
-- [Clean Code](../clean-code/README.md) - Writing quality code
+- [KISS Principle](../../README.md) - Keep it simple
+- [DRY Principle](../../README.md) - Don't repeat yourself
+- [Clean Code](../../README.md) - Writing quality code
 - [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Books](../../README.md) - Recommended reading
 
 ---
 

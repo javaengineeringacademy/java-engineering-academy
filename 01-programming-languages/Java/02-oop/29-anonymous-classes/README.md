@@ -403,5 +403,5 @@ public class FilterDemo {
 
 ## Continue Reading
 
-- [Part 2](README-part2.md)
-- [Part 3](README-part3.md)
+- Part 2
+- Part 3

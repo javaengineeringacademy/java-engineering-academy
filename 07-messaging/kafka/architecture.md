@@ -227,5 +227,5 @@ graph LR
 
 ---
 **Prerequisites:** [Kafka core-concepts](core-concepts.md)
-**Related:** [Kafka configuration](configuration.md) | [Kafka production](production.md)
+**Related:** [Kafka configuration](configuration.md) | [Kafka production](../../14-cloud/azure/production.md)
 **Next:** [Kafka configuration](configuration.md)

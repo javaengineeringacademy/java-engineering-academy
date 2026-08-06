@@ -322,7 +322,7 @@ public class MethodInvocation {
 
                 Method method = target.getClass().getMethod(methodName, paramTypes);
                 return method.invoke(target, args);
-            } catch (Exception e) {
+            } catch (NoSuchMethodException | IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
                 throw new RuntimeException("Failed to invoke " + methodName, e);
             }
         }

@@ -208,6 +208,6 @@ rabbitmqctl list_queues name disk_pending
 - [Firehose Tracing](https://www.rabbitmq.com/firehose.html)
 
 ---
-**Prerequisites:** [RabbitMQ troubleshooting](troubleshooting.md)
+**Prerequisites:** [RabbitMQ troubleshooting](../../14-cloud/azure/troubleshooting.md)
 **Related:** [RabbitMQ monitoring](monitoring.md) | [RabbitMQ pitfalls](pitfalls.md)
-**Next:** [RabbitMQ troubleshooting](troubleshooting.md)
+**Next:** [RabbitMQ troubleshooting](../../14-cloud/azure/troubleshooting.md)

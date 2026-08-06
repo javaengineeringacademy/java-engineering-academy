@@ -402,4 +402,4 @@ Where: p = parameter count, t = test time, a = argument size, g = generated test
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md)
+**Continue to Part 2**: README-part2.md

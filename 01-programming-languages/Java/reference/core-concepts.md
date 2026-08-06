@@ -348,6 +348,6 @@ public record Circle(double radius) implements Shape {
 - [Effective Java - Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 
 ---
-**Prerequisites:** [Java README](README.md)
-**Related:** [Java design patterns](design-patterns/) | [Java concurrency](concurrency/)
+**Prerequisites:** [Java README](../../../README.md)
+**Related:** Java design patterns | Java concurrency
 **Next:** [Java configuration](configuration.md)

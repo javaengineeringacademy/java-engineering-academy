@@ -745,8 +745,8 @@ export default UserService;
 - [Naming Conventions](../naming-conventions/README.md) - Naming guidelines
 - [Coding Standards](../coding-standards/README.md) - Overall standards
 - [Clean Code](../clean-code/README.md) - Writing quality code
-- [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Engineering Principles](../../../README.md) - Core principles
+- [Books](../../../README.md) - Recommended reading
 
 ---
 

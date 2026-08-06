@@ -252,6 +252,6 @@ Garbage collection exists because manual memory management is fundamentally erro
 ## Related Topics
 - [Java Memory Model](../../00-knowledge-atoms/java-memory-model/) — How GC interacts with memory
 - [Escape Analysis](../07-jit-compilation/) — JIT optimization before GC
-- [Performance Tuning](../../15-senior/performance-tuning/) — GC tuning flags
-- [Memory Leaks](../../15-senior/jvm-deep-dive/memory-leaks/) — What GC can't fix
-- [Safepoints](../../15-senior/jvm-deep-dive/safepoints/) — When GC pauses occur
+- Performance Tuning — GC tuning flags
+- Memory Leaks — What GC can't fix
+- Safepoints — When GC pauses occur

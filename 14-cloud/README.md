@@ -26,7 +26,7 @@ Cloud computing provides on-demand computing resources over the internet. This m
 | [ElastiCache](aws/elasticache/README.md) | Redis, Memcached |
 | [Cognito](aws/cognito/README.md) | User pools, identity pools |
 | [Secrets Manager](aws/secrets-manager/README.md) | Secret rotation |
-| [Systems Manager](aws/systems-manager/README.md) | Parameter Store, automation |
+| [Systems Manager](../README.md) | Parameter Store, automation |
 | [CloudTrail](aws/cloudtrail/README.md) | Audit logging |
 | [WAF](aws/waf/README.md) | Web application firewall |
 | [Shield](aws/shield/README.md) | DDoS protection |
@@ -47,14 +47,14 @@ Cloud computing provides on-demand computing resources over the internet. This m
 | [Cloud SQL](gcp/cloud-sql/README.md) | Managed databases |
 | [Pub/Sub](gcp/pub-sub/README.md) | Messaging |
 | [Dataflow](gcp/dataflow/README.md) | Apache Beam |
-| [AI Platform](gcp/ai-platform/README.md) | ML training |
+| [AI Platform](../README.md) | ML training |
 | [Vertex AI](gcp/vertex-ai/README.md) | ML platform |
 | [Cloud Logging](gcp/cloud-logging/README.md) | Centralized logging |
 | [Cloud Monitoring](gcp/cloud-monitoring/README.md) | Metrics, dashboards |
 | [IAM](gcp/iam/README.md) | Service accounts |
 | [VPC](gcp/vpc/README.md) | Networking |
 | [Cost Optimization](gcp/cost-optimization/README.md) | Savings plans |
-| [Well-Architected](gcp/well-architected/README.md) | Best practices |
+| [Well-Architected](../README.md) | Best practices |
 
 ### Microsoft Azure
 | Topic | Description |
@@ -67,7 +67,7 @@ Cloud computing provides on-demand computing resources over the internet. This m
 | [Cosmos DB](azure/cosmos-db/README.md) | Multi-model database |
 | [Service Bus](azure/service-bus/README.md) | Queues, topics |
 | [API Management](azure/api-management/README.md) | API gateway |
-| [Azure DevOps](azure/devops-services/README.md) | CI/CD, boards |
+| [Azure DevOps](../README.md) | CI/CD, boards |
 | [Azure AD](azure/active-directory/README.md) | Identity, B2C |
 | [Key Vault](azure/key-vault/README.md) | Secrets, keys |
 | [Azure Monitor](azure/monitor/README.md) | App Insights |

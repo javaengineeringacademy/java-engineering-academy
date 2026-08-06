@@ -182,8 +182,8 @@ Requirements:
    - "Java 7 Recipes" by Josh Juneau
 4. **Related Topics**:
    - [01 - Introduction](../01-introduction/README.md)
-   - [08 - NIO Basics](../08-nio-basics/README.md)
-   - [11 - NIO File System](../11-nio-file-system/README.md)
+   - [08 - NIO Basics](../../../../README.md)
+   - [11 - NIO File System](../../../../README.md)
 
 ---
 

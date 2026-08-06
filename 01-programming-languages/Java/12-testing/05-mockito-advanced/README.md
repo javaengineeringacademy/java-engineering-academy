@@ -403,4 +403,4 @@ class ComplexAdvancedTest {
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md) | [Part 3](README-part3.md)
+**Continue to Part 2**: README-part2.md | Part 3

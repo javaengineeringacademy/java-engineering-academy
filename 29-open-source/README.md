@@ -121,7 +121,7 @@ Before diving into this module, you should have:
 
 ### Recommended Prior Modules
 
-- [01-programming-languages](../01-programming-languages/README.md) - Programming fundamentals
+- [01-programming-languages](../README.md) - Programming fundamentals
 - [10-security](../10-security/README.md) - Security basics
 - [13-devops](../13-devops/README.md) - DevOps practices
 
@@ -353,10 +353,10 @@ After completing this module, verify your understanding:
 
 After completing this module, consider:
 
-- [24-certifications](../24-certifications/README.md) - Industry certifications
+- [24-certifications](../README.md) - Industry certifications
 - [13-devops](../13-devops/README.md) - DevOps practices
 - [10-security](../10-security/README.md) - Security practices
-- [17-engineering-excellence](../17-engineering-excellence/README.md) - Engineering excellence
+- [17-engineering-excellence](../README.md) - Engineering excellence
 
 ---
 

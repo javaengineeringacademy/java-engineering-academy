@@ -74,7 +74,7 @@ public class ThreadPoolTuning {
 
         try {
             System.out.println("One-time result: " + oneTime.get());
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             System.out.println("Exception: " + e.getMessage());
         }
 

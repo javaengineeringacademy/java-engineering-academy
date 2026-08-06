@@ -578,11 +578,11 @@ The engineering mindset is more than technical skill—it's a way of thinking, a
 
 ## Additional Resources
 
-- [Learning Roadmap](../learning-roadmap/README.md) - Your learning path
+- [Learning Roadmap](../../README.md) - Your learning path
 - [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Clean Code](../clean-code/README.md) - Writing quality code
-- [Books](../books/README.md) - Recommended reading
-- [FAQs](../faqs/README.md) - Common questions
+- [Clean Code](../../README.md) - Writing quality code
+- [Books](../../README.md) - Recommended reading
+- [FAQs](../../README.md) - Common questions
 
 ---
 

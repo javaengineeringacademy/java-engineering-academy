@@ -603,8 +603,8 @@ jobs:
 - [Naming Conventions](../naming-conventions/README.md) - Detailed naming rules
 - [Code Style Guide](../code-style-guide/README.md) - Formatting guidelines
 - [Clean Code](../clean-code/README.md) - Writing quality code
-- [Engineering Principles](../engineering-principles/README.md) - Core principles
-- [Books](../books/README.md) - Recommended reading
+- [Engineering Principles](../../../README.md) - Core principles
+- [Books](../../../README.md) - Recommended reading
 
 ---
 

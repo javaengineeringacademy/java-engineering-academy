@@ -1,52 +1,51 @@
-# Module Quiz
+# JVM Internals Quiz
 
 ## Question 1
-What is the main concept of this module?
-- A) Concept A
-- B) Concept B
-- C) Concept C
-- D) Concept D
+What is the purpose of the JVM's Method Area?
+- A) Stores object instances
+- B) Stores class metadata, static variables, and constant pool
+- C) Stores local method variables
+- D) Stores native method implementations
 
-**Answer: A**
+**Answer: B**
+**Explanation:** The Method Area stores class metadata, static variables, constant pool, and method bytecode. It is shared among all threads.
 
 ## Question 2
-Which annotation is used for this?
-- A) @Annotation1
-- B) @Annotation2
-- C) @Annotation3
-- D) @Annotation4
+Which GC algorithm became the default in Java 9 and is designed for large heaps with predictable pause times?
+- A) Serial GC
+- B) Parallel GC
+- C) G1 GC
+- D) ZGC
 
-**Answer: A**
+**Answer: C**
+**Explanation:** G1 (Garbage-First) GC became the default in Java 9. It divides the heap into regions and prioritizes collecting regions with the most garbage.
 
 ## Question 3
-What is the benefit of this?
-- A) Benefit 1
-- B) Benefit 2
-- C) Benefit 3
-- D) Benefit 4
+What happens during the "Linking" phase of class loading?
+- A) Reading the .class file from disk
+- B) Executing static initializers
+- C) Verifying bytecode, preparing memory, and resolving references
+- D) Allocating heap memory for objects
 
-**Answer: A**
+**Answer: C**
+**Explanation:** Linking consists of three sub-phases: Verification (checking bytecode validity), Preparation (allocating memory for static fields), and Resolution (replacing symbolic references with direct references).
 
 ## Question 4
-When should you use this?
-- A) Always
-- B) Sometimes
-- C) Never
-- D) Only in specific cases
+Which of the following is a GC Root?
+- A) An object referenced by another unreferenced object
+- B) A local variable in an active method
+- C) An object in the old generation
+- D) A weak reference
 
-**Answer: D**
+**Answer: B**
+**Explanation:** GC Roots include local variables in active frames, static fields, JNI references, active threads, and monitors. Objects reachable from GC Roots are not eligible for garbage collection.
 
 ## Question 5
-What is the best practice?
-- A) Practice 1
-- B) Practice 2
-- C) Practice 3
-- D) Practice 4
+What does the JVM flag `-XX:+HeapDumpOnOutOfMemoryError` do?
+- A) Increases heap size automatically
+- B) Enables concurrent garbage collection
+- C) Generates a heap dump file when OutOfMemoryError occurs
+- D) Restarts the application on memory errors
 
-**Answer: A**
-
----
-
-## Score: /5
-
-## Passing Score: 80% (4/5)
+**Answer: C**
+**Explanation:** This flag instructs the JVM to write a heap dump (hprof file) when an OutOfMemoryError is thrown, which helps in analyzing memory leaks and diagnosing memory issues.

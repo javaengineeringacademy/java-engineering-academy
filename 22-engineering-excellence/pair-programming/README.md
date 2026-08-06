@@ -373,5 +373,5 @@ examples:
 
 - [Code Reviews](../code-reviews/README.md)
 - [Mob Programming](../mob-programming/README.md)
-- [TDD as Craft](../craftsmanship/tdd/README.md)
+- [TDD as Craft](../../README.md)
 - [Learning Culture](../engineering-culture/learning/README.md)

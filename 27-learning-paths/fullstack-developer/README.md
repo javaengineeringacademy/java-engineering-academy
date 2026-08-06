@@ -551,6 +551,6 @@ task-manager/
 ## Next Steps
 
 After completing this path:
-- [19-case-studies](../19-case-studies/) - Learn from real-world examples
-- [20-interview-preparation](../20-interview-preparation/) - Prepare for interviews
-- [24-certifications](../24-certifications/) - Pursue certifications
+- 19-case-studies - Learn from real-world examples
+- 20-interview-preparation - Prepare for interviews
+- 24-certifications - Pursue certifications

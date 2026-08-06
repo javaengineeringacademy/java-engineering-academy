@@ -402,4 +402,4 @@ Internal service-to-service communication currently uses REST/JSON. With 15 serv
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md)
+**Continue to Part 2**: README-part2.md

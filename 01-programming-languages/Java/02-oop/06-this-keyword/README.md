@@ -37,9 +37,9 @@ The `this` keyword in Java is a reference variable that refers to the current ob
 
 ## Prerequisites
 
-- [01-classes-and-objects/README.md](../01-classes-and-objects/README.md) — Classes, objects, instance variables
-- [05-constructors/README.md](../05-constructors/README.md) — Constructor mechanics and chaining
-- [03-methods/README.md](../03-methods/README.md) — Instance methods and parameters
+- [01-classes-and-objects/README.md](../../../../README.md) — Classes, objects, instance variables
+- [05-constructors/README.md](../../../../README.md) — Constructor mechanics and chaining
+- [03-methods/README.md](../../../../README.md) — Instance methods and parameters
 
 ---
 

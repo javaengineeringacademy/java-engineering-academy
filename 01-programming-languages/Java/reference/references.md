@@ -118,6 +118,6 @@
 - [Baeldung](https://www.baeldung.com/)
 
 ---
-**Prerequisites:** [Java README](README.md)
+**Prerequisites:** [Java README](../../../README.md)
 **Related:** [Java roadmap](roadmap.md) | [Java cross-links](cross-links.md)
 **Next:** [Java patterns](patterns.md)

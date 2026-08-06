@@ -64,7 +64,7 @@ public class ExceptionBasics {
             System.out.println(text.length());
         } catch (NullPointerException e) {
             System.out.println("NullPointer caught: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.out.println("General exception: " + e.getMessage());
         }
         // Expected output:

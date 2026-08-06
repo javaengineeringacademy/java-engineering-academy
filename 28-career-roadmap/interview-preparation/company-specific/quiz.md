@@ -1,52 +1,51 @@
-# Module Quiz
+# Company-Specific Interview Quiz
 
 ## Question 1
-What is the main concept of this module?
-- A) Concept A
-- B) Concept B
-- C) Concept C
-- D) Concept D
+What is the most important preparation step for a company-specific technical interview?
+- A) Memorizing all possible interview questions
+- B) Researching the company's tech stack, products, and engineering blog
+- C) Only practicing algorithm problems
+- D) Wearing formal clothes
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Understanding the company's technologies, products, scale, and engineering challenges helps you tailor your answers, ask relevant questions, and demonstrate genuine interest in the role and organization.
 
 ## Question 2
-Which annotation is used for this?
-- A) @Annotation1
-- B) @Annotation2
-- C) @Annotation3
-- D) @Annotation4
+What should you do when asked about a technology you haven't used before?
+- A) Pretend you know it
+- B) Honestly acknowledge your experience level, explain your learning approach, and relate it to similar technologies you know
+- C) Refuse to answer
+- D) Change the subject
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Interviewers value honesty. Acknowledge your experience, demonstrate how you'd approach learning it, and connect it to similar technologies you've used. This shows problem-solving ability and adaptability.
 
 ## Question 3
-What is the benefit of this?
-- A) Benefit 1
-- B) Benefit 2
-- C) Benefit 3
-- D) Benefit 4
+When researching a company for an interview, which of these is most valuable?
+- A) The company's stock price
+- B) Their engineering blog, open-source projects, tech talks, and recent product launches
+- C) Their office address
+- D) The CEO's personal blog
 
-**Answer: A**
+**Answer: B**
+**Explanation:** Engineering blogs, open-source contributions, and tech talks reveal the company's technical challenges, architecture decisions, and engineering culture. This information helps you have informed conversations during the interview.
 
 ## Question 4
-When should you use this?
-- A) Always
-- B) Sometimes
-- C) Never
-- D) Only in specific cases
+How should you answer behavioral questions at a company-specific interview?
+- A) Give generic answers
+- B) Use the STAR method (Situation, Task, Action, Result) with examples that align with the company's values
+- C) Avoid giving specific examples
+- D) Only talk about technical skills
 
-**Answer: D**
+**Answer: B**
+**Explanation:** The STAR method provides structured, specific examples. Tailoring your examples to reflect the company's values and culture shows you've done your research and would be a good cultural fit.
 
 ## Question 5
-What is the best practice?
-- A) Practice 1
-- B) Practice 2
-- C) Practice 3
-- D) Practice 4
+What is the best way to prepare for system design interviews at a specific company?
+- A) Study only theoretical concepts
+- B) Understand the company's scale, products, and common architectural patterns they use
+- C) Only practice coding challenges
+- D) Memorize a single system design answer
 
-**Answer: A**
-
----
-
-## Score: /5
-
-## Passing Score: 80% (4/5)
+**Answer: B**
+**Explanation:** Different companies have different scales and requirements. Understanding their specific challenges (e.g., Google's scale, Netflix's streaming) helps you design systems that are relevant to their actual problems.

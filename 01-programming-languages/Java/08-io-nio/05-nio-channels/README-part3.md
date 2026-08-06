@@ -220,8 +220,8 @@ flowchart TD
    - "Netty in Action" by Norman Maurer
 4. **Related Topics**:
    - [04 - NIO Buffers](../04-nio-buffers/README.md)
-   - [06 - File Locking](../06-file-locking/README.md)
+   - [06 - File Locking](../../../../README.md)
 
 ---
 
-**Next Topic**: [06 - File Locking](../06-file-locking/README.md)
+**Next Topic**: [06 - File Locking](../../../../README.md)

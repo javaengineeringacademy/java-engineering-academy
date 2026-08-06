@@ -19,14 +19,14 @@ We provide ready-to-use templates for all contribution types. **Always use these
 
 | Template | Purpose | Link |
 |----------|---------|------|
-| Topic Template | Full topic structure with README, examples, exercises | [templates/README.md](templates/README.md) |
-| Exercise Template | Practice problems with starter code and solutions | [templates/exercise-template.md](templates/exercise-template.md) |
-| Interview Template | Questions organized by difficulty level | [templates/interview-template.md](templates/interview-template.md) |
-| Quiz Template | Multiple-choice knowledge checks | [templates/quiz-template.md](templates/quiz-template.md) |
+| Topic Template | Full topic structure with README, examples, exercises | [templates/README.md](README.md) |
+| Exercise Template | Practice problems with starter code and solutions | templates/exercise-template.md |
+| Interview Template | Questions organized by difficulty level | templates/interview-template.md |
+| Quiz Template | Multiple-choice knowledge checks | templates/quiz-template.md |
 
 ### How to Use Templates
 
-1. Copy the directory structure from the [Topic Template](templates/README.md)
+1. Copy the directory structure from the [Topic Template](README.md)
 2. Replace all `{{placeholders}}` with actual content
 3. Follow the README.md template for consistent lesson format
 4. Use the exercise template for practice materials
@@ -81,7 +81,7 @@ topic-name/
 └── solutions/             # Answer key
 ```
 
-See [templates/README.md](templates/README.md) for the full template with all placeholders.
+See [templates/README.md](README.md) for the full template with all placeholders.
 
 ### README Template
 
@@ -105,7 +105,7 @@ Every topic README should include:
 
 ## Exercise Template
 
-Every exercise should follow the [exercise template](templates/exercise-template.md):
+Every exercise should follow the exercise template:
 
 - **Difficulty level**: Easy, Medium, or Hard
 - **Estimated time**: How long it should take
@@ -119,7 +119,7 @@ Every exercise should follow the [exercise template](templates/exercise-template
 
 ## Interview Template
 
-Every interview question set should follow the [interview template](templates/interview-template.md):
+Every interview question set should follow the interview template:
 
 ### Easy (0-2 years experience)
 - Basic concept recall
@@ -243,7 +243,7 @@ diagrams(inheritance): add class hierarchy diagram
 
 - **Issues**: [Report bugs or request features](https://github.com/javaengineeringacademy/java-engineering-academy/issues)
 - **Discussions**: [Ask questions](https://github.com/javaengineeringacademy/java-engineering-academy/discussions)
-- **Templates**: [templates/README.md](templates/README.md)
+- **Templates**: [templates/README.md](README.md)
 - **Code of Conduct**: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ## Recognition

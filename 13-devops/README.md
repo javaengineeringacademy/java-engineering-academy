@@ -113,28 +113,28 @@ DevOps is a set of practices, tools, and cultural philosophies that automate and
 | [IaC Tools](infrastructure-as-code/tools/README.md) | Tool comparison |
 | [IaC Patterns](infrastructure-as-code/patterns/README.md) | Design patterns |
 | [IaC Testing](infrastructure-as-code/testing/README.md) | Terratest, validation |
-| [Best Practices](infrastructure-as-code/best-practices/README.md) | Patterns |
+| [Best Practices](../README.md) | Patterns |
 
 ### Configuration Management
 | Topic | Description |
 |-------|-------------|
-| [CM Tools](configuration-management/tools/README.md) | Tool comparison |
-| [CM Patterns](configuration-management/patterns/README.md) | Design patterns |
-| [Drift Detection](configuration-management/drift/README.md) | Drift detection |
-| [Best Practices](configuration-management/best-practices/README.md) | Patterns |
+| [CM Tools](../README.md) | Tool comparison |
+| [CM Patterns](../README.md) | Design patterns |
+| [Drift Detection](../README.md) | Drift detection |
+| [Best Practices](../README.md) | Patterns |
 
 ### Monitoring
 | Topic | Description |
 |-------|-------------|
-| [Prometheus](monitoring/prometheus/README.md) | Setup, queries |
-| [Grafana](monitoring/grafana/README.md) | Dashboards |
-| [Datadog](monitoring/datadog/README.md) | APM |
-| [New Relic](monitoring/new-relic/README.md) | Observability |
-| [Nagios](monitoring/nagios/README.md) | Monitoring |
-| [Elastic Stack](monitoring/elastic-stack/README.md) | ELK/EFK |
-| [Splunk](monitoring/splunk/README.md) | Logging |
-| [Graylog](monitoring/graylog/README.md) | Centralization |
-| [Best Practices](monitoring/best-practices/README.md) | Patterns |
+| [Prometheus](../README.md) | Setup, queries |
+| [Grafana](../README.md) | Dashboards |
+| [Datadog](../README.md) | APM |
+| [New Relic](../README.md) | Observability |
+| [Nagios](../README.md) | Monitoring |
+| [Elastic Stack](../README.md) | ELK/EFK |
+| [Splunk](../README.md) | Logging |
+| [Graylog](../README.md) | Centralization |
+| [Best Practices](../README.md) | Patterns |
 
 ## Key Concepts
 

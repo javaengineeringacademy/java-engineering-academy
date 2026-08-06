@@ -25,7 +25,7 @@ This module provides comprehensive learning paths for various technical roles. E
 | [DevOps Engineer](devops-engineer/) | CI/CD, Docker, K8s, IaC | 6-10 months | Intermediate |
 | [Cloud Engineer](cloud-engineer/) | AWS/GCP/Azure, Networking | 6-12 months | Intermediate |
 | [Site Reliability Engineer](site-reliability-engineer/) | Monitoring, Incident Response | 6-10 months | Intermediate |
-| [Platform Engineer](platform-engineer/) | IDP, Developer Experience | 8-12 months | Advanced |
+| Platform Engineer | IDP, Developer Experience | 8-12 months | Advanced |
 
 ### Data Paths
 

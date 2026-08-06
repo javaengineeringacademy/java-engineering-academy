@@ -206,9 +206,9 @@ Message brokers are middleware that enable communication between distributed sys
 | Pattern | Description | When to Use |
 |---------|-------------|-------------|
 | [Retry](./patterns/retry/) | Retry failed message processing | Transient failures |
-| [Dead Letter Queue](./patterns/dead-letter-queue/) | Capture unprocessable messages | Poison messages, error handling |
-| [Idempotency](./patterns/idempotency/) | Handle duplicate messages safely | At-least-once delivery |
-| [Exactly-Once](./patterns/exactly-once/) | Guarantee single message processing | Financial systems, critical operations |
+| Dead Letter Queue | Capture unprocessable messages | Poison messages, error handling |
+| Idempotency | Handle duplicate messages safely | At-least-once delivery |
+| Exactly-Once | Guarantee single message processing | Financial systems, critical operations |
 
 ---
 

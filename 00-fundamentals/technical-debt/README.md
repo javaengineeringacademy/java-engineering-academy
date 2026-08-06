@@ -346,7 +346,7 @@ Rate each area 1-5:
 
 ## Related Topics
 
-- [Refactoring](../refactoring/README.md)
-- [Code Quality](../quality/README.md)
-- [Software Sustainability](../sustainability/README.md)
-- [Agile Practices](../agile/README.md)
+- [Refactoring](../../README.md)
+- [Code Quality](../../README.md)
+- [Software Sustainability](../../README.md)
+- [Agile Practices](../../README.md)

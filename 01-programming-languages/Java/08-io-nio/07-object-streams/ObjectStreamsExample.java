@@ -161,7 +161,7 @@ public final class ObjectStreamsExample {
             new File(objectFile).delete();
             new File(collectionFile).delete();
 
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
         }

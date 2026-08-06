@@ -210,7 +210,7 @@ public class DynamicProxyExample {
                         System.out.println("[TX] Read-only transaction completed");
                     }
                     return result;
-                } catch (Exception e) {
+                } catch (java.lang.reflect.InvocationTargetException e) {
                     System.out.println("[TX] Rolling back transaction due to: " + e.getMessage());
                     throw e;
                 } finally {

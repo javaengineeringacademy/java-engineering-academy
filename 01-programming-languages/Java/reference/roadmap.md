@@ -114,6 +114,6 @@ graph TB
 **Total: 10-14 months** for job-ready Java developer.
 
 ---
-**Prerequisites:** [Java README](README.md)
+**Prerequisites:** [Java README](../../../README.md)
 **Related:** [Java core-concepts](core-concepts.md) | [Java best-practices](best-practices.md)
 **Next:** [Java cross-links](cross-links.md)
