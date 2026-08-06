@@ -169,3 +169,115 @@ You are building a microservice that calls 3 external APIs. Each API can fail in
 
 **Answer: B**
 **Explanation:** A custom exception hierarchy allows targeted recovery strategies per API. Retry logic handles transient failures, and the circuit breaker pattern prevents cascading failures when an API is consistently unavailable. This is the industry standard for resilient microservices.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.print("A ");
+            try {
+                System.out.print("B ");
+                int x = 1 / 0;
+                System.out.print("C ");
+            } catch (ArithmeticException e) {
+                System.out.print("D ");
+            } finally {
+                System.out.print("E ");
+            }
+            System.out.print("F ");
+        } catch (Exception e) {
+            System.out.print("G ");
+        }
+        System.out.print("H ");
+    }
+}
+```
+
+A) A B D E F H
+B) A B D E G H
+C) A B C D E F H
+D) A B D E F
+
+**Answer: A**
+**Explanation:** Outer try prints "A ". Inner try prints "B ". Division by zero throws ArithmeticException, so "C" is skipped. Inner catch prints "D ". Inner finally prints "E ". After inner try-catch-finally completes, outer try continues and prints "F ". No outer exception occurs, so "G" is skipped. Finally "H" prints. Output: `A B D E F H`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class CustomException extends RuntimeException {
+    CustomException(String msg) { super(msg); }
+}
+
+public class Main {
+    static void methodA() {
+        try {
+            methodB();
+        } catch (CustomException e) {
+            System.out.print("Caught: " + e.getMessage() + " ");
+        }
+    }
+
+    static void methodB() {
+        try {
+            throw new CustomException("Error1");
+        } finally {
+            System.out.print("Finally ");
+        }
+    }
+
+    public static void main(String[] args) {
+        methodA();
+        System.out.print("Done ");
+    }
+}
+```
+
+A) Finally Caught: Error1 Done
+B) Caught: Error1 Finally Done
+C) Finally Done
+D) Uncaught CustomException
+
+**Answer: A**
+**Explanation:** `methodB()` throws CustomException, but the finally block executes before the exception propagates, printing "Finally ". The exception propagates to `methodA()` where it's caught, printing "Caught: Error1 ". Then "Done " prints. Output: `Finally Caught: Error1 Done`.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class Resource implements AutoCloseable {
+    Resource() { System.out.print("Open "); }
+    void use() { System.out.print("Use "); }
+    @Override public void close() { System.out.print("Close "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (Resource r = new Resource()) {
+            r.use();
+            throw new RuntimeException("Error");
+        } catch (Exception e) {
+            System.out.print("Caught ");
+        }
+        System.out.print("End");
+    }
+}
+```
+
+A) Open Use Close Caught End
+B) Open Use Caught Close End
+C) Open Use Close End
+D) Open Close Caught End
+
+**Answer: A**
+**Explanation:** try-with-resources opens the Resource (prints "Open "), calls use() (prints "Use "), then the RuntimeException is thrown. The close() method is called automatically (prints "Close "), then the exception is caught (prints "Caught "), and "End" prints. Output: `Open Use Close Caught End`.
+

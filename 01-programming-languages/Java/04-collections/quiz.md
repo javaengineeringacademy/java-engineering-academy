@@ -177,3 +177,95 @@ You are building a caching system that needs to: (1) store up to 10,000 entries,
 
 **Answer: B**
 **Explanation:** LinkedHashMap with `accessOrder=true` maintains access order, making it suitable for LRU cache implementation. Override `removeEldestEntry()` to automatically evict the oldest entry when size exceeds the threshold. This provides O(1) get/put with LRU eviction.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("Charlie", 3);
+        map.put("Alice", 1);
+        map.put("Bob", 2);
+
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            System.out.print(entry.getKey() + " ");
+        }
+    }
+}
+```
+
+A) Alice Bob Charlie
+B) Charlie Alice Bob
+C) Bob Alice Charlie
+D) Output is unpredictable (depends on hash implementation)
+
+**Answer: D**
+**Explanation:** HashMap does not guarantee any iteration order. The order depends on the hash bucket arrangement and may change with different JVM implementations or versions. The output could be any permutation of the three keys.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> linked = new LinkedHashMap<>();
+        linked.put("C", 3);
+        linked.put("A", 1);
+        linked.put("B", 2);
+
+        Map<String, Integer> tree = new TreeMap<>();
+        tree.put("C", 3);
+        tree.put("A", 1);
+        tree.put("B", 2);
+
+        System.out.print(linked.keySet() + " ");
+        System.out.print(tree.keySet());
+    }
+}
+```
+
+A) [C, A, B] [A, B, C]
+B) [A, B, C] [A, B, C]
+C) [C, A, B] [C, A, B]
+D) [A, B, C] [C, A, B]
+
+**Answer: A**
+**Explanation:** LinkedHashMap preserves insertion order, so the keys are printed in the order they were added: [C, A, B]. TreeMap sorts keys by natural order (alphabetical), so the keys are [A, B, C].
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("A", "B", "C");
+        List<String> unmodifiable = Collections.unmodifiableList(list);
+
+        System.out.println(unmodifiable.size());
+        unmodifiable.add("D");
+    }
+}
+```
+
+A) 3
+B) 4
+C) UnsupportedOperationException
+D) 3 followed by UnsupportedOperationException
+
+**Answer: D**
+**Explanation:** `Collections.unmodifiableList()` returns a view that throws `UnsupportedOperationException` on modification attempts. `size()` works fine and returns 3. The `add("D")` call throws `UnsupportedOperationException` at runtime because the list is unmodifiable. Output: prints 3, then throws exception.
+

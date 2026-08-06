@@ -182,3 +182,108 @@ You are designing a data transformation pipeline that needs to: (1) read CSV dat
 
 **Answer: B**
 **Explanation:** A Stream pipeline provides lazy evaluation, so each record flows through all steps before the next record is processed. This minimizes memory usage and allows the JVM to optimize the pipeline. Intermediate operations are fused for efficiency.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] counter = {0};
+        List<String> names = List.of("Alice", "Bob", "Charlie");
+
+        names.stream()
+            .filter(n -> n.length() > 3)
+            .peek(n -> counter[0]++)
+            .collect(Collectors.toList());
+
+        System.out.println(counter[0]);
+
+        counter[0] = 0;
+        List<String> result = names.stream()
+            .filter(n -> n.length() > 3)
+            .peek(n -> counter[0]++)
+            .collect(Collectors.toList());
+
+        System.out.println(counter[0]);
+    }
+}
+```
+
+A) 2 then 2
+B) 0 then 2
+C) 2 then 0
+D) 0 then 0
+
+**Answer: A**
+**Explanation:** First pipeline: filter keeps "Alice" and "Charlie" (length > 3), peek increments counter twice, output 2. Second pipeline: same filter, peek increments counter from 0 to 2, output 2. Streams are re-created from the list each time. Note: the first pipeline's peek side-effect fires during collect. Output: `2` then `2`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Optional<String> empty = Optional.empty();
+        Optional<String> present = Optional.of("Hello");
+
+        String result1 = empty.orElse("Default");
+        String result2 = present.orElseGet(() -> {
+            System.out.print("Supplier called ");
+            return "Computed";
+        });
+
+        System.out.println(result1);
+        System.out.println(result2);
+    }
+}
+```
+
+A) Default Hello
+B) Supplier called Default Hello
+C) Default Computed
+D) Hello Default
+
+**Answer: A**
+**Explanation:** `empty.orElse("Default")` returns "Default" since Optional is empty. `present.orElseGet(...)` returns "Hello" directly — the supplier is never invoked because the Optional already has a value. The key difference: `orElse` always evaluates its argument, while `orElseGet` only calls the supplier when empty. Output: `Default` then `Hello`.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6);
+
+        Map<Boolean, List<Integer>> partitioned = numbers.stream()
+            .collect(Collectors.partitioningBy(n -> n % 2 == 0));
+
+        System.out.println(partitioned.get(true));
+        System.out.println(partitioned.get(false));
+    }
+}
+```
+
+A) [2, 4, 6] [1, 3, 5]
+B) [1, 3, 5] [2, 4, 6]
+C) {false=[1,3,5], true=[2,4,6]}
+D) [1, 2, 3, 4, 5, 6]
+
+**Answer: A**
+**Explanation:** `partitioningBy` splits elements into two groups: `true` (even numbers) and `false` (odd numbers). `partitioned.get(true)` returns `[2, 4, 6]` and `partitioned.get(false)` returns `[1, 3, 5]`. The output is printed line by line. Output: `[2, 4, 6]` then `[1, 3, 5]`.
+

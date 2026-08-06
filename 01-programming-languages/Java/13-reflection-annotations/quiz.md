@@ -196,3 +196,140 @@ You are building an AOP (Aspect-Oriented Programming) framework that needs to in
 
 **Answer: B**
 **Explanation:** Dynamic Proxy creates proxy objects at runtime that intercept method calls via InvocationHandler. Custom annotations (like @Transactional, @Secured) mark methods for interception. This approach doesn't require modifying target classes and supports composition-based AOP.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.lang.reflect.*;
+
+class Person {
+    private String name = "Alice";
+    private int age = 30;
+}
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Person person = new Person();
+
+        Field nameField = Person.class.getDeclaredField("name");
+        nameField.setAccessible(true);
+        String name = (String) nameField.get(person);
+
+        Field ageField = Person.class.getDeclaredField("age");
+        ageField.setAccessible(true);
+        int age = (int) ageField.get(person);
+
+        nameField.set(person, "Bob");
+        ageField.set(person, 25);
+
+        System.out.println(name + " " + age);
+        System.out.println(nameField.get(person) + " " + ageField.get(person));
+    }
+}
+```
+
+A) Alice 30 Bob 25
+B) Alice 30 Alice 30
+C) Bob 25 Bob 25
+D) IllegalAccessException
+
+**Answer: A**
+**Explanation:** Reflection with `setAccessible(true)` bypasses access control. Initial read: name="Alice", age=30. After `set()` calls: name becomes "Bob", age becomes 25. First print: original values read before modification → "Alice 30". Second print: modified values → "Bob 25". Output: `Alice 30 Bob 25`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@interface Version { String value(); }
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Deprecated { String reason(); }
+
+class ApiService {
+    @Deprecated(reason = "Use v2 instead")
+    public void oldMethod() {}
+
+    @Deprecated(reason = "Removed in next release")
+    public void anotherOld() {}
+
+    public void newMethod() {}
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int count = 0;
+        for (Method m : ApiService.class.getMethods()) {
+            if (m.isAnnotationPresent(Deprecated.class)) {
+                Deprecated ann = m.getAnnotation(Deprecated.class);
+                System.out.println(m.getName() + ": " + ann.reason());
+                count++;
+            }
+        }
+        System.out.println("Deprecated methods: " + count);
+    }
+}
+```
+
+A) oldMethod: Use v2 instead
+   anotherOld: Removed in next release
+   Deprecated methods: 2
+B) newMethod: null
+   Deprecated methods: 1
+C) Deprecated methods: 0
+D) Compilation error
+
+**Answer: A**
+**Explanation:** Iterating over `getMethods()` finds methods annotated with `@Deprecated`. `oldMethod` has reason "Use v2 instead", `anotherOld` has "Removed in next release". `newMethod` has no annotation, so it's skipped. Two deprecated methods are found. Output: `oldMethod: Use v2 instead` then `anotherOld: Removed in next release` then `Deprecated methods: 2`.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.lang.reflect.*;
+
+interface Greeter {
+    String greet(String name);
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Greeter proxy = (Greeter) Proxy.newProxyInstance(
+            Greeter.class.getClassLoader(),
+            new Class[]{Greeter.class},
+            (proxy1, method, methodArgs) -> {
+                System.out.println("Intercepted: " + method.getName());
+                return "Hello, " + methodArgs[0] + "!";
+            }
+        );
+
+        System.out.println(proxy.greet("World"));
+        System.out.println(proxy.greet("Java"));
+    }
+}
+```
+
+A) Intercepted: greet
+   Hello, World!
+   Intercepted: greet
+   Hello, Java!
+B) Hello, World!
+   Hello, Java!
+C) Interceptor: greet Hello, World!
+D) Compilation error
+
+**Answer: A**
+**Explanation:** Dynamic Proxy intercepts all method calls on the proxy object. `proxy.greet("World")` triggers the InvocationHandler, which prints "Intercepted: greet" and returns "Hello, World!". Second call: same behavior for "Java". Output: `Intercepted: greet` then `Hello, World!` then `Intercepted: greet` then `Hello, Java!`.
+

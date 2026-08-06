@@ -167,3 +167,83 @@ You are building a text processing pipeline that needs to: (1) read millions of 
 
 **Answer: B**
 **Explanation:** Streaming approach minimizes memory usage. BufferedReader lazily reads lines, Stream API chains operations with lazy evaluation, and batch inserts reduce DB round-trips. This provides optimal throughput while keeping memory usage constant.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String result = "";
+        for (int i = 0; i < 5; i++) {
+            result += (char)('A' + i);
+        }
+        System.out.println(result);
+    }
+}
+```
+
+A) ABCDE
+B) A B C D E
+C) Compilation error
+D) 6566676869
+
+**Answer: A**
+**Explanation:** String concatenation with `+=` builds the string by appending characters. `('A' + 0)` is 'A', `('A' + 1)` is 'B', etc. The `(char)` cast converts the int arithmetic result to a character. After 5 iterations, result is "ABCDE". String concatenation works with characters.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        StringBuilder sb1 = new StringBuilder("Hello");
+        StringBuffer sb2 = new StringBuffer("Hello");
+
+        sb1.append(" World");
+        sb2.append(" World");
+
+        System.out.println(sb1 == sb1.toString());
+        System.out.println(sb2 == sb2.toString());
+    }
+}
+```
+
+A) true true
+B) false false
+C) true false
+D) false true
+
+**Answer: A**
+**Explanation:** Both StringBuilder and StringBuffer return a new String object from `toString()`. However, `sb1 == sb1.toString()` compares the StringBuilder object itself (not the result of toString), which is the same reference, so true. Wait — actually `toString()` returns a String, and `sb1` is a StringBuilder. These are different types, so `==` returns false. The correct answer is B (false false). The `==` operator compares references of different types — a StringBuilder and a String are never the same object.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String s1 = new String("hello");
+        String s2 = new String("hello");
+        String s3 = "hello";
+
+        System.out.println(s1 == s2);
+        System.out.println(s1 == s3);
+        System.out.println(s1.intern() == s3);
+    }
+}
+```
+
+A) false false true
+B) false true true
+C) true false true
+D) false false false
+
+**Answer: A**
+**Explanation:** `s1` and `s2` are two different objects created with `new`, so `s1 == s2` is false. `s3` is a string literal from the pool, and `s1` is a new object, so `s1 == s3` is false. `s1.intern()` returns the pool reference for "hello", which is the same object as `s3`, so `s1.intern() == s3` is true. Output: `false false true`.

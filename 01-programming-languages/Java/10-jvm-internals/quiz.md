@@ -160,3 +160,96 @@ You are deploying a latency-sensitive trading application that requires sub-mill
 
 **Answer: C**
 **Explanation:** ZGC and Shenandoah are designed for ultra-low latency with pauses typically under 10ms regardless of heap size. They are ideal for latency-sensitive applications where even short pauses are unacceptable. G1 GC has longer pauses, and Parallel/Serial GC have stop-the-world pauses.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class Parent {
+    static { System.out.print("Parent-static "); }
+    { System.out.print("Parent-instance "); }
+    Parent() { System.out.print("Parent-ctor "); }
+}
+
+class Child extends Parent {
+    static { System.out.print("Child-static "); }
+    { System.out.print("Child-instance "); }
+    Child() { System.out.print("Child-ctor "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Child();
+        System.out.println();
+        new Child();
+    }
+}
+```
+
+A) Parent-static Child-static Parent-instance Parent-ctor Child-instance Child-ctor then Parent-instance Parent-ctor Child-instance Child-ctor
+B) Parent-static Child-static Parent-ctor Child-ctor then Parent-ctor Child-ctor
+C) Parent-static Child-static Parent-instance Parent-ctor Child-instance Child-ctor then Parent-instance Parent-ctor Child-instance Child-ctor
+D) Parent-static Child-static Parent-instance Parent-ctor Child-instance Child-ctor then Child-ctor
+
+**Answer: A**
+**Explanation:** Class loading: static blocks execute once when class is loaded → "Parent-static Child-static". First `new Child()`: Parent instance init → Parent constructor → Child instance init → Child constructor → "Parent-instance Parent-ctor Child-instance Child-ctor". Second `new Child()`: static blocks don't repeat, only instance init and constructors run → "Parent-instance Parent-ctor Child-instance Child-ctor". Output: static blocks once, then constructors twice.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.lang.ref.*;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Object strong = new Object();
+        WeakReference<Object> weak = new WeakReference<>(strong);
+
+        System.out.println("Before GC: " + weak.get());
+        strong = null;
+        System.gc();
+        Thread.sleep(100);
+        System.out.println("After GC: " + weak.get());
+    }
+}
+```
+
+A) Before GC: java.lang.Object@... After GC: null
+B) Before GC: null After GC: null
+C) Before GC: java.lang.Object@... After GC: java.lang.Object@...
+D) Compilation error
+
+**Answer: A**
+**Explanation:** Before GC, `strong` holds a strong reference to the object, so `weak.get()` returns the object. Setting `strong = null` removes the strong reference. `System.gc()` suggests the JVM run garbage collection. If GC runs, the weakly-referenced object is eligible for collection, so `weak.get()` returns null. Output: `Before GC: java.lang.Object@... After GC: null`.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        int x = 10;
+        Integer y = x; // autoboxing
+        int z = y;     // unboxing
+
+        System.out.println(x + " " + y + " " + z);
+        System.out.println(x == y);
+        System.out.println(y.equals(x));
+    }
+}
+```
+
+A) 10 10 10 true true
+B) 10 10 10 true false
+C) 10 Integer@... 10 false true
+D) Compilation error
+
+**Answer: A**
+**Explanation:** `Integer y = x` autoboxes int 10 to Integer (using Integer cache for -128 to 127). `int z = y` unboxes Integer back to int 10. `x == y` compares int with Integer — Integer is unboxed for comparison, 10 == 10 is true. `y.equals(x)` autoboxes x to Integer, then compares values — true. Output: `10 10 10 true true`.
+

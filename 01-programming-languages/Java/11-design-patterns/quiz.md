@@ -224,3 +224,133 @@ You need to design a middleware pipeline for an HTTP server where each request p
 
 **Answer: B**
 **Explanation:** Chain of Responsibility allows flexible composition of processing steps. Each handler decides whether to process the request and pass it forward. New middleware can be added without modifying existing ones, following the Open/Closed Principle.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class Singleton {
+    private static Singleton instance;
+    private Singleton() { System.out.print("Created "); }
+    static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Singleton s1 = Singleton.getInstance();
+        Singleton s2 = Singleton.getInstance();
+        Singleton s3 = Singleton.getInstance();
+        System.out.println(s1 == s2);
+        System.out.println(s2 == s3);
+    }
+}
+```
+
+A) Created true true
+B) Created Created Created false false
+C) Created true true
+D) Created false false
+
+**Answer: A**
+**Explanation:** First call to `getInstance()` creates the instance (prints "Created ") since it's null. Subsequent calls return the same instance without creating new ones. `s1 == s2` and `s2 == s3` are both true because all references point to the same object. Output: `Created true true`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+interface Observer {
+    void update(String event);
+}
+
+class EventEmitter {
+    private java.util.List<Observer> observers = new java.util.ArrayList<>();
+    void subscribe(Observer o) { observers.add(o); }
+    void emit(String event) {
+        for (int i = 0; i < observers.size(); i++) {
+            observers.get(i).update(event);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        EventEmitter emitter = new EventEmitter();
+        emitter.subscribe(e -> System.out.print("A:" + e + " "));
+        emitter.subscribe(e -> System.out.print("B:" + e + " "));
+        emitter.subscribe(e -> System.out.print("C:" + e + " "));
+        emitter.emit("Event1");
+    }
+}
+```
+
+A) A:Event1 B:Event1 C:Event1
+B) C:Event1 B:Event1 A:Event1
+C) A:Event1 C:Event1 B:Event1
+D) Output is unpredictable
+
+**Answer: A**
+**Explanation:** Observers are notified in the order they were subscribed (iteration uses index 0, 1, 2). The first subscriber prints "A:Event1", second "B:Event1", third "C:Event1". Output: `A:Event1 B:Event1 C:Event1`. The Observer pattern guarantees notification order matches subscription order.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+interface DataSource {
+    String writeData(String data);
+}
+
+class FileDataSource implements DataSource {
+    public String writeData(String data) {
+        return "File: " + data;
+    }
+}
+
+class DataSourceDecorator implements DataSource {
+    protected DataSource wrappee;
+    DataSourceDecorator(DataSource source) { this.wrappee = source; }
+    public String writeData(String data) { return wrappee.writeData(data); }
+}
+
+class EncryptionDecorator extends DataSourceDecorator {
+    EncryptionDecorator(DataSource source) { super(source); }
+    public String writeData(String data) {
+        return wrappee.writeData("Encrypted(" + data + ")");
+    }
+}
+
+class CompressionDecorator extends DataSourceDecorator {
+    CompressionDecorator(DataSource source) { super(source); }
+    public String writeData(String data) {
+        return wrappee.writeData("Compressed(" + data + ")");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        DataSource source = new CompressionDecorator(
+            new EncryptionDecorator(
+                new FileDataSource("test.txt")));
+        System.out.println(source.writeData("Hello"));
+    }
+}
+```
+
+A) File: Compressed(Encrypted(Hello))
+B) File: Encrypted(Compressed(Hello))
+C) Compressed(Encrypted(File: Hello))
+D) Encrypted(Compressed(File: Hello))
+
+**Answer: A**
+**Explanation:** Decorator chain: FileDataSource → EncryptionDecorator → CompressionDecorator. `writeData("Hello")` calls CompressionDecorator first, which calls EncryptionDecorator, which calls FileDataSource. FileDataSource returns "File: Hello". EncryptionDecorator wraps it: "File: Encrypted(Hello)". CompressionDecorator wraps that: "File: Compressed(Encrypted(Hello))". Output: `File: Compressed(Encrypted(Hello))`.
+

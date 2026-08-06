@@ -209,3 +209,100 @@ You need to design a notification system that sends alerts via Email, SMS, and P
 
 **Answer: B**
 **Explanation:** The Strategy pattern with an interface makes the system extensible. Adding a new channel (e.g., Slack) requires only implementing the interface. The main service depends on the abstraction, not concrete classes, following the Dependency Inversion Principle.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class Parent {
+    Parent() { System.out.print("Parent "); }
+    Parent(String s) { System.out.print("Parent-" + s + " "); }
+}
+
+class Child extends Parent {
+    Child() { super("Hello"); System.out.print("Child "); }
+    Child(String s) { this(); System.out.print("Child-" + s + " "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Child("World");
+    }
+}
+```
+
+A) Parent-Hello Child Child-World
+B) Parent Child Parent-Hello Child-World
+C) Parent-Hello Child-World
+D) Child Parent-Hello Child-World
+
+**Answer: A**
+**Explanation:** `new Child("World")` calls `Child(String s)`, which calls `this()` (Child()). Child() calls `super("Hello")` which prints "Parent-Hello ". Then Child() prints "Child ". Back in Child(String s), after this() completes, it prints "Child-World ". Output: `Parent-Hello Child Child-World`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+class Base {
+    void display() { System.out.print("Base "); }
+}
+
+class Derived extends Base {
+    void display() { System.out.print("Derived "); }
+    void display(int x) { System.out.print("Derived-" + x + " "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Base obj = new Derived();
+        obj.display();
+        obj.display(5);
+    }
+}
+```
+
+A) Derived Derived-5
+B) Base Derived-5
+C) Derived Base-5
+D) Compilation error at obj.display(5)
+
+**Answer: D**
+**Explanation:** `obj` is declared as type `Base`. Method overriding resolves at runtime (polymorphic), so `obj.display()` calls Derived's display() — prints "Derived ". However, `display(int)` is not defined in Base, so it's a compile-time error. Overloading is resolved at compile time based on reference type, and Base has no `display(int)` method.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+abstract class Animal {
+    Animal() { System.out.print("Animal "); }
+    abstract void speak();
+    void breathe() { System.out.print("Breathing "); }
+}
+
+class Cat extends Animal {
+    Cat() { System.out.print("Cat "); }
+    void speak() { System.out.print("Meow "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Animal a = new Cat();
+        a.speak();
+        a.breathe();
+    }
+}
+```
+
+A) Animal Cat Meow Breathing
+B) Cat Meow Breathing
+C) Animal Cat Meow
+D) Compilation error - cannot instantiate abstract class
+
+**Answer: A**
+**Explanation:** `new Cat()` calls Cat() constructor, which implicitly calls super() (Animal()), printing "Animal ". Then Cat() prints "Cat ". `a.speak()` calls Cat's speak(), printing "Meow ". `a.breathe()` calls Animal's breathe() (not overridden), printing "Breathing ". Output: `Animal Cat Meow Breathing`.

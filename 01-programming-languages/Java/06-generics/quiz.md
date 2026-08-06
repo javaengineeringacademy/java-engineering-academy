@@ -189,3 +189,89 @@ You need to design a generic repository pattern for a data access layer. The rep
 
 **Answer: B**
 **Explanation:** A generic Repository interface provides type-safe CRUD operations for any entity. Each entity gets its own implementation or uses a single implementation with type parameters. This reduces code duplication while maintaining compile-time type safety.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+
+public class Main {
+    static <T> void copy(List<? super T> dest, List<? extends T> src) {
+        for (T item : src) {
+            dest.add(item);
+        }
+    }
+
+    public static void main(String[] args) {
+        List<Object> dest = new ArrayList<>();
+        List<Integer> src = Arrays.asList(1, 2, 3);
+        copy(dest, src);
+        System.out.println(dest);
+    }
+}
+```
+
+A) [1, 2, 3]
+B) Compilation error
+C) ClassCastException
+D) [Object, Object, Object]
+
+**Answer: A**
+**Explanation:** This demonstrates wildcard capture. `copy(dest, src)` infers T as Integer (the most specific type that satisfies both bounds). `List<Object>` accepts `? super Integer`, and `List<Integer>` satisfies `? extends Integer`. Elements are copied successfully. Output: `[1, 2, 3]`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> integers = Arrays.asList(1, 2, 3);
+        List<Double> doubles = Arrays.asList(1.0, 2.0, 3.0);
+
+        System.out.println(integers.getClass() == doubles.getClass());
+        System.out.println(integers.getClass().getName());
+    }
+}
+```
+
+A) true java.util.Arrays$ArrayList
+B) false java.util.Arrays$ArrayList
+C) true java.util.ArrayList
+D) false java.util.List
+
+**Answer: A**
+**Explanation:** Due to type erasure, `List<Integer>` and `List<Double>` have the same runtime type (`java.util.Arrays$ArrayList`). Generic type parameters are erased at compile time, so both lists are the same class at runtime. `getClass()` returns the actual runtime class.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    static <T extends Comparable<T>> T max(T a, T b) {
+        return a.compareTo(b) >= 0 ? a : b;
+    }
+
+    public static void main(String[] args) {
+        String result = max("Apple", "Banana");
+        System.out.println(result);
+    }
+}
+```
+
+A) Apple
+B) Banana
+C) Compilation error
+D) null
+
+**Answer: B**
+**Explanation:** Type inference deduces T as String (since both arguments are Strings, and String implements Comparable). `"Apple".compareTo("Banana")` returns a negative value (A < B), so the ternary returns "Banana" (the second argument). Output: `Banana`.
+

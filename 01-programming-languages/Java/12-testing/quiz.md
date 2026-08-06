@@ -188,3 +188,129 @@ You need to implement a logging system for a distributed microservice architectu
 
 **Answer: B**
 **Explanation:** Structured logging (JSON) enables machine parsing. Correlation IDs (propagated via MDC) link related log entries across services. Centralized aggregation (ELK/Splunk) provides unified search and monitoring. This is the industry standard for distributed observability.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MathTest {
+    @Test
+    void testAddition() {
+        assertEquals(4, 2 + 2, "Basic addition failed");
+        assertTrue(4 > 3, "4 should be greater than 3");
+        assertNotEquals(5, 2 + 2, "5 should not equal 4");
+    }
+
+    @Test
+    void testArray() {
+        int[] expected = {1, 2, 3};
+        int[] actual = {1, 2, 3};
+        assertArrayEquals(expected, actual, "Arrays should match");
+    }
+
+    public static void main(String[] args) {
+        new MathTest().testAddition();
+        new MathTest().testArray();
+        System.out.println("All tests passed");
+    }
+}
+```
+
+A) All tests passed
+B) AssertionError: 5 should not equal 4
+C) AssertionError: Basic addition failed
+D) Compilation error
+
+**Answer: A**
+**Explanation:** All assertions pass: `assertEquals(4, 2+2)` → 4==4 ✓, `assertTrue(4>3)` → true ✓, `assertNotEquals(5, 4)` → 5≠4 ✓, `assertArrayEquals` → arrays match ✓. If run via main, all assertions pass and "All tests passed" prints. JUnit assertions throw AssertionError only when conditions fail.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
+
+public class MockTest {
+    interface UserDAO {
+        String findUser(int id);
+    }
+
+    public static void main(String[] args) {
+        UserDAO mockDAO = mock(UserDAO.class);
+        when(mockDAO.findUser(1)).thenReturn("Alice");
+
+        System.out.println(mockDAO.findUser(1));
+        System.out.println(mockDAO.findUser(2));
+
+        verify(mockDAO, times(1)).findUser(1);
+        verify(mockDAO, times(1)).findUser(2);
+        verifyNoMoreInteractions(mockDAO);
+        System.out.println("Verification passed");
+    }
+}
+```
+
+A) Alice null Verification passed
+B) Alice Alice Verification passed
+C) Alice null AssertionError
+D) null null Verification passed
+
+**Answer: A**
+**Explanation:** `when(mockDAO.findUser(1)).thenReturn("Alice")` stubs the mock to return "Alice" for id=1. `findUser(2)` returns null (default for unstubbed methods returning Object). `verify` confirms each method was called once. `verifyNoMoreInteractions` ensures no unexpected calls. Output: `Alice null Verification passed`.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.junit.jupiter.api.*;
+
+public class OrderTest {
+    static StringBuilder log = new StringBuilder();
+
+    @BeforeAll
+    static void initAll() { log.append("BeforeAll "); }
+
+    @BeforeEach
+    void init() { log.append("BeforeEach "); }
+
+    @Test
+    void test1() { log.append("Test1 "); }
+
+    @Test
+    void test2() { log.append("Test2 "); }
+
+    @AfterEach
+    void tearDown() { log.append("AfterEach "); }
+
+    @AfterAll
+    static void cleanupAll() { log.append("AfterAll "); }
+
+    public static void main(String[] args) {
+        OrderTest t = new OrderTest();
+        t.initAll();
+        t.init(); t.test1(); t.tearDown();
+        t.init(); t.test2(); t.tearDown();
+        t.cleanupAll();
+        System.out.println(log);
+    }
+}
+```
+
+A) BeforeAll BeforeEach Test1 AfterEach BeforeEach Test2 AfterEach AfterAll
+B) BeforeAll BeforeEach Test1 Test2 AfterEach AfterAll
+C) BeforeEach BeforeAll Test1 AfterEach Test2 AfterAll
+D) BeforeAll Test1 Test2 AfterAll
+
+**Answer: A**
+**Explanation:** JUnit execution order: `@BeforeAll` runs once → "BeforeAll ". Then for each test: `@BeforeEach` → test → `@AfterEach`. Test1: "BeforeEach Test1 AfterEach ". Test2: "BeforeEach Test2 AfterEach ". `@AfterAll` runs once at end → "AfterAll ". Output: `BeforeAll BeforeEach Test1 AfterEach BeforeEach Test2 AfterEach AfterAll`.
+

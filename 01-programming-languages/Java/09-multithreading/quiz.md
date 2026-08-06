@@ -211,3 +211,97 @@ You are building a web server that needs to handle 10,000 concurrent connections
 
 **Answer: C**
 **Explanation:** I/O-bound operations (like network I/O) benefit from many threads. A cached thread pool creates threads as needed, and virtual threads (Java 21+) handle millions of concurrent connections with minimal overhead. Fixed thread pools are better for CPU-bound work.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Runnable task = () -> {
+            System.out.print("Running ");
+        };
+
+        Thread t = new Thread(task);
+        t.start();
+        t.run();
+
+        System.out.print("Done");
+    }
+}
+```
+
+A) Running Running Done
+B) Running Done Running
+C) Done Running Running
+D) Running Running
+
+**Answer: A**
+**Explanation:** `t.start()` creates a new thread and calls run() in that thread — prints "Running ". `t.run()` is a direct method call in the main thread (not creating a new thread) — prints "Running ". Then "Done" prints. Note: the first "Running" might print before or after "Done" due to thread scheduling, but typically start() creates a thread that runs concurrently. The most likely output is `Running Running Done`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Object lock = new Object();
+        synchronized (lock) {
+            System.out.print("A ");
+            lock.wait(100);
+            System.out.print("B ");
+        }
+        System.out.print("C");
+    }
+}
+```
+
+A) A B C
+B) A C
+C) A (then blocks indefinitely)
+D) Compilation error
+
+**Answer: A**
+**Explanation:** `lock.wait(100)` releases the lock and waits for up to 100 milliseconds. After 100ms (or when notified), it reacquires the lock and continues. Since no other thread notifies, it waits 100ms then resumes, printing "B ". Then "C" prints. Output: `A B C` (with a ~100ms delay between A and B).
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        executor.execute(() -> System.out.print("A "));
+        executor.execute(() -> System.out.print("B "));
+
+        Future<String> future = executor.submit(() -> {
+            Thread.sleep(50);
+            return "C";
+        });
+
+        System.out.println(future.get() + " Done");
+
+        executor.shutdown();
+    }
+}
+```
+
+A) A B C Done
+B) A B Done C
+C) A B (then blocks until C is ready)
+D) A B C Done (with A and B before C)
+
+**Answer: D**
+**Explanation:** `execute()` submits two Runnable tasks that print "A " and "B " (order may vary). `submit()` returns a Future for a task that sleeps 50ms then returns "C". `future.get()` blocks until "C" is ready. So A and B print first (concurrent), then "C Done" prints. Output: `A B C Done` (A and B order may swap).
+

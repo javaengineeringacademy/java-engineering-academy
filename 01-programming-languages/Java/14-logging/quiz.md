@@ -184,3 +184,106 @@ You are designing a logging system for a distributed system with 50 microservice
 
 **Answer: B**
 **Explanation:** Structured JSON logs with correlation IDs enable cross-service tracing. A centralized platform provides real-time search and alerting. Log collectors decouple applications from the logging infrastructure. This architecture scales to hundreds of services and meets compliance requirements.
+
+---
+
+## Question 11 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        logger.setLevel(ch.qos.logback.classic.Level.DEBUG);
+
+        System.out.println(logger.isTraceEnabled());
+        System.out.println(logger.isDebugEnabled());
+        System.out.println(logger.isInfoEnabled());
+        System.out.println(logger.isWarnEnabled());
+        System.out.println(logger.isErrorEnabled());
+    }
+}
+```
+
+A) false true true true true
+B) true true true true true
+C) false false true true true
+D) true true true true false
+
+**Answer: A**
+**Explanation:** With log level set to DEBUG: TRACE is below DEBUG (disabled) → false. DEBUG and above (DEBUG, INFO, WARN, ERROR) are enabled → true. SLF4J loggers delegate to the underlying implementation (Logback) for level checks. Output: `false true true true true`.
+
+---
+
+## Question 12 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        MDC.put("userId", "1001");
+        MDC.put("sessionId", "abc-123");
+
+        logger.info("User action");
+
+        MDC.remove("sessionId");
+        MDC.put("userId", "2002");
+
+        logger.info("Session ended");
+
+        MDC.clear();
+        logger.info("Cleanup done");
+    }
+}
+```
+
+A) All three logs show userId=1001
+B) First two show userId=1001, third shows no userId
+C) First shows userId=1001, second shows userId=2002, third shows no userId
+D) First shows userId=1001 and sessionId=abc-123, second shows userId=2002, third shows nothing
+
+**Answer: C**
+**Explanation:** MDC values are thread-local. First log: userId=1001, sessionId=abc-123. After `remove("sessionId")` and `put("userId", "2002")`: second log shows userId=2002, sessionId is gone. After `clear()`: third log has no MDC context. Output depends on log pattern, but context values change as described.
+
+---
+
+## Question 13 (Code Snippet MCQ)
+What is the output of this code?
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Main {
+    private static final Logger parent = LoggerFactory.getLogger("com.app.Service");
+    private static final Logger child = LoggerFactory.getLogger("com.app.Service.User");
+
+    public static void main(String[] args) {
+        System.out.println(parent.getName());
+        System.out.println(child.getName());
+        System.out.println(parent.equals(child));
+
+        Logger childOfParent = LoggerFactory.getLogger("com.app");
+        System.out.println(childOfParent.getName());
+    }
+}
+```
+
+A) com.app.Service com.app.Service.User false com.app
+B) com.app.Service com.app.Service.User true com.app
+C) com.app.Service com.app.Service.User false com.app
+D) com.app.Service User false com.app
+
+**Answer: A**
+**Explanation:** SLF4J loggers are named hierarchically like packages. `parent` logger is "com.app.Service". `child` logger is "com.app.Service.User". They are different logger instances, so `parent.equals(child)` is false. `childOfParent` is "com.app" — a separate logger higher in the hierarchy. Output: `com.app.Service` then `com.app.Service.User` then `false` then `com.app`.
+
