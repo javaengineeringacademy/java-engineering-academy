@@ -1,91 +1,76 @@
-# Module 01: Java Fundamentals
+# Java
 
-## Overview
-Master the foundation of Java programming — from variables to methods, everything you need to write your first production-quality Java code.
+Java is a class-based, object-oriented programming language designed for portability and reliability.
 
-## Learning Objectives
-By the end of this module, you will be able to:
-- Understand Java program structure and execution model
-- Declare variables with appropriate data types
-- Apply operators and expressions effectively
-- Control program flow with conditionals and loops
-- Work with arrays and strings efficiently
-- Design and implement reusable methods
-- Write clean, documented, and tested Java code
+---
 
-## Topics Covered
-| Topic | Theory | Examples | Exercises | Solutions |
-|-------|--------|----------|-----------|-----------|
-| Java Basics | [✓](docs/basics.md) | [Code](src/main/java/com/javaacademy/sprint1/basics) | [Exercises](exercises/basics.md) | [Solutions](solutions/basics.md) |
-| Data Types | [✓](docs/datatypes.md) | [Code](src/main/java/com/javaacademy/sprint1/datatypes) | [Exercises](exercises/datatypes.md) | [Solutions](solutions/datatypes.md) |
-| Operators | [✓](docs/operators.md) | [Code](src/main/java/com/javaacademy/sprint1/operators) | [Exercises](exercises/operators.md) | [Solutions](solutions/operators.md) |
-| Control Flow | [✓](docs/controlflow.md) | [Code](src/main/java/com/javaacademy/sprint1/controlflow) | [Exercises](exercises/controlflow.md) | [Solutions](solutions/controlflow.md) |
-| Arrays | [✓](docs/arrays.md) | [Code](src/main/java/com/javaacademy/sprint1/arrays) | [Exercises](exercises/arrays.md) | [Solutions](solutions/arrays.md) |
-| Strings | [✓](docs/strings.md) | [Code](src/main/java/com/javaacademy/sprint1/strings) | [Exercises](exercises/strings.md) | [Solutions](solutions/strings.md) |
-| Methods | [✓](docs/methods.md) | [Code](src/main/java/com/javaacademy/sprint1/methods) | [Exercises](exercises/methods.md) | [Solutions](solutions/methods.md) |
+## Knowledge Atoms
+
+Shared concepts explained ONCE, linked from everywhere.
+
+| Atom | Description |
+|------|-------------|
+| [Java Memory Model](00-knowledge-atoms/java-memory-model/) | Heap, Stack, Metaspace |
+| [Garbage Collection](00-knowledge-atoms/garbage-collection/) | GC algorithms, tuning |
+| [equals() and hashCode()](00-knowledge-atoms/equals-hashcode/) | Contract, implementation |
+| [Immutability](00-knowledge-atoms/immutability/) | Benefits, creation |
+| [Pass by Value](00-knowledge-atoms/pass-by-value/) | Java semantics |
+| [Autoboxing](00-knowledge-atoms/autoboxing/) | Wrapper classes |
+| [Type Safety](00-knowledge-atoms/type-safety/) | Compile-time vs runtime |
+
+---
+
+## Modules
+
+| # | Module | Level | What You'll Learn |
+|---|--------|-------|-------------------|
+| 01 | [Fundamentals](01-fundamentals/) | Student | Variables, types, operators, control flow, methods, arrays, strings |
+| 02 | [OOP](02-oop/) | Student | Classes, objects, inheritance, polymorphism, encapsulation |
+| 03 | [Collections](04-collections/) | Student-Junior | List, Set, Map, Queue, iterators |
+| 04 | [Generics](05-generics/) | Junior | Generic classes, methods, wildcards |
+| 05 | [Exceptions](03-exception-handling/) | Junior | Try-catch, custom exceptions |
+| 06 | [Strings](06-strings/) | Student | String, StringBuilder, formatting |
+| 07 | [Functional Programming](07-functional-programming/) | Junior | Lambdas, streams, optional |
+| 08 | [IO/NIO](08-io-nio/) | Junior | Files, streams, buffers, channels |
+| 09 | [Multithreading](09-multithreading/) | Mid-Level | Threads, synchronization, locks |
+| 10 | [JVM Internals](10-jvm-internals/) | Mid-Senior | Classloading, memory, GC, JIT |
+| 11 | [Design Patterns](11-design-patterns/) | Mid-Senior | Creational, structural, behavioral |
+| 12 | [Testing](12-testing/) | Junior | JUnit 5, Mockito |
+| 13 | [Reflection & Annotations](13-reflection-annotations/) | Mid-Level | Runtime type info |
+| 14 | [Logging](14-logging/) | Junior | SLF4J, Logback |
+| 15 | [Senior Topics](15-senior/) | Senior | Performance, advanced concurrency, production patterns |
+
+---
+
+## Learning Path
+
+```
+01-Fundamentals → 02-OOP → 03-Collections → 04-Generics → 05-Exceptions
+                                                        ↓
+                                              06-Strings → 07-Functional → 08-IO
+                                                                      ↓
+                                              09-Multithreading → 10-JVM → 11-Patterns
+                                                                      ↓
+                                              12-Testing → 13-Reflection → 14-Logging
+                                                                      ↓
+                                                                  15-Senior
+```
+
+---
+
+## Quick Start
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+---
 
 ## Prerequisites
-- JDK 21 or later
-- Maven 3.8.6+
-- Basic text editor or IDE (IntelliJ IDEA recommended)
 
-## How to Use This Module
-1. Start with the theory documents in `docs/`
-2. Run the example code in `src/main/java/`
-3. Complete the exercises in `exercises/`
-4. Check your solutions in `solutions/`
-5. Take the quizzes in `quiz/`
-6. Review interview questions in `interview/`
-
-## Build & Test
-```bash
-# From repository root
-mvn clean compile test -pl java-fundamentals
-
-# Run specific test class
-mvn test -pl java-fundamentals -Dtest=BasicsTest
-```
-
-## Additional Resources
-- [Full Module Documentation](../java-fundamentals/README.md)
-- [Java Language Specification](https://docs.oracle.com/javase/specs/jls/se21/html/index.html)
-- [Java Tutorials - Oracle](https://docs.oracle.com/en/java/javase/21/)
-
-## Architecture
-
-```mermaid
-graph TD
-    A[Java Core] --> B[Collections Framework]
-    A --> C[Concurrency Utilities]
-    B --> D[Spring Ecosystem]
-    C --> D
-    D --> E[Microservices]
-    E --> F[Cloud Deployment]
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-## When to Use
-
-```mermaid
-graph TD
-    Start{Project Requirements} -->|Enterprise| Java[Choose Java]
-    Start -->|Quick Scripts| Python[Choose Python]
-    Start -->|Performance| Cpp[Choose C++]
-    Start -->|Mobile| Kotlin[Choose Kotlin]
-
-    Java -->|Web Backend| Spring[Spring Boot]
-    Java -->|Desktop| JavaFX[JavaFX]
-    Java -->|Android| Android[Android SDK]
-
-    style Java fill:#f96,stroke:#333,stroke-width:2px
-    style Spring fill:#6cf,stroke:#333,stroke-width:2px
-```
-
-## Status
-✅ Complete — All topics, examples, exercises, and tests ready
-
-## Next Module
-[Module 02: Object-Oriented Programming](../02-object-oriented-programming/)
+- Java 21+ installed
+- A code editor (IntelliJ IDEA recommended)
