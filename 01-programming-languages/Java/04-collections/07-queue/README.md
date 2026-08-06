@@ -247,7 +247,8 @@ public class QueueBasics {
         System.out.println("Peek: " + queue.peek());
 
         // Process queue
-        System.out.println("\nProcessing:");
+        System.out.println("
+Processing:");
         while (!queue.isEmpty()) {
             System.out.println("  Serving: " + queue.poll());
         }
@@ -276,7 +277,8 @@ public class QueueOperations {
         bfs(graph, "A");
 
         // Producer-Consumer with bounded queue
-        System.out.println("\n=== Producer-Consumer ===");
+        System.out.println("
+=== Producer-Consumer ===");
         ArrayBlockingQueue<String> buffer = new ArrayBlockingQueue<>(5);
 
         Thread producer = new Thread(() -> {
@@ -350,7 +352,8 @@ public class AdvancedQueuePatterns {
         }
 
         // Pattern 2: Task scheduler
-        System.out.println("\n=== Task Scheduler ===");
+        System.out.println("
+=== Task Scheduler ===");
         ScheduledTaskScheduler scheduler = new ScheduledTaskScheduler();
         scheduler.schedule(() -> System.out.println("Task 1 executed"), 1000);
         scheduler.schedule(() -> System.out.println("Task 2 executed"), 2000);
@@ -359,7 +362,8 @@ public class AdvancedQueuePatterns {
         scheduler.shutdown();
 
         // Pattern 3: Windowed average
-        System.out.println("\n=== Windowed Average ===");
+        System.out.println("
+=== Windowed Average ===");
         WindowedAverage window = new WindowedAverage(3);
         window.add(10);
         window.add(20);
@@ -398,347 +402,8 @@ public class AdvancedQueuePatterns {
         private final Queue<ScheduledFuture<?>> tasks = new ArrayDeque<>();
 
         public void schedule(Runnable task, long delayMillis) {
-            ScheduledFuture<?> future = executor.schedule(task, delayMillis, TimeUnit.MILLISECONDS);
-            tasks.offer(future);
-        }
 
-        public void shutdown() {
-            executor.shutdown();
-        }
-    }
+## 📑 Continue Reading
 
-    static class WindowedAverage {
-        private final Queue<Double> window;
-        private final int maxSize;
-        private double sum = 0;
+**Part 1** of 2 | [Part 2](README-part2.md)
 
-        public WindowedAverage(int maxSize) {
-            this.window = new ArrayDeque<>();
-            this.maxSize = maxSize;
-        }
-
-        public void add(double value) {
-            if (window.size() >= maxSize) {
-                sum -= window.poll();
-            }
-            window.offer(value);
-            sum += value;
-        }
-
-        public double getAverage() {
-            return window.isEmpty() ? 0 : sum / window.size();
-        }
-    }
-}
-```
-
-## 14. Enterprise Example
-
-```java
-import java.util.*;
-import java.util.concurrent.*;
-
-public class MessageQueueSystem {
-    private final BlockingQueue<Message> messageQueue;
-    private final List<Message> processedMessages;
-    private final int maxRetries;
-
-    public MessageQueueSystem(int capacity, int maxRetries) {
-        this.messageQueue = new ArrayBlockingQueue<>(capacity);
-        this.processedMessages = new CopyOnWriteArrayList<>();
-        this.maxRetries = maxRetries;
-    }
-
-    public boolean publish(Message message) {
-        return messageQueue.offer(message);
-    }
-
-    public Optional<Message> consume() {
-        try {
-            return Optional.ofNullable(messageQueue.poll(1, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return Optional.empty();
-        }
-    }
-
-    public void processMessages(int count) {
-        for (int i = 0; i < count; i++) {
-            consume().ifPresent(message -> {
-                if (processMessage(message)) {
-                    processedMessages.add(message);
-                }
-            });
-        }
-    }
-
-    private boolean processMessage(Message message) {
-        // Simulate processing
-        try {
-            Thread.sleep(100);
-            return Math.random() > 0.1; // 90% success rate
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
-    }
-
-    public Map<String, Long> getMessageStatistics() {
-        return processedMessages.stream()
-            .collect(java.util.stream.Collectors.groupingBy(
-                Message::type,
-                java.util.stream.Collectors.counting()
-            ));
-    }
-
-    public static void main(String[] args) {
-        MessageQueueSystem system = new MessageQueueSystem(100, 3);
-
-        // Publish messages
-        for (int i = 0; i < 20; i++) {
-            system.publish(new Message("MSG" + i, "ORDER", new Date()));
-        }
-
-        System.out.println("=== Processing Messages ===");
-        system.processMessages(20);
-
-        System.out.println("\n=== Message Statistics ===");
-        system.getMessageStatistics().forEach((type, count) ->
-            System.out.println("  " + type + ": " + count + " processed")
-        );
-    }
-
-    record Message(String id, String type, Date timestamp) {}
-}
-```
-
-## 15. Performance
-
-### Time Complexity
-
-| Operation | ArrayDeque | LinkedList | PriorityQueue |
-|-----------|------------|------------|---------------|
-| offer() | O(1)* | O(1) | O(log n) |
-| poll() | O(1) | O(1) | O(log n) |
-| peek() | O(1) | O(1) | O(1) |
-| size() | O(1) | O(1) | O(1) |
-| contains() | O(n) | O(n) | O(n) |
-
-*Amortized O(1) for ArrayDeque
-
-### ArrayDeque vs LinkedList
-
-| Feature | ArrayDeque | LinkedList | Winner |
-|---------|------------|------------|--------|
-| Memory | Less | More | ArrayDeque |
-| Cache locality | Good | Poor | ArrayDeque |
-| Performance | Faster | Slower | ArrayDeque |
-| Implements | Deque | List, Deque | ArrayDeque |
-| Thread-safe | No | No | Tie |
-
-**Always prefer ArrayDeque over LinkedList for queue/deque operations.**
-
-## 16. Best Practices
-
-1. **Use ArrayDeque**: Default choice for queue operations (faster than LinkedList)
-2. **Use offer/poll/peek**: For null-returning behavior (safer than add/remove/element)
-3. **Set initial capacity**: For bounded queues or known sizes
-4. **Use BlockingQueue**: For producer-consumer patterns
-5. **Check isEmpty()**: Before poll/peek to avoid null
-6. **Thread safety**: Use BlockingQueue implementations for concurrent access
-
-## 17. Common Mistakes
-
-```java
-// Mistake 1: Using LinkedList for queue operations
-// Bad - slower than ArrayDeque
-Queue<String> queue = new LinkedList<>();
-
-// Good - faster
-Queue<String> queue = new ArrayDeque<>();
-
-// Mistake 2: Using add/remove/element for null safety
-// Bad - throws exceptions
-try {
-    String element = queue.remove();
-} catch (NoSuchElementException e) {
-    // Handle exception
-}
-
-// Good - returns null
-String element = queue.poll();
-if (element != null) {
-    // Process element
-}
-
-// Mistake 3: Not checking size for bounded queues
-ArrayBlockingQueue<String> boundedQueue = new ArrayBlockingQueue<>(10);
-boolean added = boundedQueue.offer("item"); // May return false!
-
-// Mistake 4: Iterating queue for processing
-// Bad - doesn't remove elements
-for (String s : queue) {
-    process(s);
-}
-
-// Good - processes and removes
-while (!queue.isEmpty()) {
-    process(queue.poll());
-}
-```
-
-## 18. Pitfalls
-
-### Exceptions vs Special Values
-- `add()/remove()/element()` throw exceptions on failure
-- `offer()/poll()/peek()` return false/null on failure
-- Choose based on your error handling strategy
-
-### Bounded Queue Capacity
-Bounded queues (ArrayBlockingQueue) have fixed capacity. `offer()` returns false when full, `put()` blocks.
-
-### Thread Safety
-Queue implementations are NOT thread-safe (except BlockingQueue). Use BlockingQueue for concurrent access.
-
-### Null Elements
-Most Queue implementations don't allow null elements (throws NullPointerException).
-
-### Iteration Order
-PriorityQueue iteration does NOT guarantee priority order. Use poll() for priority processing.
-
-## 19. Debugging Tips
-
-1. **Print queue contents**: Use System.out.println() for debugging
-2. **Check size**: Verify expected element count
-3. **Use offer/poll**: For safer operations
-4. **Monitor capacity**: For bounded queues
-5. **Profile memory**: Use JProfiler to check memory usage
-6. **Test with multiple threads**: For BlockingQueue implementations
-
-## 20. Comparison Table
-
-| Feature | Queue | Deque | PriorityQueue | BlockingQueue |
-|---------|-------|-------|----------------|---------------|
-| Ordering | FIFO | FIFO/LIFO | Priority | FIFO |
-| Capacity | Unbounded | Unbounded | Unbounded | Bounded |
-| Thread-safe | No | No | No | Yes |
-| Null elements | No | No | No | No |
-| Performance | O(1) | O(1) | O(log n) | O(1)* |
-
-*With waiting
-
-## 21. Decision Tree
-
-```
-Need a Queue?
-├── Yes → Need priority ordering?
-│   ├── Yes → PriorityQueue
-│   └── No → Need thread safety?
-│       ├── Yes → ArrayBlockingQueue or LinkedBlockingQueue
-│       └── No → ArrayDeque (default choice)
-├── Need FIFO/LIFO?
-│   └── Use ArrayDeque
-└── Need producer-consumer?
-    └── Use BlockingQueue
-```
-
-## 22. Interview Questions
-
-### Q1: What is the difference between Queue and Deque?
-**A**: Queue is FIFO only. Deque (Double-Ended Queue) supports FIFO and LIFO operations. Deque extends Queue interface.
-
-### Q2: What is the difference between offer() and add()?
-**A**: Both add elements. offer() returns false if queue is full (for bounded queues). add() throws exception. Use offer() for bounded queues.
-
-### Q3: What is the difference between poll() and remove()?
-**A**: Both remove and return head element. poll() returns null if empty. remove() throws exception. Use poll() for safer code.
-
-### Q4: Which Queue implementation is fastest?
-**A**: ArrayDeque is fastest for most queue operations due to better cache locality and less memory overhead.
-
-### Q5: When would you use PriorityQueue over ArrayDeque?
-**A**: When you need priority-based processing instead of FIFO. PriorityQueue orders by priority, ArrayDeque orders by insertion.
-
-### Q6: What is BlockingQueue?
-**A**: A Queue that supports blocking operations. put() blocks if queue is full, take() blocks if queue is empty. Used for producer-consumer patterns.
-
-### Q7: Can Queue contain null elements?
-**A**: Most Queue implementations don't allow null elements (throws NullPointerException). LinkedList is an exception.
-
-## 23. Exercises
-
-### Exercise 1: BFS Implementation
-Implement BFS traversal using Queue.
-
-### Exercise 2: Producer-Consumer
-Implement a producer-consumer pattern using BlockingQueue.
-
-### Exercise 3: Sliding Window Maximum
-Find the maximum element in each sliding window using Queue.
-
-## 24. Assignments
-
-### Assignment 1: Print Spooler
-Build a print spooler system using Queue:
-- Add print jobs
-- Process in FIFO order
-- Handle priority jobs
-- Track job status
-
-### Assignment 2: Task Scheduler
-Create a task scheduling system:
-- Schedule tasks with delays
-- Execute in order
-- Handle cancellations
-- Track execution history
-
-## 25. Mini Project
-
-### Chat Message System
-
-Build a chat system using Queue:
-
-```java
-// Features:
-// 1. Send/receive messages
-// 2. Message queue for offline users
-// 3. Priority messages
-// 4. Message history
-// 5. Thread-safe for multiple users
-```
-
-**Requirements:**
-- Use BlockingQueue for thread safety
-- Implement message priorities
-- Handle reconnection
-- Track delivery status
-
-## 26. Summary
-
-Queue is designed for FIFO processing:
-
-- **Operations**: offer/poll/peek (null-returning), add/remove/element (exception-throwing)
-- **Implementations**: ArrayDeque (fastest), LinkedList, PriorityQueue
-- **Use cases**: BFS, producer-consumer, task scheduling
-- **Thread safety**: Use BlockingQueue for concurrent access
-- **Best practice**: Prefer ArrayDeque over LinkedList for queue operations
-
-## 27. References
-
-### Official Documentation
-- [Queue Interface](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/Queue.html)
-- [ArrayDeque](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/ArrayDeque.html)
-- [BlockingQueue](https://docs.oracle.com/en/java/javase/21/docs/api/java/util/concurrent/BlockingQueue.html)
-
-### Books
-- *Effective Java* by Joshua Bloch
-- *Java Concurrency in Practice* by Brian Goetz
-
-### Online Resources
-- [Baeldung Queue Guide](https://www.baeldung.com/java-queue)
-- [GeeksforGeeks Queue](https://www.geeksforgeeks.org/queue-interface-java/)
-
-### Related Topics
-- [Deque](../09-deque/README.md)
-- [PriorityQueue](../08-priorityqueue/README.md)
-- [ArrayDeque](../09-deque/README.md)

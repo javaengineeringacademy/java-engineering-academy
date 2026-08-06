@@ -191,14 +191,16 @@ public class EnumerationBasic {
         ages.put("Bob", 30);
         ages.put("Charlie", 35);
         
-        System.out.println("\nKeys:");
+        System.out.println("
+Keys:");
         Enumeration<String> keyEnum = ages.keys();
         while (keyEnum.hasMoreElements()) {
             String key = keyEnum.nextElement();
             System.out.println("  " + key);
         }
         
-        System.out.println("\nValues:");
+        System.out.println("
+Values:");
         Enumeration<Integer> valueEnum = ages.elements();
         while (valueEnum.hasMoreElements()) {
             Integer value = valueEnum.nextElement();
@@ -207,7 +209,8 @@ public class EnumerationBasic {
         
         // StringTokenizer
         StringTokenizer tokenizer = new StringTokenizer("Java,Collections,Framework");
-        System.out.println("\nTokens:");
+        System.out.println("
+Tokens:");
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
             System.out.println("  " + token);
@@ -244,7 +247,8 @@ public class EnumerationAdvanced {
         // StringTokenizer with delimiters
         String csv = "John,Doe,30,Engineer";
         StringTokenizer csvTokenizer = new StringTokenizer(csv, ",");
-        System.out.println("\nCSV parsing:");
+        System.out.println("
+CSV parsing:");
         while (csvTokenizer.hasMoreTokens()) {
             System.out.println("  " + csvTokenizer.nextToken());
         }
@@ -252,7 +256,8 @@ public class EnumerationAdvanced {
         // StringTokenizer with return delimiters
         String sentence = "Hello, world! How are you?";
         StringTokenizer wordTokenizer = new StringTokenizer(sentence, " ,?!");
-        System.out.println("\nWord parsing:");
+        System.out.println("
+Word parsing:");
         while (wordTokenizer.hasMoreTokens()) {
             System.out.println("  " + wordTokenizer.nextToken());
         }
@@ -271,7 +276,8 @@ public class EnumerationAdvanced {
         bobScores.add(85);
         studentScores.put("Bob", bobScores);
         
-        System.out.println("\nStudent scores:");
+        System.out.println("
+Student scores:");
         Enumeration<String> studentEnum = studentScores.keys();
         while (studentEnum.hasMoreElements()) {
             String student = studentEnum.nextElement();
@@ -322,11 +328,13 @@ public class LegacyDataProcessor {
             String category = categoryEnum.nextElement();
             Vector<String> records = dataStore.get(category);
             
-            System.out.println("\nCategory: " + category);
+            System.out.println("
+Category: " + category);
             processRecords(records);
         }
         
-        System.out.println("\nProcessed " + processedRecords.size() + " records");
+        System.out.println("
+Processed " + processedRecords.size() + " records");
     }
     
     private void processRecords(Vector<String> records) {
@@ -357,7 +365,8 @@ public class LegacyDataProcessor {
     }
     
     public void generateReport() {
-        System.out.println("\n=== Processing Report ===");
+        System.out.println("
+=== Processing Report ===");
         System.out.println("Total categories: " + dataStore.size());
         System.out.println("Total records processed: " + processedRecords.size());
         
@@ -371,7 +380,8 @@ public class LegacyDataProcessor {
             categoryCounts.put(category, count);
         }
         
-        System.out.println("\nRecords per category:");
+        System.out.println("
+Records per category:");
         Enumeration<String> countEnum = categoryCounts.keys();
         while (countEnum.hasMoreElements()) {
             String category = countEnum.nextElement();
@@ -398,381 +408,8 @@ public class LegacyDataProcessor {
         
         processor.loadData("Products", new String[]{
             "P001|Laptop|999.99|Electronics",
-            "P002|Phone|699.99|Electronics",
-            "P003|Book|29.99|Education"
-        });
-        
-        // Process data
-        processor.processData();
-        
-        // Generate report
-        processor.generateReport();
-    }
-}
-```
 
-## 12. Enterprise Example
+## 📑 Continue Reading
 
-```java
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+**Part 1** of 2 | [Part 2](README-part2.md)
 
-public class LegacySystemAdapter {
-    private static final Logger LOGGER = Logger.getLogger(LegacySystemAdapter.class.getName());
-    private final Hashtable<String, Vector<String>> legacyData;
-    private final List<String> modernData;
-    
-    public LegacySystemAdapter() {
-        this.legacyData = new Hashtable<>();
-        this.modernData = new ArrayList<>();
-    }
-    
-    // Adapter method to convert legacy Enumeration to modern Iterator
-    public <T> java.util.Iterator<T> enumerationToIterator(Enumeration<T> enumeration) {
-        List<T> list = new ArrayList<>();
-        while (enumeration.hasMoreElements()) {
-            list.add(enumeration.nextElement());
-        }
-        return list.iterator();
-    }
-    
-    // Process legacy data using Enumeration
-    public void processLegacyData() {
-        LOGGER.info("Processing legacy data with Enumeration...");
-        
-        Enumeration<String> categoryEnum = legacyData.keys();
-        while (categoryEnum.hasMoreElements()) {
-            String category = categoryEnum.nextElement();
-            Vector<String> records = legacyData.get(category);
-            
-            processCategory(category, records);
-        }
-    }
-    
-    private void processCategory(String category, Vector<String> records) {
-        LOGGER.info("Processing category: " + category);
-        
-        Enumeration<String> recordEnum = records.elements();
-        while (recordEnum.hasMoreElements()) {
-            String record = recordEnum.nextElement();
-            String processed = transformRecord(record);
-            modernData.add(processed);
-        }
-    }
-    
-    private String transformRecord(String record) {
-        // Parse legacy format and transform to modern format
-        StringTokenizer tokenizer = new StringTokenizer(record, "|");
-        StringBuilder modern = new StringBuilder();
-        
-        while (tokenizer.hasMoreTokens()) {
-            String field = tokenizer.nextToken().trim();
-            modern.append(field);
-            if (tokenizer.hasMoreTokens()) {
-                modern.append(",");
-            }
-        }
-        
-        return modern.toString();
-    }
-    
-    // Export data using modern Iterator
-    public void exportData() {
-        LOGGER.info("Exporting data using modern Iterator...");
-        
-        java.util.Iterator<String> iterator = modernData.iterator();
-        while (iterator.hasNext()) {
-            String record = iterator.next();
-            exportRecord(record);
-        }
-    }
-    
-    private void exportRecord(String record) {
-        // Simulate export to modern system
-        LOGGER.info("Exported: " + record);
-    }
-    
-    // Load legacy data
-    public void loadLegacyData(String category, String[] records) {
-        Vector<String> recordVector = new Vector<>();
-        for (String record : records) {
-            recordVector.add(record);
-        }
-        legacyData.put(category, recordVector);
-    }
-    
-    // Get statistics
-    public Hashtable<String, Integer> getStatistics() {
-        Hashtable<String, Integer> stats = new Hashtable<>();
-        
-        Enumeration<String> categoryEnum = legacyData.keys();
-        while (categoryEnum.hasMoreElements()) {
-            String category = categoryEnum.nextElement();
-            int count = legacyData.get(category).size();
-            stats.put(category, count);
-        }
-        
-        stats.put("total_legacy", getLegacyRecordCount());
-        stats.put("total_modern", modernData.size());
-        
-        return stats;
-    }
-    
-    private int getLegacyRecordCount() {
-        int count = 0;
-        Enumeration<String> categoryEnum = legacyData.keys();
-        while (categoryEnum.hasMoreElements()) {
-            String category = categoryEnum.nextElement();
-            count += legacyData.get(category).size();
-        }
-        return count;
-    }
-    
-    public static void main(String[] args) {
-        LegacySystemAdapter adapter = new LegacySystemAdapter();
-        
-        // Load legacy data
-        adapter.loadLegacyData("customers", new String[]{
-            "C001|Acme Corp|contact@acme.com",
-            "C002|TechStart|info@techstart.com",
-            "C003|GlobalInc|support@globalinc.com"
-        });
-        
-        adapter.loadLegacyData("products", new String[]{
-            "P001|Widget A|19.99|2024-01-01",
-            "P002|Widget B|29.99|2024-01-15",
-            "P003|Widget C|39.99|2024-02-01"
-        });
-        
-        // Process legacy data
-        adapter.processLegacyData();
-        
-        // Export to modern system
-        adapter.exportData();
-        
-        // Get statistics
-        Hashtable<String, Integer> stats = adapter.getStatistics();
-        System.out.println("\n=== Migration Statistics ===");
-        System.out.println("Legacy records: " + stats.get("total_legacy"));
-        System.out.println("Modern records: " + stats.get("total_modern"));
-    }
-}
-```
-
-## 13. Performance
-
-### Time Complexity
-- **hasMoreElements()**: O(1)
-- **nextElement()**: O(1)
-- **StringTokenizer.nextToken()**: O(1)
-- **Collections.enumeration()**: O(n) for conversion
-
-### Memory Usage
-- **Enumeration**: Minimal overhead, references original collection
-- **StringTokenizer**: Stores tokens in internal array
-- **Vector.elements()**: References existing vector
-
-### Comparison with Iterator
-| Aspect | Enumeration | Iterator |
-|--------|-------------|----------|
-| Creation | O(1) | O(1) |
-| Traversal | O(1) per element | O(1) per element |
-| Removal | Not supported | O(1) amortized |
-| Memory | Low | Low |
-| Thread safety | Synchronized (Vector/Hashtable) | Not synchronized |
-
-## 14. Best Practices
-
-```java
-// 1. Use Iterator instead of Enumeration for new code
-Iterator<String> iterator = list.iterator();
-
-// 2. Use Enumeration only for legacy APIs
-Enumeration<String> legacyEnum = vector.elements();
-
-// 3. Convert Enumeration to Iterator for modern code
-public <T> Iterator<T> toIterator(Enumeration<T> enumeration) {
-    List<T> list = new ArrayList<>();
-    while (enumeration.hasMoreElements()) {
-        list.add(enumeration.nextElement());
-    }
-    return list.iterator();
-}
-
-// 4. Use String.split() instead of StringTokenizer
-String[] tokens = "Hello,World".split(",");
-
-// 5. Use Collections.enumeration() to create Enumeration from List
-Enumeration<String> enumFromList = Collections.enumeration(list);
-
-// 6. Avoid using Enumeration for new implementations
-// Bad
-public Enumeration<String> getElements() { /* ... */ }
-// Good
-public Iterator<String> getElements() { /* ... */ }
-
-// 7. Use try-with-resources for StringTokenizer (implements AutoCloseable since Java 21)
-try (StringTokenizer tokenizer = new StringTokenizer("Hello,World")) {
-    while (tokenizer.hasMoreTokens()) {
-        System.out.println(tokenizer.nextToken());
-    }
-}
-```
-
-## 15. Common Mistakes
-
-```java
-// Mistake 1: Using Enumeration for new code
-// Bad
-public Enumeration<String> getItems() { /* ... */ }
-// Good
-public Iterator<String> getItems() { /* ... */ }
-
-// Mistake 2: Using StringTokenizer instead of String.split()
-// Bad
-StringTokenizer tokenizer = new StringTokenizer("Hello,World", ",");
-while (tokenizer.hasMoreTokens()) {
-    System.out.println(tokenizer.nextToken());
-}
-// Good
-String[] tokens = "Hello,World".split(",");
-for (String token : tokens) {
-    System.out.println(token);
-}
-
-// Mistake 3: Not converting Enumeration to Iterator
-// Bad
-Enumeration<String> enum = vector.elements();
-while (enum.hasMoreElements()) {
-    String element = enum.nextElement();
-    // Can't use Iterator methods
-}
-// Good
-Iterator<String> iterator = Collections.list(vector.elements()).iterator();
-while (iterator.hasNext()) {
-    String element = iterator.next();
-    // Can use Iterator methods
-}
-
-// Mistake 4: Using Enumeration for thread safety
-// Bad
-Enumeration<String> enum = vector.elements();  // Vector is synchronized, but Enumeration isn't
-// Good
-List<String> list = Collections.synchronizedList(new ArrayList<>());
-synchronized (list) {
-    Iterator<String> iterator = list.iterator();
-    while (iterator.hasNext()) {
-        // Safe iteration
-    }
-}
-
-// Mistake 5: Assuming Enumeration is thread-safe
-// Bad
-Enumeration<String> enum = hashtable.elements();
-// Multiple threads can call hasMoreElements() and nextElement()
-// Good
-Enumeration<String> enum = hashtable.elements();
-synchronized (hashtable) {
-    while (enum.hasMoreElements()) {
-        // Safe iteration
-    }
-}
-```
-
-## 16. Pitfalls
-
-### Legacy Limitations
-- **No removal**: Cannot remove elements during traversal
-- **No bidirectional traversal**: Only forward iteration
-- **Limited APIs**: Only available for Vector, Hashtable, StringTokenizer
-- **No forEachRemaining**: Cannot process remaining elements in one call
-
-### Thread Safety Issues
-- **Not truly thread-safe**: Enumeration itself is not synchronized
-- **Vector/Hashtable synchronization**: Methods are synchronized, but iteration is not atomic
-- **Concurrent access**: Multiple threads can cause issues
-
-### Performance Concerns
-- **Conversion overhead**: Converting to Iterator has O(n) cost
-- **StringTokenizer inefficiency**: Less efficient than regular expressions
-- **Memory usage**: Internal storage for StringTokenizer
-
-### Migration Challenges
-- **Code modernization**: Replacing Enumeration with Iterator requires changes
-- **API compatibility**: Some legacy APIs only support Enumeration
-- **Testing**: Need to ensure backward compatibility
-
-## 17. Interview Questions
-
-### Q1: What is the difference between Enumeration and Iterator?
-**Answer**: `Enumeration` is a legacy interface (JDK 1.0) with only `hasMoreElements()` and `nextElement()`. `Iterator` (JDK 1.2) adds `remove()` and `forEachRemaining()`. `Iterator` is the modern choice; `Enumeration` is only for legacy code.
-
-### Q2: When would you use Enumeration over Iterator?
-**Answer**: Only when working with legacy APIs that return Enumeration (Vector, Hashtable, StringTokenizer). For new code, always use Iterator or for-each loop.
-
-### Q3: What is StringTokenizer and why is it legacy?
-**Answer**: `StringTokenizer` is a legacy class for parsing strings. It uses `Enumeration` for traversal. It's replaced by `String.split()` and `Pattern` class, which are more powerful and flexible.
-
-### Q4: How do you convert Enumeration to Iterator?
-**Answer**: Use `Collections.list(enumeration)` to convert to List, then call `iterator()`. Or create a custom adapter that wraps Enumeration.
-
-### Q5: Why doesn't Enumeration support removal?
-**Answer**: It was designed for simple traversal in JDK 1.0. Removal was added later in Iterator to support more complex use cases while maintaining backward compatibility.
-
-### Q6: Is Enumeration thread-safe?
-**Answer**: The Enumeration itself is not synchronized. However, the collections that return Enumeration (Vector, Hashtable) have synchronized methods. For thread-safe iteration, you still need external synchronization.
-
-### Q7: What are modern alternatives to StringTokenizer?
-**Answer**: `String.split()`, `Pattern` and `Matcher` classes, `Scanner` class, and third-party libraries like Apache Commons Lang's `StringUtils`.
-
-## 18. Exercises
-
-### Exercise 1: Basic Enumeration
-Create a `Vector` of strings and use `Enumeration` to print all elements. Then convert the `Enumeration` to an `Iterator` and remove elements starting with "A".
-
-### Exercise 2: String Tokenization
-Implement a CSV parser using `StringTokenizer`. Parse a string with multiple fields and handle different delimiters.
-
-### Exercise 3: Legacy Data Migration
-Create a `Hashtable` with legacy data and use `Enumeration` to migrate it to a modern `HashMap`. Include data transformation during migration.
-
-### Exercise 4: Enumeration Adapter
-Implement an adapter class that converts `Enumeration` to `Iterator`. Test with `Vector` and `Hashtable`.
-
-## 19. Summary
-
-- `Enumeration` is a legacy interface from JDK 1.0 for sequential traversal
-- Supports only `hasMoreElements()` and `nextElement()` methods
-- Used by legacy classes: `Vector`, `Hashtable`, `StringTokenizer`
-- `StringTokenizer` is legacy; prefer `String.split()` or `Pattern`
-- `Iterator` is the modern replacement with more features
-- Use `Collections.enumeration()` to create Enumeration from List
-- Convert Enumeration to Iterator for modern code
-- Only use Enumeration for backward compatibility with legacy APIs
-
-## 20. References
-
-### Official Documentation
-- [Java Enumeration Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Enumeration.html)
-- [Java StringTokenizer Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/StringTokenizer.html)
-- [Java Collections.enumeration() Documentation](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collections.html#enumeration(java.util.Collection))
-
-### Books
-- *Effective Java* by Joshua Bloch
-- *Java: The Complete Reference* by Herbert Schildt
-- *Java Foundation Classes* by James Gosling
-
-### Online Resources
-- [Baeldung - Enumeration in Java](https://www.baeldung.com/java-enumeration)
-- [GeeksforGeeks - Enumeration in Java](https://www.geeksforgeeks.org/enumeration-in-java/)
-- [Oracle - Legacy Collections](https://docs.oracle.com/en/java/javase/21/collections/legacy/index.html)
-
-### Related Topics
-- [Iterator Interface](../24-iterator/README.md)
-- [Hashtable](../23-hashtable/README.md)
-- [Vector](../04-vector/README.md)
