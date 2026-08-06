@@ -1,0 +1,850 @@
+# Java Engineering Academy - Curriculum Manifest
+# Single source of truth for structure, navigation, and learning paths
+# Can be used to generate READMEs, breadcrumbs, navigation, and progress tracking
+
+meta:
+  name: Java Engineering Academy
+  version: "1.0.0"
+  description: "Complete Java curriculum from Student to CTO"
+  author: javaengineeringacademy
+  repository: https://github.com/javaengineeringacademy/java-engineering-academy
+
+# ============================================================
+# MODULE DEFINITIONS
+# ============================================================
+
+modules:
+
+  # ==========================================================
+  # 00-FUNDAMENTALS (Cross-cutting concerns)
+  # ==========================================================
+  - id: fundamentals
+    title: Software Engineering Fundamentals
+    path: 00-fundamentals
+    level: beginner
+    time_estimate: "10-15 hours"
+    prerequisites: []
+    tags: [fundamentals, cross-cutting]
+
+    topics:
+      - id: engineering-principles
+        title: Engineering Principles
+        path: engineering-principles
+        time: "2-3 hours"
+        prerequisites: []
+        description: "Core principles every software engineer must know"
+
+      - id: trade-offs
+        title: Trade-offs & Decisions
+        path: trade-offs
+        time: "2-3 hours"
+        prerequisites: [engineering-principles]
+        description: "How to make architectural decisions"
+
+      - id: economics
+        title: Engineering Economics
+        path: economics
+        time: "1-2 hours"
+        prerequisites: []
+        description: "Cost-benefit analysis for technical decisions"
+
+      - id: glossary
+        title: Technical Glossary
+        path: glossary
+        time: "1 hour"
+        prerequisites: []
+        description: "Common terms and definitions"
+
+      - id: metrics
+        title: Engineering Metrics
+        path: metrics
+        time: "2-3 hours"
+        prerequisites: []
+        description: "DORA metrics, code quality metrics, performance metrics"
+
+      - id: reliability
+        title: Reliability Engineering
+        path: reliability
+        time: "2-3 hours"
+        prerequisites: [metrics]
+        description: "SLAs, SLOs, error budgets"
+
+      - id: maintenance
+        title: Software Maintenance
+        path: maintenance
+        time: "1-2 hours"
+        prerequisites: []
+        description: "Legacy code, technical debt, refactoring"
+
+      - id: decision-making
+        title: Decision Frameworks
+        path: decision-making
+        time: "2-3 hours"
+        prerequisites: [trade-offs]
+        description: "Structured approaches to technical decisions"
+
+  # ==========================================================
+  # 01-PROGRAMMING LANGUAGES
+  # ==========================================================
+  - id: programming-languages
+    title: Programming Languages
+    path: 01-programming-languages
+    level: beginner
+    time_estimate: "200+ hours"
+    prerequisites: [fundamentals]
+    tags: [programming, languages]
+
+    languages:
+      # --------------------------------------------------------
+      # JAVA (Primary focus)
+      # --------------------------------------------------------
+      - id: java
+        title: Java
+        path: Java
+        level: beginner-to-architect
+        time_estimate: "150+ hours"
+        prerequisites: []
+        description: "Complete Java curriculum from basics to enterprise"
+        tags: [java, primary]
+
+        modules:
+          # Knowledge Atoms
+          - id: knowledge-atoms
+            title: Knowledge Atoms
+            path: 00-knowledge-atoms
+            level: intermediate
+            time_estimate: "10-15 hours"
+            prerequisites: [java.01-fundamentals, java.02-oop]
+            description: "Shared concepts that appear across multiple topics"
+            topics:
+              - id: memory-model
+                title: Java Memory Model
+                path: java-memory-model
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading]
+                next: [java.10-jvm-internals.garbage-collection]
+
+              - id: garbage-collection
+                title: Garbage Collection
+                path: garbage-collection
+                time: "3-4 hours"
+                prerequisites: [java.01-fundamentals.variables]
+                next: [java.10-jvm-internals]
+
+              - id: equals-hashcode
+                title: equals() and hashCode()
+                path: equals-hashcode
+                time: "2-3 hours"
+                prerequisites: [java.02-oop]
+                next: [java.04-collections]
+
+              - id: immutability
+                title: Immutability
+                path: immutability
+                time: "1-2 hours"
+                prerequisites: [java.02-oop]
+                next: [java.06-generics.records]
+
+              - id: pass-by-value
+                title: Pass-by-Value
+                path: pass-by-value
+                time: "1 hour"
+                prerequisites: [java.01-fundamentals]
+                next: [java.02-oop]
+
+              - id: autoboxing
+                title: Autoboxing
+                path: autoboxing
+                time: "1 hour"
+                prerequisites: [java.01-fundamentals]
+                next: [java.04-collections]
+
+              - id: type-safety
+                title: Type Safety
+                path: type-safety
+                time: "1-2 hours"
+                prerequisites: [java.06-generics]
+                next: [java.07-functional-programming]
+
+          # Fundamentals
+          - id: 01-fundamentals
+            title: Java Fundamentals
+            path: 01-fundamentals
+            level: beginner
+            time_estimate: "20-25 hours"
+            prerequisites: []
+            next: [java.02-oop]
+            topics:
+              - id: variables
+                title: Variables & Types
+                path: 01-variables
+                time: "2-3 hours"
+                prerequisites: []
+              - id: operators
+                title: Operators
+                path: 02-operators
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals.variables]
+              - id: control-flow
+                title: Control Flow
+                path: 03-control-flow
+                time: "3-4 hours"
+                prerequisites: [java.01-fundamentals.operators]
+              - id: methods
+                title: Methods
+                path: 04-methods
+                time: "3-4 hours"
+                prerequisites: [java.01-fundamentals.control-flow]
+              - id: arrays
+                title: Arrays
+                path: 05-arrays
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals.methods]
+              - id: strings
+                title: Strings
+                path: 06-strings
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals.arrays]
+              - id: project-structure
+                title: Project Structure
+                path: 07-project-structure
+                time: "2-3 hours"
+                prerequisites: []
+              - id: maven
+                title: Maven
+                path: 08-maven
+                time: "3-4 hours"
+                prerequisites: [java.01-fundamentals.project-structure]
+              - id: keywords
+                title: Java Keywords
+                path: 10-keywords
+                time: "2-3 hours"
+                prerequisites: []
+
+          # OOP
+          - id: 02-oop
+            title: Object-Oriented Programming
+            path: 02-oop
+            level: beginner-to-intermediate
+            time_estimate: "30-40 hours"
+            prerequisites: [java.01-fundamentals]
+            next: [java.03-exception-handling]
+            topics:
+              - id: classes
+                title: Classes
+                path: 02-classes
+                time: "3-4 hours"
+              - id: objects
+                title: Objects
+                path: 03-objects
+                time: "3-4 hours"
+              - id: constructors
+                title: Constructors
+                path: 04-constructors
+                time: "2-3 hours"
+              - id: methods-oop
+                title: Methods
+                path: 05-methods
+                time: "3-4 hours"
+              - id: this-keyword
+                title: this Keyword
+                path: 06-this-keyword
+                time: "1-2 hours"
+              - id: super-keyword
+                title: super Keyword
+                path: 07-super-keyword
+                time: "1-2 hours"
+              - id: encapsulation
+                title: Encapsulation
+                path: 08-encapsulation
+                time: "3-4 hours"
+              - id: inheritance
+                title: Inheritance
+                path: 09-inheritance
+                time: "4-5 hours"
+              - id: polymorphism
+                title: Polymorphism
+                path: 10-polymorphism
+                time: "4-5 hours"
+              - id: abstraction
+                title: Abstraction
+                path: 11-abstraction
+                time: "3-4 hours"
+              - id: interfaces
+                title: Interfaces
+                path: 12-interfaces
+                time: "3-4 hours"
+              - id: abstract-classes
+                title: Abstract Classes
+                path: 13-abstract-classes
+                time: "2-3 hours"
+              - id: records
+                title: Records
+                path: 33-records
+                time: "2-3 hours"
+              - id: sealed-classes
+                title: Sealed Classes
+                path: 25-sealed-classes
+                time: "2-3 hours"
+              - id: enums
+                title: Enums
+                path: 26-enums
+                time: "3-4 hours"
+              - id: nested-classes
+                title: Nested Classes
+                path: 28-nested-classes
+                time: "2-3 hours"
+              - id: access-modifiers
+                title: Access Modifiers
+                path: 36-access-modifiers
+                time: "2-3 hours"
+
+          # Exception Handling
+          - id: 03-exception-handling
+            title: Exception Handling
+            path: 03-exception-handling
+            level: intermediate
+            time_estimate: "10-15 hours"
+            prerequisites: [java.02-oop]
+            next: [java.04-collections]
+
+          # Collections
+          - id: 04-collections
+            title: Collections Framework
+            path: 04-collections
+            level: intermediate
+            time_estimate: "25-30 hours"
+            prerequisites: [java.02-oop, java.knowledge-atoms.equals-hashcode]
+            next: [java.05-text-processing]
+
+          # Text Processing
+          - id: 05-text-processing
+            title: Text Processing
+            path: 05-text-processing
+            level: intermediate
+            time_estimate: "15-20 hours"
+            prerequisites: [java.04-collections]
+            next: [java.06-generics]
+
+          # Generics
+          - id: 06-generics
+            title: Generics
+            path: 06-generics
+            level: intermediate
+            time_estimate: "15-20 hours"
+            prerequisites: [java.04-collections]
+            next: [java.07-functional-programming]
+
+          # Functional Programming
+          - id: 07-functional-programming
+            title: Functional Programming
+            path: 07-functional-programming
+            level: intermediate-to-advanced
+            time_estimate: "20-25 hours"
+            prerequisites: [java.06-generics]
+            next: [java.08-io-nio]
+
+          # I/O & NIO
+          - id: 08-io-nio
+            title: I/O & NIO
+            path: 08-io-nio
+            level: intermediate
+            time_estimate: "15-20 hours"
+            prerequisites: [java.04-collections]
+            next: [java.09-multithreading]
+
+          # Multithreading
+          - id: 09-multithreading
+            title: Multithreading
+            path: 09-multithreading
+            level: advanced
+            time_estimate: "25-30 hours"
+            prerequisites: [java.02-oop]
+            next: [java.10-jvm-internals]
+
+          # JVM Internals
+          - id: 10-jvm-internals
+            title: JVM Internals
+            path: 10-jvm-internals
+            level: advanced
+            time_estimate: "20-25 hours"
+            prerequisites: [java.09-multithreading, java.knowledge-atoms.memory-model]
+            next: [java.11-design-patterns]
+
+          # Design Patterns
+          - id: 11-design-patterns
+            title: Design Patterns
+            path: 11-design-patterns
+            level: intermediate-to-advanced
+            time_estimate: "20-25 hours"
+            prerequisites: [java.02-oop]
+            next: [java.12-testing]
+
+          # Testing
+          - id: 12-testing
+            title: Testing
+            path: 12-testing
+            level: intermediate
+            time_estimate: "15-20 hours"
+            prerequisites: [java.02-oop]
+            next: [java.13-reflection-annotations]
+
+          # Reflection & Annotations
+          - id: 13-reflection-annotations
+            title: Reflection & Annotations
+            path: 13-reflection-annotations
+            level: advanced
+            time_estimate: "10-15 hours"
+            prerequisites: [java.02-oop]
+            next: [java.14-logging]
+
+          # Logging
+          - id: 14-logging
+            title: Logging
+            path: 14-logging
+            level: intermediate
+            time_estimate: "5-8 hours"
+            prerequisites: []
+            next: [java.15-senior]
+
+          # Senior
+          - id: 15-senior
+            title: Senior Java Developer
+            path: 15-senior
+            level: senior
+            time_estimate: "40-60 hours"
+            prerequisites: [java.10-jvm-internals, java.11-design-patterns]
+            next: []
+            description: "Performance, architecture, production patterns, Java platform deep dive"
+
+  # ==========================================================
+  # 02-COMPUTER SCIENCE
+  # ==========================================================
+  - id: computer-science
+    title: Computer Science
+    path: 02-computer-science
+    level: beginner-to-intermediate
+    time_estimate: "40-60 hours"
+    prerequisites: [fundamentals]
+    tags: [computer-science, theory]
+
+  # ==========================================================
+  # 03-SOFTWARE DESIGN
+  # ==========================================================
+  - id: software-design
+    title: Software Design
+    path: 03-software-design
+    level: intermediate
+    time_estimate: "30-40 hours"
+    prerequisites: [computer-science]
+    tags: [design, patterns, principles]
+
+  # ==========================================================
+  # 04-BACKEND ENGINEERING
+  # ==========================================================
+  - id: backend-engineering
+    title: Backend Engineering
+    path: 04-backend-engineering
+    level: intermediate-to-advanced
+    time_estimate: "60-80 hours"
+    prerequisites: [programming-languages]
+    tags: [backend, spring, dotnet]
+
+  # ==========================================================
+  # 05-DATA PLATFORMS
+  # ==========================================================
+  - id: data-platforms
+    title: Data Platforms
+    path: 05-data-platforms
+    level: intermediate
+    time_estimate: "40-60 hours"
+    prerequisites: [backend-engineering]
+    tags: [databases, sql, nosql]
+
+  # ==========================================================
+  # 06-DATA ENGINEERING
+  # ==========================================================
+  - id: data-engineering
+    title: Data Engineering
+    path: 06-data-engineering
+    level: intermediate-to-advanced
+    time_estimate: "40-60 hours"
+    prerequisites: [data-platforms]
+    tags: [etl, pipelines, spark]
+
+  # ==========================================================
+  # 07-MESSAGING
+  # ==========================================================
+  - id: messaging
+    title: Messaging & Event Streaming
+    path: 07-messaging
+    level: intermediate-to-advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [backend-engineering]
+    tags: [kafka, rabbitmq, events]
+
+  # ==========================================================
+  # 08-INTEGRATION ENGINEERING
+  # ==========================================================
+  - id: integration-engineering
+    title: Integration Engineering
+    path: 08-integration-engineering
+    level: intermediate
+    time_estimate: "20-30 hours"
+    prerequisites: [backend-engineering]
+    tags: [apis, rest, graphql]
+
+  # ==========================================================
+  # 09-OBSERVABILITY
+  # ==========================================================
+  - id: observability
+    title: Observability
+    path: 09-observability
+    level: intermediate-to-advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [backend-engineering]
+    tags: [monitoring, logging, tracing]
+
+  # ==========================================================
+  # 10-SECURITY
+  # ==========================================================
+  - id: security
+    title: Security
+    path: 10-security
+    level: intermediate-to-advanced
+    time_estimate: "30-40 hours"
+    prerequisites: [backend-engineering]
+    tags: [security, encryption, auth]
+
+  # ==========================================================
+  # 11-ARCHITECTURE
+  # ==========================================================
+  - id: architecture
+    title: Architecture
+    path: 11-architecture
+    level: advanced
+    time_estimate: "40-60 hours"
+    prerequisites: [backend-engineering, software-design]
+    tags: [architecture, microservices, ddd]
+
+  # ==========================================================
+  # 12-TESTING (General)
+  # ==========================================================
+  - id: testing-general
+    title: Testing
+    path: 12-testing
+    level: intermediate
+    time_estimate: "20-30 hours"
+    prerequisites: [programming-languages]
+    tags: [testing, tdd, bdd]
+
+  # ==========================================================
+  # 13-DEVOPS
+  # ==========================================================
+  - id: devops
+    title: DevOps
+    path: 13-devops
+    level: intermediate-to-advanced
+    time_estimate: "40-60 hours"
+    prerequisites: [backend-engineering]
+    tags: [devops, docker, kubernetes, ci-cd]
+
+  # ==========================================================
+  # 14-CLOUD
+  # ==========================================================
+  - id: cloud
+    title: Cloud Computing
+    path: 14-cloud
+    level: intermediate-to-advanced
+    time_estimate: "40-60 hours"
+    prerequisites: [devops]
+    tags: [cloud, aws, azure, gcp]
+
+  # ==========================================================
+  # 15-BIG DATA
+  # ==========================================================
+  - id: big-data
+    title: Big Data
+    path: 15-big-data
+    level: advanced
+    time_estimate: "30-40 hours"
+    prerequisites: [data-engineering]
+    tags: [big-data, hadoop, spark]
+
+  # ==========================================================
+  # 16-MACHINE LEARNING
+  # ==========================================================
+  - id: machine-learning
+    title: Machine Learning
+    path: 16-machine-learning
+    level: advanced
+    time_estimate: "40-60 hours"
+    prerequisites: [data-platforms]
+    tags: [ml, ai, data-science]
+
+  # ==========================================================
+  # 17-APPLICATION SERVERS & RUNTIME
+  # ==========================================================
+  - id: app-servers
+    title: Application Servers & Runtime
+    path: 17-application-servers-runtime
+    level: intermediate
+    time_estimate: "15-20 hours"
+    prerequisites: [backend-engineering]
+    tags: [tomcat, jetty, runtime]
+
+  # ==========================================================
+  # 18-OPERATING SYSTEMS
+  # ==========================================================
+  - id: operating-systems
+    title: Operating Systems
+    path: 18-operating-systems
+    level: intermediate
+    time_estimate: "20-30 hours"
+    prerequisites: []
+    tags: [linux, windows, macos]
+
+  # ==========================================================
+  # 19-ENTERPRISE LEGACY TECHNOLOGIES
+  # ==========================================================
+  - id: legacy-technologies
+    title: Enterprise Legacy Technologies
+    path: 19-enterprise-legacy-technologies
+    level: intermediate
+    time_estimate: "20-30 hours"
+    prerequisites: [programming-languages]
+    tags: [legacy, ejb, struts, soap]
+
+  # ==========================================================
+  # 20-SEARCH & ANALYTICS
+  # ==========================================================
+  - id: search-analytics
+    title: Search & Analytics
+    path: 20-search-analytics
+    level: intermediate-to-advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [data-platforms]
+    tags: [elasticsearch, solr, lucene]
+
+  # ==========================================================
+  # 21-ENTERPRISE TOOLS
+  # ==========================================================
+  - id: enterprise-tools
+    title: Enterprise Tools
+    path: 21-enterprise-tools
+    level: intermediate
+    time_estimate: "15-20 hours"
+    prerequisites: []
+    tags: [jira, splunk, datadog]
+
+  # ==========================================================
+  # 22-ENGINEERING EXCELLENCE
+  # ==========================================================
+  - id: engineering-excellence
+    title: Engineering Excellence
+    path: 22-engineering-excellence
+    level: intermediate-to-advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [fundamentals]
+    tags: [agile, craftsmanship, leadership]
+
+  # ==========================================================
+  # 23-REFERENCE IMPLEMENTATIONS
+  # ==========================================================
+  - id: reference-implementations
+    title: Reference Implementations
+    path: 23-reference-implementations
+    level: advanced
+    time_estimate: "30-40 hours"
+    prerequisites: [architecture]
+    tags: [reference, implementations]
+
+  # ==========================================================
+  # 24-CASE STUDIES
+  # ==========================================================
+  - id: case-studies
+    title: Case Studies
+    path: 24-case-studies
+    level: advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [architecture]
+    tags: [case-studies, real-world]
+
+  # ==========================================================
+  # 25-ENGINEERING PLAYBOOKS
+  # ==========================================================
+  - id: engineering-playbooks
+    title: Engineering Playbooks
+    path: 25-engineering-playbooks
+    level: intermediate-to-advanced
+    time_estimate: "20-30 hours"
+    prerequisites: [engineering-excellence]
+    tags: [playbooks, company-specific]
+
+  # ==========================================================
+  # 26-INTERVIEW PREPARATION
+  # ==========================================================
+  - id: interview-preparation
+    title: Interview Preparation
+    path: 26-interview-preparation
+    level: intermediate-to-senior
+    time_estimate: "30-40 hours"
+    prerequisites: [programming-languages, computer-science]
+    tags: [interview, coding-challenges]
+
+  # ==========================================================
+  # 27-LEARNING PATHS
+  # ==========================================================
+  - id: learning-paths
+    title: Learning Paths
+    path: 27-learning-paths
+    level: all
+    time_estimate: "varies"
+    prerequisites: []
+    tags: [learning-paths, roadmaps]
+
+  # ==========================================================
+  # 28-CAREER ROADMAP
+  # ==========================================================
+  - id: career-roadmap
+    title: Career Roadmap
+    path: 28-career-roadmap
+    level: all
+    time_estimate: "varies"
+    prerequisites: []
+    tags: [career, roadmap, certifications]
+
+  # ==========================================================
+  # 29-OPEN SOURCE
+  # ==========================================================
+  - id: open-source
+    title: Open Source
+    path: 29-open-source
+    level: intermediate-to-advanced
+    time_estimate: "varies"
+    prerequisites: []
+    tags: [open-source, contributing]
+
+  # ==========================================================
+  # 30-CERTIFICATIONS
+  # ==========================================================
+  - id: certifications
+    title: Certifications
+    path: 30-certifications
+    level: intermediate-to-advanced
+    time_estimate: "varies"
+    prerequisites: []
+    tags: [certifications, aws, azure, kubernetes]
+
+# ============================================================
+# LEARNING PATHS
+# ============================================================
+
+learning_paths:
+
+  - id: student-to-developer
+    title: Student to Java Developer
+    description: "Complete beginner to job-ready Java developer"
+    duration: "3-6 months"
+    modules:
+      - fundamentals
+      - programming-languages.java.01-fundamentals
+      - programming-languages.java.02-oop
+      - programming-languages.java.03-exception-handling
+      - programming-languages.java.04-collections
+      - computer-science
+      - testing-general
+
+  - id: developer-to-senior
+    title: Java Developer to Senior
+    description: "Solid developer to senior engineer"
+    duration: "6-12 months"
+    modules:
+      - programming-languages.java.07-functional-programming
+      - programming-languages.java.08-io-nio
+      - programming-languages.java.09-multithreading
+      - programming-languages.java.10-jvm-internals
+      - programming-languages.java.11-design-patterns
+      - programming-languages.java.12-testing
+      - software-design
+      - architecture
+
+  - id: senior-to-architect
+    title: Senior to Principal Architect
+    description: "Senior engineer to architect"
+    duration: "12-18 months"
+    modules:
+      - programming-languages.java.15-senior
+      - architecture
+      - security
+      - devops
+      - cloud
+      - engineering-excellence
+
+  - id: architect-to-cto
+    title: Architect to CTO
+    description: "Technical leadership and business alignment"
+    duration: "18-24 months"
+    modules:
+      - engineering-excellence
+      - engineering-playbooks
+      - case-studies
+      - career-roadmap
+      - reference-implementations
+
+  - id: full-stack-java
+    title: Full Stack Java Developer
+    description: "Backend to full stack with Spring"
+    duration: "6-12 months"
+    modules:
+      - programming-languages.java.01-fundamentals
+      - programming-languages.java.02-oop
+      - backend-engineering
+      - data-platforms
+      - integration-engineering
+      - testing-general
+
+  - id: cloud-native
+    title: Cloud Native Java Developer
+    description: "Java applications in cloud environments"
+    duration: "6-12 months"
+    modules:
+      - programming-languages.java.09-multithreading
+      - devops
+      - cloud
+      - observability
+      - security
+      - architecture
+
+# ============================================================
+# NAVIGATION HELPERS
+# ============================================================
+
+navigation:
+  # Breadcrumb generation
+  breadcrumbs:
+    enabled: true
+    format: "{parent} > {current}"
+
+  # Progress tracking
+  progress:
+    enabled: true
+    track_by: topic
+    storage: local
+
+  # Next topic suggestion
+  suggestions:
+    enabled: true
+    algorithm: prerequisite_chain
+
+# ============================================================
+# METADATA
+# ============================================================
+
+metadata:
+  total_modules: 31
+  total_topics: 500+
+  total_java_files: 474
+  total_readme_files: 358
+  total_lines_of_code: 55666
+  last_updated: "2026-08-06"
