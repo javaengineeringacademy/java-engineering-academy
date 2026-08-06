@@ -117,7 +117,7 @@ modules:
             prerequisites: [java.01-fundamentals, java.02-oop]
             description: "Shared concepts that appear across multiple topics"
             topics:
-              - id: memory-model
+              - id: java-memory-model
                 title: Java Memory Model
                 path: java-memory-model
                 time: "3-4 hours"
@@ -205,14 +205,20 @@ modules:
                 path: 06-strings
                 time: "2-3 hours"
                 prerequisites: [java.01-fundamentals.arrays]
+              - id: wrapper-classes
+                title: Wrapper Classes
+                path: 07-wrapper-classes
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals.variables]
+                next: [java.knowledge-atoms.autoboxing, java.04-collections]
               - id: project-structure
                 title: Project Structure
-                path: 07-project-structure
+                path: 08-project-structure
                 time: "2-3 hours"
                 prerequisites: []
               - id: maven
                 title: Maven
-                path: 08-maven
+                path: 09-maven
                 time: "3-4 hours"
                 prerequisites: [java.01-fundamentals.project-structure]
               - id: keywords
@@ -230,74 +236,186 @@ modules:
             prerequisites: [java.01-fundamentals]
             next: [java.03-exception-handling]
             topics:
+              - id: introduction
+                title: Introduction to OOP
+                path: 01-introduction
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals]
               - id: classes
                 title: Classes
                 path: 02-classes
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.introduction]
               - id: objects
                 title: Objects
                 path: 03-objects
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.classes]
               - id: constructors
                 title: Constructors
                 path: 04-constructors
                 time: "2-3 hours"
+                prerequisites: [java.02-oop.objects]
               - id: methods-oop
                 title: Methods
                 path: 05-methods
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.constructors]
               - id: this-keyword
                 title: this Keyword
                 path: 06-this-keyword
                 time: "1-2 hours"
+                prerequisites: [java.02-oop.methods-oop]
               - id: super-keyword
                 title: super Keyword
                 path: 07-super-keyword
                 time: "1-2 hours"
+                prerequisites: [java.02-oop.this-keyword]
               - id: encapsulation
                 title: Encapsulation
                 path: 08-encapsulation
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.super-keyword]
               - id: inheritance
                 title: Inheritance
                 path: 09-inheritance
                 time: "4-5 hours"
+                prerequisites: [java.02-oop.encapsulation]
               - id: polymorphism
                 title: Polymorphism
                 path: 10-polymorphism
                 time: "4-5 hours"
+                prerequisites: [java.02-oop.inheritance]
               - id: abstraction
                 title: Abstraction
                 path: 11-abstraction
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.polymorphism]
               - id: interfaces
                 title: Interfaces
                 path: 12-interfaces
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.abstraction]
               - id: abstract-classes
                 title: Abstract Classes
                 path: 13-abstract-classes
                 time: "2-3 hours"
-              - id: records
-                title: Records
-                path: 33-records
+                prerequisites: [java.02-oop.interfaces]
+              - id: composition
+                title: Composition
+                path: 14-composition
+                time: "3-4 hours"
+                prerequisites: [java.02-oop.abstract-classes]
+              - id: aggregation
+                title: Aggregation
+                path: 15-aggregation
                 time: "2-3 hours"
+                prerequisites: [java.02-oop.composition]
+              - id: association
+                title: Association
+                path: 16-association
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.aggregation]
+              - id: coupling
+                title: Coupling
+                path: 17-coupling
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.association]
+              - id: cohesion
+                title: Cohesion
+                path: 18-cohesion
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.coupling]
+              - id: solid-principles
+                title: SOLID Principles
+                path: 19-solid-principles
+                time: "4-5 hours"
+                prerequisites: [java.02-oop.cohesion]
+              - id: oop-design-principles
+                title: OOP Design Principles
+                path: 20-oop-design-principles
+                time: "3-4 hours"
+                prerequisites: [java.02-oop.solid-principles]
+              - id: class-diagrams
+                title: Class Diagrams
+                path: 21-class-diagrams
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.oop-design-principles]
+              - id: object-lifecycle
+                title: Object Lifecycle
+                path: 22-object-lifecycle
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.constructors]
+              - id: tight-loose-coupling
+                title: Tight vs Loose Coupling
+                path: 23-tight-loose-coupling
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.coupling]
+              - id: inner-classes
+                title: Inner Classes
+                path: 24-inner-classes
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.classes]
               - id: sealed-classes
                 title: Sealed Classes
                 path: 25-sealed-classes
                 time: "2-3 hours"
+                prerequisites: [java.02-oop.interfaces]
               - id: enums
                 title: Enums
                 path: 26-enums
                 time: "3-4 hours"
+                prerequisites: [java.02-oop.classes]
+              - id: pattern-matching
+                title: Pattern Matching
+                path: 27-pattern-matching
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.sealed-classes]
               - id: nested-classes
                 title: Nested Classes
                 path: 28-nested-classes
                 time: "2-3 hours"
+                prerequisites: [java.02-oop.inner-classes]
+              - id: varargs
+                title: Varargs
+                path: 29-varargs
+                time: "1-2 hours"
+                prerequisites: [java.02-oop.methods-oop]
+              - id: packages
+                title: Packages
+                path: 30-packages
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.classes]
+              - id: java-object
+                title: Java Object Methods
+                path: 31-java-object
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.objects]
+              - id: comparable-comparator
+                title: Comparable & Comparator
+                path: 32-comparable-comparator
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.interfaces]
+              - id: records
+                title: Records
+                path: 33-records
+                time: "2-3 hours"
+                prerequisites: [java.02-oop.classes]
+              - id: string-immutable
+                title: String Immutability
+                path: 34-string-immutable
+                time: "1-2 hours"
+                prerequisites: [java.01-fundamentals.strings]
+              - id: wrapper-classes-oop
+                title: Wrapper Classes
+                path: 35-wrapper-classes
+                time: "2-3 hours"
+                prerequisites: [java.01-fundamentals.wrapper-classes]
               - id: access-modifiers
                 title: Access Modifiers
                 path: 36-access-modifiers
                 time: "2-3 hours"
+                prerequisites: [java.02-oop.encapsulation]
 
           # Exception Handling
           - id: 03-exception-handling
@@ -316,6 +434,256 @@ modules:
             time_estimate: "25-30 hours"
             prerequisites: [java.02-oop, java.knowledge-atoms.equals-hashcode]
             next: [java.05-text-processing]
+            sub-modules:
+              - id: 01-overview
+                title: Collections Overview
+                path: 01-overview
+                time: "2-3 hours"
+                prerequisites: [java.02-oop]
+                next: [java.04-collections.02-list]
+
+              - id: 02-list
+                title: List Interface
+                path: 02-list
+                time: "5-6 hours"
+                prerequisites: [java.04-collections.01-overview]
+                next: [java.04-collections.03-iterators]
+                topics:
+                  - id: arraylist
+                    title: ArrayList
+                    path: arraylist
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.02-list]
+                    next: [java.04-collections.02-list.linkedlist]
+                  - id: linkedlist
+                    title: LinkedList
+                    path: linkedlist
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.02-list.arraylist]
+                    next: [java.04-collections.02-list.vector]
+                  - id: vector
+                    title: Vector
+                    path: vector
+                    time: "1-2 hours"
+                    prerequisites: [java.04-collections.02-list.linkedlist]
+                    next: [java.04-collections.02-list.stack]
+                  - id: stack
+                    title: Stack
+                    path: stack
+                    time: "1-2 hours"
+                    prerequisites: [java.04-collections.02-list.vector]
+                    next: [java.04-collections.03-iterators]
+
+              - id: 03-iterators
+                title: Iterators
+                path: 03-iterators
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.02-list]
+                next: [java.04-collections.04-comparators]
+
+              - id: 04-comparators
+                title: Comparators
+                path: 04-comparators
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.03-iterators]
+                next: [java.04-collections.05-sorting]
+
+              - id: 05-sorting
+                title: Sorting Algorithms
+                path: 05-sorting
+                time: "3-4 hours"
+                prerequisites: [java.04-collections.04-comparators]
+                next: [java.04-collections.06-searching]
+
+              - id: 06-searching
+                title: Searching Algorithms
+                path: 06-searching
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.05-sorting]
+                next: [java.04-collections.07-queue]
+
+              - id: 07-queue
+                title: Queue Interface
+                path: 07-queue
+                time: "4-5 hours"
+                prerequisites: [java.04-collections.06-searching]
+                next: [java.04-collections.08-deque]
+                topics:
+                  - id: priority
+                    title: PriorityQueue
+                    path: priority
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.07-queue]
+                    next: [java.04-collections.08-deque]
+                  - id: deque
+                    title: Deque
+                    path: deque
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.07-queue.priority]
+                    next: [java.04-collections.09-blocking-queue]
+
+              - id: 08-deque
+                title: Deque Interface
+                path: 08-deque
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.07-queue]
+                next: [java.04-collections.09-blocking-queue]
+
+              - id: 09-blocking-queue
+                title: Blocking Queue
+                path: 09-blocking-queue
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.08-deque]
+                next: [java.04-collections.10-set]
+
+              - id: 10-set
+                title: Set Interface
+                path: 10-set
+                time: "4-5 hours"
+                prerequisites: [java.04-collections.09-blocking-queue]
+                next: [java.04-collections.11-sorted-set]
+                topics:
+                  - id: hashset
+                    title: HashSet
+                    path: hashset
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.10-set]
+                    next: [java.04-collections.10-set.linkedhashset]
+                  - id: linkedhashset
+                    title: LinkedHashSet
+                    path: linkedhashset
+                    time: "1-2 hours"
+                    prerequisites: [java.04-collections.10-set.hashset]
+                    next: [java.04-collections.10-set.treeset]
+                  - id: treeset
+                    title: TreeSet
+                    path: treeset
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.10-set.linkedhashset]
+                    next: [java.04-collections.11-sorted-set]
+
+              - id: 11-sorted-set
+                title: SortedSet Interface
+                path: 11-sorted-set
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.10-set]
+                next: [java.04-collections.12-navigable-set]
+
+              - id: 12-navigable-set
+                title: NavigableSet Interface
+                path: 12-navigable-set
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.11-sorted-set]
+                next: [java.04-collections.13-collection-utils]
+
+              - id: 13-collection-utils
+                title: Collections Utility Class
+                path: 13-collection-utils
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.12-navigable-set]
+                next: [java.04-collections.14-map]
+
+              - id: 14-map
+                title: Map Interface
+                path: 14-map
+                time: "5-6 hours"
+                prerequisites: [java.04-collections.13-collection-utils]
+                next: [java.04-collections.15-sorted-map]
+                topics:
+                  - id: hashmap
+                    title: HashMap
+                    path: hashmap
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.14-map]
+                    next: [java.04-collections.14-map.linkedhashmap]
+                  - id: linkedhashmap
+                    title: LinkedHashMap
+                    path: linkedhashmap
+                    time: "1-2 hours"
+                    prerequisites: [java.04-collections.14-map.hashmap]
+                    next: [java.04-collections.14-map.treemap]
+                  - id: treemap
+                    title: TreeMap
+                    path: treemap
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.14-map.linkedhashmap]
+                    next: [java.04-collections.14-map.concurrenthashmap]
+                  - id: concurrenthashmap
+                    title: ConcurrentHashMap
+                    path: concurrenthashmap
+                    time: "2-3 hours"
+                    prerequisites: [java.04-collections.14-map.treemap]
+                    next: [java.04-collections.15-sorted-map]
+
+              - id: 15-sorted-map
+                title: SortedMap Interface
+                path: 15-sorted-map
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.14-map]
+                next: [java.04-collections.16-navigable-map]
+
+              - id: 16-navigable-map
+                title: NavigableMap Interface
+                path: 16-navigable-map
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.15-sorted-map]
+                next: [java.04-collections.17-map-utils]
+
+              - id: 17-map-utils
+                title: Map Utility Methods
+                path: 17-map-utils
+                time: "1-2 hours"
+                prerequisites: [java.04-collections.16-navigable-map]
+                next: [java.04-collections.18-enum-map]
+
+              - id: 18-enum-map
+                title: EnumMap
+                path: 18-enum-map
+                time: "1-2 hours"
+                prerequisites: [java.04-collections.17-map-utils]
+                next: [java.04-collections.19-weak-reference]
+
+              - id: 19-weak-reference
+                title: Weak References & IdentityHashMap
+                path: 19-weak-reference
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.18-enum-map]
+                next: [java.04-collections.20-copy-on-write]
+
+              - id: 20-copy-on-write
+                title: Copy-on-Write Collections
+                path: 20-copy-on-write
+                time: "1-2 hours"
+                prerequisites: [java.04-collections.19-weak-reference]
+                next: [java.04-collections.21-synchronized]
+
+              - id: 21-synchronized
+                title: Synchronized Collections
+                path: 21-synchronized
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.20-copy-on-write]
+                next: [java.04-collections.22-properties]
+
+              - id: 22-properties
+                title: Properties Class
+                path: 22-properties
+                time: "1-2 hours"
+                prerequisites: [java.04-collections.21-synchronized]
+                next: [java.04-collections.23-hashtable]
+
+              - id: 23-hashtable
+                title: Hashtable
+                path: 23-hashtable
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.14-map.hashmap]
+                next: [java.04-collections.24-best-practices]
+
+              - id: 24-best-practices
+                title: Collections Best Practices
+                path: 24-best-practices
+                time: "2-3 hours"
+                prerequisites: [java.04-collections.23-hashtable]
+                next: [java.05-text-processing]
 
           # Text Processing
           - id: 05-text-processing
@@ -361,6 +729,60 @@ modules:
             time_estimate: "25-30 hours"
             prerequisites: [java.02-oop]
             next: [java.10-jvm-internals]
+            topics:
+              - id: threads-basics
+                title: Thread Basics
+                path: 01-threads-basics
+                time: "3-4 hours"
+                prerequisites: [java.02-oop]
+              - id: runnable-callable
+                title: Runnable & Callable
+                path: 02-runnable-callable
+                time: "2-3 hours"
+                prerequisites: [java.09-multithreading.threads-basics]
+              - id: synchronization
+                title: Synchronization
+                path: 03-synchronization
+                time: "4-5 hours"
+                prerequisites: [java.09-multithreading.runnable-callable]
+              - id: locks
+                title: Locks & Conditions
+                path: 04-locks
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading.synchronization]
+              - id: executor-framework
+                title: Executor Framework
+                path: 05-executor-framework
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading.locks]
+              - id: concurrent-collections
+                title: Concurrent Collections
+                path: 06-concurrent-collections
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading.executor-framework]
+              - id: atomic-variables
+                title: Atomic Variables
+                path: 07-atomic-variables
+                time: "2-3 hours"
+                prerequisites: [java.09-multithreading.concurrent-collections]
+              - id: virtual-threads
+                title: Virtual Threads
+                path: 08-virtual-threads
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading.executor-framework]
+                next: [java.09-multithreading.completable-future]
+              - id: completable-future
+                title: CompletableFuture
+                path: 09-completable-future
+                time: "3-4 hours"
+                prerequisites: [java.09-multithreading.virtual-threads]
+                next: [java.09-multithreading.parallel-streams]
+              - id: parallel-streams
+                title: Parallel Streams
+                path: 10-parallel-streams
+                time: "2-3 hours"
+                prerequisites: [java.09-multithreading.completable-future]
+                next: [java.10-jvm-internals]
 
           # JVM Internals
           - id: 10-jvm-internals
@@ -368,8 +790,45 @@ modules:
             path: 10-jvm-internals
             level: advanced
             time_estimate: "20-25 hours"
-            prerequisites: [java.09-multithreading, java.knowledge-atoms.memory-model]
+            prerequisites: [java.09-multithreading, java.knowledge-atoms.java-memory-model]
             next: [java.11-design-patterns]
+            topics:
+              - id: jvm-introduction
+                title: Introduction to JVM
+                path: 01-introduction
+                time: "2-3 hours"
+                prerequisites: [java.09-multithreading]
+                next: [java.10-jvm-internals.classloader]
+              - id: classloader
+                title: ClassLoader
+                path: 02-classloader
+                time: "3-4 hours"
+                prerequisites: [java.10-jvm-internals.jvm-introduction]
+                next: [java.10-jvm-internals.memory-model]
+              - id: memory-model
+                title: JVM Memory Model
+                path: 03-memory-model
+                time: "3-4 hours"
+                prerequisites: [java.10-jvm-internals.classloader]
+                next: [java.10-jvm-internals.garbage-collection]
+              - id: garbage-collection
+                title: Garbage Collection
+                path: 04-garbage-collection
+                time: "4-5 hours"
+                prerequisites: [java.10-jvm-internals.memory-model]
+                next: [java.10-jvm-internals.jit-compilation]
+              - id: jit-compilation
+                title: JIT Compilation
+                path: 05-jit-compilation
+                time: "3-4 hours"
+                prerequisites: [java.10-jvm-internals.garbage-collection]
+                next: [java.10-jvm-internals.profiling-tools]
+              - id: profiling-tools
+                title: Profiling Tools
+                path: 06-profiling-tools
+                time: "3-4 hours"
+                prerequisites: [java.10-jvm-internals.jit-compilation]
+                next: [java.11-design-patterns]
 
           # Design Patterns
           - id: 11-design-patterns
@@ -379,6 +838,159 @@ modules:
             time_estimate: "20-25 hours"
             prerequisites: [java.02-oop]
             next: [java.12-testing]
+            categories:
+              - id: creational
+                title: Creational Patterns
+                path: creational
+                time: "6-8 hours"
+                prerequisites: [java.02-oop]
+                patterns:
+                  - id: factory
+                    title: Factory Pattern
+                    path: factory
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.creational]
+                    next: [java.11-design-patterns.creational.abstract-factory]
+                  - id: abstract-factory
+                    title: Abstract Factory Pattern
+                    path: abstract-factory
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.creational.factory]
+                    next: [java.11-design-patterns.creational.builder]
+                  - id: builder
+                    title: Builder Pattern
+                    path: builder
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.creational.abstract-factory]
+                    next: [java.11-design-patterns.creational.prototype]
+                  - id: prototype
+                    title: Prototype Pattern
+                    path: prototype
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.creational.builder]
+                    next: [java.11-design-patterns.creational.singleton]
+                  - id: singleton
+                    title: Singleton Pattern
+                    path: singleton
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.creational.prototype]
+                    next: [java.11-design-patterns.structural]
+
+              - id: structural
+                title: Structural Patterns
+                path: structural
+                time: "8-10 hours"
+                prerequisites: [java.11-design-patterns.creational]
+                patterns:
+                  - id: adapter
+                    title: Adapter Pattern
+                    path: adapter
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural]
+                    next: [java.11-design-patterns.structural.bridge]
+                  - id: bridge
+                    title: Bridge Pattern
+                    path: bridge
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.adapter]
+                    next: [java.11-design-patterns.structural.composite]
+                  - id: composite
+                    title: Composite Pattern
+                    path: composite
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.bridge]
+                    next: [java.11-design-patterns.structural.decorator]
+                  - id: decorator
+                    title: Decorator Pattern
+                    path: decorator
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.composite]
+                    next: [java.11-design-patterns.structural.facade]
+                  - id: facade
+                    title: Facade Pattern
+                    path: facade
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.decorator]
+                    next: [java.11-design-patterns.structural.flyweight]
+                  - id: flyweight
+                    title: Flyweight Pattern
+                    path: flyweight
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.facade]
+                    next: [java.11-design-patterns.structural.proxy]
+                  - id: proxy
+                    title: Proxy Pattern
+                    path: proxy
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.structural.flyweight]
+                    next: [java.11-design-patterns.behavioral]
+
+              - id: behavioral
+                title: Behavioral Patterns
+                path: behavioral
+                time: "10-12 hours"
+                prerequisites: [java.11-design-patterns.structural]
+                patterns:
+                  - id: chain-of-responsibility
+                    title: Chain of Responsibility
+                    path: chain-of-responsibility
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral]
+                    next: [java.11-design-patterns.behavioral.command]
+                  - id: command
+                    title: Command Pattern
+                    path: command
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.chain-of-responsibility]
+                    next: [java.11-design-patterns.behavioral.iterator]
+                  - id: iterator
+                    title: Iterator Pattern
+                    path: iterator
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.command]
+                    next: [java.11-design-patterns.behavioral.mediator]
+                  - id: mediator
+                    title: Mediator Pattern
+                    path: mediator
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.iterator]
+                    next: [java.11-design-patterns.behavioral.memento]
+                  - id: memento
+                    title: Memento Pattern
+                    path: memento
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.mediator]
+                    next: [java.11-design-patterns.behavioral.observer]
+                  - id: observer
+                    title: Observer Pattern
+                    path: observer
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.memento]
+                    next: [java.11-design-patterns.behavioral.state]
+                  - id: state
+                    title: State Pattern
+                    path: state
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.observer]
+                    next: [java.11-design-patterns.behavioral.strategy]
+                  - id: strategy
+                    title: Strategy Pattern
+                    path: strategy
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.state]
+                    next: [java.11-design-patterns.behavioral.template]
+                  - id: template
+                    title: Template Method Pattern
+                    path: template
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.strategy]
+                    next: [java.11-design-patterns.behavioral.visitor]
+                  - id: visitor
+                    title: Visitor Pattern
+                    path: visitor
+                    time: "1-2 hours"
+                    prerequisites: [java.11-design-patterns.behavioral.template]
+                    next: [java.12-testing]
 
           # Testing
           - id: 12-testing
@@ -416,6 +1028,209 @@ modules:
             prerequisites: [java.10-jvm-internals, java.11-design-patterns]
             next: []
             description: "Performance, architecture, production patterns, Java platform deep dive"
+            categories:
+              - id: performance
+                title: Performance Engineering
+                path: performance
+                time: "10-12 hours"
+                prerequisites: [java.10-jvm-internals]
+                topics:
+                  - id: jmh
+                    title: JMH (Java Microbenchmark Harness)
+                    path: jmh
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.performance]
+                    next: [java.15-senior.performance.jfr]
+                  - id: jfr
+                    title: Java Flight Recorder
+                    path: jfr
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.performance.jmh]
+                    next: [java.15-senior.performance.profiling]
+                  - id: profiling
+                    title: Profiling Techniques
+                    path: profiling
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.performance.jfr]
+                    next: [java.15-senior.performance.tuning]
+                  - id: tuning
+                    title: Performance Tuning
+                    path: tuning
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.performance.profiling]
+                    next: [java.15-senior.performance.at-scale]
+                  - id: at-scale
+                    title: Performance at Scale
+                    path: at-scale
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.performance.tuning]
+                    next: [java.15-senior.architecture]
+
+              - id: architecture
+                title: Software Architecture
+                path: architecture
+                time: "10-12 hours"
+                prerequisites: [java.11-design-patterns]
+                topics:
+                  - id: adr
+                    title: Architecture Decision Records
+                    path: adr
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.architecture]
+                    next: [java.15-senior.architecture.strategy]
+                  - id: strategy
+                    title: Architecture Strategy
+                    path: strategy
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.architecture.adr]
+                    next: [java.15-senior.architecture.cost-analysis]
+                  - id: cost-analysis
+                    title: Cost Analysis
+                    path: cost-analysis
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.architecture.strategy]
+                    next: [java.15-senior.architecture.trade-offs]
+                  - id: trade-offs
+                    title: Architecture Trade-offs
+                    path: trade-offs
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.architecture.cost-analysis]
+                    next: [java.15-senior.architecture.ecosystem]
+                  - id: ecosystem
+                    title: Technology Ecosystem
+                    path: ecosystem
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.architecture.trade-offs]
+                    next: [java.15-senior.architecture.risk]
+                  - id: risk
+                    title: Risk Assessment
+                    path: risk
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.architecture.ecosystem]
+                    next: [java.15-senior.production]
+
+              - id: production
+                title: Production Patterns
+                path: production
+                time: "10-12 hours"
+                prerequisites: [java.15-senior.architecture]
+                topics:
+                  - id: circuit-breaker
+                    title: Circuit Breaker Pattern
+                    path: circuit-breaker
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.production]
+                    next: [java.15-senior.production.rate-limiting]
+                  - id: rate-limiting
+                    title: Rate Limiting
+                    path: rate-limiting
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.production.circuit-breaker]
+                    next: [java.15-senior.production.retry]
+                  - id: retry
+                    title: Retry & Backoff
+                    path: retry
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.production.rate-limiting]
+                    next: [java.15-senior.production.graceful-shutdown]
+                  - id: graceful-shutdown
+                    title: Graceful Shutdown
+                    path: graceful-shutdown
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.production.retry]
+                    next: [java.15-senior.production.health-checks]
+                  - id: health-checks
+                    title: Health Checks
+                    path: health-checks
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.production.graceful-shutdown]
+                    next: [java.15-senior.java-platform]
+
+              - id: java-platform
+                title: Java Platform Deep Dive
+                path: java-platform
+                time: "10-12 hours"
+                prerequisites: [java.10-jvm-internals]
+                topics:
+                  - id: evolution
+                    title: Java Language Evolution
+                    path: evolution
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.java-platform]
+                    next: [java.15-senior.java-platform.specification]
+                  - id: specification
+                    title: Java Specification Process
+                    path: specification
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.java-platform.evolution]
+                    next: [java.15-senior.java-platform.philosophy]
+                  - id: philosophy
+                    title: Java Design Philosophy
+                    path: philosophy
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.java-platform.specification]
+                    next: [java.15-senior.java-platform.jvm-deep-dive]
+                  - id: jvm-deep-dive
+                    title: JVM Deep Dive
+                    path: jvm-deep-dive
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.java-platform.philosophy]
+                    next: [java.15-senior.java-platform.openjdk]
+                  - id: openjdk
+                    title: OpenJDK
+                    path: openjdk
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.java-platform.jvm-deep-dive]
+                    next: [java.15-senior.java-platform.jdk-distributions]
+                  - id: jdk-distributions
+                    title: JDK Distributions
+                    path: jdk-distributions
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.java-platform.openjdk]
+                    next: [java.15-senior.java-platform.source-exploration]
+                  - id: source-exploration
+                    title: Source Code Exploration
+                    path: source-exploration
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.java-platform.jdk-distributions]
+                    next: [java.15-senior.java-platform.java-at-scale]
+                  - id: java-at-scale
+                    title: Java at Scale
+                    path: java-at-scale
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.java-platform.source-exploration]
+                    next: [java.15-senior.java-platform.roadmap]
+                  - id: roadmap
+                    title: Java Roadmap
+                    path: roadmap
+                    time: "1-2 hours"
+                    prerequisites: [java.15-senior.java-platform.java-at-scale]
+                    next: [java.15-senior.advanced]
+
+              - id: advanced
+                title: Advanced Topics
+                path: advanced
+                time: "8-10 hours"
+                prerequisites: [java.15-senior.java-platform]
+                topics:
+                  - id: concurrency
+                    title: Advanced Concurrency
+                    path: concurrency
+                    time: "3-4 hours"
+                    prerequisites: [java.15-senior.advanced]
+                    next: [java.15-senior.advanced.data-access]
+                  - id: data-access
+                    title: Advanced Data Access
+                    path: data-access
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.advanced.concurrency]
+                    next: [java.15-senior.advanced.security]
+                  - id: security
+                    title: Advanced Security
+                    path: security
+                    time: "2-3 hours"
+                    prerequisites: [java.15-senior.advanced.data-access]
+                    next: []
 
   # ==========================================================
   # 02-COMPUTER SCIENCE
