@@ -1,24 +1,50 @@
-# Kotlin Fundamentals
+# Kotlin Learning Module
 
 ## Overview
-Kotlin is a modern statically-typed language running on JVM. Concise, safe, and fully interoperable with Java.
+This module covers Kotlin fundamentals and advanced concepts.
 
-## Topics
-- Variables (val/var)
-- Null Safety
-- Functions
-- Classes
-- Data Classes
-- Sealed Classes
+## Topics Covered
+
+### Fundamentals
+- Variables and type inference
+- Control flow expressions
+- Functions and lambdas
+- Null safety
+
+### OOP
+- Classes and constructors
+- Data classes
+- Interfaces
+- Inheritance
+
+### Advanced
+- Lambda expressions
+- Extension functions
 - Coroutines
-- Extension Functions
-- Lambdas
-- Collections
 
-## Learning Objectives
-- Write Kotlin code
-- Use null safety features
-- Leverage coroutines
+## Getting Started
+```bash
+# Install Kotlin
+brew install kotlin
+
+# Run Kotlin script
+kotlin script.kts
+
+# Compile and run
+kotlinc src/main.kt -include-runtime -d main.jar
+java -jar main.jar
+```
+
+## Directory Structure
+```
+Kotlin/
+├── 01-fundamentals/     # Core Kotlin concepts
+├── 02-oop/              # Object-oriented programming
+├── 03-advanced/         # Advanced features
+└── reference/           # Best practices and patterns
+```
 
 ## Prerequisites
+- JDK installed
 - Basic programming knowledge
+- Understanding of OOP concepts

@@ -1,71 +1,30 @@
-# Python Fundamentals
+# Python Programming
 
-## Overview
-Python is a high-level, interpreted language known for readability and versatility. Used in web, data science, AI.
+Comprehensive Python learning module covering fundamentals through advanced topics.
 
-## Topics
-- Variables and Types
-- Control Flow
-- Functions
-- Lists and Tuples
-- Dictionaries and Sets
-- Classes and Objects
-- Exception Handling
-- File I/O
-- Modules and Packages
-- Virtual Environments
+## Modules
 
-## Learning Objectives
-- Write Pythonic code
-- Use Python's rich standard library
-- Create reusable modules
+| # | Module | Topics |
+|---|--------|--------|
+| 01 | Fundamentals | Variables, operators, control flow, functions, collections, strings, file handling |
+| 02 | OOP | Classes, inheritance, polymorphism, encapsulation, abstraction, magic methods |
+| 03 | Advanced | Decorators, generators, context managers, comprehensions, lambda |
+| 04 | Concurrency | Threading, multiprocessing, asyncio |
+| 05 | Testing | unittest, pytest |
+| ref | Reference | Best practices, anti-patterns, patterns, performance, comparisons |
 
-## Prerequisites
-- Basic programming knowledge
+## Quick Start
 
-## Architecture
+```python
+# Run any module directly
+python 01-fundamentals/01-variables/variables.py
 
-```mermaid
-graph TD
-    A[Python Core] --> B[Web Frameworks]
-    A --> C[Data Science]
-    B --> D[ML/AI Libraries]
-    C --> D
-    D --> E[Production Deployment]
-
-    B --> B1[FastAPI]
-    B --> B2[Django]
-    B --> B3[Flask]
-    C --> C1[Pandas]
-    C --> C2[NumPy]
-    D --> D1[TensorFlow]
-    D --> D2[PyTorch]
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#bbf,stroke:#333,stroke-width:2px
-    style E fill:#bfb,stroke:#333,stroke-width:2px
+# Run all fundamentals
+for f in 01-fundamentals/*/[!.]*.py; do python "$f"; done
 ```
 
-## When to Use
+## Requirements
 
-```mermaid
-graph TD
-    Start{Project Type} -->|Data Analysis| Python[Choose Python]
-    Start -->|Web App| Web[Choose Framework]
-    Start -->|Scripting| Script[Choose Python]
-    Start -->|Machine Learning| ML[Choose Python]
-
-    Python -->|Data Science| Pandas[Pandas + NumPy]
-    Python -->|Visualization| Matplotlib[Matplotlib/Seaborn]
-
-    Web -->|Fast API| FastAPI[FastAPI]
-    Web -->|Full Stack| Django[Django]
-    Web -->|Micro| Flask[Flask]
-
-    ML -->|Deep Learning| DL[TensorFlow/PyTorch]
-    ML -->|Classical ML| Sklearn[Scikit-learn]
-
-    style Python fill:#f96,stroke:#333,stroke-width:2px
-    style FastAPI fill:#6cf,stroke:#333,stroke-width:2px
-    style DL fill:#bfb,stroke:#333,stroke-width:2px
-```
+- Python 3.10+
+- No external dependencies for fundamentals/advanced
+- `pytest` for 05-testing/02-pytest

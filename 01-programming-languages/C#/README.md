@@ -1,24 +1,51 @@
-# C# Fundamentals
+# C# Learning Module
 
 ## Overview
-C# is a modern, object-oriented language for .NET development. Type-safe, powerful, and versatile.
+This module covers C# fundamentals and advanced concepts.
 
-## Topics
-- Variables and Types
-- Control Flow
-- Classes and Objects
-- Inheritance
-- Interfaces
+## Topics Covered
+
+### Fundamentals
+- Types and type system
+- Operators and expressions
+- Control flow statements
+- Methods and parameters
+- Arrays and collections
+- String manipulation
+
+### OOP
+- Classes and objects
+- Inheritance and polymorphism
+- Interfaces and abstract classes
 - Generics
-- LINQ
-- Async/Await
-- Events
-- Delegates
 
-## Learning Objectives
-- Write C# applications
-- Use .NET framework
-- Implement async patterns
+### Advanced
+- LINQ queries
+- Async/await patterns
+- Delegates and events
+
+## Getting Started
+```bash
+# Create new console app
+dotnet new console -n MyApp
+
+# Run the application
+dotnet run
+
+# Build the application
+dotnet build
+```
+
+## Directory Structure
+```
+C#/
+├── 01-fundamentals/     # Core C# concepts
+├── 02-oop/              # Object-oriented programming
+├── 03-advanced/         # Advanced features
+└── reference/           # Best practices and patterns
+```
 
 ## Prerequisites
+- .NET SDK installed
 - Basic programming knowledge
+- Understanding of OOP concepts

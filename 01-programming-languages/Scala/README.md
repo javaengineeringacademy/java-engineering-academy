@@ -1,24 +1,27 @@
-# Scala Fundamentals
+# Scala Programming Language
 
 ## Overview
-Scala is a modern multi-approach language designed for brief, elegant, and type-safe code. Combines OO and functional programming.
+Scala is a modern JVM language that combines object-oriented and functional programming. It's known for its powerful type system and expressive syntax.
 
-## Topics
-- Variables and Types
-- Control Flow
-- Functions and Methods
-- Classes and Objects
-- Traits
-- Case Classes
-- Pattern Matching
-- Collections
-- Higher-Order Functions
-- Immutability
+## Topics Covered
 
-## Learning Objectives
-- Write Scala code
-- Use functional programming
-- Understand type inference
+### Fundamentals
+- **Variables**: `val`, `var`, type inference
+- **Control Flow**: `if`, `for`, `while`, `yield`
+- **Functions**: `def`, lambdas, currying
+- **Classes**: `class`, `object`, `case class`, companion objects
 
-## Prerequisites
-- Basic programming knowledge
+### Advanced
+- **Pattern Matching**: `match`, extractors, guards
+- **Higher-Order Functions**: `map`, `filter`, `flatMap`, `reduce`
+- **Traits**: Trait definitions, mixins, abstract classes
+- **Implicits**: Implicit parameters, `given`/`using` (Scala 3)
+
+### Functional Programming
+- **Immutability**: Immutable collections, `copy` method
+- **Monads**: `Option`, `Either`, `Try`
+- **For Comprehensions**: Comprehension syntax for monads
+
+## Resources
+- [Scala Documentation](https://docs.scala-lang.org/)
+- [Scala Book](https://docs.scala-lang.org/scala3/book/introduction.html)
