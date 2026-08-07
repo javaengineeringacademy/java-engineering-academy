@@ -155,45 +155,90 @@
 
 ## Java 17 (Java SE 17)
 - **Release Date:** September 14, 2021
-- **Features:** Sealed classes (standard), pattern matching for switch (preview), enhanced pseudo-random number generators, foreign function and memory API (incubator), macOS/AArch64 delivery, stream.toList(), new Apple Silicon support
-- **Deprecated:** Security Manager (deprecated for removal), Applet API
+- **Features:** Sealed classes (standard), pattern matching for instanceof (standard), text blocks (standard), records (standard), Foreign Function & Memory API (incubator), enhanced pseudo-random number generators, stream.toList(), macOS/AArch64 delivery, strong encapsulation of JDK internals
+- **Deprecated:** Security Manager (deprecated for removal), Applet API (deprecated for removal)
 - **Removed:** N/A
-- **Performance:** New PRNG algorithms, improved Stream.toList() performance
-- **Security:** Strong encapsulation enforced, Apple Silicon native support, improved random number generation
-- **Why Introduced:** Second LTS release under new cycle, sealed classes finalized, significant security hardening
+- **Performance:** New PRNG algorithms, improved Stream.toList() performance, enhanced memory management
+- **Security:** Strong encapsulation enforced, Apple Silicon native support, improved random number generation, reduced attack surface through encapsulation
+- **Why Introduced:** Second LTS release under new 6-month cycle. Sealed classes, pattern matching, text blocks, and records all finalized. Major security hardening through strong encapsulation. Foreign Function & Memory API incubated for safer native interop
 
 ## Java 18 (Java SE 18)
 - **Release Date:** March 22, 2022
-- **Features:** Simple web server (jwebserver), code snippets in Javadoc, UTF-8 by default, Internet-address resolution SPI, foreign function and memory API (second incubator), vector API (third incubator)
-- **Deprecated:** N/A
+- **Features:** Simple web server (jwebserver) for testing and prototyping, code snippets in Javadoc (@snippet tag), UTF-8 as default charset, Internet-address resolution SPI, Foreign Function & Memory API (second incubator), Vector API (third incubator), finalization deprecated for removal
+- **Deprecated:** Finalization (Object.finalize()) deprecated for removal
 - **Removed:** N/A
-- **Performance:** Simple web server for testing, improved Javadoc with code snippets
-- **Security:** UTF-8 default reduces encoding vulnerabilities
-- **Why Introduced:** Developer convenience tools, continued incubation of foreign function API
+- **Performance:** Simple web server for quick HTTP testing, improved Javadoc generation with code snippets
+- **Security:** UTF-8 default eliminates charset-related vulnerabilities, more predictable encoding behavior across platforms
+- **Why Introduced:** Developer convenience tools, continued incubation of Foreign Function API, deprecating finalization to prepare for its removal and improve memory safety
 
 ## Java 19 (Java SE 19)
 - **Release Date:** September 20, 2022
-- **Features:** Virtual threads (preview), structured concurrency (incubator), foreign function and memory API (preview), record patterns (preview), pattern matching for switch (third preview), concurrent thread-local handshakes
+- **Features:** Virtual threads (preview), structured concurrency (incubator), Foreign Function & Memory API (preview), record patterns (preview), Vector API (fourth incubator), pattern matching for switch (third preview), concurrent thread-local handshakes
 - **Deprecated:** N/A
 - **Removed:** N/A
-- **Performance:** Virtual threads enable massive concurrency with lightweight threads, improved thread scheduling
-- **Security:** Enhanced concurrency model security, virtual thread isolation
-- **Why Introduced:** Major concurrency revolution with virtual threads preview, continued language evolution
+- **Performance:** Virtual threads enable massive concurrency with lightweight threads, improved thread scheduling, reduced context-switching overhead
+- **Security:** Enhanced concurrency model security, virtual thread isolation, safer foreign memory access
+- **Why Introduced:** Major concurrency revolution with virtual threads preview. Foreign Function & Memory API reaching preview maturity. Record patterns extending pattern matching capabilities
 
 ## Java 20 (Java SE 20)
 - **Release Date:** March 21, 2023
-- **Features:** Scoped values (incubator), record patterns (second preview), pattern matching for switch (fourth preview), virtual threads (second preview), structured concurrency (second incubator), foreign function and memory API (third preview)
+- **Features:** Scoped values (incubator), record patterns (second preview), pattern matching for switch (fourth preview), virtual threads (second preview), structured concurrency (second incubator), Foreign Function & Memory API (third preview)
 - **Deprecated:** N/A
 - **Removed:** N/A
-- **Performance:** Continued optimization of virtual threads, improved pattern matching performance
-- **Security:** Continued work on memory safety through foreign function API
-- **Why Introduced:** Continued preview/incubation of major features, incremental improvements
+- **Performance:** Continued optimization of virtual threads, improved pattern matching performance, refined scoped value access
+- **Security:** Continued work on memory safety through Foreign Function API, enhanced type safety in pattern matching
+- **Why Introduced:** Continued preview/incubation of major features for finalization in Java 21 LTS. Incremental refinements based on community feedback
 
 ## Java 21 (Java SE 21)
 - **Release Date:** September 19, 2023
-- **Features:** Virtual threads (standard), pattern matching for switch (standard), record patterns (standard), sequenced collections, string templates (preview), unnamed patterns and variables (preview), generational mode for ZGC (default), Key Encapsulation Mechanism API, generative AI integration considerations
+- **Features:** Virtual threads (standard), pattern matching for switch (standard), record patterns (standard), sequenced collections (SequencedCollection, SequencedMap, SequencedSet), string templates (preview), unnamed patterns and variables (preview), generational mode for ZGC (default), Key Encapsulation Mechanism API, Deprecate Windows 32-bit x86 port for removal
+- **Deprecated:** Windows 32-bit x86 port deprecated for removal, finalization for removal (continued)
+- **Removed:** N/A
+- **Performance:** Virtual threads now standard for high-concurrency workloads, generational ZGC default for better throughput and lower latency, improved collection iteration performance
+- **Security:** Key Encapsulation Mechanism API for post-quantum cryptography, enhanced security policies, stronger platform encapsulation
+- **Why Introduced:** Major LTS release finalizing virtual threads (Project Loom), pattern matching, and record patterns for production use. Sequenced collections provide predictable iteration order. ZGC generational mode becomes default for production workloads
+
+## Java 22 (Java SE 22)
+- **Release Date:** March 19, 2024
+- **Features:** Unnamed variables (standard), statements before super() (preview), Stream gatherers (preview), Foreign Function & Memory API (standard), region pinning for G1 GC, class-file API (preview), launch multi-file source programs
 - **Deprecated:** N/A
 - **Removed:** N/A
-- **Performance:** Virtual threads now standard for high-concurrency workloads, generational ZGC default for better throughput
-- **Security:** Key Encapsulation Mechanism API for post-quantum cryptography, enhanced security policies
-- **Why Introduced:** Major LTS release finalizing virtual threads, pattern matching, and record patterns for production use
+- **Performance:** Region pinning for G1 GC reduces GC pause times by avoiding full-pinning of heap regions, improved native interop performance through standardized Foreign Function & Memory API
+- **Security:** Foreign Function & Memory API provides safer alternative to JNI for native code access, enhanced memory safety guarantees, reduced risk of memory corruption
+- **Why Introduced:** Foreign Function & Memory API standardized for production native interop without JNI safety risks. Unnamed variables reduce code noise. G1 region pinning improves GC performance for native-heavy workloads
+
+## Java 23 (Java SE 23)
+- **Release Date:** September 17, 2024
+- **Features:** Primitive types in patterns (preview), Class-File API (preview), Markdown documentation comments (/**/ with Markdown), ZGC: Generational mode by default (non-generational removed), module import declarations (preview), primitive type patterns in switch
+- **Deprecated:** N/A
+- **Removed:** ZGC non-generational mode (generational only)
+- **Performance:** ZGC generational mode default improves throughput for most applications, better garbage collection for large heaps
+- **Security:** Class-File API enables safer bytecode manipulation tools, reduced attack surface in class loading
+- **Why Introduced:** Continued language evolution with primitive pattern matching. ZGC simplification by making generational mode the only mode. Markdown comments improve documentation readability
+
+## Java 24 (Java SE 24)
+- **Release Date:** March 18, 2025
+- **Features:** Class-File API (standard), Stream gatherers (standard), ahead-of-time class loading & linking, permanently disable Security Manager, synchronize virtual threads without pinning, ZGC: Remove non-generational mode, quantum-resistant cryptography (ML-KEM, ML-DSA, SLH-DSA)
+- **Deprecated:** Security Manager permanently disabled (cannot be re-enabled)
+- **Removed:** ZGC non-generational mode fully removed
+- **Performance:** Ahead-of-time class loading and linking improves startup time and reduces memory footprint, virtual threads can now synchronize without pinning to platform threads
+- **Security:** Quantum-resistant cryptography algorithms (ML-KEM, ML-DSA, SLH-DSA) provide defense against future quantum computing attacks, Security Manager disabled to reduce attack surface
+- **Why Introduced:** Post-quantum cryptography prepares Java for the quantum computing era. Virtual thread synchronization without pinning completes the virtual threads story. Ahead-of-time class loading improves cloud-native deployments
+
+## Java 25 (Java SE 25)
+- **Release Date:** September 16, 2025
+- **Features:** Stable values (preview), scoped values (standard), module import declarations (preview), compact source files and instance main methods (preview), flexible constructor bodies (preview), ahead-of-time command-line ergonomics, JFR CPU-time profiling, key derivation function API (standard), compact object headers (experimental)
+- **Deprecated:** N/A
+- **Removed:** N/A
+- **Performance:** Ahead-of-time command-line ergonomics simplify AOT compilation, compact object headers reduce memory usage by 25% for small objects, JFR CPU-time profiling for production performance analysis
+- **Security:** Key derivation function API standardizes secure key generation, improved cryptographic operations, enhanced monitoring capabilities
+- **Why Introduced:** LTS release focusing on developer ergonomics (compact source files, flexible constructors), memory efficiency (compact object headers), and production observability (JFR CPU-time profiling). Scoped values standardized for structured concurrency patterns
+
+## Java 26 (Java SE 26)
+- **Release Date:** March 17, 2026
+- **Features:** HTTP/3 for HTTP Client API (preview), PEM encodings of cryptographic objects (preview), structured concurrency (preview), lazy constants (preview), Vector API (11th incubator), primitive types in patterns (preview), remove Applet API, ahead-of-time object caching with any GC, G1 GC: Improve throughput by reducing synchronization, prepare to make final mean final
+- **Deprecated:** Applet API removed
+- **Removed:** Applet API (final removal)
+- **Performance:** Ahead-of-time object caching with any GC improves startup and reduces allocation overhead, G1 GC throughput improved by reducing synchronization overhead between GC threads
+- **Security:** HTTP/3 support provides improved security and performance for web communications, PEM encodings simplify cryptographic object handling, structured concurrency improves error handling safety
+- **Why Introduced:** HTTP/3 modernizes web connectivity. Applet API removal completes the transition away from browser-based Java. Lazy constants and AOT object caching improve runtime performance. Preparing final keyword semantics for stricter enforcement in future releases
