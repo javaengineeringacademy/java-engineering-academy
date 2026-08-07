@@ -439,6 +439,233 @@ Clear package boundaries make it easier to understand where changes should be ma
 
 ---
 
+## Important Java Packages
+
+### java.lang (Automatically Imported)
+
+The `java.lang` package is imported automatically — you never need to import it.
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `String` | Text | Everywhere |
+| `Integer`, `Long`, `Double`, `Float`, `Boolean` | Wrapper types | Collections, primitives → objects |
+| `Math` | Math operations | `Math.random()`, `Math.max()`, `Math.sqrt()` |
+| `System` | System I/O, env vars | `System.out.println()`, `System.getenv()` |
+| `Thread` | Multithreading | `Thread.sleep()`, `Thread.currentThread()` |
+| `Runnable` | Thread interface | `new Thread(() -> ...)` |
+| `Exception` | Base exception | All exceptions extend this |
+| `Object` | Base class | All classes extend this |
+| `Class` | Runtime type info | `getClass()`, `forName()` |
+| `Enum` | Base enum | All enums extend this |
+| `StringBuilder` | Mutable strings | String concatenation in loops |
+| `Character` | Single chars | `Character.isDigit()`, `Character.toUpperCase()` |
+| `Throwable` | Base error | Parent of Exception and Error |
+| `Number` | Numeric base | Parent of Integer, Long, Double |
+| `Package` | Package metadata | `getClass().getPackage()` |
+
+### java.util (Collections and Utilities)
+
+| Class/Interface | Purpose | When You Use It |
+|-----------------|---------|-----------------|
+| `List` (ArrayList, LinkedList) | Ordered collection | Most common data structure |
+| `Set` (HashSet, TreeSet) | Unique elements | Remove duplicates |
+| `Map` (HashMap, TreeMap) | Key-value pairs | Fast lookups |
+| `Queue` (PriorityQueue, ArrayDeque) | FIFO processing | BFS, task scheduling |
+| `Stack` (legacy) | LIFO | Avoid — use Deque instead |
+| `Date`, `Calendar` | Old date API | Legacy code only |
+| `LocalDate`, `LocalTime`, `LocalDateTime` | Modern date API | New code — always use this |
+| `Optional` | Null handling | Return types that may be empty |
+| `Random` | Random numbers | `Random.nextInt()` |
+| `Collections` | Utility methods | `Collections.sort()`, `Collections.unmodifiableList()` |
+| `Arrays` | Array utilities | `Arrays.sort()`, `Arrays.asList()` |
+| `Timer`, `TimerTask` | Scheduled tasks | Simple scheduling (use ScheduledExecutor instead) |
+| `UUID` | Unique IDs | `UUID.randomUUID()` |
+| `Scanner` | User input | Console apps, file reading |
+| `Properties` | Key-value config | Config files, system properties |
+| `BitSet` | Bit manipulation | Large boolean sets, Bloom filters |
+| `WeakHashMap` | Memory-sensitive cache | Cache with auto-cleanup |
+
+### java.io (Input/Output)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `File` | File metadata | Check existence, size, delete |
+| `FileInputStream/FileOutputStream` | Byte streams | Binary data |
+| `BufferedReader/BufferedWriter` | Buffered I/O | Text files (faster) |
+| `PrintWriter` | Formatted output | Writing text files |
+| `ObjectInputStream/ObjectOutputStream` | Serialization | Save/load objects |
+| `FileReader/FileWriter` | Character streams | Text files (simpler) |
+| `ByteArrayInputStream/ByteArrayOutputStream` | In-memory I/O | Testing, temporary data |
+| `DataInputStream/DataOutputStream` | Primitive I/O | Binary protocols |
+
+### java.nio (New I/O — Modern)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `Path` | File paths | Modern alternative to File |
+| `Files` | File operations | Read, write, copy, delete |
+| `ByteBuffer` | Buffer operations | NIO channels |
+| `FileChannel` | Channel I/O | High-performance file I/O |
+| `Selector` | Non-blocking I/O | Network servers |
+| `StandardOpenOption` | File open modes | `READ`, `WRITE`, `CREATE` |
+
+### java.math (Mathematical Operations)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `BigInteger` | Arbitrary precision integers | Cryptography, large numbers |
+| `BigDecimal` | Arbitrary precision decimals | Money, financial calculations |
+| `MathContext` | Precision control | Rounding modes |
+
+### java.time (Date/Time — Java 8+)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `LocalDate` | Date only | Birthdays, deadlines |
+| `LocalTime` | Time only | Business hours |
+| `LocalDateTime` | Date + time | Timestamps (no timezone) |
+| `ZonedDateTime` | Date + time + timezone | Global applications |
+| `Instant` | Epoch timestamps | Logging, APIs |
+| `Duration` | Time amounts | `Duration.ofHours(2)` |
+| `Period` | Date amounts | `Period.ofDays(30)` |
+| `DateTimeFormatter` | Formatting | `format(DateTimeFormatter.ISO_DATE)` |
+
+### java.net (Networking)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `URL` | URL handling | `new URL("https://...")` |
+| `HttpURLConnection` | HTTP requests | Legacy HTTP (use HttpClient instead) |
+| `HttpClient` | HTTP client (Java 11+) | Modern HTTP calls |
+| `ServerSocket` | TCP server | Simple servers |
+| `Socket` | TCP client | Network connections |
+| `InetAddress` | IP addresses | `InetAddress.getByName()` |
+
+### java.util.concurrent (Concurrency)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `ExecutorService` | Thread pool | Task execution |
+| `ScheduledExecutorService` | Scheduled tasks | Periodic jobs |
+| `CompletableFuture` | Async composition | Chaining async operations |
+| `ConcurrentHashMap` | Thread-safe map | Concurrent access |
+| `CopyOnWriteArrayList` | Thread-safe list | Read-heavy, write-light |
+| `BlockingQueue` | Producer-consumer | Thread communication |
+| `CountDownLatch` | Synchronization | Wait for N threads |
+| `CyclicBarrier` | Synchronization | Wait at checkpoint |
+| `Semaphore` | Rate limiting | Limit concurrent access |
+| `AtomicInteger`, `AtomicLong` | Lock-free counters | Thread-safe counters |
+| `Lock` (ReentrantLock) | Explicit locks | More flexible than synchronized |
+
+### java.util.regex (Regular Expressions)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `Pattern` | Compiled regex | `Pattern.compile("\\d+")` |
+| `Matcher` | Match execution | `matcher.find()`, `matcher.group()` |
+
+### java.text (Text Processing)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `NumberFormat` | Number formatting | `NumberFormat.getCurrencyInstance()` |
+| `DateFormat` | Date formatting | Legacy (use DateTimeFormatter) |
+| `MessageFormat` | String formatting | `MessageFormat.format("Hello {0}", name)` |
+| `DecimalFormat` | Custom number format | `new DecimalFormat("#,###.##")` |
+| `Collator` | Locale-aware sorting | `Collator.getInstance(Locale.US)` |
+
+### java.security (Security)
+
+| Class | Purpose | When You Use It |
+|-------|---------|-----------------|
+| `MessageDigest` | Hashing | `MessageDigest.getInstance("SHA-256")` |
+| `SecureRandom` | Cryptographic random | Token generation |
+| `KeyStore` | Certificate storage | SSL/TLS |
+| `Signature` | Digital signatures | Verify authenticity |
+
+---
+
+## Common Myths
+
+### ❌ Myth 1: You must import java.lang classes
+**Reality:** java.lang is imported automatically. You never need `import java.lang.String;`.
+
+### ❌ Myth 2: import statements slow down your program
+**Reality:** Imports are resolved at compile time. They have zero runtime cost.
+
+### ❌ Myth 3: Wildcard imports are always bad
+**Reality:** Acceptable in test files with many imports. Just avoid in production code.
+
+### ❌ Myth 4: Package-private access is useless
+**Reality:** It's essential for hiding implementation details within a module.
+
+### ❌ Myth 5: Subpackages inherit parent package access
+**Reality:** Subpackages are separate packages. `com.foo.bar` cannot access package-private members in `com.foo`.
+
+---
+
+## Production Checklist
+
+### ✅ Before using packages in production:
+
+☐ I know which package each class belongs to
+☐ I use specific imports (not wildcards)
+☐ I don't import unused classes
+☐ I understand package-private access
+☐ I know that subpackages are separate packages
+☐ I use package-info.java for package documentation
+☐ I follow reverse domain name convention
+
+---
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows how to declare a package
+- Can use import statements
+
+### Level 2: Understands
+- Knows naming conventions
+- Understands directory structure mapping
+
+### Level 3: Deep Knowledge
+- Knows access modifiers and package-private
+- Understands subpackages are separate
+
+### Level 4: Expert
+- Designs package architecture for large systems
+- Knows when to use package-private vs public
+
+### Level 5: Master
+- Designs modular systems with package boundaries
+- Can refactor packages in legacy codebases
+
+---
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Organize code into namespaces |
+| Convention | Reverse domain name (com.company.project) |
+| Declaration | First line of file: `package com.example;` |
+| Import | `import com.example.MyClass;` |
+| Static Import | `import static com.example.MyClass.method;` |
+| Wildcard | `import com.example.*;` (avoid in production) |
+| java.lang | Auto-imported, never need to import |
+| Default Access | Package-private (no modifier) |
+| Subpackages | Separate packages, no inherited access |
+
+---
+
+## Related Topics
+
+- **[Access Modifiers](../../02-oop/39-access-modifiers/)** — Deep dive into public, protected, default, private
+- **[Maven](../08-maven/)** — Build tool that manages package structure
+- **[Encapsulation](../../02-oop/08-encapsulation/)** — How packages enable access control
+
+---
+
 ## What's Next
 
 Now that you understand how to organize code with packages, learn about [Maven](../08-maven/) — the build tool that manages project structure, dependencies, and build processes.
