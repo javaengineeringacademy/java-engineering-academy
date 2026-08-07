@@ -279,6 +279,60 @@ public class ReplaceDemo {
 
 ---
 
+## Interactive Examples
+
+### Example 1: Primitives are Pass by Value
+
+```java
+public static void modifyPrimitive(int x) {
+    x = 100;
+}
+
+int num = 10;
+modifyPrimitive(num);
+System.out.println(num); // Still 10
+```
+
+### Example 2: Object References are Pass by Value
+
+```java
+public static void modifyObject(Person p) {
+    p.setName("Bob"); // Modifies the object
+}
+
+Person person = new Person("Alice");
+modifyObject(person);
+System.out.println(person.getName()); // Bob
+```
+
+### Example 3: Reassignment Doesn't Work
+
+```java
+public static void reassign(Person p) {
+    p = new Person("Charlie"); // Reassigns the copy
+}
+
+Person person = new Person("Alice");
+reassign(person);
+System.out.println(person.getName()); // Still Alice
+```
+
+### Example 4: Swap Doesn't Work
+
+```java
+public static void swap(int a, int b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int x = 1, y = 2;
+swap(x, y);
+System.out.println(x + " " + y); // Still 1 2
+```
+
+---
+
 ## Summary
 
 | Scenario | What Happens | Original Modified? |

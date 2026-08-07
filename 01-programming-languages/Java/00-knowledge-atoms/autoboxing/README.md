@@ -185,3 +185,75 @@ public class OverloadDemo {
 | **Performance** | Avoid in tight loops, use primitives |
 | **Equality** | Use `.equals()` for wrappers, not `==` |
 | **Collections** | Always boxed (use primitive-specialized collections for performance) |
+
+---
+
+## Interactive Examples
+
+### Example 1: Autoboxing in Action
+
+```java
+Integer num = 42;  // Autoboxing: int → Integer
+int value = num;    // Unboxing: Integer → int
+System.out.println(num);    // 42
+System.out.println(value);  // 42
+```
+
+### Example 2: Integer Cache (Gotcha!)
+
+Java caches Integer objects from -128 to 127.
+
+```java
+Integer a = 127;
+Integer b = 127;
+System.out.println(a == b);  // true (same cached object)
+
+Integer c = 128;
+Integer d = 128;
+System.out.println(c == d);  // false (different objects!)
+System.out.println(c.equals(d)); // true
+```
+
+### Example 3: Autoboxing in Collections
+
+```java
+List<Integer> list = new ArrayList<>();
+list.add(42);  // Autoboxing: int → Integer
+int value = list.get(0); // Unboxing: Integer → int
+```
+
+### Example 4: NullPointerException with Unboxing
+
+```java
+Integer num = null;
+// int value = num; // NullPointerException!
+```
+
+---
+
+## Code Examples
+
+See the `examples/` directory for runnable Java files:
+
+- `AutoboxingDemo.java` - Basic autoboxing and unboxing
+- `IntegerCache.java` - Integer cache behavior demonstration
+- `CollectionAutoboxing.java` - Autoboxing with collections
+- `NullUnboxing.java` - NullPointerException gotcha
+
+---
+
+## Exercises
+
+See the `exercises/` directory for practice problems.
+
+---
+
+## Solutions
+
+See the `solutions/` directory for exercise solutions.
+
+---
+
+## Quiz
+
+Test your knowledge with the quiz in `quiz.md`.

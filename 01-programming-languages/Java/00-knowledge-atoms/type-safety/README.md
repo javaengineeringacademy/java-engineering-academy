@@ -212,6 +212,43 @@ public double calculateArea(Shape shape) {
 
 ---
 
+## Interactive Examples
+
+### Example 1: Compile-Time Type Checking
+
+```java
+String name = "Hello";
+int number = name; // Compile error: incompatible types
+```
+
+### Example 2: Runtime Type Checking
+
+```java
+Object obj = "Hello";
+if (obj instanceof String) {
+    String s = (String) obj; // Safe cast
+}
+```
+
+### Example 3: Generics Type Safety
+
+```java
+List<String> list = new ArrayList<>();
+list.add("Hello");
+// list.add(42); // Compile error
+String s = list.get(0); // No cast needed
+```
+
+### Example 4: Type Erasure
+
+```java
+List<String> strings = new ArrayList<>();
+List<Integer> integers = new ArrayList<>();
+System.out.println(strings.getClass() == integers.getClass()); // true
+```
+
+---
+
 ## Summary
 
 | Concept | Details |

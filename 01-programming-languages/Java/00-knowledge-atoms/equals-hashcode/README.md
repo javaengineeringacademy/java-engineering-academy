@@ -1,10 +1,8 @@
-# equals() and hashCode()
+# equals() and hashCode() — Interactive Guide
 
-## Overview
+## Why This Matters
 
-The `equals()` and `hashCode()` methods are fundamental to Java's object model. They work together to determine object identity in collections like `HashMap`, `HashSet`, and `Hashtable`. Understanding their contract is essential for correct behavior in these collections.
-
----
+Every Java developer who uses HashMap, HashSet, or any collection needs to understand equals() and hashCode(). Get this wrong, and your objects will "disappear" from collections, behave unpredictably, or cause subtle bugs that take days to debug.
 
 ## The Contract
 
@@ -28,49 +26,31 @@ The `equals()` and `hashCode()` methods are fundamental to Java's object model. 
 
 ---
 
-## Default Behavior
+## Interactive Examples
 
-### equals() Default (Object class)
+### Example 1: Same hashCode, Different Objects (Hash Collision)
+
+Two different objects can have the same hashCode. This is called a hash collision.
 
 ```java
-// Default implementation uses identity comparison (==)
-public boolean equals(Object obj) {
-    return (this == obj);
-}
+// String "Aa" and "BB" have same hashCode
+String a = "Aa";
+String b = "BB";
+System.out.println(a.hashCode()); // 2112
+System.out.println(b.hashCode()); // 2112
+System.out.println(a.equals(b));  // false
 ```
 
-This means two different objects are never equal, even if they have the same field values.
+**Why this happens**: HashMap uses the hashCode to find a bucket, but multiple keys can map to the same bucket. The bucket stores a linked list of entries, and equals() is used to find the exact match.
+
+### Example 2: Equal Objects, Same hashCode (Correct Implementation)
+
+When you override equals() correctly, equal objects MUST have same hashCode.
 
 ```java
 public class Person {
-    String name;
-    int age;
-}
-
-Person p1 = new Person("Alice", 30);
-Person p2 = new Person("Alice", 30);
-
-System.out.println(p1.equals(p2));  // false! Different objects
-System.out.println(p1 == p2);       // false! Different references
-```
-
-### hashCode() Default (Object class)
-
-```java
-// Default implementation typically returns memory address
-public native int hashCode();
-```
-
----
-
-## Why Both Must Be Overridden Together
-
-### The Problem with Only equals()
-
-```java
-public class Person {
-    String name;
-    int age;
+    private String name;
+    private int age;
     
     @Override
     public boolean equals(Object o) {
@@ -79,182 +59,82 @@ public class Person {
         Person person = (Person) o;
         return age == person.age && Objects.equals(name, person.name);
     }
-    // hashCode() NOT overridden - uses default!
-}
-
-Person p1 = new Person("Alice", 30);
-Person p2 = new Person("Alice", 30);
-
-// Problem 1: equals() says they're equal
-System.out.println(p1.equals(p2));  // true
-
-// Problem 2: hashCode() says they're different
-System.out.println(p1.hashCode());  // e.g., 20123456
-System.out.println(p2.hashCode());  // e.g., 30987654
-
-// Problem 3: HashSet fails!
-Set<Person> set = new HashSet<>();
-set.add(p1);
-set.add(p2);
-System.out.println(set.size());  // 2! Should be 1
-
-// Problem 4: HashMap fails!
-Map<Person, String> map = new HashMap<>();
-map.put(p1, "value");
-System.out.println(map.get(p2));  // null! Should return "value"
-```
-
-### The Problem with Only hashCode()
-
-```java
-public class Person {
-    String name;
-    int age;
     
     @Override
     public int hashCode() {
         return Objects.hash(name, age);
     }
-    // equals() NOT overridden - uses default!
 }
 
 Person p1 = new Person("Alice", 30);
 Person p2 = new Person("Alice", 30);
-
-// hashCode() is the same (good)
-System.out.println(p1.hashCode() == p2.hashCode());  // true
-
-// But equals() says they're different
-System.out.println(p1.equals(p2));  // false
-
-// HashSet behavior is unpredictable
-Set<Person> set = new HashSet<>();
-set.add(p1);
-set.add(p2);
-System.out.println(set.size());  // 2 (even though hashCode is same)
+System.out.println(p1.equals(p2));      // true
+System.out.println(p1.hashCode() == p2.hashCode()); // true
 ```
 
----
+### Example 3: Broken equals, Broken hashCode (Common Bug)
 
-## Best Practices for Implementation
-
-### Using Objects Utility Class
+If you override equals() but not hashCode(), equal objects may have different hashCodes.
 
 ```java
-public class Person {
+public class BrokenPerson {
     private String name;
     private int age;
-    private String email;
-
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Person person = (Person) o;
-        return age == person.age &&
-               Objects.equals(name, person.name) &&
-               Objects.equals(email, person.email);
+        BrokenPerson p = (BrokenPerson) o;
+        return age == p.age && Objects.equals(name, p.name);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, age, email);
-    }
+    // NO hashCode() override!
 }
+
+Set<BrokenPerson> set = new HashSet<>();
+BrokenPerson p1 = new BrokenPerson("Alice", 30);
+BrokenPerson p2 = new BrokenPerson("Alice", 30);
+
+set.add(p1);
+set.add(p2);
+System.out.println(set.size()); // 2! Should be 1
 ```
 
-### Using @EqualsAndHashCode (Lombok)
+### Example 4: equals() with null
+
+equals() must handle null gracefully.
 
 ```java
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode
-public class Person {
-    private String name;
-    private int age;
-    private String email;
-}
+Person p = new Person("Alice", 30);
+System.out.println(p.equals(null)); // false
+System.out.println(p.equals("Alice")); // false (different type)
 ```
 
-### Excluding Fields
+### Example 5: equals() with Different Types
+
+equals() must handle different types gracefully.
 
 ```java
-@EqualsAndHashCode(exclude = {"id", "createdAt"})
-public class Person {
-    private Long id;
-    private String name;
-    private int age;
-    private LocalDateTime createdAt;
-}
-```
-
-### Only Including Specific Fields
-
-```java
-@EqualsAndHashCode(of = {"name", "age"})
-public class Person {
-    private Long id;
-    private String name;
-    private int age;
-    private String email;
-}
-```
-
-### Inheritance Considerations
-
-```java
-// Call super if parent class has meaningful equals/hashCode
-public class Employee extends Person {
-    private String department;
-
-    @Override
-    public boolean equals(Object o) {
-        if (!super.equals(o)) return false;
-        Employee employee = (Employee) o;
-        return Objects.equals(department, employee.department);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), department);
-    }
-}
+Person p = new Person("Alice", 30);
+String s = "Alice";
+System.out.println(p.equals(s)); // false (different class)
+System.out.println(s.equals(p)); // false (String.equals checks instance of String)
 ```
 
 ---
 
-## When to Use equals vs ==
+## Production Checklist
 
-### Use == For:
-- **Primitives**: `int x = 5; if (x == 5)` 
-- **Reference identity**: Checking if two references point to the same object
-- **Null checks**: `if (obj == null)`
-- **Enum comparison**: `if (status == Status.ACTIVE)`
-
-### Use equals() For:
-- **Object value comparison**: When you want to compare field values
-- **Collection lookups**: `map.containsKey()`, `set.contains()`
-- **String comparison**: Always use `equals()` for strings
-- **Custom objects**: When identity-based comparison is not meaningful
-
-```java
-// == comparison (reference identity)
-String s1 = new String("hello");
-String s2 = new String("hello");
-System.out.println(s1 == s2);       // false (different objects)
-System.out.println(s1.equals(s2));  // true (same value)
-
-// String pool optimization
-String s3 = "hello";
-String s4 = "hello";
-System.out.println(s3 == s4);       // true (same object in pool)
-System.out.println(s3.equals(s4));  // true (same value)
-
-// When to use ==
-if (obj == null) { ... }           // null check
-if (status == Status.ACTIVE) { ... } // enum comparison
-if (this == other) { return true; }  // identity check in equals()
-```
+- [ ] Override both equals() and hashCode() together
+- [ ] Use Objects.hash() for hashCode() implementation
+- [ ] Use Objects.equals() for null-safe field comparisons
+- [ ] Include all fields that define logical equality
+- [ ] Don't use mutable fields in hashCode()
+- [ ] Test with HashMap and HashSet to verify behavior
+- [ ] Consider using Lombok @EqualsAndHashCode for boilerplate reduction
+- [ ] Don't override equals() for value objects (use record types in Java 14+)
+- [ ] Verify symmetry and transitivity in your equals() implementation
+- [ ] Test edge cases: null, different types, same object
 
 ---
 
@@ -335,7 +215,7 @@ Child c = new Child();
 
 ---
 
-## Summary
+## One-Minute Revision
 
 | Concept | Rule |
 |---------|------|
@@ -346,3 +226,33 @@ Child c = new Child();
 | **Use Objects.hash()** | Simplifies hashCode() implementation |
 | **Use Objects.equals()** | Handles null safely in equals() |
 | **== vs equals()** | == for reference identity, equals() for value equality |
+| **Hash collision** | Different objects can have same hashCode |
+| **Null handling** | equals() must return false for null |
+| **Type checking** | equals() must handle different types gracefully |
+
+---
+
+## Runnable Examples
+
+See the `examples/` directory for complete, runnable Java files:
+
+- `HashCollisionDemo.java` - Demonstrates hash collisions with String objects
+- `CorrectImplementation.java` - Shows proper equals() and hashCode() implementation
+- `BrokenImplementation.java` - Shows what happens when you only override equals()
+- `NullHandling.java` - Demonstrates null handling in equals()
+
+## Exercises
+
+See the `exercises/` directory for practice problems:
+
+- `PersonExercise.java` - Implement equals() and hashCode() for a Person class
+
+## Solutions
+
+See the `solutions/` directory for completed implementations:
+
+- `PersonSolution.java` - Complete solution to the Person exercise
+
+## Quiz
+
+Test your knowledge with the quiz in `quiz.md`.

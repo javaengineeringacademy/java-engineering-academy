@@ -341,3 +341,65 @@ public class GameWorld {
 | **Java support** | String, records, Collections.unmodifiable*() |
 | **Trade-offs** | Object creation overhead vs thread safety |
 | **Best for** | Value objects, DTOs, constants, shared state |
+
+---
+
+## Interactive Examples
+
+### Example 1: String is Immutable
+
+```java
+String s = "Hello";
+s.concat(" World");
+System.out.println(s); // Still "Hello"
+
+s = s.concat(" World");
+System.out.println(s); // "Hello World"
+```
+
+### Example 2: Immutable Class Pattern
+
+```java
+public final class Money {
+    private final BigDecimal amount;
+    private final Currency currency;
+    
+    public Money(BigDecimal amount, Currency currency) {
+        this.amount = amount;
+        this.currency = currency;
+    }
+    
+    public BigDecimal getAmount() { return amount; }
+    public Currency getCurrency() { return currency; }
+    
+    public Money add(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Different currencies");
+        }
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+}
+```
+
+### Example 3: Defensive Copy
+
+```java
+public final class SecureDate {
+    private final Date date;
+    
+    public SecureDate(Date date) {
+        this.date = new Date(date.getTime()); // Defensive copy
+    }
+    
+    public Date getDate() {
+        return new Date(date.getTime()); // Defensive copy
+    }
+}
+```
+
+### Example 4: Immutable Collection
+
+```java
+List<String> list = List.of("A", "B", "C"); // Immutable
+// list.add("D"); // UnsupportedOperationException
+```
