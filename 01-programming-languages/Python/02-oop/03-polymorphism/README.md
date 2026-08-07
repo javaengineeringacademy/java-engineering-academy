@@ -1,6 +1,6 @@
 # Polymorphism
 
-Duck typing, method overriding, and operator overloading.
+When you need to write functions that work with multiple types and customize object behavior, polymorphism is essential. Python uses duck typing, method overriding, and operator overloading to let objects of different types be used through a uniform interface.
 
 ## Overview
 
@@ -36,3 +36,59 @@ Polymorphism allows objects of different types to be used through a uniform inte
 2. How does operator overloading work in Python?
 3. What is the difference between polymorphism and inheritance?
 4. How do you make a class iterable?
+
+## Production Checklist
+
+### ✅ Before using polymorphism in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Can optimize for specific use cases
+- Can explain trade-offs
+
+### Level 5: Master
+- Can debug in production
+- Can design custom implementations
+
+## Common Myths
+
+### ❌ Myth 1: Polymorphism requires inheritance
+**Reality:** Python's duck typing means any object with the right methods works, regardless of inheritance.
+
+### ❌ Myth 2: Operator overloading makes code harder to read
+**Reality:** Well-designed operator overloading makes code more intuitive (e.g., `+` for addition).
+
+### ❌ Myth 3: isinstance() is always necessary for type checking
+**Reality:** Duck typing is preferred; isinstance() breaks polymorphism.
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Write code that works with multiple types |
+| Complexity | O(1) for method dispatch |
+| Thread Safe | Yes (method calls are atomic) |
+| Best Alternative | Use protocols for structural typing |
+| When to Use | Writing generic functions, operator overloading |
+| When to Avoid | Overusing isinstance(), breaking duck typing |

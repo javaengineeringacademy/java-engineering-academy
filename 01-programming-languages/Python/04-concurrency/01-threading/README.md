@@ -1,6 +1,6 @@
 # Threading
 
-Thread, Lock, Queue, and concurrent.futures.
+When you need to perform multiple I/O-bound tasks concurrently, threading allows parallel execution without true parallelism. Python's Thread, Lock, Queue, and concurrent.futures provide tools for concurrent execution and synchronization.
 
 ## Overview
 

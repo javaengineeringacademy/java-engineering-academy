@@ -1,6 +1,6 @@
 # Python Best Practices
 
-A comprehensive guide to Python coding standards, project structure, and development practices.
+A detailed guide to Python coding standards, project structure, and development practices.
 
 ## Table of Contents
 

@@ -1,6 +1,6 @@
 # Python Advanced Concepts
 
-A comprehensive guide to advanced Python programming concepts.
+A detailed guide to advanced Python programming concepts.
 
 ## Table of Contents
 
@@ -1323,7 +1323,7 @@ print(sorter.sort([3, 1, 4, 1, 5, 9]))
 
 ## Summary
 
-Advanced Python concepts provide powerful tools for building sophisticated applications:
+Advanced Python concepts provide powerful tools for building advanced applications:
 
 - **Metaclasses** control class creation and behavior
 - **Descriptors** enable property-like functionality

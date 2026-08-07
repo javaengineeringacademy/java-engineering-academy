@@ -1,6 +1,6 @@
 # Classes
 
-Class definitions, methods, properties, and dataclasses.
+When you need to model real-world entities and bundle data with behavior, classes provide the foundation. Python's class definitions, methods, properties, and dataclasses let you create reusable, organized code that encapsulates state and functionality.
 
 ## Overview
 
@@ -37,3 +37,59 @@ Classes are the foundation of OOP in Python. They bundle data (attributes) and b
 2. What is a class method vs a static method?
 3. When would you use `@property`?
 4. What are dataclasses and how do they differ from regular classes?
+
+## Production Checklist
+
+### ✅ Before using classes in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Can optimize for specific use cases
+- Can explain trade-offs
+
+### Level 5: Master
+- Can debug in production
+- Can design custom implementations
+
+## Common Myths
+
+### ❌ Myth 1: Classes are always better than functions
+**Reality:** Functions are simpler for stateless operations; classes add overhead for state management.
+
+### ❌ Myth 2: `@dataclass` is just syntactic sugar
+**Reality:** dataclasses provide `__init__`, `__repr__`, `__eq__`, and more with minimal overhead.
+
+### ❌ Myth 3: Instance methods can't access class state
+**Reality:** Instance methods can access class attributes via `self.__class__` or `ClassName`.
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Create reusable object blueprints |
+| Complexity | O(1) instantiation, O(n) for methods |
+| Thread Safe | No (instance state is mutable) |
+| Best Alternative | Use namedtuples for simple data |
+| When to Use | Modeling entities, encapsulating state |
+| When to Avoid | Simple stateless operations, overengineering |

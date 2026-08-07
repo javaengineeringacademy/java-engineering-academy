@@ -1,6 +1,6 @@
 # Python Fundamentals
 
-A comprehensive guide to Python programming fundamentals.
+A detailed guide to Python programming fundamentals.
 
 ## Table of Contents
 

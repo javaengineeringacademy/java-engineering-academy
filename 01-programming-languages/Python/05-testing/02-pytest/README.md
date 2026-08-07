@@ -1,6 +1,6 @@
 # pytest
 
-Modern testing framework with fixtures, parametrize, and plugins.
+When you need a flexible and feature-rich testing framework, pytest simplifies test writing and supports advanced features. Python's fixtures, parametrize, and extensive plugin ecosystem make pytest a powerful tool for comprehensive testing.
 
 ## Overview
 

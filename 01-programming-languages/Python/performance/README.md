@@ -1,6 +1,6 @@
 # Python Performance
 
-A comprehensive guide to Python performance optimization, profiling, and benchmarking.
+A detailed guide to Python performance optimization, profiling, and benchmarking.
 
 ## Table of Contents
 

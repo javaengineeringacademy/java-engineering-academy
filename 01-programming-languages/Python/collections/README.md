@@ -1,6 +1,6 @@
 # Python Collections
 
-A comprehensive guide to Python's built-in collection types and the collections module.
+A detailed guide to Python's built-in collection types and the collections module.
 
 ## Table of Contents
 

@@ -1,6 +1,6 @@
 # Multiprocessing
 
-Process, Pool, shared state, and inter-process communication.
+When you need to bypass the GIL and run CPU-bound tasks in parallel, multiprocessing provides true parallelism. Python's Process, Pool, shared state, and inter-process communication enable efficient multi-core computation.
 
 ## Overview
 

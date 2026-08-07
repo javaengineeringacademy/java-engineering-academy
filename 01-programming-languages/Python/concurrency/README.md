@@ -1,6 +1,6 @@
 # Python Concurrency
 
-A comprehensive guide to Python concurrency, parallelism, and async programming.
+A detailed guide to Python concurrency, parallelism, and async programming.
 
 ## Table of Contents
 

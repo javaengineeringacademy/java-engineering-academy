@@ -1,6 +1,6 @@
 # Inheritance
 
-Single, multiple inheritance, MRO, and composition.
+When you need to reuse code and build hierarchies of related classes, inheritance is a key technique. Python supports single, multiple inheritance, method resolution order (MRO), and composition that let you share behavior between classes and manage complex relationships.
 
 ## Overview
 
@@ -38,3 +38,59 @@ Inheritance enables code reuse by creating new classes from existing ones. Pytho
 2. What is the difference between `isinstance` and `type`?
 3. When would you use composition over inheritance?
 4. Explain the diamond problem and how Python handles it.
+
+## Production Checklist
+
+### ✅ Before using inheritance in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Can optimize for specific use cases
+- Can explain trade-offs
+
+### Level 5: Master
+- Can debug in production
+- Can design custom implementations
+
+## Common Myths
+
+### ❌ Myth 1: Inheritance always promotes code reuse
+**Reality:** Deep inheritance hierarchies create tight coupling; composition is often better.
+
+### ❌ Myth 2: Multiple inheritance is always dangerous
+**Reality:** Python's MRO (C3 linearization) safely resolves diamond problems.
+
+### ❌ Myth 3: `super()` always calls the parent class
+**Reality:** `super()` calls the next class in the MRO, which may not be the direct parent.
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Create specialized classes from base classes |
+| Complexity | O(1) for method resolution |
+| Thread Safe | No (shared class state) |
+| Best Alternative | Use composition for has-a relationships |
+| When to Use | Is-a relationships, shared behavior |
+| When to Avoid | Deep hierarchies, code reuse only |

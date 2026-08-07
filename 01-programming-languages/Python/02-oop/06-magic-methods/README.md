@@ -1,6 +1,6 @@
 # Magic Methods
 
-Dunder methods for customizing object behavior.
+When you want your custom objects to work seamlessly with Python's built-in operations like printing, comparison, and iteration, magic methods are essential. Dunder methods let you define how objects behave with built-in functions and operators.
 
 ## Overview
 
@@ -38,3 +38,59 @@ Magic methods (double underscore methods) let you define how objects behave with
 2. How do you make a class iterable?
 3. What does __slots__ do?
 4. How do context managers work with __enter__ and __exit__?
+
+## Production Checklist
+
+### ✅ Before using magic methods in production:
+
+☐ I know the time/space complexity
+☐ I know thread safety guarantees
+☐ I know memory impact
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands thread safety
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Understands edge cases
+
+### Level 4: Expert
+- Can optimize for specific use cases
+- Can explain trade-offs
+
+### Level 5: Master
+- Can debug in production
+- Can design custom implementations
+
+## Common Myths
+
+### ❌ Myth 1: Magic methods are always called automatically
+**Reality:** Magic methods are only called by special syntax (e.g., `+` calls `__add__`).
+
+### ❌ Myth 2: `__str__` is always called instead of `__repr__`
+**Reality:** `__repr__` is called by the interpreter; `__str__` is called by `print()` and `str()`.
+
+### ❌ Myth 3: Implementing `__eq__` is enough for hashing
+**Reality:** If `__eq__` is defined, `__hash__` should also be defined or set to None.
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Customize object behavior with built-in operations |
+| Complexity | O(1) for most magic methods |
+| Thread Safe | Yes (magic methods are stateless) |
+| Best Alternative | Use built-in functions when possible |
+| When to Use | Making objects work with built-in syntax |
+| When to Avoid | Overusing magic methods, breaking expectations |

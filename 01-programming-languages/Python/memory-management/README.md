@@ -1,6 +1,6 @@
 # Python Memory Management
 
-A comprehensive guide to Python's memory management, garbage collection, and profiling.
+A detailed guide to Python's memory management, garbage collection, and profiling.
 
 ## Table of Contents
 

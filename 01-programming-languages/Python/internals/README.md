@@ -1,6 +1,6 @@
 # Python Internals
 
-A comprehensive guide to CPython internals and how Python works under the hood.
+A detailed guide to CPython internals and how Python works under the hood.
 
 ## Table of Contents
 

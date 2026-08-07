@@ -1,6 +1,6 @@
 # unittest
 
-Built-in testing framework with TestCase, assertions, and organization.
+When you need a built-in testing framework for unit and integration tests, unittest provides a structured approach. Python's TestCase, assertions, setup/teardown, and test organization help you write reliable tests without external dependencies.
 
 ## Overview
 

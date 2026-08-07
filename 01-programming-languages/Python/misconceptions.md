@@ -38,7 +38,7 @@
 **Evidence**: 
 - Python is #1 in TIOBE index (2024)
 - Major tech companies use Python for core products
-- Python has robust testing, packaging, and deployment tools
+- Python has reliable testing, packaging, and deployment tools
 
 **Interview Relevance**: Highlight Python's production use cases. Discuss architecture decisions that led to Python adoption.
 

@@ -1,6 +1,6 @@
 # Asyncio
 
-async/await, asyncio.gather, and asynchronous patterns.
+When you need to handle many concurrent network connections efficiently, asyncio provides single-threaded concurrent execution. Python's async/await, asyncio.gather, and asynchronous patterns enable non-blocking I/O and high-concurrency servers.
 
 ## Overview
 
