@@ -1,250 +1,112 @@
-# SQLAlchemy — SQL Toolkit and Object-Relational Mapper
+# SQLAlchemy
 
-> **Write Python, not SQL. Let SQLAlchemy handle the translation.**
+## Why SQLAlchemy Exists
 
-## What
+Every Python developer who works with databases eventually writes raw SQL strings, forgets to parameterize queries, and struggles with connection management. SQLAlchemy was created to solve these problems by providing two layers: a Core for SQL expression language with built-in injection protection, and an ORM that maps Python classes to database tables. It handles connection pooling, relationships, and schema migrations so you can focus on your application logic.
 
-SQLAlchemy provides two layers: a Core (SQL expression language and connection pooling) and an ORM (object-relational mapping). It maps Python classes to database tables, handles relationships, manages sessions, and generates SQL from Python expressions. It supports every major database: PostgreSQL, MySQL, SQLite, Oracle, and more.
+## What You'll Learn
 
-## Why
+By the end of this section, you'll be able to:
 
-- **Database abstraction:** Switch between SQLite (dev) and PostgreSQL (prod) with one config change.
-- **SQL injection protection:** Parameterized queries built into the expression language.
-- **Relationships:** One-to-many, many-to-many, and inheritance mapped naturally.
-- **Connection pooling:** Built-in pool management, no manual connection handling.
-- **Migration support:** Alembic (SQLAlchemy's migration tool) tracks schema changes.
+- Define models with relationships using SQLAlchemy's declarative base
+- Perform CRUD operations with proper session management
+- Use Alembic for database schema migrations
 
-## When
+## When to Use SQLAlchemy
 
-| Scenario | SQLAlchemy Approach | Why |
-|----------|-------------------|-----|
-| Web app ORM | `declarative_base()` models | Map classes to tables |
-| Raw SQL control | Core expression language | SQL without injection risk |
-| Data migration | Alembic migrations | Version-controlled schema changes |
-| Connection pooling | `create_engine(pool_size=5)` | Efficient connection reuse |
-| Complex queries | Core queries or ORM hybrid | Best of both worlds |
-| Multi-database | Multiple engines | Route queries to different DBs |
+| Use Case | Why SQLAlchemy | Alternative |
+|----------|---------------|-------------|
+| Web app ORM | Map classes to tables naturally | Django ORM |
+| Raw SQL control | SQL without injection risk | Raw SQL |
+| Data migration | Version-controlled schema changes | Manual SQL |
+| Connection pooling | Efficient connection reuse | Manual management |
+| Complex queries | Core queries or ORM hybrid | Raw SQL |
+| Multi-database | Route queries to different DBs | Manual routing |
 
-## How
+## How SQLAlchemy Works Internally
 
-### Engine and Connection
+SQLAlchemy's Core layer provides a Pythonic way to build SQL statements. Instead of concatenating strings, you use expression operators like `select()`, `where()`, and `join()`. These create Clause Elements that are rendered into database-specific SQL when executed. The Connection object manages a transaction and uses a pool of database connections for efficiency.
 
-```python
-from sqlalchemy import create_engine
-
-# Engine (connection factory)
-engine = create_engine(
-    'postgresql://user:pass@localhost/mydb',
-    pool_size=5,           # Connection pool size
-    max_overflow=10,       # Extra connections beyond pool_size
-    pool_pre_ping=True,    # Verify connections before use
-    echo=True              # Log SQL (dev only)
-)
-
-# Raw SQL with connection
-with engine.connect() as conn:
-    result = conn.execute("SELECT * FROM users WHERE age > :age", {"age": 30})
-    for row in result:
-        print(row)
-```
-
-### Declarative Models
+The ORM layer builds on Core. Each mapped class has a Table object that defines the schema. When you query `session.query(User).filter(User.age > 25)`, SQLAlchemy translates this into a SELECT statement with a WHERE clause, executes it, and hydrates the results into User objects. The Session tracks all changes and commits them in a single transaction.
 
 ```python
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean
-from sqlalchemy.orm import declarative_base, relationship, Session
-from datetime import datetime
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, Session
 
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
-
     id = Column(Integer, primary_key=True)
-    username = Column(String(50), unique=True, nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
-    age = Column(Integer)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    name = Column(String(50))
 
-    # Relationships
-    posts = relationship('Post', back_populates='author', cascade='all, delete-orphan')
-    profile = relationship('Profile', back_populates='user', uselist=False)
+engine = create_engine('sqlite:///app.db')
+Base.metadata.create_all(engine)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
-
-class Post(Base):
-    __tablename__ = 'posts'
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String(200), nullable=False)
-    content = Column(String)
-    author_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-
-    # Relationships
-    author = relationship('User', back_populates='posts')
-    tags = relationship('Tag', secondary='post_tags', back_populates='posts')
-
-class Profile(Base):
-    __tablename__ = 'profiles'
-
-    id = Column(Integer, primary_key=True)
-    bio = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'), unique=True)
-
-    user = relationship('User', back_populates='profile')
-
-# Many-to-many
-from sqlalchemy import Table
-post_tags = Table('post_tags', Base.metadata,
-    Column('post_id', Integer, ForeignKey('posts.id'), primary_key=True),
-    Column('tag_id', Integer, ForeignKey('tags.id'), primary_key=True)
-)
-
-class Tag(Base):
-    __tablename__ = 'tags'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), unique=True)
-    posts = relationship('Post', secondary=post_tags, back_populates='tags')
-```
-
-### CRUD Operations
-
-```python
-from sqlalchemy.orm import Session
-
-# Create
 with Session(engine) as session:
-    user = User(username='alice', email='alice@example.com', age=30)
+    user = User(name='Alice')
     session.add(user)
     session.commit()
-
-# Read
-with Session(engine) as session:
-    # Get by ID
-    user = session.get(User, 1)
-
-    # Query
-    users = session.query(User).filter(User.age > 25).all()
-    active = session.query(User).filter_by(is_active=True).first()
-    count = session.query(User).count()
-
-# Update
-with Session(engine) as session:
-    user = session.get(User, 1)
-    user.age = 31
-    session.commit()
-
-# Delete
-with Session(engine) as session:
-    user = session.get(User, 1)
-    session.delete(user)
-    session.commit()
-```
-
-### Relationships and Loading
-
-```python
-# Eager loading (loads related objects in one query)
-users = session.query(User).options(
-    joinedload(User.posts),
-    joinedload(User.profile)
-).all()
-
-# Lazy loading (loads on access — triggers additional queries)
-user = session.get(User, 1)
-posts = user.posts  # SQL query happens here
-
-# Relationship queries
-posts = session.query(Post).join(Post.author).filter(User.username == 'alice').all()
-
-# Many-to-many
-tag = session.query(Tag).filter_by(name='python').first()
-tag.posts  # All posts with this tag
-```
-
-### Session Management
-
-```python
-from sqlalchemy.orm import sessionmaker
-
-# Factory pattern
-SessionLocal = sessionmaker(bind=engine)
-
-# Use in context manager (recommended)
-def get_user(user_id: int):
-    with SessionLocal() as session:
-        return session.get(User, user_id)
-
-# Manual session (careful with exceptions!)
-session = SessionLocal()
-try:
-    user = User(username='bob', email='bob@example.com')
-    session.add(user)
-    session.commit()
-except Exception:
-    session.rollback()
-    raise
-finally:
-    session.close()
 ```
 
 ## Production Checklist
 
-- [ ] **Use `pool_pre_ping=True`** — handles stale connections
-- [ ] **Set `pool_size` and `max_overflow`** — control connection usage
-- [ ] **Never commit in loops** — batch operations, commit once
-- [ ] **Use `session.expire_on_commit=False`** — avoid lazy load after commit
-- [ ] **Enable SQL logging in dev only** — `echo=True` in dev, `False` in prod
-- [ ] **Use Alembic for migrations** — never manually alter production schemas
-- [ ] **Parameterize queries** — never concatenate user input into SQL
-- [ ] **Close sessions** — use context managers or `try/finally`
+### ✅ Before using SQLAlchemy in production:
 
-## Maturity Levels
+☐ I know the time/space complexity
+☐ I know common mistakes
+☐ I know alternatives
+☐ I know limitations
+☐ I know how to debug it
+☐ I've tested with realistic data volume
+☐ I've profiled for performance
 
-| Level | Name | Characteristics |
-|-------|------|----------------|
-| 1 | **Raw SQL** | `engine.execute()` with string SQL. No ORM. |
-| 2 | **Basic ORM** | Declarative models, simple queries, basic relationships. |
-| 3 | **Intermediate** | Complex joins, eager loading, custom types, events. |
-| 4 | **Advanced** | Multiple databases, hybrid properties, association proxies, bulk operations. |
-| 5 | **Expert** | Custom dialects, connection pooling tuning, async SQLAlchemy, performance profiling. |
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows basic syntax
+- Can write working code
+
+### Level 2: Understands
+- Knows time/space complexity
+- Understands edge cases
+
+### Level 3: Deep Knowledge
+- Knows internal implementation
+- Can explain trade-offs
+
+### Level 4: Expert
+- Can optimize for specific use cases
+- Can debug in production
+
+### Level 5: Master
+- Can design custom implementations
+- Can teach others
 
 ## Common Myths
 
-### Myth 1: "SQLAlchemy is slow because of the ORM overhead"
-**Reality:** The ORM adds minimal overhead for most operations. For bulk inserts, use `session.bulk_save_objects()` or Core's `insert()` for near-native speed. The ORM's convenience far outweighs its overhead in typical web applications.
+### ❌ Myth 1: SQLAlchemy is slow because of the ORM overhead
+**Reality:** The ORM adds minimal overhead for most operations. For bulk inserts, use `session.bulk_save_objects()` or Core's `insert()` for near-native speed.
 
-### Myth 2: "You should use raw SQL for performance"
-**Reality:** Most performance issues come from N+1 queries (solved with `joinedload()`), missing indexes, or bad schema design — not ORM overhead. Profile first, then optimize.
+### ❌ Myth 2: You should use raw SQL for performance
+**Reality:** Most performance issues come from N+1 queries (solved with `joinedload()`), missing indexes, or bad schema design — not ORM overhead.
 
-### Myth 3: "SQLAlchemy's session is just a database connection"
-**Reality:** The session is a Unit of Work pattern. It tracks changes, manages identity (one Python object per DB row), and handles transactions. Understanding this is key to using SQLAlchemy correctly.
+### ❌ Myth 3: SQLAlchemy's session is just a database connection
+**Reality:** The session is a Unit of Work pattern. It tracks changes, manages identity (one Python object per DB row), and handles transactions.
 
 ## One-Minute Revision
 
-| Concept | Syntax | Purpose |
-|---------|--------|---------|
-| Engine | `create_engine(url)` | Connection factory |
-| Model | `class User(Base)` | Map to table |
-| Session | `Session(engine)` | Unit of work |
-| Query | `session.query(User).filter(...)` | Read data |
-| Create | `session.add(obj)` + `commit()` | Insert row |
-| Update | `obj.attr = value` + `commit()` | Modify row |
-| Delete | `session.delete(obj)` + `commit()` | Remove row |
-| Relationship | `relationship('Model', back_populates='...')` | Link tables |
-| ForeignKey | `Column(Integer, ForeignKey('table.id'))` | Referential integrity |
-| Migration | `alembic revision --autogenerate` | Schema versioning |
+| Aspect | Value |
+|--------|-------|
+| Purpose | SQL toolkit and ORM |
+| Complexity | O(1) for simple queries, O(n) for joins |
+| Thread Safe | No (sessions are not thread-safe) |
+| Best Alternative | Django ORM for Django apps |
+| When to Use | Database-driven applications |
+| When to Avoid | Simple scripts with hardcoded queries |
 
 ## Related Topics
 
-- [22-libraries-flask](../22-libraries-flask/) - Web framework integration
-- [23-libraries-django](../23-libraries-django/) - Django ORM alternative
-- [19-libraries-numpy](../19-libraries-numpy/) - Database ↔ DataFrame pipeline
-- [08-file-io](../08-file-io/) - File-based alternatives
-
----
-
-> **Remember:** SQLAlchemy's power is its two-layer design. Use the ORM for convenience, drop to Core when you need control. Both are first-class citizens.
+- [04-flask](../04-flask/) - Web framework integration
+- [05-django](../05-django/) - Django ORM alternative
+- [17-sqlite3](../17-sqlite3/) - Built-in SQLite alternative
