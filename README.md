@@ -63,7 +63,7 @@ graph TD
 | Module | Description | Start Here |
 |--------|-------------|------------|
 | [00-Fundamentals](00-fundamentals/) | Software engineering principles, trade-offs, metrics | Yes |
-| [01-Programming Languages](01-programming-languages/) | Java, Python, Go, JavaScript, TypeScript, C#, Kotlin, Rust, Scala, PHP | Pick your language |
+| [01-Programming Languages](01-programming-languages/) | Java, Python, C, C++, Go, JavaScript, TypeScript, C#, Kotlin, Rust, Scala, PHP | Pick your language |
 | [02-Computer Science](02-computer-science/) | Algorithms, data structures, OS, networks | Yes |
 | [03-Software Design](03-software-design/) | Design patterns, SOLID, architecture styles | Yes |
 
