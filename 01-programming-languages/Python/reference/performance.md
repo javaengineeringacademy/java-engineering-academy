@@ -1,118 +1,232 @@
 # Python Performance
 
-Profiling, optimization, and common bottlenecks.
+## Profiling
 
-## Profiling Tools
-
+### cProfile
 ```python
-# cProfile — function-level profiling
 import cProfile
+
+def my_function():
+    total = 0
+    for i in range(1000000):
+        total += i
+    return total
+
+# Profile function
 cProfile.run('my_function()')
 
-# timeit — micro-benchmarks
-import timeit
-timeit.timeit('sum(range(1000))', number=10000)
-
-# line_profiler — line-by-line (pip install line_profiler)
-# @profile
-# def my_function(): ...
+# Profile specific code block
+profiler = cProfile.Profile()
+profiler.enable()
+# Code to profile
+profiler.disable()
+profiler.print_stats(sort='cumulative')
 ```
 
-## Data Structure Performance
-
-| Operation | list | dict | set | deque |
-|-----------|------|------|-----|-------|
-| Index | O(1) | — | — | O(n) |
-| Append | O(1) | — | — | O(1) |
-| Pop end | O(1) | — | — | O(1) |
-| Pop front | O(n) | — | — | O(1) |
-| Lookup | O(n) | O(1) | O(1) | O(n) |
-| Insert | O(n) | — | — | O(1) |
-
-## Common Optimizations
-
-```python
-# Use set for membership testing
-if item in large_list:    # O(n)
-if item in large_set:     # O(1)
-
-# Use deque for queue operations
-from collections import deque
-queue = deque()
-queue.append(item)    # O(1)
-queue.popleft()       # O(1)
-
-# Use generator for large data
-sum(x**2 for x in range(10**7))  # Memory efficient
-
-# Use join for string concatenation
-result = "".join(words)  # O(n)
-
-# Use f-strings over format
-f"{name} is {age}"  # Fastest
-
-# Use defaultdict/setdefault
-from collections import defaultdict
-d = defaultdict(list)
-d[key].append(value)  # No key check needed
+### line_profiler
+```bash
+pip install line_profiler
 ```
 
-## Memory Optimization
-
 ```python
-# Use __slots__ for classes
-class Point:
-    __slots__ = ('x', 'y')
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-# Use array for numeric arrays
-from array import array
-arr = array('i', [1, 2, 3])  # 4 bytes per int vs 28 for list
-
-# Use named tuples for records
-from collections import namedtuple
-Point = namedtuple('Point', ['x', 'y'])
-
-# Use sys.getsizeof to check sizes
-import sys
-sys.getsizeof([])         # 56 bytes
-sys.getsizeof([1, 2, 3])  # 88 bytes
+@profile  # Add decorator
+def slow_function():
+    import time
+    time.sleep(1)
+    return sum(range(1000000))
 ```
 
-## Concurrency
+```bash
+kernprof -l -v myscript.py
+```
+
+### memory_profiler
+```bash
+pip install memory_profiler
+```
 
 ```python
-# I/O-bound: use asyncio or threading
-# CPU-bound: use multiprocessing
-# GIL prevents true threading for CPU work
+@profile
+def memory_heavy():
+    data = [i for i in range(1000000)]
+    return sum(data)
+```
 
+```bash
+python -m memory_profiler myscript.py
+```
+
+### py-spy
+```bash
+pip install py-spy
+
+# Profile running process
+py-spy top --pid 12345
+
+# Generate flame graph
+py-spy record -o profile.svg --pid 12345
+```
+
+## Async Programming
+
+### asyncio
+```python
 import asyncio
-async def fetch():
-    await asyncio.sleep(1)  # Releases GIL
 
-from concurrent.futures import ProcessPoolExecutor
-with ProcessPoolExecutor() as executor:
-    executor.submit(cpu_heavy_task)
+async def fetch_data(url):
+    await asyncio.sleep(1)  # Simulate I/O
+    return f"Data from {url}"
+
+async def main():
+    tasks = [
+        fetch_data("http://example.com/1"),
+        fetch_data("http://example.com/2"),
+    ]
+    results = await asyncio.gather(*tasks)
+    return results
+
+asyncio.run(main())
 ```
 
-## C Extensions
+### aiohttp
+```python
+import aiohttp
+import asyncio
+
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def main():
+    async with aiohttp.ClientSession() as session:
+        html = await fetch(session, 'http://python.org')
+```
+
+## Cython
 
 ```python
-# NumPy for numerical computation
-import numpy as np
-arr = np.array([1, 2, 3])
-result = arr * 2  # 100x faster than list
-
-# Cython for C-speed Python
-# Use C extensions for hot paths
+# example.pyx
+def fibonacci(int n):
+    cdef int a = 0, b = 1
+    for i in range(n):
+        a, b = b, a + b
+    return a
 ```
 
-## Quick Wins
+```python
+# setup.py
+from setuptools import setup
+from Cython.Build import cythonize
 
-1. Use `collections.Counter` over manual counting
-2. Use `itertools` for iteration patterns
-3. Use `functools.lru_cache` for memoization
-4. Avoid global variables in hot loops
-5. Use list comprehensions over map/filter
+setup(ext_modules=cythonize("example.pyx"))
+```
+
+```bash
+python setup.py build_ext --inplace
+```
+
+## PyPy
+
+Alternative Python interpreter with JIT compilation.
+
+```bash
+# Install PyPy
+# Download from https://pypy.org
+
+# Run with PyPy
+pypy3 myscript.py
+
+# Benchmark comparison
+python -m timeit "sum(range(1000000))"
+pypy3 -m timeit "sum(range(1000000))"
+```
+
+## Optimization Techniques
+
+### Built-in Functions
+```python
+# Slow
+result = []
+for i in range(1000000):
+    result.append(i * 2)
+
+# Fast
+result = list(map(lambda x: x * 2, range(1000000)))
+
+# Faster
+result = [i * 2 for i in range(1000000)]
+```
+
+### Data Structure Selection
+```python
+# Slow - O(n) lookup
+my_list = [1, 2, 3, 4, 5]
+if 3 in my_list:  # O(n)
+    pass
+
+# Fast - O(1) lookup
+my_set = {1, 2, 3, 4, 5}
+if 3 in my_set:  # O(1)
+    pass
+```
+
+### String Concatenation
+```python
+# Slow
+result = ""
+for s in strings:
+    result += s
+
+# Fast
+result = "".join(strings)
+```
+
+### Generator Expressions
+```python
+# Memory efficient
+sum(i**2 for i in range(1000000))
+
+# vs list comprehension (uses more memory)
+sum([i**2 for i in range(1000000)])
+```
+
+## NumPy for Numerical Computing
+
+```python
+import numpy as np
+
+# Slow Python
+result = sum([i**2 for i in range(1000000)])
+
+# Fast NumPy
+arr = np.arange(1000000)
+result = np.sum(arr**2)
+```
+
+## Benchmarking
+
+```python
+import timeit
+
+# Benchmark code snippet
+time = timeit.timeit(
+    'sum(range(1000000))',
+    number=100
+)
+print(f"Time: {time:.4f}s")
+
+# Compare approaches
+time1 = timeit.timeit('[i**2 for i in range(1000)]', number=1000)
+time2 = timeit.timeit('list(map(lambda x: x**2, range(1000)))', number=1000)
+print(f"List comp: {time1:.4f}s, Map: {time2:.4f}s")
+```
+
+## Best Practices
+
+1. Profile before optimizing
+2. Use appropriate data structures
+3. Use built-in functions
+4. Consider Cython for CPU-bound code
+5. Use async for I/O-bound tasks
+6. Cache expensive computations
+7. Avoid premature optimization
