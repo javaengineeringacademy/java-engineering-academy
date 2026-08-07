@@ -521,7 +521,7 @@ setup(
 pip install flake8
 flake8 myproject/
 
-# pylint - Comprehensive analysis
+# pylint - Detailed analysis
 pip install pylint
 pylint myproject/
 

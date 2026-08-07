@@ -171,7 +171,7 @@ def calculate_discount(price: float, discount: float) -> float:
 1. Use built-in functions and libraries
 2. Profile before optimizing
 3. Use appropriate data structures
-4. Leverage list comprehensions
+4. Use list comprehensions
 5. Consider generators for large datasets
 
 ## Security

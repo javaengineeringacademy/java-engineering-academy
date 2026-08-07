@@ -1376,7 +1376,7 @@ Python fundamentals cover a wide range of topics from basic variables and types 
 - **Dynamic typing** with optional type hints
 - **Rich standard library** with modules for common tasks
 - **Multiple programming approachs**: procedural, object-oriented, functional
-- **Comprehensive error handling** with try-except-finally
+- **Detailed error handling** with try-except-finally
 - **Comprehensions** for concise data transformation
 - **Decorators** for modifying function behavior
 - **Context managers** for resource management

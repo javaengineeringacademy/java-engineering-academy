@@ -113,7 +113,7 @@ def parse_data(data: str, format: str):
 ## Best Practices
 
 1. Use functions for simple factories; classes for complex ones
-2. Leverage Python's dynamic typing - no need for abstract interfaces in simple cases
+2. Use Python's dynamic typing - no need for abstract interfaces in simple cases
 3. Consider using dictionaries for type mapping
 4. Keep factory methods focused on single responsibility
 5. Document expected return types clearly

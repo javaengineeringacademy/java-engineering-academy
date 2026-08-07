@@ -225,7 +225,7 @@ print(f"List comp: {time1:.4f}s, Map: {time2:.4f}s")
 
 1. Profile before optimizing
 2. Use appropriate data structures
-3. Leverage built-in functions
+3. Use built-in functions
 4. Consider Cython for CPU-bound code
 5. Use async for I/O-bound tasks
 6. Cache expensive computations

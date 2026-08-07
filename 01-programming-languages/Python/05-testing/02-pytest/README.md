@@ -1,6 +1,6 @@
 # pytest
 
-When you need a flexible and feature-rich testing framework, pytest simplifies test writing and supports advanced features. Python's fixtures, parametrize, and extensive plugin ecosystem make pytest a powerful tool for comprehensive testing.
+When you need a flexible and feature-rich testing framework, pytest simplifies test writing and supports advanced features. Python's fixtures, parametrize, and extensive plugin ecosystem make pytest a powerful tool for detailed testing.
 
 ## Overview
 

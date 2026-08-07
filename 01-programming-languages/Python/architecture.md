@@ -100,7 +100,7 @@ print(sys.getrefcount(obj))  # Reference count
 
 **Optimization Strategies:**
 - Use built-in data structures
-- Leverage C extensions
+- Use C extensions
 - Profile before optimizing
 - Consider PyPy for long-running scripts
 
