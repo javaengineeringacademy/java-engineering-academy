@@ -1,5 +1,7 @@
 # Data Structures Quiz
 
+## Questions
+
 1. What are the advantages of linked lists over arrays?
 2. What is a stack and its LIFO principle?
 3. What is a circular queue?
@@ -10,6 +12,11 @@
 8. What is a graph?
 9. When would you use a linked list over an array?
 10. What is cache locality?
+11. What is an AVL tree and why is it useful?
+12. What is the difference between a priority queue and a regular queue?
+13. What is a trie and what is it used for?
+14. What is open addressing in hash tables?
+15. What is the difference between a directed and undirected graph?
 
 ## Answers
 
@@ -23,3 +30,8 @@
 8. A collection of vertices connected by edges
 9. When you need frequent insertions/deletions
 10. Data stored close in memory improves cache performance
+11. A self-balancing BST where the height difference between left and right subtrees is at most 1; guarantees O(log n) operations
+12. Priority queue serves elements by priority (not insertion order); regular queue is FIFO
+13. A tree-like data structure for storing strings with shared prefixes; used in autocomplete, spell checkers, and routing tables
+14. Collisions are resolved by finding another slot in the hash table (linear probing, quadratic probing, double hashing)
+15. Directed graph has ordered edges (A→B ≠ B→A); undirected graph has unordered edges (A-B implies both directions)

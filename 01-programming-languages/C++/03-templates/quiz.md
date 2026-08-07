@@ -3,34 +3,64 @@
 ## Questions
 
 ### 1. What is the syntax for declaring a function template?
-A) `template <typename T> T func(T a);`  
-B) `func <typename T> (T a);`  
-C) `template (typename T) T func(T a);`  
+A) `template <typename T> T func(T a);`
+B) `func <typename T> (T a);`
+C) `template (typename T) T func(T a);`
 D) `T template func(T a);`
 
 ### 2. What does SFINAE stand for?
-A) Substitution Failure Is Not An Error  
-B) Template Failure Is Not An Error  
-C) Type Failure Is Not An Error  
+A) Substitution Failure Is Not An Error
+B) Template Failure Is Not An Error
+C) Type Failure Is Not An Error
 D) Compilation Failure Is Not An Error
 
 ### 3. When is template code instantiated?
-A) At compile time  
-B) At runtime  
-C) At link time  
+A) At compile time
+B) At runtime
+C) At link time
 D) At object creation time
 
 ### 4. What is template specialization?
-A) Creating a specific implementation for a particular type  
-B) Using templates with specific values  
-C) Creating templates within templates  
+A) Creating a specific implementation for a particular type
+B) Using templates with specific values
+C) Creating templates within templates
 D) Using multiple template parameters
 
 ### 5. What is the purpose of `typename` keyword in templates?
-A) To declare a type parameter  
-B) To indicate a dependent type  
-C) To create a new type  
+A) To declare a type parameter
+B) To indicate a dependent type
+C) To create a new type
 D) Both A and B
+
+### 6. What is a variadic template?
+A) A template that accepts any number of arguments
+B) A template with default arguments
+C) A template that varies at runtime
+D) A template with fixed parameters
+
+### 7. What is template metaprogramming?
+A) Writing templates that compute values at compile time
+B) Using templates at runtime
+C) Debugging templates
+D) Optimizing template instantiation
+
+### 8. What happens if template arguments cannot be deduced?
+A) Compilation error
+B) Runtime error
+C) Linker error
+D) Undefined behavior
+
+### 9. What is the difference between `class` and `typename` in template parameters?
+A) `class` is for classes only
+B) No difference in modern C++
+C) `typename` is faster
+D) `class` is deprecated
+
+### 10. What is explicit template specialization?
+A) Specifying exact template arguments when calling
+B) Providing a completely custom implementation for specific types
+C) Forcing template instantiation
+D) Disabling template features
 
 ## Answers
 1. A) `template <typename T> T func(T a);`
@@ -38,3 +68,8 @@ D) Both A and B
 3. A) At compile time
 4. A) Creating a specific implementation for a particular type
 5. D) Both A and B
+6. A) A template that accepts any number of arguments
+7. A) Writing templates that compute values at compile time
+8. A) Compilation error
+9. B) No difference in modern C++
+10. B) Providing a completely custom implementation for specific types
