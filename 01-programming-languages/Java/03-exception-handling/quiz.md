@@ -1,38 +1,57 @@
 # Exception Handling Quiz
 
-## Question 1 (MCQ)
-Which of the following is a checked exception in Java?
-- A) NullPointerException
-- B) ArrayIndexOutOfBoundsException
-- C) IOException
-- D) ClassCastException
+## Question 1 (Production Scenario)
+Your microservice calls an external payment API that occasionally times out. During peak hours, 30% of requests fail with `SocketTimeoutException`. The service must remain available. How should you handle this?
 
-**Answer: C**
-**Explanation:** Checked exceptions (like IOException, SQLException) must be declared in the method signature or caught. Unchecked exceptions (RuntimeException subclasses) don't require explicit handling.
-
----
-
-## Question 2 (MCQ)
-What is the correct order of blocks in a try-catch-finally statement?
-- A) try → finally → catch
-- B) catch → try → finally
-- C) try → catch → finally
-- D) finally → try → catch
-
-**Answer: C**
-**Explanation:** The order is always: `try` block first, then one or more `catch` blocks, and optionally `finally` at the end. The `finally` block always executes regardless of whether an exception is thrown.
-
----
-
-## Question 3 (MCQ)
-What happens if an exception is thrown inside a finally block?
-- A) It is ignored
-- B) It replaces any exception from the try block
-- C) The program terminates immediately
-- D) It is caught by the catch block
+- A) Let the exception propagate to the caller
+- B) Catch the specific exception, implement exponential backoff retry, and fall back to a cached response
+- C) Catch `Exception` and return null
+- D) Increase the connection timeout to 60 seconds
 
 **Answer: B**
-**Explanation:** If a finally block throws an exception, it masks any exception from the try/catch block. This is why code inside finally should be kept simple and not throw exceptions.
+**Explanation:** Retry with exponential backoff handles transient failures without overwhelming the external service. Falling back to cached data maintains availability. Catching specific exceptions (not generic `Exception`) allows targeted handling. This pattern (retry + fallback) is standard for resilient microservices.
+
+---
+
+## Question 2 (Production Scenario)
+A developer writes a method that reads a file and parses JSON. They wrap everything in `catch (Exception e)` and return null. In production, the system silently produces incorrect results. What went wrong?
+
+- A) The method should catch `RuntimeException` instead
+- B) Catching `Exception` and returning null masks all errors, making failures invisible to callers
+- C) JSON parsing doesn't throw exceptions
+- D) File reading always succeeds
+
+**Answer: B**
+**Explanation:** Catching `Exception` and returning null is an anti-pattern. Callers cannot distinguish between "no data" and "error occurred." This leads to silent failures and incorrect business logic. The fix: catch specific exceptions (FileNotFoundException, JsonParseException), log them, and either rethrow as a custom exception or return a meaningful error result.
+
+---
+
+## Question 3 (Debugging)
+A production application throws `NullPointerException` intermittently. The stack trace shows:
+
+```java
+public void processOrder(Order order) {
+    try {
+        validate(order);
+        save(order);
+        sendNotification(order);
+    } catch (Exception e) {
+        // handle
+    } finally {
+        order.setStatus("PROCESSED");
+    }
+}
+```
+
+The `order` parameter is sometimes null. What is the bug?
+
+- A) The try-catch block should be removed
+- B) The finally block executes even when order is null, causing NPE on `order.setStatus()`
+- C) The `save()` method should be called before `validate()`
+- D) Exception handling is not needed for NPE
+
+**Answer: B**
+**Explanation:** If `order` is null, the `finally` block still executes and calls `order.setStatus("PROCESSED")`, throwing NPE. The fix: null-check `order` before entering the try block, or add a null check in the finally block: `if (order != null) order.setStatus("PROCESSED");`.
 
 ---
 

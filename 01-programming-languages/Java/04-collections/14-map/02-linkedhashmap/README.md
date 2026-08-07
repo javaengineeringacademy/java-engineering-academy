@@ -428,6 +428,25 @@ public class LinkedHashMapBasics {
 ### ❌ Myth 3: LinkedHashMap is not thread-safe
 **Reality:** Correct. Like HashMap, it requires external synchronization for concurrent access.
 
+## Alternatives
+
+| Collection | Ordered | Access Order | LRU Support | Memory | Use When |
+|------------|---------|-------------|-------------|--------|----------|
+| LinkedHashMap | Yes | Yes (configurable) | Yes | Moderate | Insertion/access order needed |
+| HashMap | No | No | No | Low | Fast lookups, no order needed |
+| TreeMap | Yes (sorted) | No | No | High | Sorted key iteration |
+| ConcurrentHashMap | No | No | No | High | Concurrent access |
+| Caffeine/Guava Cache | Yes | Yes | Yes | Configurable | Production LRU caches |
+
+## Trade-offs
+
+LinkedHashMap maintains order because it:
+- Uses more memory than HashMap (2 extra pointers per entry: before/after)
+- Is not thread-safe (use Collections.synchronizedMap or ConcurrentHashMap)
+- Access order mode adds overhead on get() (moves entries in linked list)
+- LRU eviction via removeEldestEntry() is per-put (not time-based)
+- Resizing is more expensive than HashMap (re-links doubly-linked list)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

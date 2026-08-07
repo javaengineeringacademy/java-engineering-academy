@@ -15,13 +15,19 @@ Without proper exception handling, programs crash unpredictably on invalid input
 - Build fault-tolerant systems
 
 ## History
-- **1995** — Java 1.0 introduced checked and unchecked exceptions, `try-catch-finally`
-- **1998** — Java 1.2 added `Throwable` as base class for all errors and exceptions
-- **2004** — Java 5 introduced `AutoCloseable` for future try-with-resources
-- **2011** — Java 7 added multi-catch (`catch (A | B e)`) and try-with-resources
-- **2014** — Java 8 refined exception handling in lambdas
-- **2021** — Java 17 added helpful `NullPointerException` messages
-- **2023** — Java 21 continued improving error diagnostics
+- **1995** — Java 1.0 introduced checked and unchecked exceptions, `try-catch-finally` to provide a structured way to handle runtime errors and separate error-handling code from normal logic
+- **1998** — Java 1.2 added `Throwable` as base class for all errors and exceptions to unify the exception hierarchy and improve error handling consistency
+- **2004** — Java 5 introduced `AutoCloseable` to enable automatic resource management in try-with-resources, reducing resource leaks
+- **2011** — Java 7 added multi-catch (`catch (A | B e)`) and try-with-resources to simplify exception handling and ensure resources are closed automatically
+- **2014** — Java 8 refined exception handling in lambdas to allow functional interfaces to throw exceptions, improving integration with Streams and functional programming
+- **2021** — Java 17 added helpful `NullPointerException` messages to pinpoint the exact variable that was null, simplifying debugging
+- **2023** — Java 21 continued improving error diagnostics to provide clearer, more actionable error messages for developers
+
+## Production Notes
+- **Where is it used?** In all Java applications that need to handle errors, recover from failures, and manage resources reliably
+- **Why is it useful?** Provides structured error handling, separates error logic from normal code, and ensures resource cleanup
+- **When should it be avoided?** For simple scripts where exceptions are not expected; overuse can lead to complex catch blocks and performance overhead
+- **Alternative?** Error codes, return values, or Optional for expected null cases
 
 ## Learning Objectives
 

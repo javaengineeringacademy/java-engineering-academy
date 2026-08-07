@@ -1,50 +1,62 @@
 # Multithreading Quiz
 
-## Question 1 (MCQ)
-What is the difference between start() and run() methods?
-- A) start() creates a new thread and calls run(); run() executes in the current thread
-- B) start() calls run() directly; run() creates a new thread
-- C) Both create new threads
-- D) Both execute in the current thread
+## Question 1 (Production Scenario)
+Your web server needs to handle 10,000 concurrent connections. Each connection requires minimal processing (read request, send response). The current implementation creates a new thread per connection and crashes under load. How should you redesign the threading model?
 
-**Answer: A**
-**Explanation:** `start()` creates a new OS thread and invokes `run()` in that thread. `run()` is just a regular method call in the current thread — it does not create any new thread.
+- A) Create a new thread for each connection (current approach)
+- B) Use a fixed thread pool with a size equal to the number of CPU cores
+- C) Use a cached thread pool or virtual threads (Java 21+) to handle concurrent I/O efficiently
+- D) Use a single thread for all connections
+
+**Answer: C**
+**Explanation:** I/O-bound operations (like network I/O) benefit from many threads. A cached thread pool creates threads as needed, and virtual threads (Java 21+) handle millions of concurrent connections with minimal overhead. Fixed thread pools are better for CPU-bound work, not I/O-bound servers.
 
 ---
 
-## Question 2 (MCQ)
-What does the volatile keyword guarantee?
-- A) Atomicity of compound operations
-- B) Visibility of writes to all threads and prevents instruction reordering
-- C) Mutual exclusion for synchronized blocks
-- D) Thread-safe iteration over collections
+## Question 2 (Production Scenario)
+A financial trading system processes transactions. Each transaction updates multiple shared counters atomically. The current implementation uses `synchronized` blocks, causing contention under high load. Which alternative reduces contention?
+
+- A) Use `volatile` variables instead of `synchronized`
+- B) Use `AtomicLong` with `compareAndSet()` for lock-free updates
+- C) Use `Thread.sleep()` between updates
+- D) Use `wait()` and `notify()` for coordination
 
 **Answer: B**
-**Explanation:** `volatile` ensures that reads and writes to a variable go directly to main memory, not CPU caches. It prevents instruction reordering but does NOT provide atomicity for compound operations like `count++`.
+**Explanation:** `AtomicLong` with CAS (compare-and-swap) operations provides lock-free thread safety. Unlike `synchronized`, it doesn't block threads — it retries on contention. `volatile` only ensures visibility, not atomicity for compound operations. For high-contention counters, atomic classes outperform synchronized blocks.
 
 ---
 
-## Question 3 (MCQ)
-What is the difference between wait() and sleep()?
-- A) wait() releases the object lock; sleep() does not
-- B) wait() does not release the lock; sleep() does
-- C) Both release the lock
-- D) Neither releases the lock
+## Question 3 (Debugging)
+A production application throws `ConcurrentModificationException` intermittently. The code:
+
+```java
+List<String> items = new ArrayList<>();
+// Thread 1: items.add("A");
+// Thread 2: for (String s : items) { System.out.println(s); }
+```
+
+What is the bug?
+
+- A) `ArrayList` is not thread-safe — use `CopyOnWriteArrayList` for concurrent read/write
+- B) The for-each loop should use an index instead
+- C) Add `synchronized` around both operations
+- D) Use `Vector` instead of `ArrayList`
 
 **Answer: A**
-**Explanation:** `wait()` releases the monitor lock on the object and waits until notified. `sleep()` pauses the thread for a specified time but does NOT release any locks it holds.
+**Explanation:** `ArrayList` is not thread-safe. Concurrent modification during iteration throws `ConcurrentModificationException`. `CopyOnWriteArrayList` creates a new copy of the array on each write, allowing safe iteration without locking. For read-heavy scenarios, this provides excellent concurrency.
 
 ---
 
-## Question 4 (MCQ)
-What is a deadlock?
-- A) A thread that runs too slowly
-- B) Two or more threads waiting for each other's locks indefinitely
-- C) A thread that throws an exception
-- D) A thread that is interrupted
+## Question 4 (Production Scenario)
+You are building a producer-consumer system where producers add items to a buffer and consumers process them. The buffer has a fixed capacity of 1000 items. Producers can produce faster than consumers can consume. Which concurrent collection is best?
+
+- A) `ArrayList` with synchronized methods
+- B) `BlockingQueue` (e.g., `ArrayBlockingQueue`)
+- C) `HashMap` with locks
+- D) `LinkedList` with manual synchronization
 
 **Answer: B**
-**Explanation:** Deadlock occurs when Thread A holds Lock1 and waits for Lock2, while Thread B holds Lock2 and waits for Lock1. Both threads are stuck forever in a circular dependency.
+**Explanation:** `BlockingQueue` provides built-in thread safety with `put()` blocking when full and `take()` blocking when empty. This eliminates the need for manual wait/notify coordination, reducing complexity and potential bugs. It's specifically designed for producer-consumer patterns.
 
 ---
 

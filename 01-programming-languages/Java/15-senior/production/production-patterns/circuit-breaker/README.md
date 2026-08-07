@@ -1,8 +1,8 @@
 # Circuit Breaker Pattern
 
-## What Is It?
+## Why It Exists
 
-The circuit breaker pattern prevents an application from repeatedly trying to execute an operation that is likely to fail, allowing it to continue without waiting for fault recovery.
+Imagine your checkout service calls a payment gateway, and that gateway goes down. Without protection, every request keeps trying, your thread pool fills up, connections hang, and eventually your whole service collapses — even though the problem is downstream. A circuit breaker watches for failures and trips open when things go wrong, so your service can fail fast and stay alive while the downstream recovers.
 
 ## States
 
@@ -19,12 +19,29 @@ The circuit breaker pattern prevents an application from repeatedly trying to ex
 - Any operation with potential cascading failure risk
 - Microservice-to-microservice communication
 
+## When NOT to Use This
+
+- Simple retry with backoff handles the failure — circuit breaker adds unnecessary state
+- Your operations are purely in-process with no external calls
+- The failure rate is too low to justify the overhead of tracking it
+- You don't have a fallback — circuit breaker without fallback just swaps one exception for another
+
 ## Benefits
 
 - Prevents cascading failures across services
 - Reduces load on failing downstream services
 - Provides fast-fail instead of hanging requests
 - Enables automatic recovery detection
+
+## Trade-offs
+
+| Aspect | With Circuit Breaker | Without |
+|--------|---------------------|---------|
+| Cascading failures | Prevented | Can spread across services |
+| Complexity | State machine + config tuning | Simple call chain |
+| Debugging | State transitions add noise | Straightforward stack traces |
+| Latency when open | ~1µs (fast fail) | 30s+ (timeout) |
+| Recovery detection | Automatic via half-open | Manual intervention |
 
 ## Implementation Options
 
@@ -185,6 +202,25 @@ When a downstream service fails, callers keep sending requests, overwhelming the
 
 ## References
 
+## Alternatives
+
+| Pattern | State Machine | Fail-Fast | Recovery Detection | Use When |
+|---------|--------------|-----------|-------------------|----------|
+| Circuit Breaker | Yes (3 states) | Yes | Yes | Cascading failure prevention |
+| Retry with backoff | No | No | No | Transient, recoverable failures |
+| Rate limiting | No | No | No | Preventing overload on healthy services |
+| Bulkhead | No | No | No | Isolating failure domains |
+| Timeout + fallback | No | Yes | No | Simple degradation without state machine |
+
+## Trade-offs
+
+Circuit breaker prevents cascading failures because it:
+- Adds ~10-50ns overhead per call (state check + metrics update)
+- Requires tuning failure thresholds (too sensitive = opens too often)
+- Needs meaningful fallback responses (without fallback, just changes exception type)
+- State transitions must be monitored (missing recovery opportunities)
+- Should be combined with retry for transient failures (circuit breaker alone isn't enough)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -224,3 +260,13 @@ When a downstream service fails, callers keep sending requests, overwhelming the
 
 ### ❌ Myth 3: Circuit breaker state is shared
 **Reality:** Usually per-service. Each service should have its own circuit breaker instance.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Configure Resilience4j circuit breakers with appropriate thresholds for your service
+- Implement meaningful fallbacks that degrade gracefully instead of just catching exceptions
+- Monitor circuit breaker state transitions and tune thresholds based on real failure data
+- Combine circuit breaker with retry patterns for both transient and persistent failures
+- Decide when circuit breaker adds resilience vs when it just adds complexity

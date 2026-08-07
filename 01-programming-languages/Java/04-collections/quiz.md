@@ -1,50 +1,64 @@
 # Collections Framework Quiz
 
-## Question 1 (MCQ)
-What is the time complexity of get() and set() operations on ArrayList?
-- A) O(n)
-- B) O(log n)
-- C) O(1)
-- D) O(n²)
+## Question 1 (Production Scenario)
+Your application receives one million concurrent HTTP requests. Each request needs to look up user session data by session ID. The session data is read-heavy (95% reads, 5% writes). Which collection should you choose?
 
-**Answer: C**
-**Explanation:** ArrayList is backed by an array, so index-based access (get and set) is O(1) since the memory address can be calculated directly.
-
----
-
-## Question 2 (MCQ)
-Which collection maintains insertion order and does not allow duplicates?
-- A) HashSet
-- B) TreeSet
-- C) LinkedHashSet
-- D) PriorityQueue
-
-**Answer: C**
-**Explanation:** LinkedHashSet uses a linked list to maintain insertion order while using a hash table for O(1) lookups. HashSet is unordered, TreeSet is sorted, and PriorityQueue has no guaranteed order.
-
----
-
-## Question 3 (MCQ)
-What is the default load factor of a HashMap?
-- A) 0.5
-- B) 0.75
-- C) 1.0
-- D) 0.25
+- A) `ArrayList` for fast index-based access
+- B) `ConcurrentHashMap` for thread-safe O(1) lookups without full synchronization
+- C) `Collections.synchronizedMap(new HashMap<>())` for simplicity
+- D) `TreeMap` for sorted access by session ID
 
 **Answer: B**
-**Explanation:** The default load factor is 0.75, meaning the HashMap resizes when 75% of buckets are filled. This balances memory usage and collision probability.
+**Explanation:** `ConcurrentHashMap` uses segment locking (lock striping), allowing concurrent reads without locking the entire map. `Collections.synchronizedMap` locks the entire map for every operation, creating a bottleneck under high concurrency. `ArrayList` doesn't support key-based lookups. `TreeMap` has O(log n) lookup, slower than O(1).
 
 ---
 
-## Question 4 (MCQ)
-When should you use a LinkedList over an ArrayList?
-- A) For random access by index
-- B) For frequent insertions and deletions at the beginning
-- C) For iterating over elements
-- D) For storing primitive types
+## Question 2 (Production Scenario)
+Your e-commerce platform needs to display product search results. Users expect results to appear in the order they were added to the catalog, but the system must also prevent duplicate product entries. Which collection is appropriate?
+
+- A) `HashSet` for O(1) lookups
+- B) `LinkedHashSet` for insertion order with uniqueness
+- C) `TreeSet` for sorted order
+- D) `ArrayList` with manual duplicate checking
 
 **Answer: B**
-**Explanation:** LinkedList has O(1) insertion/deletion at the head (no element shifting), while ArrayList requires O(n) shifting. However, ArrayList is preferred for random access due to O(1) index operations.
+**Explanation:** `LinkedHashSet` maintains insertion order while guaranteeing uniqueness via hash-based equality checks. `HashSet` doesn't preserve order. `TreeSet` sorts alphabetically (not insertion order). `ArrayList` requires O(n) duplicate checking per insertion. For display-critical ordering with deduplication, `LinkedHashSet` is the right choice.
+
+---
+
+## Question 3 (Debugging)
+A production system throws `ConcurrentModificationException` under load. The code iterates over a `HashMap` while another thread removes entries. The developer used:
+
+```java
+for (Map.Entry<String, Object> entry : map.entrySet()) {
+    if (isExpired(entry.getValue())) {
+        map.remove(entry.getKey());
+    }
+}
+```
+
+What is the bug and the fix?
+
+- A) Use `HashMap` instead of `ConcurrentHashMap`
+- B) Use `ConcurrentHashMap` with `forEach` and `remove()` which is safe for concurrent modification
+- C) Add `synchronized` around the loop
+- D) Use `Iterator.remove()` with a regular HashMap
+
+**Answer: B**
+**Explanation:** `ConcurrentHashMap.forEach()` + `remove()` is safe because `ConcurrentHashMap` supports concurrent modification during iteration (weakly consistent). A regular `HashMap` throws `ConcurrentModificationException`. `Iterator.remove()` works but is single-threaded. For concurrent access, `ConcurrentHashMap` is the correct choice.
+
+---
+
+## Question 4 (Production Scenario)
+You need a collection to store student records where you frequently need to find students by ID, iterate in insertion order, and occasionally sort by name. Which approach is best?
+
+- A) Use `TreeMap` with student ID as key
+- B) Use `LinkedHashMap` for insertion order, maintain a separate `TreeMap` for sorted access
+- C) Use a single `ArrayList` with manual searching
+- D) Use `HashSet` for fast lookup
+
+**Answer: B**
+**Explanation:** `LinkedHashMap` preserves insertion order with O(1) lookup. A separate `TreeMap` provides sorted access. This composite approach optimizes for the different access patterns without compromising on any requirement.
 
 ---
 

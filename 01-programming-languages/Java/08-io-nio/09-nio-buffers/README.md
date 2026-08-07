@@ -465,6 +465,25 @@ import java.nio.*;
 ### ❌ Myth 3: Direct buffers are always better
 **Reality:** More expensive to allocate. Use heap buffers for small, short-lived data.
 
+## Alternatives
+
+| Approach | Zero-copy | Position Tracking | Complexity | Use When |
+|----------|----------|-------------------|------------|----------|
+| NIO Buffers | Yes | Yes | High | High-performance I/O with channels |
+| Files API (Java 7+) | No | No | Low | Simple file read/write |
+| InputStream/OutputStream | No | No | Low | Sequential text/binary processing |
+| DataInputStream | No | No | Low | Primitive type serialization |
+| Memory-mapped files | Yes | No | Moderate | Large file random access |
+
+## Trade-offs
+
+NIO Buffers enable high-performance I/O because they:
+- Require manual position management (flip/clear/compact is error-prone)
+- Direct buffers are expensive to allocate (use heap buffers for small/short-lived data)
+- Not thread-safe (each thread needs its own buffer instance)
+- Direct buffers are not freed immediately on GC (can cause native memory pressure)
+- Byte order differences between platforms require explicit handling
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

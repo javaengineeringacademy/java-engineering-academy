@@ -1,50 +1,64 @@
 # Java I/O and NIO Quiz
 
-## Question 1 (MCQ)
-What is the primary difference between InputStream and Reader?
-- A) InputStream is faster than Reader
-- B) InputStream handles raw bytes, while Reader handles characters with encoding
-- C) They are identical
-- D) Reader only works with files
+## Question 1 (Production Scenario)
+Your application needs to read a 5GB log file and count lines containing "ERROR". The server has only 2GB of available RAM. Which approach is most memory-efficient?
+
+- A) Read the entire file into a String and count occurrences
+- B) Use `BufferedReader` with try-with-resources to process line by line
+- C) Use `FileChannel` with a large ByteBuffer
+- D) Use `Scanner` with a regex pattern
 
 **Answer: B**
-**Explanation:** InputStream and its subclasses deal with raw byte data. Reader and its subclasses handle character data, converting bytes to characters using a specified charset encoding.
+**Explanation:** `BufferedReader` reads one line at a time into memory, using constant O(1) memory regardless of file size. Reading the entire file into a String would require ~5GB of heap memory, causing `OutOfMemoryError`. `FileChannel` with large buffers also consumes significant memory.
 
 ---
 
-## Question 2 (MCQ)
-What is the key advantage of NIO Channels over traditional I/O Streams?
-- A) Channels are simpler to use
-- B) Channels support non-blocking I/O operations
-- C) Channels are only for reading
-- D) Channels don't need buffers
+## Question 2 (Production Scenario)
+You are building a file upload service that needs to: (1) receive large files (up to 10GB), (2) process them without loading entirely into memory, (3) support concurrent uploads, and (4) write to distributed storage. How should you design the I/O layer?
+
+- A) Use `FileInputStream` to read entire file, then write to storage
+- B) Use NIO Channels with memory-mapped files for efficient large file handling, combined with a thread pool for concurrent processing
+- C) Use `BufferedReader` for all file operations
+- D) Use Socket channels for file transfer
 
 **Answer: B**
-**Explanation:** NIO Channels can operate in non-blocking mode, allowing a single thread to manage multiple I/O operations. Traditional Streams are always blocking, requiring dedicated threads for each connection.
+**Explanation:** NIO Channels with memory-mapped files allow efficient large file handling without loading the entire file into heap memory. A thread pool manages concurrent uploads. This design scales to large files while maintaining throughput.
 
 ---
 
-## Question 3 (MCQ)
-What is the correct order of buffer operations when reading from a buffer?
-- A) clear → get → flip
-- B) flip → get → clear
-- C) put → flip → get
-- D) clear → put → flip
+## Question 3 (Debugging)
+A production application throws `java.io.IOException: Too many open files` after running for several hours. The code opens file handles in a loop:
+
+```java
+for (File file : directory.listFiles()) {
+    FileInputStream fis = new FileInputStream(file);
+    // process file
+    fis.close();
+}
+```
+
+What is the bug?
+
+- A) The directory contains too many files
+- B) If an exception occurs before `close()`, the file handle leaks — use try-with-resources
+- C) `FileInputStream` is not the right class to use
+- D) The loop should use a different iteration method
 
 **Answer: B**
-**Explanation:** When reading: `flip()` switches the buffer from write mode to read mode (sets limit to position, position to 0), `get()` reads data, and `clear()` resets the buffer for writing again.
+**Explanation:** If `process file` throws an exception, `fis.close()` is never called, leaking the file descriptor. Over time, the process exhausts the OS file descriptor limit. The fix: use try-with-resources: `try (FileInputStream fis = new FileInputStream(file)) { ... }`. This guarantees `close()` is called even if an exception occurs.
 
 ---
 
-## Question 4 (MCQ)
-Which class is used to read a file as a Stream of lines in Java NIO.2?
-- A) FileReader
-- B) BufferedReader
-- C) Files.lines()
-- D) FileChannel
+## Question 4 (Production Scenario)
+Your application processes character data from files in different encodings (UTF-8, ISO-8859-1, Windows-1252). You need to read files correctly regardless of encoding. Which approach handles this?
+
+- A) Use `FileInputStream` and assume UTF-8
+- B) Use `Files.newBufferedReader(path, StandardCharsets.UTF_8)` for all files
+- C) Use `Files.lines(path)` with explicit charset parameter
+- D) Use `FileReader` which auto-detects encoding
 
 **Answer: C**
-**Explanation:** `Files.lines(Path)` returns a `Stream<String>` of lines from a file, which is lazily loaded and can be processed using the Stream API. It's the modern approach introduced in Java 8.
+**Explanation:** `Files.lines(path, charset)` allows specifying the exact charset for each file. `FileReader` uses the platform default charset, which varies across systems. `FileInputStream` reads raw bytes without character decoding. Always specify charset explicitly to avoid encoding-related bugs in production.
 
 ---
 

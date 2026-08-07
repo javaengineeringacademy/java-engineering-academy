@@ -1,12 +1,20 @@
 # Strategy Pattern
 
 ## Overview
-The Strategy pattern defines a family of algorithms, encapsulates each one, and makes them interchangeable. It lets the algorithm vary independently from clients that use it.
+
+You've probably written a method with a big `if-else` or `switch` that picks which algorithm to run — sorting, compression, payment processing. Every time you add a new option, you're back in that same method, modifying code that was already working. The Strategy pattern fixes this by letting you define each algorithm in its own class, then swap them at runtime without touching the code that uses them.
 
 ## When to Use
+
 - Multiple algorithms for a specific task that can be selected at runtime
 - Avoiding conditional statements for selecting algorithm behavior
 - Payment processing, sorting algorithms, compression strategies
+
+## When NOT to Use This
+
+- You only have 2 variants and they're unlikely to change — a simple if-else is fine
+- The "algorithms" differ by a single parameter, not actual behavior — use a config value instead
+- You're adding strategies for the sake of patterns, not because the code actually needs it
 
 ## Code Structure
 ```
@@ -21,6 +29,15 @@ BubbleSort, QuickSort (concrete)
 - Eliminates conditional statements
 - Algorithms can be switched at runtime
 - Open/Closed Principle: new strategies don't require modifying context
+
+## Trade-offs
+
+| Aspect | Strategy Pattern | Simple if-else |
+|--------|-----------------|----------------|
+| Extensibility | Add new strategy without modifying context | Must modify existing code |
+| Testability | Each strategy is independently testable | Test the whole conditional block |
+| Complexity | More classes, indirection overhead | Simple, easy to follow |
+| Runtime flexibility | Swap algorithms on the fly | Fixed at compile time |
 
 ## Common Mistakes
 - Creating too many strategies for simple variations
@@ -122,6 +139,25 @@ Algorithms often have multiple variants: sorting (bubble, quick, merge), compres
 
 ## References
 
+## Alternatives
+
+| Approach | Runtime Swap | Extensibility | Complexity | Use When |
+|----------|-------------|---------------|------------|----------|
+| Strategy pattern | Yes | High (OCP) | Moderate | Algorithms need runtime switching |
+| If-else/switch | No | Low | Low | 2-3 stable variants |
+| Enum with behavior | Yes | Low | Low | Fixed set of behaviors |
+| Lambda/Method ref | Yes | Moderate | Low | Single-method strategies |
+| Inheritance | No | Moderate | Moderate | Is-a relationship, compile-time |
+
+## Trade-offs
+
+Strategy pattern provides flexibility because it:
+- Adds indirection (one virtual method call overhead, ~5ns)
+- Can lead to class explosion for minor variations (consider parameterizing instead)
+- Requires understanding of each strategy's lifecycle (stateless strategies are safest)
+- Combining with Factory adds complexity (justify the indirection)
+- Testing each strategy separately increases test surface (factor out shared behavior)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -161,3 +197,13 @@ Algorithms often have multiple variants: sorting (bubble, quick, merge), compres
 
 ### ❌ Myth 3: Strategy is only for algorithms
 **Reality:** Any behavior. Strategy encapsulates any interchangeable behavior, not just algorithms.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Identify code smells like long conditionals that Strategy pattern can clean up
+- Design a strategy interface and implement concrete strategies for real use cases
+- Decide when Strategy adds value vs when it's over-engineering
+- Combine Strategy with Factory to manage strategy creation at runtime
+- Write unit tests that verify each strategy independently

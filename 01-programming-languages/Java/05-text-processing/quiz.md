@@ -1,50 +1,50 @@
 # Text Processing Quiz
 
-## Question 1 (MCQ)
-Why is StringBuilder preferred over String concatenation in loops?
-- A) StringBuilder uses less memory and avoids creating intermediate String objects
-- B) StringBuilder is always faster in all scenarios
-- C) String concatenation doesn't work in loops
-- D) StringBuilder is thread-safe while String is not
+## Question 1 (Production Scenario)
+Your application processes log files containing millions of lines. Each line must be parsed, filtered, and transformed. A developer uses `String +=` in a loop to build output, and the application becomes extremely slow after processing 100K lines. What is the root cause?
 
-**Answer: A**
-**Explanation:** String concatenation in a loop creates a new String object each iteration (O(n²) time). StringBuilder modifies a mutable buffer in-place, resulting in O(n) time complexity.
+- A) The JVM garbage collector is overloaded
+- B) String concatenation with `+=` creates new String objects each iteration, causing O(n²) time and excessive memory allocation
+- C) The file I/O is the bottleneck
+- D) The regex patterns are too complex
+
+**Answer: B**
+**Explanation:** Each `+=` creates a new String object and copies all previous characters. For n iterations, this results in O(n²) time. `StringBuilder.append()` modifies a mutable buffer in-place with amortized O(1) per append, resulting in O(n) total time. For 100K iterations, this difference is dramatic (seconds vs. minutes).
 
 ---
 
-## Question 2 (MCQ)
-What is the difference between `String.equals()` and `==` for comparing two strings?
-- A) They are identical in behavior
-- B) `==` compares object references, while `equals()` compares the actual character content
-- C) `equals()` compares references, `==` compares content
-- D) `==` is faster and should always be used
+## Question 2 (Production Scenario)
+Your application generates HTTP response headers. You need to concatenate 50 header key-value pairs into a single string. The concatenation happens once per request, serving 10,000 requests per second. Which approach is optimal?
+
+- A) Use `String +=` in a loop
+- B) Use `StringBuilder` with initial capacity set to expected size
+- C) Use `String.concat()` method
+- D) Use `StringBuffer` for thread safety
 
 **Answer: B**
-**Explanation:** `==` checks if two references point to the same object in memory. `equals()` compares the actual string content character by character. Always use `equals()` for string content comparison.
+**Explanation:** Pre-sizing `StringBuilder` avoids repeated resizing. For 50 headers, estimating ~100 chars each means setting capacity to ~5000. `String +=` creates intermediate objects. `StringBuffer` has synchronization overhead. `String.concat()` only joins two strings. For single-threaded concatenation with known size, `StringBuilder` with pre-allocated capacity is optimal.
 
 ---
 
-## Question 3 (MCQ)
-What is the default capacity of a StringBuilder and how does it grow?
-- A) Capacity 8, doubles on resize
-- B) Capacity 16, grows by doubling current capacity + 2
-- C) Capacity 32, grows by adding 16
-- D) Capacity is unlimited
+## Question 3 (Debugging)
+A production service processes user input and throws `StackOverflowError`. The code builds a string recursively:
+
+```java
+public String buildString(List<String> parts) {
+    if (parts.isEmpty()) return "";
+    return parts.get(0) + buildString(parts.subList(1, parts.size()));
+}
+```
+
+What is the bug?
+
+- A) The method should use `StringBuilder` instead of recursion
+- B) `subList()` creates a view that causes infinite recursion
+- C) The base case is incorrect
+- D) String concatenation is not allowed in recursion
 
 **Answer: B**
-**Explanation:** StringBuilder starts with a capacity of 16 characters. When it needs to grow, the new capacity is calculated as `(oldCapacity + 1) * 2`, ensuring amortized O(1) append operations.
-
----
-
-## Question 4 (MCQ)
-What does `String.intern()` return?
-- A) A new String object
-- B) A canonical representation from the string pool
-- C) The hash code of the string
-- D) A lowercase version of the string
-
-**Answer: B**
-**Explanation:** `intern()` checks the string pool for an equal string. If found, it returns the pool reference. If not, it adds the string to the pool and returns that reference. This saves memory for repeated strings.
+**Explanation:** `subList(1, parts.size())` creates a view of the original list. The `isEmpty()` check works correctly, but for large lists, deep recursion exhausts the stack. The fix: use an iterative approach with `StringBuilder`, or use `String.join()` with `Collectors.joining()`.
 
 ---
 

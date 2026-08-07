@@ -1,6 +1,8 @@
 # Java Regular Expressions
 
-Regular expressions (regex) are patterns used to match character combinations in strings. Java provides the `java.util.regex` package for regex support.
+## Why Regex Exists
+
+You need to validate an email address, extract dates from a log file, or find all URLs in a block of text. You could write dozens of `startsWith`, `contains`, and `substring` calls — or you could express what you're looking for in a pattern. Regular expressions let you describe text patterns concisely, but they come with trade-offs: they're powerful, but easy to get wrong and expensive when poorly written. This section covers when regex is the right tool, when it's not, and how to write patterns that don't explode your CPU.
 
 ## Table of Contents
 1. [Pattern and Matcher Overview](#pattern-and-matcher-overview)
@@ -248,6 +250,23 @@ Matches if NOT preceded by the pattern:
 
 ---
 
+## When NOT to Use This
+
+- Simple string operations suffice — `startsWith`, `contains`, `equals` are faster and clearer
+- The pattern is trivial — if a `String.split()` or `indexOf()` works, use it
+- User input is untrusted — regex is vulnerable to ReDoS (catastrophic backtracking attacks)
+- You need to parse structured data like JSON or XML — use a proper parser, not regex
+
+## Trade-offs
+
+| Aspect | Regex | String methods |
+|--------|-------|---------------|
+| Expressiveness | Powerful pattern matching | Limited to exact matches |
+| Readability | Cryptic to non-experts | Self-documenting |
+| Performance | Compilation overhead, backtracking risk | Fast for simple operations |
+| Maintenance | Hard to debug complex patterns | Easy to understand |
+| Flexibility | Handles variable formats | Requires knowing exact format |
+
 ## Engineering Decision Framework
 
 ### ✅ Use Regex when:
@@ -324,6 +343,25 @@ Matches if NOT preceded by the pattern:
 
 ---
 
+## Alternatives
+
+| Approach | Pattern Matching | Performance | Maintenance | Use When |
+|----------|-----------------|-------------|-------------|----------|
+| Regex | Full | Moderate | Hard | Complex pattern matching |
+| String methods | Basic | High | Easy | Simple prefix/suffix/contains |
+| StringTokenizer | Basic | High | Easy | Basic delimiter-based splitting |
+| Scanner | Token-based | Moderate | Easy | Token-based input parsing |
+| Parser combinators | Full | Moderate | Moderate | Complex grammar-based parsing |
+
+## Trade-offs
+
+Regex provides powerful pattern matching because it:
+- Compiling patterns is expensive (reuse compiled Pattern objects)
+- Can be vulnerable to ReDoS attacks (test with adversarial input)
+- Greedy quantifiers cause catastrophic backtracking (use possessive or atomic groups)
+- Hard to read and maintain (document complex patterns thoroughly)
+- Not portable across languages (Java-specific syntax nuances exist)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -362,3 +400,13 @@ Matches if NOT preceded by the pattern:
 
 ### ❌ Myth 3: Regex is portable
 **Reality:** Flavors differ. Java regex syntax may not work in other languages or tools.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Compile and reuse Pattern objects for efficient repeated matching
+- Use capturing and named groups to extract structured data from text
+- Distinguish greedy from lazy quantifiers and predict their behavior on real input
+- Write regex patterns that avoid catastrophic backtracking
+- Know when regex is the right tool and when a simple String method is better

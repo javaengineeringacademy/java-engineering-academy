@@ -2,15 +2,15 @@
 
 ## 1. Introduction
 
-HashMap is the most widely used implementation of the `Map` interface in Java. It provides O(1) average-time performance for basic operations (get, put, remove) using a hash table data structure. HashMap stores key-value pairs and allows null keys and values.
+HashMap is the go-to implementation of the `Map` interface in Java. It gives you O(1) average-time performance for get, put, and remove operations by hashing keys into an internal array of buckets. You can store one null key and as many null values as you like.
 
-HashMap works by computing a hash code from the key, using it to determine which "bucket" (index in an internal array) to store the value in. When retrieving, it computes the hash of the key again to find the correct bucket, then searches within that bucket for the exact key using `equals()`.
+Here's how it works at a high level: when you call `map.put(key, value)`, the key's `hashCode()` is computed, mixed with a spreading function (`h ^ (h >>> 16)`), and used to pick a bucket index. Retrieval follows the same path — hash the key, find the bucket, then walk the entries in that bucket using `equals()`.
 
-Understanding HashMap internals is essential for Java developers because:
+Why does this matter? Because:
 1. It's the default choice for most Map use cases
-2. Improper use of hashCode()/equals() causes subtle bugs
+2. Bad `hashCode()`/`equals()` implementations cause subtle, hard-to-reproduce bugs
 3. Performance depends on hash distribution and load factor
-4. Java 8+ introduced treeification (red-black trees for collisions)
+4. Java 8+ introduced treeification — red-black trees for collisions with 8+ entries
 
 ## 2. Learning Objectives
 
@@ -33,14 +33,15 @@ Understanding HashMap internals is essential for Java developers because:
 
 ## 4. Why This Concept Exists
 
-Before HashMap, developers used Hashtable (synchronized, slow) or manual array-based lookups. HashMap provides:
+Before HashMap, developers used Hashtable (synchronized, slow) or manual array-based lookups. HashMap changed the game:
+
 1. **O(1) average performance**: Fast lookups regardless of data size
 2. **No synchronization overhead**: Faster than Hashtable in single-threaded code
 3. **Null support**: Allows one null key and multiple null values
 4. **Dynamic resizing**: Automatically grows as data is added
 5. **Flexible key types**: Any object can be a key (with proper hashCode/equals)
 
-HashMap is essential for:
+In practice, you'll reach for HashMap for:
 - Caching and memoization
 - Database indexing
 - Configuration storage
@@ -199,6 +200,8 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
 
 ### The get() Operation
 
+This example demonstrates how HashMap retrieves values by computing the hash, finding the bucket, and traversing the chain or tree.
+
 ```java
 public V get(Object key) {
     Node<K,V> e;
@@ -224,7 +227,11 @@ final Node<K,V> getNode(int hash, Object key) {
 }
 ```
 
+> **Production Note:** The get operation is O(1) on average. If there are no collisions, it's a single array access plus one key comparison.
+
 ### The resize() Operation
+
+This example demonstrates how HashMap doubles its capacity when the threshold is exceeded, rehashing all entries into the new array.
 
 ```java
 final Node<K,V>[] resize() {
@@ -302,9 +309,13 @@ final Node<K,V>[] resize() {
 }
 ```
 
+> **Production Note:** Resizing is O(n) and causes a temporary performance dip. Pre-allocate capacity if you know the expected size to avoid resizing.
+
 ## 8. JVM Perspective
 
 ### Memory Allocation
+
+This example demonstrates how much memory a HashMap consumes for its internal structure and each entry.
 
 ```java
 Map<String, Integer> map = new HashMap<>();
@@ -321,6 +332,8 @@ Map<String, Integer> map = new HashMap<>();
 // - Node[] array: 16 × 8 = 128 bytes (references)
 // - Each Node: ~40 bytes (hash, key, value, next)
 ```
+
+> **Production Note:** Pre-allocating capacity avoids resize operations. Use `new HashMap<>(expectedSize / 0.75 + 1)` for the initial capacity.
 
 ### JIT Optimization
 
@@ -425,10 +438,6 @@ V value = map.getOrDefault(key, default); // Returns default if absent
 V value = map.computeIfAbsent(key, k -> createValue(k));
 ```
 
-## 📑 Continue Reading
-
-**Part 1** of 3 | Part 2 | Part 3
-
 ## Related Topics
 - equals() and hashCode — Contract for HashMap keys
 - Java Memory Model — Where HashMap objects live in heap
@@ -498,45 +507,128 @@ General purpose? → Yes → Use HashMap
 
 ### ✅ Before using HashMap in production:
 
-☐ I know the time/space complexity
-☐ I know thread safety guarantees
-☐ I know memory impact
-☐ I know common mistakes
-☐ I know alternatives
-☐ I know limitations
-☐ I know how to debug it
-☐ I've tested with realistic data volume
+- I know the time/space complexity
+- I know thread safety guarantees
+- I know memory impact
+- I know common mistakes
+- I know alternatives
+- I know limitations
+- I know how to debug it
+- I've tested with realistic data volume
 
-## Production Incidents
+## Performance
 
-### Incident 1: Mutable Keys Causing Memory Leak
+| Operation | Time Complexity | Notes |
+|-----------|----------------|-------|
+| get() | O(1) amortized | O(n) worst case with collisions |
+| put() | O(1) amortized | O(n) worst case with collisions |
+| remove() | O(1) amortized | O(n) worst case |
+| containsKey() | O(1) amortized | Same as get() |
+| containsValue() | O(n) | Must scan all entries |
+| size() | O(1) | Direct field access |
+| iteration | O(n) | Proportional to capacity |
 
-**Problem:** Application memory usage grew steadily over days until it hit OutOfMemoryError.
-**Cause:** Mutable objects (e.g., `Date` or custom `User` objects with mutable fields) were used as HashMap keys. When a key's fields were modified after insertion, `hashCode()` changed, making the old bucket unreachable. The old entry was never removed.
-**Impact:** Memory leak leading to production outage and emergency restart.
-**Detection:** Heap dumps showed phantom HashMap entries with stale keys scattered across the table.
-**Solution:** Replace mutable keys with immutable equivalents (e.g., `Instant` instead of `Date`). If mutation is unavoidable, explicitly remove old entries before modifying key fields.
-**Prevention:** Enforce immutable key policy. Use static analysis tools (ErrorProne, SpotBugs) to detect mutable key usage.
+## Best Practices
 
-### Incident 2: Poor hashCode() Causing O(n) Lookups
+1. **Pre-allocate capacity** if you know the expected size: `new HashMap<>(100)`
+2. **Use immutable keys** — mutable keys that change hashCode() cause entries to become unreachable
+3. **Override both hashCode() and equals()** — or rely on the default Object implementations
+4. **Prefer ConcurrentHashMap** for concurrent access — don't use external synchronization on HashMap
+5. **Use compute/merge/putIfAbsent** for atomic compound operations
 
-**Problem:** API endpoint response times degraded from 5ms to 500ms under load.
-**Cause:** A `User` class had a `hashCode()` that only returned the hash of one field (e.g., `firstName`), causing many collisions in a HashMap with 100,000+ entries. Lookups degraded from O(1) to O(n) within a single bucket.
-**Impact:** Customer-facing latency spike, SLA breach, cascading timeouts in downstream services.
-**Detection:** Thread dumps showed threads blocked in `HashMap.getNode()` traversing long linked lists.
-**Solution:** Rewrite `hashCode()` to incorporate all significant fields using a consistent algorithm (Objects.hash). Add benchmark tests to validate distribution.
-**Prevention:** Mandate code review of `hashCode()/equals()` implementations. Add load testing with realistic data volumes.
+## Common Mistakes
 
-## Common Myths
+| Mistake | Impact | Fix |
+|---------|--------|-----|
+| Using mutable object as key | Memory leak — entry becomes unreachable | Use immutable keys |
+| Not pre-allocating capacity | Frequent resizing, temporary O(n) cost | Set initial capacity |
+| Using HashMap in concurrent code | Data corruption, infinite loops | Use ConcurrentHashMap |
+| Overriding hashCode() without equals() | Broken lookups | Override both |
+| Using null key in multi-threaded code | NPE in some contexts | Avoid null keys |
 
-### ❌ Myth 1: HashMap preserves insertion order
-**Reality:** Use LinkedHashMap for insertion order. HashMap uses a hash table that provides no ordering guarantee.
+## Production Notes
 
-### ❌ Myth 2: Initial capacity equals max size
-**Reality:** It's the initial bucket count. HashMap resizes (doubles) automatically when the threshold (capacity × load factor) is exceeded.
+**Where is it used?**
+- Caching and memoization
+- Database indexing and result caching
+- Configuration storage
+- Counting and frequency analysis
+- Object relationship mapping
 
-### ❌ Myth 3: Concurrent reads/writes are always safe
-**Reality:** Not thread-safe. Concurrent modifications can cause data corruption or infinite loops. Use ConcurrentHashMap for concurrent access.
+**Why is it useful?**
+- O(1) average-case performance for key lookups
+- Flexible key types (any object with hashCode/equals)
+- Dynamic resizing handles varying data sizes
+
+**When should it be avoided?**
+- When you need sorted key iteration (use TreeMap)
+- When you need insertion order (use LinkedHashMap)
+- When multiple threads write concurrently (use ConcurrentHashMap)
+- When you need null keys (use only in single-threaded code)
+
+**Alternative?**
+- `ConcurrentHashMap` — thread-safe concurrent access
+- `LinkedHashMap` — maintains insertion or access order
+- `TreeMap` — sorted keys, O(log n)
+- `Hashtable` — legacy, synchronized, slow
+
+## Interview Questions
+
+1. **What is the time complexity of HashMap operations?** — O(1) amortized for get/put/remove; O(n) worst case with many collisions.
+2. **Why must hashCode() and equals() be consistent?** — If two objects are equal per equals(), they must have the same hashCode(). Otherwise, get() won't find the entry.
+3. **What is the default load factor and why 0.75?** — 0.75 balances memory usage against collision probability. It's mathematically optimal for uniform hash distributions.
+4. **How does HashMap handle null keys?** — Null key always hashes to bucket 0. Only one null key is allowed.
+5. **What is treeification in Java 8+?** — When a bucket has 8+ entries, the linked list is converted to a red-black tree, providing O(log n) worst-case lookups.
+6. **What happens during resize?** — Capacity doubles, all entries are rehashed into new positions. This is O(n) and causes a temporary performance dip.
+
+## One-Minute Revision
+
+- HashMap stores key-value pairs using a hash table with O(1) average performance
+- Keys are hashed to determine bucket index; collisions resolved via linked lists (or trees in Java 8+)
+- Default capacity is 16, load factor is 0.75 — resizing doubles capacity
+- Not thread-safe — use ConcurrentHashMap for concurrent access
+- Allows one null key and multiple null values
+- Always override hashCode() and equals() for custom key types
+- Pre-allocate capacity when size is known to avoid resizing
+
+## Quiz
+
+**Q1:** What happens if you use a mutable object as a HashMap key?
+<details><summary>Answer</summary>The entry becomes unreachable when hashCode() changes, causing a memory leak.</details>
+
+**Q2:** Why is HashMap's capacity always a power of 2?
+<details><summary>Answer</summary>Enables bitwise AND instead of modulo for bucket index calculation, which is faster.</details>
+
+**Q3:** What is the maximum number of entries before a bucket is treeified?
+<details><summary>Answer</summary>8 entries (TREEIFY_THRESHOLD). The bucket is converted to a red-black tree for O(log n) lookups.</details>
+
+## Related Topics
+
+## Alternatives
+
+| Collection | Ordered | Thread-Safe | Null Keys | Use When |
+|------------|---------|-------------|-----------|----------|
+| HashMap | No | No | Yes | Fast lookups, single thread |
+| LinkedHashMap | Yes | No | Yes | Need insertion order |
+| TreeMap | Yes (sorted) | No | No | Need sorted keys |
+| ConcurrentHashMap | No | Yes | No | Multi-threaded access |
+| WeakHashMap | No | No | Yes | Caching, memory-sensitive |
+| IdentityHashMap | No | No | Yes | Reference equality |
+
+## Trade-offs
+
+HashMap is fast because it:
+- Sacrifices ordering (use LinkedHashMap if you need order)
+- Is not thread-safe (use ConcurrentHashMap for concurrency)
+- Allows one null key (use TreeMap if nulls cause issues)
+- Uses more memory than arrays (for the hash table overhead)
+- May produce poor performance with bad hashCode() implementations (use TreeMap for guaranteed O(log n))
+
+## References
+
+- [Oracle Java Documentation - HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)
+- [OpenJDK Source - HashMap.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java)
+- [Effective Java - Item 11: Always override hashCode() when you override equals()](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
 
 ## Engineering Maturity Levels
 
@@ -560,4 +652,3 @@ General purpose? → Yes → Use HashMap
 - Can debug in production
 - Can explain trade-offs to team
 - Can design custom implementations
-

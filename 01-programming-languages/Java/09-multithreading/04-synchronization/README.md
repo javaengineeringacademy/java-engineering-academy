@@ -2,20 +2,17 @@
 
 ## 1. Introduction
 
-Synchronization is the mechanism that controls access to shared resources in a multithreaded environment. Without synchronization, concurrent access to shared mutable data leads to race conditions, data corruption, and unpredictable behavior. Java provides multiple synchronization mechanisms: the `synchronized` keyword, `volatile` field modifier, and explicit locks in `java.util.concurrent.locks`.
-
-The `synchronized` keyword is Java's built-in monitor-based synchronization mechanism. It ensures that only one thread at a time can execute a block of code or method, providing mutual exclusion and memory visibility guarantees. Understanding synchronization is essential for writing correct concurrent Java programs.
+You've probably seen a counter increment go wrong in a multithreaded program — you expected 1000 but got 987. That's a race condition, and it happens because `count++` isn't atomic: it's read, add, write, and another thread can sneak in between. Synchronization is how you tell the JVM "only one thread at a time can touch this." It's your basic tool for correctness in concurrent code — but it has real costs, and knowing when and how to use it separates working concurrent code from code that works *sometimes*.
 
 ## 2. Learning Objectives
 
-- Understand what race conditions are and why they occur
-- Learn how `synchronized` blocks and methods work
-- Understand intrinsic locks (monitor locks)
-- Learn the difference between synchronized methods and blocks
-- Understand the `volatile` keyword and memory visibility
-- Know when and how to use synchronization
-- Learn about lock reentrancy
-- Understand the performance impact of synchronization
+By the end of this topic you will be able to:
+
+- Identify race conditions in shared mutable state and fix them with synchronization
+- Use `synchronized` blocks and methods correctly, understanding what object you're locking on
+- Explain the difference between mutual exclusion and memory visibility
+- Apply `volatile` for simple flags and understand why it doesn't replace synchronized for compound operations
+- Avoid deadlocks by enforcing lock ordering and using `tryLock` with timeouts
 
 ## 3. Prerequisites
 
@@ -42,7 +39,6 @@ The `count++` operation is not atomic. It involves three steps:
 
 With two threads executing simultaneously:
 
-```
 ```
 Thread 1: read(0) → add(1) → write(1)
 Thread 2:         read(0) → add(1) → write(1)
@@ -404,6 +400,23 @@ public class BankAccount {
 
 [📖 Continue to Part 2](README-part2.md)
 
+## When NOT to Use This
+
+- Read-only shared data — no synchronization needed
+- Single-threaded code — synchronization adds overhead for no benefit
+- `AtomicInteger` / `LongAdder` for simple counters — lock-free is faster
+- `ConcurrentHashMap` for concurrent maps — don't reinvent the wheel with synchronized blocks
+
+## Trade-offs
+
+| Aspect | synchronized | ReentrantLock | Atomic classes |
+|--------|-------------|---------------|----------------|
+| Simplicity | Simple syntax | More verbose | Simple for primitives |
+| Flexibility | Basic lock/unlock | tryLock, timed lock, interruptible | Lock-free |
+| Performance | Good (JIT optimized) | Good | Best for simple ops |
+| Deadlock handling | Manual prevention | tryLock with timeout | Not applicable |
+| Fairness | Not fair by default | Can be configured fair | Not applicable |
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -477,3 +490,13 @@ public class BankAccount {
 
 ### ❌ Myth 3: Locks prevent deadlocks
 **Reality:** Can cause deadlocks. Improper lock ordering leads to deadlock situations.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Identify race conditions in shared mutable state and fix them with synchronization
+- Use `synchronized` blocks and methods correctly, understanding what object you're locking on
+- Explain the difference between mutual exclusion and memory visibility
+- Apply `volatile` for simple flags and understand why it doesn't replace synchronized for compound operations
+- Avoid deadlocks by enforcing lock ordering and using `tryLock` with timeouts

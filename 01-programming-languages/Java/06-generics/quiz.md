@@ -1,50 +1,70 @@
 # Generics Quiz
 
-## Question 1 (MCQ)
-What is type erasure in Java generics?
-- A) Removing generic type information at compile time
-- B) Adding generic type information at compile time
-- C) Keeping generic type information at runtime
-- D) Removing generic type information at runtime
+## Question 1 (Production Scenario)
+Your data processing framework needs to accept lists of any Comparable type (Integer, String, CustomEntity) and find the maximum element. A developer writes `<T>` without bounds and gets a compilation error when calling `compareTo()`. What should you do?
 
-**Answer: A**
-**Explanation:** Type erasure removes generic type parameters during compilation, converting `List<String>` to `List`. This ensures backward compatibility with pre-generics code.
-
----
-
-## Question 2 (MCQ)
-What does the PECS principle stand for?
-- A) Producer Extends, Consumer Super
-- B) Producer Super, Consumer Extends
-- C) Parameter Extends, Collection Super
-- D) Public Extends, Private Super
-
-**Answer: A**
-**Explanation:** Producer Extends, Consumer Super. Use `? extends T` when reading from a collection (producer), and `? super T` when writing to it (consumer).
-
----
-
-## Question 3 (MCQ)
-Which of the following is NOT valid in Java generics?
-- A) `List<String>`
-- B) `new ArrayList<String>()`
-- C) `new T()`
-- D) `<T extends Comparable<T>>`
-
-**Answer: C**
-**Explanation:** Due to type erasure, you cannot create an instance of a type parameter (`new T()`). The compiler has no way to know what concrete type T represents at runtime.
-
----
-
-## Question 4 (MCQ)
-What is the benefit of using bounded type parameters like `<T extends Number>`?
-- A) Allows any type to be passed
-- B) Restricts the type to Number and its subclasses, allowing access to Number methods
-- C) Makes the code run faster
-- D) Prevents null values
+- A) Use `Object` as the type parameter and cast to `Comparable`
+- B) Use `<T extends Comparable<T>>` to ensure T implements Comparable
+- C) Create separate methods for each type
+- D) Use raw types without generics
 
 **Answer: B**
-**Explanation:** Bounded types restrict the generic to a specific hierarchy, allowing you to call methods on the bound type (e.g., `doubleValue()` from Number) while maintaining type safety.
+**Explanation:** `<T extends Comparable<T>>` is a bounded type parameter that restricts T to types implementing `Comparable`. This allows calling `compareTo()` directly while maintaining compile-time type safety. Without the bound, the compiler cannot verify that T has `compareTo()`, requiring unsafe casts.
+
+---
+
+## Question 2 (Production Scenario)
+You are building a generic utility method that copies elements from a source list to a destination list. The source might be `List<Integer>` and the destination `List<Number>`. Which generic signature is correct?
+
+- A) `void copy(List<Object> dest, List<Object> src)`
+- B) `void copy(List<? super T> dest, List<? extends T> src)`
+- C) `void copy(List dest, List src)`
+- D) `void copy(List<Number> dest, List<Integer> src)`
+
+**Answer: B**
+**Explanation:** PECS (Producer Extends, Consumer Super): `? super T` for the destination (consumer that receives elements), `? extends T` for the source (producer that provides elements). This allows `List<Object>` to accept `Integer` elements, and `List<Integer>` to provide `Number` elements, while maintaining type safety.
+
+---
+
+## Question 3 (Debugging)
+A generic repository class throws `ClassCastException` at runtime despite compile-time type safety. The code:
+
+```java
+public class Repository<T> {
+    private List<Object> items = new ArrayList<>();
+    
+    public void add(T item) { items.add(item); }
+    public T get(int index) { return (T) items.get(index); }
+}
+
+Repository<String> repo = new Repository<>();
+repo.add("Hello");
+repo.add(42);  // Compiled without error!
+String s = repo.get(1);  // ClassCastException!
+```
+
+What is the bug?
+
+- A) The `get()` method should use `items.get(index)` directly
+- B) Type erasure removes the generic type at runtime, so the unchecked cast `(T)` fails
+- C) The `add()` method should accept `Object` instead of `T`
+- D) `Repository` should implement `Iterable`
+
+**Answer: B**
+**Explanation:** Due to type erasure, `Repository<String>` and `Repository<Integer>` are the same class at runtime. The `add(T)` method accepts any object because T is erased to Object. The cast `(T)` is unchecked and fails when retrieving an Integer as String. Fix: use `List<T>` instead of `List<Object>`.
+
+---
+
+## Question 4 (Production Scenario)
+You need to design a generic repository pattern for a data access layer. The repository must support CRUD operations for any entity type and should be type-safe. How should you design it?
+
+- A) Create a separate repository class for each entity type
+- B) Define `interface Repository<T, ID>` with methods like `findById(ID id)`, `save(T entity)`, `delete(T entity)`
+- C) Use Object for all entity types and cast as needed
+- D) Use a single Repository class with string-based entity names
+
+**Answer: B**
+**Explanation:** A generic Repository interface provides type-safe CRUD operations for any entity. Each entity gets its own implementation or uses a single implementation with type parameters. This reduces code duplication while maintaining compile-time type safety.
 
 ---
 

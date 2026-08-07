@@ -67,6 +67,34 @@ With virtual threads, you write straightforward sequential code that blocks on I
 
 Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and scalability (async I/O). They let you write simple blocking code that scales to millions of concurrent operations — solving the thread pool sizing problem entirely.
 
+## When NOT to Use This
+
+- CPU-bound work — virtual threads don't add parallelism, use thread pools sized to core count
+- Code using `ThreadLocal` that spans blocking operations — the carrier thread may change
+- `synchronized` blocks held during I/O — this causes pinning, defeating the whole purpose
+- Applications already well-tuned with platform thread pools — migration risk for no gain
+
+## Trade-offs
+
+| Aspect | Virtual Threads | Platform Threads | Async/Reactor |
+|--------|----------------|-----------------|---------------|
+| Code style | Blocking (simple) | Blocking (simple) | Callbacks (complex) |
+| Scalability | Millions | ~10K | Millions |
+| Debugging | Normal stack traces | Normal stack traces | Broken stack traces |
+| Learning curve | Low (just use threads) | Low | High (reactive paradigm) |
+| CPU-bound work | No advantage | Fine with pool | Fine with pool |
+| Ecosystem support | Growing (Java 21+) | Universal | Mature but complex |
+
+## Alternatives
+
+| Approach | Simplicity | Scalability | CPU-bound | Debugging | Use When |
+|----------|-----------|-------------|-----------|-----------|----------|
+| Virtual threads | High | Millions | Poor | Easy | I/O-bound at scale |
+| Platform thread pools | Moderate | Thousands | Good | Moderate | CPU-bound workloads |
+| CompletableFuture | Low | High | N/A | Hard | Async composition |
+| Reactor/Vert.x | Low | High | N/A | Hard | Reactive with backpressure |
+| ExecutorService | Moderate | Thousands | Good | Moderate | Traditional thread pools |
+
 ## Engineering Decision Framework
 
 ### ✅ Use Virtual Threads when:
@@ -130,6 +158,11 @@ Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and sca
 **Reality:** Different implementation. Virtual threads are scheduled by the JVM, not OS-level green threads.
 
 ## See Also
+- [CompletableFuture](../../15-senior/advanced/concurrency-advanced/completable-future/) — Async alternative virtual threads replace
+- [ThreadPoolExecutor Source](../../15-senior/java-platform/source-exploration/threadpool-executor-source/) — How carrier threads work internally
+- [Structured Concurrency](../../15-senior/advanced/concurrency-advanced/structured-concurrency/) — Companion API for virtual threads
+- [ForkJoinPool](../../15-senior/advanced/concurrency-advanced/fork-join/) — The executor backing virtual threads
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -153,8 +186,12 @@ Virtual threads eliminate the tradeoff between simplicity (blocking I/O) and sca
 - Can explain trade-offs to team
 - Can design custom implementations
 
-## See Also
-- [CompletableFuture](../../15-senior/advanced/concurrency-advanced/completable-future/) — Async alternative virtual threads replace
-- [ThreadPoolExecutor Source](../../15-senior/java-platform/source-exploration/threadpool-executor-source/) — How carrier threads work internally
-- [Structured Concurrency](../../15-senior/advanced/concurrency-advanced/structured-concurrency/) — Companion API for virtual threads
-- [ForkJoinPool](../../15-senior/advanced/concurrency-advanced/fork-join/) — The executor backing virtual threads
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Migrate thread pool based services to virtual threads and measure the difference
+- Identify pinning caused by synchronized blocks and fix it with ReentrantLock
+- Decide when virtual threads add value vs when platform thread pools are better
+- Monitor carrier thread utilization and tune for your workload
+- Use StructuredTaskScope to compose multiple concurrent tasks cleanly

@@ -2,24 +2,17 @@
 
 ## 1. Introduction
 
-ConcurrentHashMap is a thread-safe implementation of the `Map` interface that allows concurrent access without locking the entire map. Introduced in Java 5 as part of the `java.util.concurrent` package, it provides better performance than `Collections.synchronizedMap()` by allowing concurrent reads and segment-based locking for writes.
-
-Unlike Hashtable which locks the entire map for every operation, ConcurrentHashMap uses a more advanced approach:
-- **Java 7**: Segment locking (divides the table into 16 segments, each with its own lock)
-- **Java 8+**: CAS operations + synchronized on individual buckets (fine-grained locking)
-
-ConcurrentHashMap is the go-to choice for concurrent Map operations in Java. It supports non-blocking reads, fully concurrent updates, and a set of atomic operations (compute, merge, putIfAbsent) that eliminate the need for external synchronization.
+If you've ever had a HashMap in a multithreaded application blow up with `ConcurrentModificationException`, or worse, silently return corrupt data, you've felt the problem ConcurrentHashMap solves. Before Java 5, your options were Hashtable (everything synchronized, terrible throughput) or `Collections.synchronizedMap()` (same problem with extra wrapping). ConcurrentHashMap lets multiple threads read and write simultaneously without locking the entire map — and that difference matters when you have hundreds of threads hitting a shared cache.
 
 ## 2. Learning Objectives
 
-- Create and use ConcurrentHashMap for thread-safe operations
-- Understand the difference between ConcurrentHashMap and Collections.synchronizedMap()
-- Learn about CAS (Compare-And-Swap) operations
-- Master atomic operations: compute, merge, computeIfAbsent, computeIfPresent
-- Understand the segment locking mechanism (Java 7) vs bucket-level locking (Java 8+)
-- Learn about weakly consistent iterators
-- Understand when to use ConcurrentHashMap vs other synchronization strategies
-- Know the limitations and pitfalls of ConcurrentHashMap
+By the end of this topic you will be able to:
+
+- Replace Hashtable and synchronizedMap with ConcurrentHashMap in real code
+- Explain why CAS + bucket-level locking scales better than segment locking
+- Use atomic operations (compute, merge, computeIfAbsent) to eliminate race conditions
+- Recognize when weakly consistent iteration will bite you and design around it
+- Diagnose concurrency issues using the right constructor and avoiding deprecated parameters
 
 ## 3. Prerequisites
 
@@ -47,6 +40,14 @@ ConcurrentHashMap solves these by:
 - **Lock-free reads**: `get()` operations never block
 - **Atomic operations**: `compute()`, `merge()`, `putIfAbsent()` are thread-safe
 - **Weakly consistent iterators**: Don't throw ConcurrentModificationException
+
+## When NOT to Use This
+
+- Single-threaded access — HashMap has less overhead
+- You need sorted keys — use TreeMap instead
+- Null keys or values are part of your design — ConcurrentHashMap throws NPE on nulls
+- You need strict consistency during iteration — weakly consistent iterators can miss or duplicate entries
+- Simple synchronized wrapper suffices — Collections.synchronizedMap is simpler for low-contention cases
 
 ## 4b. Why ConcurrentHashMap Uses CAS + Synchronized
 
@@ -275,7 +276,6 @@ CAS operations provide memory barriers:
 ## 9. Memory Representation
 
 ```
-```
 ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();
 map.put("Alice", 30);
 map.put("Bob", 25);
@@ -423,10 +423,6 @@ public class ConcurrentHashMapBasics {
         System.out.println("Contains Alice: " + scores.containsKey("Alice"));
         System.out.println("Contains 95: " + scores.containsValue(95));
 
-## 📑 Continue Reading
-
-**Part 1** of 3 | Part 2 | Part 3
-
 ## Engineering Decision Framework
 
 ### ✅ Use ConcurrentHashMap when:
@@ -523,6 +519,25 @@ Concurrent access? → Yes → Need high performance? → Yes → Use Concurrent
 ### ❌ Myth 3: ConcurrentHashMap is always faster
 **Reality:** Overhead for single-threaded scenarios. HashMap is faster when concurrency isn't needed.
 
+## Alternatives
+
+| Collection | Concurrency | Null Keys | Iteration | Performance | Use When |
+|------------|------------|-----------|-----------|-------------|----------|
+| ConcurrentHashMap | Fine-grained locks | No | Weakly consistent | High | Concurrent access |
+| Collections.synchronizedMap | Single lock | Yes | Fail-fast | Low | Simple sync, low contention |
+| Hashtable | Single lock | No | Fail-fast | Low | Legacy code only |
+| HashMap | None | Yes | Fail-fast | Very high | Single-threaded |
+| CopyOnWriteArrayMap | Copy-on-write | Yes | Snapshot | Read-heavy | Rare writes |
+
+## Trade-offs
+
+ConcurrentHashMap provides high concurrency because it:
+- Does not allow null keys or values (use HashMap if nulls needed)
+- Uses approximate size() (use mappingCount() for large maps)
+- Weakly consistent iterators may miss concurrent modifications (not fail-fast)
+- CAS + synchronized adds overhead vs plain HashMap (use HashMap for single-threaded)
+- Deprecated concurrencyLevel parameter is ignored in Java 8+ (don't set it)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -545,4 +560,3 @@ Concurrent access? → Yes → Need high performance? → Yes → Use Concurrent
 - Can debug in production
 - Can explain trade-offs to team
 - Can design custom implementations
-

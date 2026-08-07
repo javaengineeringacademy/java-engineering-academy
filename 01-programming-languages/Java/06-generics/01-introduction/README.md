@@ -1,4 +1,4 @@
-# 01 - Introduction to Generics
+# Introduction to Generics
 
 ## Table of Contents
 
@@ -34,24 +34,20 @@
 
 ## Introduction
 
-Generics is one of the most powerful features introduced in Java 5 (JDK 1.5). It allows you to define classes, interfaces, and methods with **type parameters** — placeholders that are replaced with actual types when the code is used. Before generics, Java relied on `Object` references and explicit casting, which was error-prone and shifted type-checking from compile time to runtime.
+Before Java 5, every collection stored `Object` references. You'd put a `String` in a `List`, pull it out, and cast it — hoping you remembered what type you put in. If a teammate stored an `Integer` where you expected a `String`, your code would compile fine and blow up at runtime with a `ClassCastException`. Generics moved that check from runtime to compile time: the compiler now catches type mismatches before you ever run the code.
 
-Generics enable **compile-time type safety**, **code reusability**, and **elimination of explicit casts**. They are foundational to the Java Collections Framework and are used extensively throughout the Java ecosystem.
-
----
+But generics come with a catch — literally. The JVM doesn't know about generics. It sees `Box<String>` and `Box<Integer>` as the same raw `Box` type. Type erasure means your generic type information is thrown away after compilation. This creates real limitations: you can't do `new T()`, you can't check `instanceof T`, and arrays of generic types are forbidden. Understanding these constraints upfront saves you from debugging cryptic errors later.
 
 ## Learning Objectives
 
-By the end of this topic, you will be able to:
+By the end of this topic you will be able to:
 
-- Explain why generics were introduced in Java
-- Distinguish between raw types and parameterized types
-- Write basic generic classes and methods
-- Understand type inference and diamond operator
-- Identify type safety benefits over pre-generics code
-- Recognize the relationship between generics and type erasure
-
----
+- Explain why generics exist and what problem they solve compared to raw types.
+- Write a generic class, interface, and method with proper type bounds.
+- Understand type erasure: what the compiler does, what the JVM sees, and what you can't do.
+- Use bounded wildcards (`? extends`, `? super`) to write flexible APIs without breaking type safety.
+- Avoid the five most common generic pitfalls: raw types, generic arrays, overusing wildcards, ignoring erasure, and unchecked casts.
+- Diagnose ClassCastException at runtime and trace it back to missing generic parameters.
 
 ## Prerequisites
 
@@ -414,6 +410,19 @@ public class Utility {
 ```
 
 ---
+
+## When NOT to Use Generics
+
+- **Simple types with no polymorphism**: If you only ever work with one type, a specific class is clearer.
+- **Runtime type information is needed**: Type erasure means you can't inspect `T` at runtime. Use `Class<T>` tokens or reified generics patterns instead.
+- **Performance-critical code with heavy boxing**: Generic collections box primitives. For numeric computation, use `IntStream` or primitive arrays.
+- **Legacy codebases with raw types everywhere**: Introducing generics into a massive legacy codebase may require touching hundreds of files. Migrate incrementally.
+
+## Trade-offs
+
+- **Type safety vs. verbosity**: Generics catch errors at compile time but add syntax noise. `Map<String, List<Integer>>` is safer but harder to read than `Map`.
+- **Erasure vs. flexibility**: Type erasure keeps bytecode compatible with pre-Java 5 but prevents runtime type checks. You gain backward compatibility at the cost of runtime introspection.
+- **Bounded wildcards vs. simplicity**: `List<? extends Number>` is flexible but confuses developers. Use it for API consumers; use concrete types internally.
 
 ## Engineering Decision Framework
 

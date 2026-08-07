@@ -528,6 +528,25 @@ class LifecycleTest {
 - [Baeldung JUnit 5 Tutorial](https://www.baeldung.com/junit-5)
 - [JUnit 5 GitHub Repository](https://github.com/junit-team/junit5)
 
+## Alternatives
+
+| Framework | Parallel | BDD Style | Parameterized | Extensions | Use When |
+|-----------|----------|-----------|---------------|------------|----------|
+| JUnit 5 | Yes | No | Yes | Yes | Standard Java unit testing |
+| TestNG | Yes | No | Yes | Yes | Advanced grouping, parallel execution |
+| Spock | Yes | Yes | Yes | Yes | BDD-style with Groovy |
+| JMH | No | No | No | No | Microbenchmarking |
+| AssertJ | N/A | No | N/A | N/A | Rich fluent assertions (complements JUnit) |
+
+## Trade-offs
+
+JUnit 5 provides modern testing because it:
+- Requires more setup than ad-hoc scripts (use Vintage for legacy JUnit 4)
+- Mocking frameworks add complexity (use real objects when possible)
+- Test isolation requires discipline (use @BeforeEach to reset state)
+- Parameterized tests can be hard to read (use @CsvSource or @MethodSource carefully)
+- Integration tests are slower than unit tests (use TestContainers for database tests)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

@@ -208,6 +208,25 @@ Need complex behavior? → Yes → Use Class
 ☐ I know how to debug it
 ☐ I've tested with realistic data volume
 
+## Alternatives
+
+| Approach | Immutability | Boilerplate | Custom equals | Mutable Fields | Use When |
+|----------|-------------|-------------|---------------|----------------|----------|
+| Records | Yes | Low | Not allowed | No | Immutable data carriers |
+| Classes with final fields | Yes | High | Allowed | No | Custom validation logic |
+| Sealed classes | N/A | Low | Allowed | Yes | Restricting hierarchies |
+| Lombok @Value | Yes | Low | Allowed | No | Pre-Java 16 immutable classes |
+| Tuple libraries | Yes | Low | Allowed | No | Simple pair/triple returns |
+
+## Trade-offs
+
+Records simplify data classes because they:
+- Cannot have mutable fields after construction (use classes if mutability needed)
+- Cannot customize equals/hashCode (use classes if custom equality logic needed)
+- Are not recommended for JPA entities (use classes with proxies)
+- Cannot extend classes (use sealed classes + interfaces for hierarchies)
+- All components are included in equals/hashCode (use classes if selective equality needed)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

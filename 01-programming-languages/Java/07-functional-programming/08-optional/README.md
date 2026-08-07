@@ -34,7 +34,7 @@
 
 ## 1. Introduction
 
-`Optional<T>` is a container object that may or may not contain a non-null value. Introduced in Java 8, `Optional` provides a explicit way to handle the absence of a value, replacing the error-prone null checks with a functional, composable API.
+You've written `if (x != null)` a thousand times. Sometimes you forget one, and a `NullPointerException` surfaces three layers up in a call stack you weren't even looking at. `Optional<T>` is Java's way of making "this value might be missing" explicit in the type system — so the compiler forces you to handle absence instead of discovering it at runtime.
 
 ### Key Characteristics
 
@@ -58,14 +58,13 @@
 
 ## 2. Learning Objectives
 
-After completing this topic, you will be able to:
+By the end of this topic you will be able to:
 
-1. Create and use Optional instances correctly
-2. Apply Optional operations (map, flatMap, filter, orElse, ifPresent)
-3. Avoid common Optional pitfalls
-4. Use Optional in stream operations
-5. Design APIs with Optional return types
-6. Handle Optional in enterprise applications
+- Create Optional instances correctly and know when to use `of()` vs `ofNullable()` vs `empty()`
+- Chain `map`, `flatMap`, and `filter` to handle absent values without null checks
+- Design method return types that communicate "this might be missing" through the API
+- Avoid the most common Optional pitfalls: using it as a parameter, calling `.get()` without checking, wrapping nullables with `of()`
+- Integrate Optional with Stream API terminal operations like `findFirst()` and `reduce()`
 
 ---
 
@@ -469,6 +468,25 @@ boolean present = optional.isPresent();
 
 ### ❌ Myth 3: Optional is serializable
 **Reality:** Not serializable. Cannot be used with serialization frameworks.
+
+## Alternatives
+
+| Approach | Null-safe | Composable | Serializable | Performance | Use When |
+|----------|----------|------------|--------------|-------------|----------|
+| Optional<T> | Yes | Yes | No | Moderate | Method returns with possible absence |
+| Null checks + @NonNull | Yes | No | Yes | High | Simple, performance-critical code |
+| Empty collections | Yes | Yes | Yes | Moderate | Absence means "no items" |
+| Default values | N/A | No | Yes | High | Sensible default exists |
+| Exceptions | N/A | No | Yes | Low | Absence is truly exceptional |
+
+## Trade-offs
+
+Optional makes null handling explicit because it:
+- Is not serializable (cannot use with Jackson, etc.)
+- Should not be used as method parameters (use overloading instead)
+- Should not be used as class fields (use @Nullable annotation instead)
+- Adds allocation overhead (~16 bytes per Optional, avoid in hot paths)
+- Empty Optional is a singleton (reuse Optional.empty(), don't create new each time)
 
 ## Engineering Maturity Levels
 

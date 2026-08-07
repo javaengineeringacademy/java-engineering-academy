@@ -1,50 +1,62 @@
 # JVM Internals Quiz
 
-## Question 1 (MCQ)
-What is the purpose of the JVM's Method Area?
-- A) Stores object instances
-- B) Stores class metadata, static variables, and constant pool
-- C) Stores local method variables
-- D) Stores native method implementations
+## Question 1 (Production Scenario)
+Your Java application is experiencing frequent Full GC pauses that last several seconds. The heap size is 4GB. Users report timeouts during these pauses. Which diagnostic approach should you take first?
+
+- A) Increase heap size to 8GB
+- B) Enable GC logging and analyze heap usage patterns with JFR (Java Flight Recorder)
+- C) Switch to ZGC immediately
+- D) Add more RAM to the server
 
 **Answer: B**
-**Explanation:** The Method Area stores class metadata, static variables, constant pool, and method bytecode. It is shared among all threads.
+**Explanation:** Before tuning, you need data. GC logging and JFR provide insights into what's being collected, pause times, and allocation rates. This data-driven approach ensures you address the root cause rather than guessing. Increasing heap without understanding the problem may worsen pause times.
 
 ---
 
-## Question 2 (MCQ)
-Which GC algorithm became the default in Java 9 and is designed for large heaps with predictable pause times?
-- A) Serial GC
-- B) Parallel GC
-- C) G1 GC
-- D) ZGC
+## Question 2 (Production Scenario)
+You are deploying a latency-sensitive trading application that requires sub-millisecond GC pauses. The heap will be 16GB. Which GC algorithm should you choose?
+
+- A) G1 GC (default)
+- B) Serial GC
+- C) ZGC or Shenandoah
+- D) Parallel GC
 
 **Answer: C**
-**Explanation:** G1 (Garbage-First) GC became the default in Java 9. It divides the heap into regions and prioritizes collecting regions with the most garbage, providing predictable pause times.
+**Explanation:** ZGC and Shenandoah are designed for ultra-low latency with pauses typically under 10ms regardless of heap size. They are ideal for latency-sensitive applications where even short pauses are unacceptable. G1 GC has longer pauses, and Parallel/Serial GC have stop-the-world pauses.
 
 ---
 
-## Question 3 (MCQ)
-What happens during the "Linking" phase of class loading?
-- A) Reading the .class file from disk
-- B) Executing static initializers
-- C) Verifying bytecode, preparing memory, and resolving references
-- D) Allocating heap memory for objects
+## Question 3 (Debugging)
+A production application throws `OutOfMemoryError: Java heap space` even though heap usage appears low in monitoring. The code uses:
 
-**Answer: C**
-**Explanation:** Linking consists of three sub-phases: Verification (checking bytecode validity), Preparation (allocating memory for static fields), and Resolution (replacing symbolic references with direct references).
+```java
+public byte[] processData(byte[] input) {
+    return Arrays.copyOf(input, input.length * 2);
+}
+```
 
----
+When processing 10,000 concurrent requests, each with 10MB input, the application crashes. What is the bug?
 
-## Question 4 (MCQ)
-Which of the following is a GC Root?
-- A) An object referenced by another unreferenced object
-- B) A local variable in an active method
-- C) An object in the old generation
-- D) A weak reference
+- A) The JVM heap is too small
+- B) Each request allocates 20MB (2x input), so 10,000 requests need 200GB — far exceeding heap
+- C) `Arrays.copyOf()` is inefficient
+- D) The input data is corrupted
 
 **Answer: B**
-**Explanation:** GC Roots include local variables in active frames, static fields, JNI references, active threads, and monitors. Objects reachable from GC Roots are not eligible for garbage collection.
+**Explanation:** This is a memory estimation error. Each request allocates 20MB (input + copy). With 10,000 concurrent requests, peak memory is ~200GB. The fix: process requests in batches, use streaming (NIO), or implement backpressure to limit concurrency based on available memory.
+
+---
+
+## Question 4 (Production Scenario)
+Your application uses many short-lived objects that become garbage quickly. GC logs show frequent young generation collections but long Full GC pauses. Which tuning approach helps?
+
+- A) Increase old generation size
+- B) Increase young generation size to reduce promotion rate
+- C) Disable garbage collection
+- D) Use a smaller heap
+
+**Answer: B**
+**Explanation:** Increasing the young generation allows objects to live longer before promotion to old generation. Short-lived objects die in the young generation, avoiding Full GC. This reduces the frequency of expensive Full GC pauses at the cost of slightly longer young GC pauses.
 
 ---
 

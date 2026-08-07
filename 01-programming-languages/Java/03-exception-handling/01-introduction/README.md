@@ -492,6 +492,25 @@ public class ExceptionChainingExample {
 
 **Part 1** of 3 | Part 2 | Part 3
 
+## Alternatives
+
+| Approach | Compile-time Safety | Performance | Composability | Use When |
+|----------|-------------------|-------------|---------------|----------|
+| Try-catch | Yes | Slow (stack trace) | Limited | Recoverable errors |
+| Optional<T> | No | Fast | High | Method returns that may be absent |
+| Result types | Yes | Fast | High | Functional error handling |
+| Error codes | No | Fast | Low | Legacy systems |
+| Validation annotations | Yes | Fast | High | Declarative input validation |
+
+## Trade-offs
+
+Exception handling provides structured error management because it:
+- Is expensive to create (stack trace generation cost, avoid in hot paths)
+- Should not be used for flow control (use if-else or Optional instead)
+- Can mask root causes if catch blocks are too broad (catch specific types)
+- Finally blocks may not run on System.exit() or JVM crash
+- Checked exceptions add verbosity but enforce handling at compile time
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

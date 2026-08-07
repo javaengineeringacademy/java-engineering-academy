@@ -1,8 +1,8 @@
 # 02 - ClassLoader Deep Dive
 
-## Introduction
+## Why ClassLoaders Matter
 
-The ClassLoader subsystem is the foundation of Java's dynamic class loading mechanism. It reads `.class` files from disk, network, or generated at runtime, and converts them into `java.lang.Class` objects in the method area. Understanding classloaders is essential for debugging `ClassNotFoundException`, implementing plugin architectures, and managing long-running applications.
+You've probably seen `ClassNotFoundException` or `NoClassDefFoundError` in a stack trace and wondered what actually happened. Those errors come from the classloader — the subsystem that reads `.class` files from disk, network, or runtime generation and turns them into `java.lang.Class` objects the JVM can use. Understanding classloaders isn't just trivia: it's how you debug plugin architectures, fix memory leaks in long-running apps, and understand why the same class loaded by different classloaders is treated as completely different types.
 
 ## Classloading Phases
 
@@ -182,6 +182,22 @@ c1 != c2  // Different class objects
 - Application classloader: classes unload on JVM shutdown or if classloader is nulled
 - Custom classloaders: unload when no references remain
 
+## When NOT to Use This
+
+- Simple applications — you never touch classloaders directly unless you're building plugins or app servers
+- Standard Spring Boot apps — the default classloader hierarchy handles everything
+- You're looking for a way to hot-patch production code — this is fragile and rarely worth the risk
+
+## Trade-offs
+
+| Aspect | Custom ClassLoader | Standard ClassLoader |
+|--------|-------------------|---------------------|
+| Class isolation | Full isolation between loaders | Shared by all code |
+| Hot reload | Possible but complex | No reload without restart |
+| Memory risk | Leaks if not careful | No leak risk |
+| Debugging | Harder (multiple class instances) | Straightforward |
+| Security | Can load untrusted code | Controlled by classpath |
+
 ## Best Practices
 
 1. **Always Set Parent**: `super(parent)` in custom classloader constructors
@@ -265,3 +281,13 @@ jcmd <pid> VM.classloader_stats
 
 ### ❌ Myth 3: Classes are loaded once
 **Reality:** Can be unloaded. Classes can be garbage collected when their classloader is collected.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Explain the parent delegation model and why it matters for class identity
+- Diagnose ClassNotFoundException vs NoClassDefFoundError and know the fix for each
+- Write a custom classloader for plugin or hot-reload architectures
+- Detect and fix classloader memory leaks using jcmd and MXBeans
+- Use Thread Context ClassLoader to break parent delegation when needed

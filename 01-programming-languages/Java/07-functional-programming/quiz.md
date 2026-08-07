@@ -1,50 +1,62 @@
 # Functional Programming Quiz
 
-## Question 1 (MCQ)
-What is a functional interface in Java?
-- A) An interface with exactly one abstract method
-- B) An interface with no methods
-- C) An interface with multiple abstract methods
-- D) An abstract class with one method
+## Question 1 (Production Scenario)
+Your application processes a stream of 10 million customer records. You need to filter customers with age > 30, map them to their email addresses, and collect results into a list. The pipeline must be memory-efficient. Which approach is correct?
 
-**Answer: A**
-**Explanation:** A functional interface has exactly one abstract method (SAM - Single Abstract Method). It can have multiple default and static methods. The `@FunctionalInterface` annotation ensures this contract at compile time.
-
----
-
-## Question 2 (MCQ)
-What is the difference between `map()` and `flatMap()` in Stream API?
-- A) They are identical
-- B) `map()` transforms each element one-to-one; `flatMap()` transforms each element to a stream and flattens results
-- C) `map()` is faster than `flatMap()`
-- D) `flatMap()` is for primitive types only
+- A) Load all records into a List, then use a for loop
+- B) Use Stream pipeline: `records.stream().filter(r -> r.getAge() > 30).map(r -> r.getEmail()).collect(Collectors.toList())`
+- C) Use parallel streams for all operations
+- D) Use `reduce()` to build the result list
 
 **Answer: B**
-**Explanation:** `map()` applies a function to each element producing one output element. `flatMap()` applies a function that returns a stream for each element, then flattens all streams into a single stream.
+**Explanation:** A Stream pipeline processes records lazily — each record flows through all operations before the next is processed. This uses constant memory regardless of input size. Loading all records into memory first defeats the purpose. `reduce()` is for combining elements into a single value, not building collections.
 
 ---
 
-## Question 3 (MCQ)
-What is lazy evaluation in Streams?
-- A) Operations are not executed until a terminal operation is invoked
-- B) Operations are executed immediately
-- C) Operations are executed in parallel
-- D) Operations are executed in reverse order
+## Question 2 (Production Scenario)
+Your e-commerce system needs to group 1 million orders by status (COMPLETED, PENDING, CANCELLED), then calculate total revenue for COMPLETED orders. Which stream operation is most appropriate?
 
-**Answer: A**
-- **Explanation:** Intermediate operations (filter, map, etc.) are deferred. Processing only begins when a terminal operation (collect, forEach, etc.) is called, enabling optimizations like short-circuiting.
-
----
-
-## Question 4 (MCQ)
-What is the difference between `reduce()` and `collect()`?
-- A) They are identical
-- B) `reduce()` combines elements into a single value; `collect()` accumulates into a mutable container
-- C) `reduce()` is for parallel streams only
-- D) `collect()` is slower than `reduce()`
+- A) Use a for loop with if-else for grouping
+- B) Use `Collectors.groupingBy()` to group by status, then `filter` and `mapToDouble` for revenue
+- C) Sort the list, then manually group
+- D) Use parallel streams for all operations without considering data size
 
 **Answer: B**
-**Explanation:** `reduce()` uses a BinaryOperator to combine elements into one value (e.g., sum). `collect()` uses a Collector to accumulate elements into a mutable container like a List, Set, or Map.
+**Explanation:** `Collectors.groupingBy()` provides a clean, declarative way to group elements. Combined with downstream collectors like `Collectors.summingDouble()`, this approach is concise, readable, and efficient. It avoids manual bookkeeping and leverages the Stream API's optimized implementations.
+
+---
+
+## Question 3 (Debugging)
+A developer writes a stream pipeline that throws `IllegalStateException: stream has already been operated upon or closed`. The code:
+
+```java
+Stream<String> stream = names.stream();
+long count = stream.filter(n -> n.length() > 3).count();
+List<String> result = stream.filter(n -> n.length() > 3).collect(Collectors.toList());
+```
+
+What is the bug?
+
+- A) The filter condition is incorrect
+- B) Streams are single-use — after the terminal operation `count()`, the stream is consumed and cannot be reused
+- C) The `collect()` method should be called before `count()`
+- D) `names` is null
+
+**Answer: B**
+**Explanation:** Streams are single-use. Once a terminal operation (`count()`, `collect()`, `forEach()`) is called, the stream is consumed. To perform multiple operations, create a new stream from the source: `names.stream().filter(...).count()` and `names.stream().filter(...).collect(...)`.
+
+---
+
+## Question 4 (Production Scenario)
+You are designing a data transformation pipeline that needs to: (1) read CSV data, (2) validate records, (3) transform to domain objects, (4) aggregate statistics, and (5) write results. How should you design this?
+
+- A) Process each step entirely before moving to the next
+- B) Use a Stream pipeline with intermediate operations for validation and transformation, and terminal operations for aggregation
+- C) Load all data into memory, process, then output
+- D) Use separate threads for each step without coordination
+
+**Answer: B**
+**Explanation:** A Stream pipeline provides lazy evaluation, so each record flows through all steps before the next record is processed. This minimizes memory usage and allows the JVM to optimize the pipeline. Intermediate operations are fused for efficiency.
 
 ---
 

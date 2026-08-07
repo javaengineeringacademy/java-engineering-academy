@@ -93,6 +93,25 @@ account.withdraw(BigDecimal.valueOf(200)); // Checked
 ☐ I know how to debug it
 ☐ I've tested with realistic data volume
 
+## Alternatives
+
+| Approach | Immutability | Boilerplate | Pattern Matching | Use When |
+|----------|-------------|-------------|-----------------|----------|
+| Encapsulation (getters/setters) | Manual | High | No | Mutable state, complex behavior |
+| Records (Java 16+) | Yes | Low | Yes | Immutable data carriers |
+| Sealed classes | N/A | Low | Yes | Restricting type hierarchies |
+| Lombok @Data | No | Low | No | Reducing POJO boilerplate |
+| Builder pattern | Optional | High | No | Complex object construction |
+
+## Trade-offs
+
+Encapsulation protects invariants because it:
+- Adds boilerplate for simple data carriers (use Records instead)
+- Returning mutable objects from getters leaks internal state (use defensive copies)
+- Anemic domain models with only getters/setters lose behavior (put logic in domain objects)
+- Over-encapsulation of value objects adds unnecessary complexity (use Records or public final fields)
+- Testability requires package-private access or frameworks (use @VisibleForTesting)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

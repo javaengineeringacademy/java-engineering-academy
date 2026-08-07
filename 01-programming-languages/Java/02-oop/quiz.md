@@ -1,38 +1,54 @@
 # OOP Concepts Quiz
 
-## Question 1 (MCQ)
-Which OOP principle wraps data and methods together, hiding internal state?
-- A) Inheritance
-- B) Polymorphism
-- C) Encapsulation
-- D) Abstraction
+## Question 1 (Production Scenario)
+Your team is designing a payment processing system. You need to support CreditCard, PayPal, and BankTransfer. Each has its own validation and processing logic. A new payment method (Crypto) must be added next quarter without modifying existing code. Which design approach should you choose?
 
-**Answer: C**
-**Explanation:** Encapsulation bundles data (fields) and methods into a single unit (class) and restricts direct access to fields via access modifiers, providing public getters/setters for controlled access.
+- A) Create a single `PaymentProcessor` class with if-else for each type
+- B) Define a `PaymentProcessor` interface with `process()`, implement separately for each type
+- C) Use an abstract class with all methods concrete
+- D) Store payment logic in a properties file
 
----
-
-## Question 2 (MCQ)
-What is the key difference between an abstract class and an interface in Java?
-- A) Abstract classes can have constructors; interfaces cannot
-- B) Interfaces can have instance variables; abstract classes cannot
-- C) Both can have constructors
-- D) There is no difference
-
-**Answer: A**
-**Explanation:** Abstract classes can have constructors (called via `super()` from subclasses), instance variables, and non-abstract methods. Interfaces cannot have constructors (prior to Java 8 default methods).
+**Answer: B**
+**Explanation:** Using an interface allows each payment processor to implement its own logic independently. This follows the Open/Closed Principle — new payment types can be added without modifying existing code. It also enables dependency injection, easier testing, and runtime swapping of implementations.
 
 ---
 
-## Question 3 (MCQ)
-Which access modifier provides the most restriction?
-- A) public
-- B) protected
-- C) default (package-private)
-- D) private
+## Question 2 (Production Scenario)
+You are building a notification system that sends alerts via Email, SMS, and Push. New notification channels may be added in the future. The system must send 1 million notifications per hour. How should you architect this?
 
-**Answer: D**
-**Explanation:** `private` restricts access to within the same class only. `default` allows package access, `protected` allows subclass access, and `public` allows global access.
+- A) Create a single `NotificationService` with methods `sendEmail()`, `sendSms()`, `sendPush()`
+- B) Define a `NotificationChannel` interface with `send()`, implement `EmailChannel`, `SmsChannel`, `PushChannel`
+- C) Create a `Notification` abstract class with concrete send methods
+- D) Use static methods for each channel type
+
+**Answer: B**
+**Explanation:** The Strategy pattern with an interface makes the system extensible. Adding a new channel (e.g., Slack) requires only implementing the interface. The main service depends on the abstraction, not concrete classes, following the Dependency Inversion Principle. This also allows independent testing and scaling of each channel.
+
+---
+
+## Question 3 (Debugging)
+A junior developer creates a `Person` class with an `equals()` method. Users report that `HashSet<Person>` contains duplicate entries. The code is:
+
+```java
+public class Person {
+    private String name;
+    private int age;
+    
+    public boolean equals(Person other) {
+        return this.name.equals(other.name) && this.age == other.age;
+    }
+}
+```
+
+What is the bug?
+
+- A) The `equals()` method should use `==` for String comparison
+- B) The `equals()` method has the wrong signature — it overloads instead of overrides `Object.equals(Object)`
+- C) The class needs to implement `Comparable`
+- D) HashSet doesn't support custom objects
+
+**Answer: B**
+**Explanation:** The method `equals(Person)` doesn't override `equals(Object)` from Object. It creates a new overloaded method. HashSet uses `equals(Object)` to check for duplicates, so it falls back to reference equality. The fix: override `equals(Object obj)` and also override `hashCode()` to maintain the contract.
 
 ---
 
@@ -48,64 +64,38 @@ What is the benefit of programming to an interface rather than a concrete class?
 
 ---
 
-## Question 5 (Code Output)
-What does this code print?
+## Question 5 (Production Scenario)
+Your application has a `Shape` class hierarchy with `Circle`, `Rectangle`, and `Triangle`. A new requirement needs to add a `draw()` method that behaves differently for each shape. The system processes 10,000 shapes per second. Which approach is most appropriate?
 
-```java
-class Animal {
-    public void speak() {
-        System.out.println("Animal speaks");
-    }
-}
+- A) Use `instanceof` checks in a single `draw(Shape s)` method
+- B) Add abstract `draw()` to `Shape` and override in each subclass
+- C) Create separate `drawCircle()`, `drawRectangle()` methods in a manager class
+- D) Use a `switch` on shape type string
 
-class Dog extends Animal {
-    @Override
-    public void speak() {
-        System.out.println("Dog barks");
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        Animal animal = new Dog();
-        animal.speak();
-    }
-}
-```
-
-**Answer:** Dog barks
-**Explanation:** Even though the reference type is `Animal`, the actual object is `Dog`. Due to dynamic method dispatch (runtime polymorphism), the overridden `speak()` method in `Dog` is called.
+**Answer: B**
+**Explanation:** An abstract `draw()` method leverages polymorphism — the JVM resolves the correct implementation at runtime via dynamic dispatch. This is O(1) per call, maintains the Open/Closed Principle (adding a new shape doesn't modify existing code), and keeps drawing logic co-located with the shape data.
 
 ---
 
-## Question 6 (Code Output)
-What does this code print?
+## Question 6 (Debugging)
+A banking application has two threads transferring money between accounts. After running overnight, account balances are incorrect. The code uses:
 
 ```java
-public class Main {
-    static void process(Animal a) {
-        a.speak();
-    }
-
-    public static void main(String[] args) {
-        Animal a1 = new Animal();
-        Animal a2 = new Dog();
-        process(a1);
-        process(a2);
-    }
-}
-
-class Animal {
-    void speak() { System.out.print("Animal "); }
-}
-
-class Dog extends Animal {
-    void speak() { System.out.print("Dog "); }
+public void transfer(Account from, Account to, double amount) {
+    from.debit(amount);
+    to.credit(amount);
 }
 ```
 
-**Answer:** Animal Dog
-**Explanation:** Method overriding with dynamic dispatch: `a1` is an Animal object, so `Animal.speak()` is called. `a2` is a Dog object, so `Dog.speak()` is called even though the parameter type is `Animal`.
+What is the bug and how do you fix it?
+
+- A) Use `synchronized` on the method to ensure atomicity
+- B) The method should return a boolean instead of void
+- C) Use `volatile` on the amount parameter
+- D) Add a `Thread.sleep()` between operations
+
+**Answer: A**
+**Explanation:** Without synchronization, Thread A can debit from account1 while Thread B is also debiting from account1, causing lost updates. The `synchronized` keyword ensures only one thread can execute the transfer at a time per account instance. For better performance, consider using `ReentrantLock` with fine-grained locking or optimistic locking with version numbers.
 
 ---
 

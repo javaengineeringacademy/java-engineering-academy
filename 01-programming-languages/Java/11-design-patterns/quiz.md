@@ -1,50 +1,70 @@
 # Design Patterns Quiz
 
-## Question 1 (MCQ)
-Which pattern ensures only one instance of a class exists throughout the application?
-- A) Factory Method
-- B) Singleton
-- C) Builder
-- D) Prototype
+## Question 1 (Production Scenario)
+Your application uses a database connection pool that must be shared across all threads. Multiple instances would cause resource exhaustion. The code runs in a clustered environment where multiple JVMs might start simultaneously. Which pattern should you use?
+
+- A) Factory Method for creating connections
+- B) Singleton with double-checked locking for thread-safe single instance
+- C) Builder for configuring the pool
+- D) Prototype for cloning connections
 
 **Answer: B**
-**Explanation:** The Singleton pattern restricts instantiation to a single object, providing a global point of access. It's commonly used for configuration management, logging, and connection pooling.
+**Explanation:** Singleton ensures only one instance of the connection pool exists per JVM. Double-checked locking with `volatile` provides thread-safe lazy initialization without synchronization overhead on every access. In clustered environments, each JVM has its own Singleton instance.
 
 ---
 
-## Question 2 (MCQ)
-What is the primary purpose of the Adapter pattern?
-- A) Adds behavior to objects dynamically
-- B) Converts one interface to another expected by clients
-- C) Provides a simplified interface to complex subsystems
-- D) Creates objects without specifying their exact class
+## Question 2 (Production Scenario)
+Your e-commerce system has an `OrderProcessor` class with a `processOrder(String type)` method that uses if-else to handle "standard", "express", and "international" orders. A new "subscription" order type must be added. The team is concerned about modifying existing code. Which pattern addresses this?
+
+- A) Singleton to manage order processing
+- B) Strategy pattern — define an `OrderStrategy` interface, implement separately for each type
+- C) Adapter to convert order types
+- D) Observer to notify when orders complete
 
 **Answer: B**
-**Explanation:** The Adapter pattern allows classes with incompatible interfaces to work together by wrapping one interface into another the client expects.
+**Explanation:** Strategy pattern defines a family of algorithms (order processing logic) and makes them interchangeable. Adding a new order type requires creating a new `OrderStrategy` implementation — no existing code is modified. This follows the Open/Closed Principle.
 
 ---
 
-## Question 3 (MCQ)
-What is the Open/Closed Principle?
-- A) Classes should be open for modification, closed for extension
-- B) Classes should be open for extension, closed for modification
-- C) Classes should be open for both
-- D) Classes should be closed for both
+## Question 3 (Debugging)
+A developer implements a Singleton for a configuration manager. In production, two instances occasionally appear under high concurrency. The code:
+
+```java
+public class ConfigManager {
+    private static ConfigManager instance;
+    private ConfigManager() {}
+    
+    public static ConfigManager getInstance() {
+        if (instance == null) {
+            instance = new ConfigManager();
+        }
+        return instance;
+    }
+}
+```
+
+What is the bug?
+
+- A) The constructor should be public
+- B) The Singleton is not thread-safe — two threads can pass the null check simultaneously and create two instances
+- C) Static methods cannot create instances
+- D) The class should implement an interface
 
 **Answer: B**
-**Explanation:** The Open/Closed Principle states that software entities should be open for extension (adding new functionality) but closed for modification (changing existing code).
+**Explanation:** Without synchronization, Thread A checks `instance == null`, then Thread B also checks before Thread A assigns. Both create instances, and one is lost. Fix: use double-checked locking with `volatile`, enum Singleton, or lazy initialization holder pattern.
 
 ---
 
-## Question 4 (MCQ)
-Which pattern defines a family of algorithms and makes them interchangeable?
-- A) Strategy
-- B) Observer
-- C) Command
-- D) State
+## Question 4 (Production Scenario)
+Your HTTP server needs to process requests through multiple middleware steps (authentication, logging, validation, rate limiting). Steps may be added or removed dynamically. Which pattern allows flexible composition?
 
-**Answer: A**
-**Explanation:** The Strategy pattern encapsulates algorithms in separate classes and makes them interchangeable at runtime. This allows selecting algorithms without modifying the client code.
+- A) Create a single method with all steps hardcoded
+- B) Chain of Responsibility — each middleware processes the request and passes it to the next handler
+- C) Use inheritance to create middleware classes
+- D) Store middleware configuration in a database
+
+**Answer: B**
+**Explanation:** Chain of Responsibility allows flexible composition of processing steps. Each handler decides whether to process the request and pass it forward. New middleware can be added without modifying existing ones, following the Open/Closed Principle.
 
 ---
 

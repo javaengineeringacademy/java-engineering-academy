@@ -203,6 +203,25 @@ public class CacheManager {
 4. **Class loader leaks**: In app servers, singleton held by a web app's class loader can prevent undeployment
 5. **Overuse**: Use dependency injection instead when possible; singletons are often a code smell
 
+## Alternatives
+
+| Approach | Lazy Init | Thread-Safe | Testable | Serialization Safe | Use When |
+|----------|-----------|-------------|----------|-------------------|----------|
+| Singleton (enum) | No | Yes | Hard | Yes | Guaranteed single instance |
+| Singleton (static holder) | Yes | Yes | Hard | No | Lazy initialization needed |
+| Singleton (DCL) | Yes | Yes (volatile) | Hard | No | Performance-critical lazy init |
+| Dependency Injection | N/A | Container-managed | Easy | Yes | When DI container available |
+| Per-request instance | N/A | N/A | Easy | N/A | Stateless services |
+
+## Trade-offs
+
+Singleton provides global access because it:
+- Makes unit testing harder (static methods hard to mock, use DI instead)
+- Introduces global mutable state (prefer immutable singletons)
+- Can cause classloader leaks in app servers (clean up resources on undeployment)
+- Overuse couples components tightly (use DI for loose coupling)
+- Double-checked locking requires volatile (use enum or static holder instead)
+
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use

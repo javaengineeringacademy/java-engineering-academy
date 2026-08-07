@@ -17,15 +17,21 @@ Applications constantly handle text — user input, file content, network data, 
 - Immutability guarantees for thread-safe text handling
 
 ## History
-- **1995** — Java 1.0 introduced `String`, `StringBuffer`, `Character`
-- **1997** — Java 1.1 added `Reader`/`Writer` for character-based I/O
-- **2002** — Java 1.4 introduced `java.util.regex` for regular expressions
-- **2004** — Java 5 added `Scanner` for text parsing
-- **2011** — Java 7 added `Files` methods for reading/writing text files
-- **2014** — Java 8 added `String.join()`, `String.format()` improvements
-- **2020** — Java 15 introduced text blocks (`"""`) for multi-line strings
-- **2021** — Java 17 added `String.stripIndent()`, `translateEscapes()`, `formatted()`
-- **2023** — Java 21 added `String.contains()`, `String.strip()` enhancements
+- **1995** — Java 1.0 introduced `String`, `StringBuffer`, `Character` to provide immutable and mutable text handling with Unicode support
+- **1997** — Java 1.1 added `Reader`/`Writer` for character-based I/O to support internationalization and proper encoding handling
+- **2002** — Java 1.4 introduced `java.util.regex` to provide powerful pattern matching and text manipulation capabilities
+- **2004** — Java 5 added `Scanner` to simplify reading and parsing text from various input sources
+- **2011** — Java 7 added `Files` methods for reading/writing text files to provide concise, efficient file operations with NIO.2
+- **2014** — Java 8 added `String.join()`, `String.format()` improvements to simplify string concatenation and formatting
+- **2020** — Java 15 introduced text blocks (`"""`) to simplify multi-line strings and reduce escape sequences
+- **2021** — Java 17 added `String.stripIndent()`, `translateEscapes()`, `formatted()` to enhance text block and string processing capabilities
+- **2023** — Java 21 added `String.contains()`, `String.strip()` enhancements to provide more convenient text search and trimming operations
+
+## Production Notes
+- **Where is it used?** In all Java applications that process text, handle user input, read/write files, or perform pattern matching
+- **Why is it useful?** Provides efficient, secure, and internationalized text manipulation with immutable strings and mutable builders
+- **When should it be avoided?** For simple concatenation in loops (use StringBuilder), or when performance is critical and custom text processing is needed
+- **Alternative?** StringBuilder for mutable strings, char arrays for low-level processing, or third-party libraries for complex parsing
 
 ## Core Concepts
 

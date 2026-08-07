@@ -1,50 +1,74 @@
 # Debugging Quiz
 
-## Question 1 (MCQ)
-What is the purpose of a stack trace in exception handling?
-- A) To fix the exception automatically
-- B) To show the sequence of method calls that led to the exception
-- C) To log all variable values
-- D) To restart the application
+## Question 1 (Production Scenario)
+Your application becomes slow in production. Response times increase from 50ms to 5 seconds. The heap usage is stable at 60%. CPU usage is low. What should you investigate first?
+
+- A) Increase heap size
+- B) Take a thread dump to identify blocked or waiting threads
+- C) Restart the application
+- D) Add more servers
 
 **Answer: B**
-**Explanation:** A stack trace shows the call hierarchy from the point of exception origin back to the main method, helping developers trace the execution path and identify the root cause.
+**Explanation:** When response times degrade but CPU and heap are normal, the issue is likely thread contention, deadlocks, or blocking I/O. A thread dump shows what each thread is doing, revealing blocked threads, lock contention, or waiting on external resources. This is the first diagnostic step before making changes.
 
 ---
 
-## Question 2 (MCQ)
-What is a memory leak in Java?
-- A) When the JVM runs out of physical RAM
-- B) When objects are no longer needed but are still referenced, preventing garbage collection
-- C) When a thread is stuck in an infinite loop
-- D) When a file handle is not closed
+## Question 2 (Production Scenario)
+Your microservice processes orders but occasionally fails with `OutOfMemoryError` after running for 6 hours. Heap dumps show a `HashMap` growing indefinitely. The code caches user sessions:
+
+```java
+static Map<String, Session> sessionCache = new HashMap<>();
+public static void cacheSession(String userId, Session session) {
+    sessionCache.put(userId, session);
+}
+```
+
+What is the bug?
+
+- A) HashMap is not thread-safe
+- B) Sessions are never removed from the cache, causing unbounded growth — implement eviction (TTL or LRU)
+- C) The map should be static
+- D) Use ConcurrentHashMap instead
 
 **Answer: B**
-**Explanation:** A memory leak occurs when objects are unintentionally kept referenced (e.g., in static collections, unclosed resources), so the garbage collector cannot reclaim their memory even though they're no longer needed.
+**Explanation:** The cache has no eviction policy. Sessions accumulate indefinitely, causing memory exhaustion. Fix: use `ConcurrentHashMap` with scheduled cleanup, or use a caching library (Caffeine, Guava Cache) with TTL and maximum size policies.
 
 ---
 
-## Question 3 (MCQ)
-What is the difference between System.out.println debugging and using a proper logging framework?
-- A) println is faster
-- B) Logging frameworks provide configurable log levels, structured output, and can be disabled without code changes
-- C) println provides more information
-- D) There is no difference
+## Question 3 (Debugging)
+A unit test fails intermittently in CI but passes locally. The test uses:
+
+```java
+@Test
+void testOrderProcessing() {
+    Order order = new Order();
+    order.process();
+    assertEquals("COMPLETED", order.getStatus());
+}
+```
+
+The `process()` method uses `Instant.now()` for timestamps. What is the bug?
+
+- A) The test framework has a bug
+- B) Time-dependent tests are flaky — mock the clock or use deterministic timestamps
+- C) The assertion is incorrect
+- D) `Instant.now()` is not thread-safe
 
 **Answer: B**
-**Explanation:** Logging frameworks like SLF4J/Logback offer log levels (DEBUG, INFO, WARN, ERROR), structured formats, file rotation, and can be configured externally. println is hardcoded and lacks these features.
+**Explanation:** Tests depending on system time are inherently flaky. `Instant.now()` can return different values depending on execution timing. Fix: inject a `Clock` dependency and use a fixed clock in tests, or use `java.time` utilities to control time in tests.
 
 ---
 
-## Question 4 (MCQ)
-Which JVM flag enables remote debugging on port 5005?
-- A) `-XX:+RemoteDebug=5005`
-- B) `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005`
-- C) `-Ddebug.port=5005`
-- D) `-Xdebug:remote:5005`
+## Question 4 (Production Scenario)
+You need to implement a logging system for a distributed microservice architecture. Logs from multiple services need to be correlated and searchable. How should you design this?
+
+- A) Each service writes logs to its own file
+- B) Use structured logging (JSON format) with correlation IDs, centralized log aggregation (ELK stack), and SLF4J with MDC for context propagation
+- C) Print all logs to stdout
+- D) Store logs in a relational database
 
 **Answer: B**
-**Explanation:** The `-agentlib:jdwp` flag loads the Java Debug Wire Protocol agent, which allows an external debugger to connect to the specified port for remote debugging.
+**Explanation:** Structured logging (JSON) enables machine parsing. Correlation IDs (propagated via MDC) link related log entries across services. Centralized aggregation (ELK/Splunk) provides unified search and monitoring. This is the industry standard for distributed observability.
 
 ---
 

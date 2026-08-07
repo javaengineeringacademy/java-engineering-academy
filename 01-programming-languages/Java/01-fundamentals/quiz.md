@@ -1,75 +1,48 @@
 # Java Fundamentals Quiz
 
-## Question 1 (Code Snippet MCQ)
-What is the output of this code?
+## Question 1 (Production Scenario)
+Your application receives user input as Strings and needs to convert them to numeric types for calculations. A junior developer writes `int value = (int) someDoubleString;` and gets unexpected results. Which approach handles type conversion correctly?
 
-```java
-public class Main {
-    public static void main(String[] args) {
-        int x = 10;
-        double y = x;
-        int z = (int) y;
-        System.out.println(x + " " + y + " " + z);
-    }
-}
-```
-
-A) 10 10.0 10
-B) 10 10 10
-C) 10.0 10.0 10
-D) Compilation error
+- A) Use `Integer.parseInt()` for int conversion and `Double.parseDouble()` for double conversion
+- B) Cast directly using `(int)` and `(double)` for all conversions
+- C) Use `toString()` method on the string
+- D) Use `Object` casting for all types
 
 **Answer: A**
-**Explanation:** `int x = 10` stores an integer. `double y = x` performs implicit widening conversion, storing 10.0. `int z = (int) y` performs explicit narrowing cast back to 10. The output is `10 10.0 10`.
+**Explanation:** String to numeric conversion requires parsing methods like `Integer.parseInt()` or `Double.parseDouble()`. Direct casting `(int)` only works between numeric primitives/wrappers (not from String). Using parsing methods also throws `NumberFormatException` for invalid input, allowing proper error handling in production.
 
 ---
 
-## Question 2 (Code Snippet MCQ)
-What is the output of this code?
+## Question 2 (Production Scenario)
+A financial application calculates interest using `double` arithmetic. Customers report that balances are off by pennies after thousands of transactions. What is the root cause and the fix?
 
-```java
-public class Main {
-    public static void main(String[] args) {
-        int result = 2 + 3 * 4;
-        int result2 = (2 + 3) * 4;
-        System.out.println(result + " " + result2);
-    }
-}
-```
-
-A) 20 20
-B) 14 20
-C) 20 14
-D) 14 14
+- A) The JVM has a bug with double precision — use float instead
+- B) Floating-point precision errors accumulate — use `BigDecimal` for monetary calculations
+- C) The database is rounding values — change database settings
+- D) Network latency is causing race conditions — add synchronization
 
 **Answer: B**
-**Explanation:** Operator precedence: multiplication (`*`) has higher precedence than addition (`+`). `2 + 3 * 4 = 2 + 12 = 14`. With parentheses: `(2 + 3) * 4 = 5 * 4 = 20`.
+**Explanation:** `double` uses IEEE 754 binary floating-point, which cannot exactly represent many decimal fractions (e.g., 0.1). Errors compound over many operations. `BigDecimal` provides arbitrary-precision decimal arithmetic, essential for financial calculations. This is a fundamental production issue in any money-handling system.
 
 ---
 
-## Question 3 (Code Snippet MCQ)
-What is the output of this code?
+## Question 3 (Debugging)
+Your application works in development but crashes in production with `NullPointerException` at an auto-unboxing line. The code is:
 
 ```java
-public class Main {
-    public static void main(String[] args) {
-        Integer a = 127;
-        Integer b = 127;
-        Integer c = 128;
-        Integer d = 128;
-        System.out.println(a == b);
-        System.out.println(c == d);
-    }
-}
+Map<String, Integer> config = loadConfig();
+int timeout = config.get("timeout");
 ```
 
-A) true true
-B) false false
-C) true false
-D) false true
+What is the most likely cause?
 
-**Answer: C**
-**Explanation:** Java caches Integer values from -128 to 127 in a cache (IntegerCache). `a` and `b` both reference the same cached object for 127, so `a == b` is true. `c` and `d` are outside the cache range, so each creates a new object on the heap, making `c == d` false.
+- A) The HashMap is null
+- B) The key "timeout" is missing from the map, so `get()` returns null, and auto-unboxing null throws NPE
+- C) The int type cannot store the config value
+- D) The loadConfig() method throws an exception
+
+**Answer: B**
+**Explanation:** `HashMap.get()` returns `null` if the key doesn't exist. When assigning `null` to `int` via auto-unboxing, Java calls `intValue()` on null, throwing `NullPointerException`. The fix is to use `config.getOrDefault("timeout", 30)` or check for null before unboxing.
 
 ---
 
@@ -125,110 +98,53 @@ D) true false false
 
 ---
 
-## Question 6 (Code Snippet MCQ)
-What is the output of this code?
+## Question 6 (Production Scenario)
+Your team maintains a legacy system where a method signature is `void process(int x, double y)`. A new requirement needs `void process(double x, int y)`. Adding the second overload causes a compilation error at call sites like `process(5, 10)`. How should you resolve this?
 
-```java
-public class Main {
-    public static void main(String[] args) {
-        int[] arr1 = {1, 2, 3};
-        int[] arr2 = {1, 2, 3};
-        int[] arr3 = arr1;
+- A) Remove the first method and only keep the new one
+- B) Rename the methods to `processIntDouble` and `processDoubleInt`
+- C) Make both methods take `double` parameters instead
+- D) Use varargs to handle both cases
 
-        System.out.println(arr1 == arr2);
-        System.out.println(arr1 == arr3);
-        System.out.println(arr1.equals(arr2));
-    }
-}
-```
-
-A) false true false
-B) true true true
-C) false false false
-D) Compilation error
-
-**Answer: A**
-**Explanation:** Arrays are objects. `arr1 == arr2` compares references — two different array objects with same content, so false. `arr1 == arr3` is true because `arr3` references the same array object as `arr1`. `arr1.equals(arr2)` calls Object.equals() which is reference equality (arrays don't override equals), so false.
+**Answer: B**
+**Explanation:** When `process(5, 10)` is called, Java cannot determine which overload is more specific — both require one widening conversion. This ambiguity causes a compilation error. Renaming methods with descriptive names eliminates ambiguity and makes the API clearer for other developers.
 
 ---
 
-## Question 7 (Code Snippet MCQ)
-What is the output of this code?
+## Question 7 (Debugging)
+A production service throws `NullPointerException` intermittently. The stack trace points to:
 
 ```java
-public class Main {
-    static void display(int x, double y) {
-        System.out.println("int-double: " + x + y);
-    }
-    static void display(double x, int y) {
-        System.out.println("double-int: " + x + y);
-    }
-
-    public static void main(String[] args) {
-        display(5, 10);
-    }
-}
+Integer count = cache.get(key);
+int total = count * factor;
 ```
 
-A) int-double: 510.0
-B) double-int: 15.0
-C) Compilation error - ambiguous method call
-D) int-double: 15
+The cache is a `ConcurrentHashMap<String, Integer>`. What is happening?
 
-**Answer: A**
-**Explanation:** Java resolves overloaded methods by finding the most specific applicable method. `display(5, 10)` with both int arguments matches `display(int, double)` (5 fits int, 10 widens to double) and `display(double, int)` (5 widens to double, 10 fits int). `display(int, double)` is more specific because the first parameter doesn't require widening. Output: `int-double: 510.0` (string concatenation of int 5 and double 10.0).
+- A) ConcurrentHashMap is not thread-safe and loses entries
+- B) Another thread removed the key between `get()` and the unboxing, so `count` is null
+- C) The `factor` variable is null
+- D) The cache is returning the wrong type
+
+**Answer: B**
+**Explanation:** This is a classic TOCTOU (time-of-check-time-of-use) race condition. Between `cache.get(key)` returning a value and the auto-unboxing on the next line, another thread could remove the key. The fix is to use `cache.getOrDefault(key, 0)` or store the result in a local variable and null-check before unboxing.
 
 ---
 
-## Question 8 (Code Snippet MCQ)
-What is the output of this code?
+## Question 8 (Production Scenario)
+You are building a data pipeline that processes millions of integer IDs from a CSV file. The IDs range from 1 to 100,000. You need fast lookups to check if an ID exists. Which approach is most memory-efficient?
 
-```java
-public class Main {
-    public static void main(String[] args) {
-        Integer x = null;
-        int y = x;
-        System.out.println(y);
-    }
-}
-```
-
-A) 0
-B) null
-C) NullPointerException
-D) Compilation error
+- A) `ArrayList<Integer>` with `contains()` method
+- B) `HashSet<Integer>` for O(1) lookups
+- C) `boolean[]` array indexed by ID value
+- D) `TreeSet<Integer>` for sorted access
 
 **Answer: C**
-**Explanation:** `Integer x = null` assigns null to the wrapper type. `int y = x` attempts auto-unboxing, which calls `x.intValue()`. Calling a method on null throws a `NullPointerException`. The compiler allows this assignment because auto-unboxing is a valid conversion, but it fails at runtime.
+**Explanation:** A `boolean[]` of size 100,001 uses ~100KB of memory (1 byte per boolean). A `HashSet<Integer>` would use ~4-8 bytes per entry plus overhead (~2-4MB). For dense integer IDs, a direct-mapped array provides O(1) lookup with minimal memory. This is a common optimization in production systems processing numeric identifiers.
 
 ---
 
 ## Question 9 (Code Snippet MCQ)
-What is the output of this code?
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        final int x = 10;
-        int y = 20;
-        Object obj = x;
-        System.out.println(obj);
-        // obj = y; // uncomment this line
-    }
-}
-```
-
-A) 10
-B) Compilation error
-C) 20
-D) ClassCastException
-
-**Answer: A**
-**Explanation:** `final int x = 10` is a compile-time constant. `Object obj = x` performs autoboxing from `int` to `Integer` (a constant), then upcasting to `Object`. The Integer is printed as `10`. The commented line would also work via autoboxing.
-
----
-
-## Question 10 (Code Snippet MCQ)
 What is the output of this code?
 
 ```java
