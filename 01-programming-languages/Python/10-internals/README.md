@@ -559,3 +559,47 @@ Python internals:
 - **Data model** defines how objects behave
 - **Memory architecture** uses pools and generations
 - Understanding internals helps write better Python code
+
+## Production Checklist
+
+- [ ] Use `dis.dis()` to inspect bytecode for performance-critical functions
+- [ ] Profile with `cProfile` before claiming Python is too slow
+- [ ] Understand GIL release during C extensions (NumPy, I/O operations)
+- [ ] Use `sys.getswitchinterval()` to tune GIL switching for latency-sensitive apps
+- [ ] Clear `sys.modules` cache when hot-reloading modules in development
+- [ ] Use `__slots__` to reduce memory footprint for high-instance-count classes
+- [ ] Monitor integer caching behavior (`is` vs `==` for small ints)
+- [ ] Avoid `__del__` in production; rely on context managers and explicit cleanup
+- [ ] Use `tracemalloc` to debug memory leaks in long-running processes
+- [ ] Understand attribute lookup order (data descriptors → instance dict → non-data descriptors)
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Understands Python compiles to bytecode; knows GIL limits CPU-bound threading |
+| **Intermediate** | Can read `dis.dis()` output; uses `sys.getsizeof()` and `sys.getrefcount()` |
+| **Advanced** | Writes C extensions; custom import hooks; tunes GIL switch interval |
+| **Expert** | Hacks CPython internals; implements custom bytecode optimizations; contributes to CPython |
+
+## Common Myths
+
+1. **"Python is interpreted"** — CPython compiles to bytecode first; the PVM executes bytecode
+2. **"GIL prevents all parallelism"** — C extensions release GIL; multiprocessing bypasses it entirely
+3. **"Import is always fast"** — First import executes module code; use lazy imports for startup time
+4. **"All objects are on the heap"** — Small ints and strings are interned; tuples may be optimized
+5. **"CPython is Python"** — CPython is one implementation; Jython, PyPy, GraalPy exist
+6. **"Bytecode is optimized"** — Python does constant folding and dead code elimination, but no JIT
+
+## One-Minute Revision
+
+- **Compilation pipeline**: Source → Tokens → AST → Bytecode → PVM execution
+- **Bytecode**: Stack-based instructions; `dis.dis()` for disassembly; cached per module
+- **GIL**: Mutex; one thread executes bytecode at a time; released during I/O and C extensions
+- **Import system**: Finders locate modules; loaders execute code; `sys.modules` caches results
+- **Data model**: Dunder methods define object behavior; attribute lookup follows descriptor protocol
+- **Memory**: Reference counting (primary) + generational GC (cyclic); memory pools for small objects
+- **Object model**: Everything is an object; types are objects too; metaclasses control type creation
+- **Integer caching**: -5 to 256 are cached; `is` works for cached values; use `==` for comparison
+- **String interning**: Short strings interned; use `sys.intern()` for repeated lookups
+- **C extensions**: Can release GIL; NumPy uses them for vectorized parallel operations

@@ -816,3 +816,47 @@ Python's memory management:
 - **Slots** reduce memory usage for class instances
 - **Generators** provide memory-efficient iteration
 - **tracemalloc** and **objgraph** help debug memory issues
+
+## Production Checklist
+
+- [ ] Use `tracemalloc.start()` at application entry for memory profiling
+- [ ] Monitor memory growth with `tracemalloc.get_traced_memory()` periodically
+- [ ] Use `weakref.WeakValueDictionary` for caches to prevent memory leaks
+- [ ] Implement `__slots__` for classes with many instances
+- [ ] Use generators for large datasets instead of list comprehensions
+- [ ] Call `del large_obj` explicitly after use to free memory immediately
+- [ ] Tune GC thresholds with `gc.set_threshold()` for long-running processes
+- [ ] Avoid `__del__` methods; use context managers for cleanup
+- [ ] Use `objgraph.show_growth()` to detect memory leaks in development
+- [ ] Set `sys.setrecursionlimit()` appropriately for deep recursion scenarios
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Understands reference counting; uses `del` and `sys.getrefcount()` |
+| **Intermediate** | Profiles with `tracemalloc`; uses `__slots__` and generators for optimization |
+| **Advanced** | Tunes GC thresholds; uses weakref for caches; debugs leaks with objgraph |
+| **Expert** | Implements custom memory allocators; optimizes C extension memory; contributes to CPython GC |
+
+## Common Myths
+
+1. **"Python handles memory automatically so I don't need to worry"** — Circular references can leak; caches can grow unbounded
+2. **"del immediately frees memory"** — Only decreases refcount; GC handles cycles
+3. **"Garbage collection runs constantly"** — It's generational; runs based on allocation thresholds
+4. **"Weak references are always better for caches"** — They add complexity; use simple dicts with eviction for small caches
+5. **"Memory leaks don't happen in Python"** — Caches, global lists, and circular references cause leaks
+6. **"__slots__ always saves memory"** — Only for instances with many attributes; adds complexity
+
+## One-Minute Revision
+
+- **Reference counting**: Primary mechanism; `sys.getrefcount()`; refcount 0 → immediate deallocation
+- **Generational GC**: 3 generations; handles circular references; tune with `gc.set_threshold()`
+- **Memory pools**: Small objects (≤512 bytes) use size-class pools; efficient allocation
+- **Weak references**: `weakref.ref()`; don't prevent garbage collection; ideal for caches
+- **`__slots__`**: Eliminates `__dict__`; saves 40-60 bytes per instance; requires planning
+- **Generators**: Lazy evaluation; constant memory footprint; `(expr for x in iter)`
+- **tracemalloc**: Track memory allocations; take snapshots; compare over time
+- **objgraph**: Visualize object references; find growing types; detect leaks
+- **String optimization**: Use `join()` not `+=`; `sys.intern()` for repeated strings
+- **Best practice**: Profile before optimizing; use weakref for caches; prefer generators for large data

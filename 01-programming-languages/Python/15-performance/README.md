@@ -702,3 +702,48 @@ Python performance optimization:
 6. **Consider Cython** - For CPU-critical code
 7. **Use generators** - For memory efficiency
 8. **Optimize algorithms** - O(n) vs O(n²) matters
+
+## Production Checklist
+
+- [ ] Profile before optimizing; never optimize without data
+- [ ] Use `cProfile` or `py-spy` to identify actual bottlenecks
+- [ ] Benchmark with `timeit` to verify improvements are real
+- [ ] Use built-in functions (`sum`, `map`, `filter`) over manual loops
+- [ ] Prefer list comprehensions for simple transformations
+- [ ] Use generators for large datasets to reduce memory pressure
+- [ ] Apply `@lru_cache` or `@cache` for expensive pure functions
+- [ ] Use `deque` for queue operations; `set` for membership testing
+- [ ] Replace string concatenation with `join()` or f-strings
+- [ ] Consider Cython or C extensions for hot paths after profiling
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Uses `timeit` for simple benchmarks; understands built-ins are faster |
+| **Intermediate** | Profiles with `cProfile`; applies caching and appropriate data structures |
+| **Advanced** | Writes Cython extensions; uses NumPy for vectorized operations; benchmarks statistically |
+| **Expert** | Writes C extensions; tunes memory allocation; contributes to PyPy or CPython JIT |
+
+## Common Myths
+
+1. **"Python is too slow for production"** — Profile first; bottlenecks are often in I/O or algorithms, not Python itself
+2. **"Optimizing everything improves performance"** — Focus on hot paths; premature optimization is the root of all evil
+3. **"More cores = faster Python"** — GIL limits CPU-bound parallelism; use multiprocessing or C extensions
+4. **"Caching always helps"** — Cache invalidation is complex; profile to confirm cache hits
+5. **"NumPy is always faster"** — Overhead for small arrays; benchmark with your actual data
+6. **"Profiling in production is unsafe"** — Use `py-spy` (sampling) or `Austin` for low-overhead production profiling
+
+## One-Minute Revision
+
+- **Profile first**: `cProfile.run()` or `py-spy` to find actual bottlenecks
+- **Built-ins**: `sum()`, `min()`, `max()`, `sorted()` implemented in C; always faster
+- **List comprehensions**: Faster than `for` loops with `append()`; single allocation
+- **Generators**: Constant memory; `(expr for x in iter)`; use for large datasets
+- **Caching**: `@lru_cache(maxsize=N)` or `@cache` (Python 3.9+); pure functions only
+- **Data structures**: `deque` for O(1) left ops; `set` for O(1) lookups; `Counter` for counting
+- **String optimization**: `"".join(parts)` not `+=`; f-strings over `str.format()`
+- **NumPy**: Vectorized operations; 10-100x faster for numerical computations
+- **Cython**: Compile Python to C; add type declarations for 10-100x speedup
+- **C extensions**: Ultimate performance; release GIL for parallel execution
+- **Statistical benchmarking**: Run multiple iterations; report mean, median, stdev

@@ -40,6 +40,50 @@ pytest is a mature, feature-rich testing framework. It's simpler than unittest a
 3. When would you use @pytest.mark.parametrize?
 4. What is conftest.py?
 
+## Production Checklist
+
+- [ ] Use `conftest.py` for shared fixtures across test modules
+- [ ] Implement fixture cleanup with `yield` (not `return`) for teardown
+- [ ] Apply `@pytest.mark.parametrize` for data-driven tests
+- [ ] Use markers (`@pytest.mark.slow`, `@pytest.mark.integration`) for test filtering
+- [ ] Run tests with `pytest -v --tb=short` for clear output
+- [ ] Add `pytest-cov` for coverage reporting in CI
+- [ ] Use `monkeypatch` for environment and attribute patching
+- [ ] Implement `tmp_path` fixture for temporary file isolation
+- [ ] Use `pytest-xdist` for parallel test execution
+- [ ] Configure `pytest.ini` or `pyproject.toml` for consistent settings
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Writes simple test functions with `assert`; uses basic fixtures |
+| **Intermediate** | Uses `@pytest.fixture` with yield; applies `@pytest.mark.parametrize` and markers |
+| **Advanced** | Implements scoped fixtures, `conftest.py` hierarchies, and custom markers |
+| **Expert** | Designs plugin architectures, custom fixtures with complex dependencies, and pytest hooks |
+
+## Common Myths
+
+1. **"pytest requires test classes"** — pytest discovers and runs plain test functions
+2. **"Fixtures are just setup functions"** — They provide dependency injection, cleanup, and scoped lifecycle
+3. **"More tests = better"** — Focus on meaningful assertions; avoid testing implementation details
+4. **"Mock everything"** — Over-mocking hides bugs; test real behavior when safe
+5. **"conftest.py is optional"** — It's essential for shared fixtures and plugin configuration
+6. **"pytest is just unittest with syntax sugar"** — pytest has its own fixture system, plugin architecture, and discovery mechanism
+
+## One-Minute Revision
+
+- **Test functions**: Plain functions with `assert`; no class needed; names start with `test_`
+- **Fixtures**: `@pytest.fixture`; `yield` for setup/teardown; inject via function arguments
+- **Parametrize**: `@pytest.mark.parametrize("args", [cases])` for data-driven tests
+- **Markers**: `@pytest.mark.slow`, `@skip`, `@xfail`; filter with `-m` flag
+- **conftest.py**: Shared fixtures; placed in test directories; auto-loaded by pytest
+- **monkeypatch**: Replace attributes, environment variables, and imports during tests
+- **tmp_path**: Built-in fixture for temporary directories; auto-cleaned after test
+- **Plugins**: pytest-cov, pytest-xdist, pytest-mock; extend via `pyproject.toml`
+- **Best practice**: Use `yield` fixtures for cleanup; prefer `monkeypatch` over `mock.patch`
+- **Discovery**: pytest finds `test_*.py` files; configure paths in `pyproject.toml`
+
 ## Production Incidents
 
 ### Incident 1: Flaky Test Causing False Positives

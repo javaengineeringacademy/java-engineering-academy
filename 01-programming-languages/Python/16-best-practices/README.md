@@ -946,3 +946,49 @@ Python best practices:
 8. **Document code** - Docstrings and comments
 9. **Handle exceptions** - Specific and informative
 10. **Profile and optimize** - Measure before optimizing
+
+## Production Checklist
+
+- [ ] Enforce PEP 8 with `ruff` or `black` in CI
+- [ ] Add type hints to all public APIs; run `mypy` in CI
+- [ ] Write tests for every feature; target >80% coverage
+- [ ] Use virtual environments; pin dependencies in `requirements.txt` or `pyproject.toml`
+- [ ] Implement pre-commit hooks for linting and formatting
+- [ ] Document public APIs with Google/NumPy docstrings
+- [ ] Use `src/` layout to prevent accidental imports
+- [ ] Handle exceptions specifically; avoid bare `except:`
+- [ ] Use `logging` module, not `print()`, for production logging
+- [ ] Run `safety` or `pip-audit` to check for vulnerable dependencies
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Follows PEP 8; writes basic tests; uses virtual environments |
+| **Intermediate** | Uses type hints; applies pre-commit hooks; writes docstrings; uses pytest |
+| **Advanced** | Enforces linting in CI; uses `src/` layout; implements custom exceptions; profiles performance |
+| **Expert** | Designs project templates; enforces standards across teams; contributes to linter plugins |
+
+## Common Myths
+
+1. **"Code works, so it's good code"** — Readability, maintainability, and testability matter equally
+2. **"Type hints slow you down"** — They catch bugs early; `mypy` prevents runtime errors
+3. **"Tests are optional for small projects"** — Small projects grow; tests prevent regressions
+4. **"print() is fine for debugging"** — Use `logging` with levels; configurable in production
+5. **"PEP 8 is just style"** — Consistency reduces cognitive load; aids code review
+6. **"One test framework is enough"** — pytest for unit/integration; `tox` for multi-environment testing
+
+## One-Minute Revision
+
+- **PEP 8**: snake_case functions/vars; PascalCase classes; UPPER_SNAKE constants
+- **Type hints**: `def f(x: int) -> str:`; use `Optional`, `Union`, `TypeVar` for complex types
+- **Testing**: pytest over unittest; `conftest.py` for fixtures; `@parametrize` for data-driven
+- **Virtual environments**: `python -m venv venv`; activate before installing packages
+- **Package management**: `pyproject.toml` (modern) or `setup.py` (legacy); pin dependencies
+- **Linting**: `ruff` (fast) or `flake8` (traditional); `black` for formatting; `isort` for imports
+- **Pre-commit**: `.pre-commit-config.yaml`; run `pre-commit install` to enable hooks
+- **Docstrings**: Google or NumPy style; describe args, returns, raises
+- **Error handling**: Specific exceptions; custom exception classes; `finally` for cleanup
+- **Performance**: Profile before optimizing; use built-ins; cache expensive computations
+- **Project structure**: `src/` layout; separate tests from source; `pyproject.toml` at root
+- **CI/CD**: Run linting, type checking, and tests on every push; enforce coverage thresholds

@@ -397,4 +397,50 @@ Master these atoms, and you'll read Python source code like a native speaker rea
 
 ---
 
+## Production Checklist
+
+- [ ] Use duck typing for flexible interfaces; avoid unnecessary `isinstance()` checks
+- [ ] Apply EAFP pattern for cleaner error handling; use LBYL only when atomicity matters
+- [ ] Understand GIL limitations; use multiprocessing for CPU-bound tasks
+- [ ] Monitor reference counts with `sys.getrefcount()` during debugging
+- [ ] Tune garbage collection thresholds for long-running applications
+- [ ] Use single underscore `_name` for private-by-convention; avoid `__name` unless needed
+- [ ] Implement descriptor protocol for custom attribute access
+- [ ] Define `__repr__` and `__eq__` for all custom classes
+- [ ] Use ABCs or Protocols for plugin systems and formal interfaces
+- [ ] Profile memory and concurrency bottlenecks before optimizing
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| **Beginner** | Understands basic duck typing, EAFP vs LBYL, and simple object creation |
+| **Intermediate** | Grasps GIL implications, reference counting, garbage collection generations, and descriptor protocol |
+| **Advanced** | Masters name mangling, data model dunders, ABCs vs Protocols, and custom descriptors |
+| **Expert** | Designs systems leveraging these atoms: protocol-based APIs, non-data descriptors, generational GC tuning |
+
+## Common Myths
+
+1. **"GIL makes Python threads useless"** — GIL only limits CPU-bound parallelism; threads work fine for I/O-bound tasks
+2. **"`__init__` creates objects"** — `__new__` creates; `__init__` initializes
+3. **"Name mangling provides privacy"** — It's name collision avoidance, not access control
+4. **"ABCs are always better than duck typing"** — Duck typing is Pythonic; ABCs are for enforced contracts
+5. **"Garbage collection is automatic so I don't need to think about memory"** — Circular references can leak; use weakref and context managers
+6. **"Descriptors are only for properties"** — They power classmethod, staticmethod, slots, and ORM field validation
+7. **"Reference counting alone handles memory"** — Circular references require generational GC
+
+## One-Minute Revision
+
+- **Duck Typing**: Behavior over inheritance; design around protocols, not class hierarchies
+- **EAFP vs LBYL**: Prefer try/except for Pythonic code; use LBYL for race-sensitive checks
+- **GIL**: Mutex allowing one thread to execute Python bytecode; blocks CPU-bound parallelism, not I/O-bound
+- **Reference Counting**: Primary memory management; refcount hits 0 → immediate deallocation
+- **Garbage Collection**: Generational (3 gen); handles circular references; don't disable in production
+- **Name Mangling**: `__name` → `_ClassName__name`; for collision avoidance, not privacy
+- **Descriptor Protocol**: `__get__`, `__set__`, `__delete__`; powers properties, classmethod, slots
+- **Data Model**: Dunder methods define how objects interact with Python syntax (`+`, `str`, `with`, etc.)
+- **ABCs vs Protocols**: ABCs for enforced interfaces; Protocols for structural subtyping (duck typing with type checking)
+
+---
+
 *Next: Explore the `projects/` folder for hands-on practice with these concepts.*
