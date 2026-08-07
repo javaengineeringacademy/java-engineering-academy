@@ -4,6 +4,14 @@
 
 Imagine your checkout service calls a payment gateway, and that gateway goes down. Without protection, every request keeps trying, your thread pool fills up, connections hang, and eventually your whole service collapses — even though the problem is downstream. A circuit breaker watches for failures and trips open when things go wrong, so your service can fail fast and stay alive while the downstream recovers.
 
+## History
+
+| Version | Change |
+|---------|--------|
+| 2007 | Michael Nygard popularized circuit breaker in "Release It!" — Java microservice teams adopted it to prevent cascading failures |
+| 2012 | Netflix Hystrix brought circuit breaker to the JVM ecosystem — added thread isolation and bulkheading |
+| 2017 | Resilience4j replaced Hystrix — lightweight circuit breaker for Java 8+ with functional composition |
+
 ## States
 
 | State | Behavior |

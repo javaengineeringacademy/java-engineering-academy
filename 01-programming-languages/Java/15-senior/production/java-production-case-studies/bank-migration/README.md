@@ -165,7 +165,7 @@ public class MigrationAnalyzer {
 | "Learning curve" | 45% | Training program, pair programming |
 | "Job security" | 30% | Clear communication, upskilling |
 
-**Resolution**: Comprehensive training program, pair programming, clear career path
+**Resolution**: Detailed training program, pair programming, clear career path
 
 ## Results
 
@@ -255,7 +255,7 @@ Payback Period = 24 months
 
 1. **Phased Approach**: Reduced risk, allowed learning
 2. **Automated Tooling**: Consistent migration, reduced manual errors
-3. **Comprehensive Testing**: Caught issues early, maintained quality
+3. **Detailed Testing**: Caught issues early, maintained quality
 4. **Training Program**: Built team confidence, reduced resistance
 5. **Executive Sponsorship**: Clear priority, adequate resources
 

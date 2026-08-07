@@ -41,7 +41,7 @@ Multithreading solves these problems by allowing a program to:
 
 - **Overlap I/O with computation**: While one thread waits for data, another can process results.
 - **Improve responsiveness**: Background threads handle long operations while the UI thread stays responsive.
-- **Utilize multiple cores**: Threads can run in parallel on different CPU cores.
+- **Use multiple cores**: Threads can run in parallel on different CPU cores.
 - **Simplify program structure**: Each thread handles one logical task, making code easier to reason about.
 
 However, multithreading is not free. It introduces:

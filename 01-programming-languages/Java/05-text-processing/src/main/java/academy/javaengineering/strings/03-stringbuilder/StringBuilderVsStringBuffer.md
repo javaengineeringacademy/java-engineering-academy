@@ -218,5 +218,5 @@ String result = new StringBuilder()
 
 ## Code References
 
-- `StringBuilderVsBuffer.java` - Comprehensive comparison examples
+- `StringBuilderVsBuffer.java` - Detailed comparison examples
 - `StringBuilderDemo.java` - Basic StringBuilder examples

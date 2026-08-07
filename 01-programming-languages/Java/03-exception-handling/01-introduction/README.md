@@ -65,7 +65,15 @@ Before exception handling mechanisms were introduced in programming languages, d
 - Global error variables (errno in C)
 - Conditional checks after every operation
 
-These approaches were error-prone, verbose, and often ignored by developers. Exception handling was introduced to address these shortcomings.
+These approaches were error-prone, verbose, and often ignored by developers. Java introduced try-catch-finally to replace error codes with a structured mechanism that separates error handling from business logic and forces developers to deal with failures.
+
+### History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Checked exceptions and try-catch-finally introduced — Java enforced error handling at compile time to prevent ignored error codes |
+| JDK 1.2 | Chained exceptions added — preserving the cause chain for debugging |
+| JDK 7 | Try-with-resources and multi-catch added — reducing boilerplate for resource cleanup |
 
 ## 5. Problem Statement
 

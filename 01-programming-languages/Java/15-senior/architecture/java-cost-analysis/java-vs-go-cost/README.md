@@ -85,7 +85,7 @@ This analysis compares Java and Go across critical CTO decision factors includin
 
 ### Strong Java Cases
 1. **Enterprise Applications**: Complex business logic, regulatory compliance
-2. **Existing Java Teams**: Leverage existing expertise
+2. **Existing Java Teams**: Use existing expertise
 3. **Long-lived Systems**: 10+ year lifecycle expectations
 4. **Large Ecosystem Needs**: Extensive library requirements
 5. **Transactional Systems**: ACID compliance, distributed transactions

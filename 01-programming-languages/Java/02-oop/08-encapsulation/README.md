@@ -3,6 +3,52 @@
 ## Overview
 Encapsulation is the bundling of data with methods that operate on that data, restricting direct access to some components.
 
+## History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Encapsulation supported via private/protected/public access modifiers — Java enforced visibility control to protect object state from uncontrolled access |
+| JDK 16 | Records added — encapsulation without boilerplate for immutable data carriers |
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+• Explain why encapsulation matters for maintainability
+• Design classes with proper access modifiers
+• Choose between getters/setters and immutable objects
+• Identify when encapsulation hurts (DTOs, records)
+• Apply defensive copying to protect internal state
+
+## Internal Working
+
+Encapsulation works by restricting direct access to class fields and forcing interaction through methods.
+
+Without encapsulation:
+```java
+public class BankAccount {
+    public double balance;  // Anyone can modify
+}
+
+account.balance = -1000;  // No validation, no control
+```
+
+With encapsulation:
+```java
+public class BankAccount {
+    private double balance;  // Only this class can access
+
+    public void deposit(double amount) {
+        if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
+        balance += amount;
+    }
+}
+
+account.deposit(-1000);  // Rejected by validation logic
+```
+
+The key insight: encapsulation lets you change internal representation without breaking external code.
+
 ## When to Use
 - To protect object invariants and ensure data integrity
 - To reduce coupling between components
@@ -17,11 +63,125 @@ account.deposit(BigDecimal.valueOf(500));  // Validated
 account.withdraw(BigDecimal.valueOf(200)); // Checked
 ```
 
+## When NOT to Use Encapsulation
+
+Encapsulation isn't always the right choice:
+
+**DTOs and data carriers:**
+```java
+// Records are better here — no getters/setters boilerplate
+public record Point(int x, int y) {}
+```
+
+**Performance-critical code:**
+```java
+// Direct field access is faster than method calls in hot paths
+public class Vec3 {
+    public double x, y, z;  // Public for performance
+}
+```
+
+**Framework requirements:**
+```java
+// JPA entities need setters (or at least package-private)
+@Entity
+public class User {
+    private String name;
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }  // Required by JPA
+}
+```
+
+## Alternatives
+
+| Approach | Boilerplate | Immutability | Validation | Use When |
+|----------|-------------|--------------|------------|----------|
+| Public fields | None | No | No | DTOs, performance |
+| Getters/Setters | High | No | Yes | Traditional Java |
+| Records | Low | Yes | Limited | Data carriers |
+| Builder pattern | High | Yes | Yes | Complex construction |
+| Lombok | Low | Configurable | Yes | Reduce boilerplate |
+
+## Trade-offs
+
+Encapsulation gives you control but costs:
+- Boilerplate: Getters/setters add lines of code
+- Performance: Method calls have overhead vs direct field access
+- Complexity: More code to maintain
+
+Use encapsulation when:
+- You have invariants to protect (balance must be positive)
+- You might change internal representation
+- You need validation on set
+- You're building domain objects
+
+Skip encapsulation when:
+- It's a simple data carrier (use records)
+- Performance is critical (inner loops)
+- The object has no invariants
+
+## Best Practices
+
+1. **Prefer immutable objects** — If the field never changes after construction, make it final and don't provide a setter.
+
+2. **Use defensive copying** — When returning mutable objects, return copies:
+```java
+public List<String> getNames() {
+    return new ArrayList<>(names);  // Defensive copy
+}
+```
+
+3. **Validate in setters** — Never trust external input:
+```java
+public void setAge(int age) {
+    if (age < 0 || age > 150) throw new IllegalArgumentException("Invalid age");
+    this.age = age;
+}
+```
+
+4. **Consider records first** — For data carriers, records give you encapsulation with less code.
+
+5. **Package-private for testing** — Sometimes package-private access is better than private (for unit testing internal methods).
+
 ## Common Mistakes
-1. Making fields public instead of private
-2. Creating getters for everything (anemic domain model)
-3. Not validating in setters
-4. Returning mutable objects directly from getters
+
+### Mistake 1: Exposing mutable internal state
+```java
+// BAD — external code can modify your internal list
+public List<String> getNames() { return names; }
+
+// GOOD — return a copy
+public List<String> getNames() { return new ArrayList<>(names); }
+```
+
+### Mistake 2: Getters/setters for everything
+```java
+// BAD — anemic domain model
+public class User {
+    private String name;
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+
+// GOOD — behavior-rich domain model
+public class User {
+    private String name;
+    public void rename(String newName) {
+        if (newName == null || newName.isBlank()) throw new IllegalArgumentException();
+        this.name = newName;
+    }
+}
+```
+
+### Mistake 3: Forgetting that records are immutable
+```java
+// Records give you encapsulation automatically
+public record User(String name, int age) {}
+
+// But you can't do this:
+User u = new User("Alice", 30);
+// u.name = "Bob";  // Compile error — records are immutable
+```
 
 ## Engineering Decision Framework
 
@@ -93,25 +253,6 @@ account.withdraw(BigDecimal.valueOf(200)); // Checked
 ☐ I know how to debug it
 ☐ I've tested with realistic data volume
 
-## Alternatives
-
-| Approach | Immutability | Boilerplate | Pattern Matching | Use When |
-|----------|-------------|-------------|-----------------|----------|
-| Encapsulation (getters/setters) | Manual | High | No | Mutable state, complex behavior |
-| Records (Java 16+) | Yes | Low | Yes | Immutable data carriers |
-| Sealed classes | N/A | Low | Yes | Restricting type hierarchies |
-| Lombok @Data | No | Low | No | Reducing POJO boilerplate |
-| Builder pattern | Optional | High | No | Complex object construction |
-
-## Trade-offs
-
-Encapsulation protects invariants because it:
-- Adds boilerplate for simple data carriers (use Records instead)
-- Returning mutable objects from getters leaks internal state (use defensive copies)
-- Anemic domain models with only getters/setters lose behavior (put logic in domain objects)
-- Over-encapsulation of value objects adds unnecessary complexity (use Records or public final fields)
-- Testability requires package-private access or frameworks (use @VisibleForTesting)
-
 ## Engineering Maturity Levels
 
 ### Level 1: Can Use
@@ -136,11 +277,21 @@ Encapsulation protects invariants because it:
 - Can design custom implementations
 
 ## Interview Questions
-1. What is encapsulation and why is it important?
-2. What is the difference between a POJO, JavaBean, and a domain object?
-3. When should you NOT use encapsulation?
-4. What is the Hollywood Principle and how does it relate to encapsulation?
-5. How do you handle immutable objects with encapsulation?
+
+1. **What is encapsulation?**
+   Hiding internal state and forcing interaction through methods.
+
+2. **When would you NOT use encapsulation?**
+   DTOs, performance-critical code, records.
+
+3. **What is defensive copying?**
+   Returning copies of mutable objects to prevent external modification.
+
+4. **What's the difference between a record and a class with getters?**
+   Records are immutable, have auto-generated equals/hashCode/toString, and use compact constructors.
+
+5. **How does encapsulation relate to the Open/Closed Principle?**
+   Encapsulated code can change internally without breaking external callers.
 
 ## Common Myths
 

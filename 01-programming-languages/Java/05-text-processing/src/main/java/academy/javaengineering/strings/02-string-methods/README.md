@@ -49,7 +49,7 @@ String joined = String.join(" - ", fruits);  // "apple - banana - cherry"
 ```
 
 ## Code References
-- `StringMethods.java` - Comprehensive examples
+- `StringMethods.java` - Detailed examples
 
 ## Common Mistakes
 1. Not handling `indexOf` returning -1

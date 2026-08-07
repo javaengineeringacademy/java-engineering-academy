@@ -95,7 +95,7 @@ The solution? Using diagnostic tools to capture and analyze the issues.
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │  Flight Recordings                                   │   │
-│  │  - Comprehensive profiling data                     │   │
+│  │  - Detailed profiling data                     │   │
 │  │  - Low overhead                                     │   │
 │  │  - Historical analysis                              │   │
 │  └─────────────────────────────────────────────────────┘   │

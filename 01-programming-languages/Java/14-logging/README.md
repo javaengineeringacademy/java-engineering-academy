@@ -61,6 +61,17 @@ This module covers Java logging frameworks including SLF4J, Logback, and Log4j2 
 6. Avoid logging in tight loops — sample instead
 7. Use MDC (Mapped Diagnostic Context) for request-scoped context instead of concatenating thread info
 
+## Alternatives
+
+| Framework | Performance | Async | Features | Use When |
+|-----------|-------------|-------|----------|----------|
+| System.out | Fastest | No | None | Quick debugging only |
+| java.util.logging | Moderate | Limited | Basic | JDK-only environments |
+| Log4j 1.x | Moderate | No | Basic | Legacy (avoid) |
+| Logback | Fast | Yes | Rich | Default SLF4J implementation |
+| Log4j2 | Fastest | Yes | Richest | High-performance needs |
+| SLF4J | Facade | N/A | N/A | Always use as facade |
+
 ## Examples
 
 ```java
@@ -144,6 +155,25 @@ public class DataProcessor {
 
 6. **Log rotation**: Rolling file appenders monitor file size/time and rotate to new files. `SizeAndTimeBasedRollingPolicy` combines both. Old files are compressed and optionally deleted.
 
+## Trade-offs
+
+Logging gives you visibility but costs:
+- Performance: Even disabled log checks have overhead (branch prediction)
+- Disk space: Logs consume storage rapidly in production
+- Security: Logs can leak sensitive data (PII, tokens)
+- Complexity: Async logging adds thread management overhead
+
+Use logging when:
+- You need to trace production issues
+- You're building audit trails
+- You need performance metrics
+- Debugging distributed systems
+
+Avoid excessive logging when:
+- You're in a hot path (inner loops)
+- Data is sensitive (PII, passwords)
+- The operation is trivial and expected to succeed
+
 ## Why This Concept Exists
 
 Logging exists because:
@@ -156,13 +186,63 @@ Logging exists because:
 6. **Post-mortem analysis** — When production incidents occur, logs are the primary source of forensic data
 
 Without proper logging, production debugging becomes guesswork, and system behavior becomes opaque.
-- `Slf4jBasics.java` - Comprehensive SLF4J examples
+
+## Production Checklist
+
+### ✅ Before using logging in production:
+
+☐ I'm using SLF4J facade (not System.out)
+☐ I log at the right level (ERROR for failures, WARN for issues, INFO for milestones, DEBUG for diagnostics)
+☐ I don't log sensitive data (passwords, tokens, PII)
+☐ I use parameterized logging (not string concatenation)
+☐ I have log rotation configured
+☐ I know my logging framework's async options
+☐ I've tested logging doesn't impact performance
 
 ## Common Mistakes
 1. Using wrong log level for messages
 2. Not including context in log messages
 3. Logging sensitive information
 4. Not configuring log rotation
+
+## Engineering Maturity Levels
+
+### Level 1: Can Use
+- Knows System.out.println basics
+- Can use logger.info() and logger.error()
+
+### Level 2: Understands
+- Knows log levels (TRACE, DEBUG, INFO, WARN, ERROR)
+- Understands structured logging
+
+### Level 3: Deep Knowledge
+- Knows SLF4J facade pattern
+- Understands MDC (Mapped Diagnostic Context)
+
+### Level 4: Expert
+- Configures log rotation and retention
+- Knows async logging for performance
+
+### Level 5: Master
+- Designs logging architecture for distributed systems
+- Knows ELK stack, Fluentd, log aggregation
+
+## Common Myths
+
+### ❌ Myth 1: System.out.println is fine for production
+**Reality:** No log levels, no rotation, no timestamps, no structured output. Use SLF4J.
+
+### ❌ Myth 2: More logging is always better
+**Reality:** Excessive logging wastes I/O and disk. Log at the right level for the right situation.
+
+### ❌ Myth 3: String concatenation is fine for logging
+**Reality:** `"User: " + name` evaluates even if debug is disabled. Use `logger.debug("User: {}", name)`.
+
+### ❌ Myth 4: Log4j 1.x is still fine
+**Reality:** End of life, known vulnerabilities. Use Logback or Log4j2.
+
+### ❌ Myth 5: Logging frameworks are interchangeable
+**Reality:** SLF4J is a facade, not an implementation. You need Logback or Log4j2 behind it.
 
 ## Interview Questions
 1. What is the difference between SLF4J and Log4j?
@@ -204,6 +284,6 @@ Without proper logging, production debugging becomes guesswork, and system behav
 | Thread Safe | Yes (SLF4J) |
 | Ordered | Yes (log order) |
 | Allows Null | Yes |
-| Best Alternative | System.out (for simple cases) |
+| Best Alternative | SLF4J with Logback/Log4j2 |
 | When to Use | Production monitoring |
 | When to Avoid | Debug code |

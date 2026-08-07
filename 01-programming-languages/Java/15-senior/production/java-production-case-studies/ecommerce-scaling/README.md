@@ -334,7 +334,7 @@ Payback Period = $100,000 / ($2,000,000 / 12) = 0.6 months
 
 1. **Profiling First**: Identified actual bottlenecks before optimization
 2. **Incremental Changes**: Small, testable improvements
-3. **Comprehensive Monitoring**: Real-time visibility into performance
+3. **Detailed Monitoring**: Real-time visibility into performance
 4. **Load Testing**: Validated improvements under realistic conditions
 5. **Rollback Plan**: Every change was reversible
 
@@ -351,7 +351,7 @@ Payback Period = $100,000 / ($2,000,000 / 12) = 0.6 months
 | Factor | Importance | Execution |
 |--------|------------|-----------|
 | Executive Support | Critical | Clear business case |
-| Data-Driven Decisions | Critical | Comprehensive monitoring |
+| Data-Driven Decisions | Critical | Detailed monitoring |
 | Incremental Approach | High | Phased optimization |
 | Expert Knowledge | High | JVM tuning expertise |
 | Thorough Testing | High | Load testing validated |

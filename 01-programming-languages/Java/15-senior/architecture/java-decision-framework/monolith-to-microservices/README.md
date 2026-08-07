@@ -314,7 +314,7 @@ Total: 14 months
 **Deliverables**:
 - Decommissioned monolith
 - Optimized microservices architecture
-- Comprehensive documentation
+- Detailed documentation
 - Team knowledge base
 
 **Budget**: $500K

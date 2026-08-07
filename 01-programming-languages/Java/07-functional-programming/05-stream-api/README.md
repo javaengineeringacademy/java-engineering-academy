@@ -21,7 +21,7 @@ Before starting this topic, you should be comfortable with:
 
 | Version | Change |
 |---------|--------|
-| JDK 8 | Stream API introduced — filter, map, collect, parallel streams |
+| JDK 8 | Stream API introduced — Java added Streams to simplify bulk data processing and encourage a more declarative programming style |
 | JDK 9 | `Stream.ofNullable()`, `takeWhile()`, `dropWhile()` |
 | JDK 10 | `Collectors.toUnmodifiableList()` |
 | JDK 16 | `Stream.toList()` (unmodifiable) |

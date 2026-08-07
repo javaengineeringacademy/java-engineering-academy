@@ -58,7 +58,11 @@ By the end of this topic you will be able to:
 
 ---
 
-## Why This Concept Exists
+## History
+
+| Version | Change |
+|---------|--------|
+| JDK 5 | Generics introduced — Java added compile-time type safety to collections, eliminating manual casting and ClassCastException at runtime |
 
 ### Before Generics (Java 1.4 and earlier)
 

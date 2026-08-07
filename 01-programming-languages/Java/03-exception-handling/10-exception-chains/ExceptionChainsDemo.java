@@ -1,5 +1,7 @@
 package exceptionchains;
 
+import java.util.logging.Logger;
+
 /**
  * Exception Chaining Demo - Complete Guide
  * 
@@ -7,6 +9,7 @@ package exceptionchains;
  * causal chain from low-level to high-level exceptions.
  */
 public class ExceptionChainsDemo {
+    private static final Logger logger = Logger.getLogger(ExceptionChainsDemo.class.getName());
 
     // ==========================================
     // SECTION 1: Basic Exception Chaining
@@ -94,9 +97,8 @@ public class ExceptionChainsDemo {
             Exception middle = new RuntimeException("Middle layer", root);
             Exception top = new RuntimeException("Top layer", middle);
 
-            // Print full stack trace with cause
-            System.out.println("Full exception with cause chain:");
-            top.printStackTrace(System.out);
+            logger.severe(() -> "Full exception with cause chain:");
+            top.printStackTrace(System.out);  // Demo only — use logger in production
 
             // Manual traversal
             System.out.println("\n--- Manual Cause Traversal ---");

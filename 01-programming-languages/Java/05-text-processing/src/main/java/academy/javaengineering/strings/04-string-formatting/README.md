@@ -37,7 +37,7 @@ String json = """
 ```
 
 ## Code References
-- `StringFormatting.java` - Comprehensive examples
+- `StringFormatting.java` - Detailed examples
 
 ## Common Mistakes
 1. Using wrong format specifier for data type

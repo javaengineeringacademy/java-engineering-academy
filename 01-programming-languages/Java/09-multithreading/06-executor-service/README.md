@@ -21,7 +21,7 @@ ExecutorService solves the problems of manual thread management: thread creation
 
 | Version | Change |
 |---------|--------|
-| JDK 5 | ExecutorService, ThreadPoolExecutor, Executors factory |
+| JDK 5 | ExecutorService, ThreadPoolExecutor, Executors factory — Java added thread pools to eliminate the overhead of creating threads manually for every task |
 | JDK 7 | ForkJoinPool introduced |
 | JDK 8 | CompletableFuture added |
 | JDK 19 | Virtual Threads preview |

@@ -266,7 +266,7 @@ public class ExceptionLogging {
 
 ## 12. Medium Example
 
-### Comprehensive Exception Handler
+### Detailed Exception Handler
 
 ```java
 import java.util.logging.*;

@@ -43,6 +43,14 @@ ArrayList solves all these problems with:
 
 ArrayList uses an `Object[]` array as its internal storage. This design choice is deliberate and optimal for several reasons.
 
+## History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.2 | ArrayList introduced — Java added a resizable array to replace manual array management and provide a standard List implementation |
+| JDK 5 | Generics added — type-safe ArrayList without manual casting |
+| JDK 8 | `removeIf()`, `sort(Comparator)`, stream support added |
+
 **Array is the fastest data structure for indexed access.** An array gives O(1) random access because elements are stored contiguously in memory. The JVM calculates the address of any element with a single arithmetic operation: `baseAddress + (index * elementSize)`. No pointer chasing, no tree traversal — just a direct memory offset. This is as fast as memory access gets.
 
 **ArrayList adds dynamic resizing on top of raw speed.** A plain Java array has a fixed size. ArrayList wraps the array and automatically grows it (by 1.5x) when capacity is exceeded. The amortized cost of `add()` remains O(1) because resizing happens infrequently — the geometric growth ensures that the total copies across n insertions sum to O(n).

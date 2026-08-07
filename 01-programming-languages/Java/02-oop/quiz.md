@@ -73,7 +73,7 @@ Your application has a `Shape` class hierarchy with `Circle`, `Rectangle`, and `
 - D) Use a `switch` on shape type string
 
 **Answer: B**
-**Explanation:** An abstract `draw()` method leverages polymorphism — the JVM resolves the correct implementation at runtime via dynamic dispatch. This is O(1) per call, maintains the Open/Closed Principle (adding a new shape doesn't modify existing code), and keeps drawing logic co-located with the shape data.
+**Explanation:** An abstract `draw()` method uses polymorphism — the JVM resolves the correct implementation at runtime via dynamic dispatch. This is O(1) per call, maintains the Open/Closed Principle (adding a new shape doesn't modify existing code), and keeps drawing logic co-located with the shape data.
 
 ---
 

@@ -88,7 +88,7 @@ A payment gateway system processing transactions with fraud detection and reconc
 **Non-Functional Requirements**:
 - Security (encryption, tokenization)
 - Idempotency for duplicate requests
-- Comprehensive error handling
+- Detailed error handling
 - Audit logging
 - Rate limiting
 

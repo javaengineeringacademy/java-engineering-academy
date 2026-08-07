@@ -4,6 +4,13 @@
 
 You've probably written a method with a big `if-else` or `switch` that picks which algorithm to run — sorting, compression, payment processing. Every time you add a new option, you're back in that same method, modifying code that was already working. The Strategy pattern fixes this by letting you define each algorithm in its own class, then swap them at runtime without touching the code that uses them.
 
+## History
+
+| Version | Change |
+|---------|--------|
+| Pre-JDK | Strategy pattern formalized in GoF book (1994) — Java developers used it to replace conditional logic with polymorphism |
+| JDK 8 | Lambda expressions made strategies concise — single-method interfaces replaced inner classes for simple algorithms |
+
 ## When to Use
 
 - Multiple algorithms for a specific task that can be selected at runtime

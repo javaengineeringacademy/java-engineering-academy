@@ -33,7 +33,7 @@ sb.toString();             // Convert to String
 - Pre-allocate if size is known
 
 ## Code References
-- `StringBuilderDemo.java` - Comprehensive examples
+- `StringBuilderDemo.java` - Detailed examples
 
 ## Common Mistakes
 1. Using String concatenation in loops instead of StringBuilder

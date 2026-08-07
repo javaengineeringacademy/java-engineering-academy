@@ -53,7 +53,7 @@ SapMachine is a free, production-ready OpenJDK distribution provided by SAP. It 
 - **SAP-specific patches**: Security and bug fixes for SAP environments
 - **Performance tuning**: Optimized for SAP workloads
 - **SAP support integration**: Seamless with SAP support contracts
-- **SAP documentation**: Comprehensive guides for SAP developers
+- **SAP documentation**: Detailed guides for SAP developers
 
 ## How to Install
 

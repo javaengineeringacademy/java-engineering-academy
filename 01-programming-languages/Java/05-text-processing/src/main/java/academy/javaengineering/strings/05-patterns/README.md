@@ -48,7 +48,7 @@ Set<Character> findDuplicates(String s) {
 ```
 
 ## Code References
-- `StringPatterns.java` - Comprehensive examples
+- `StringPatterns.java` - Detailed examples
 
 ## Common Mistakes
 1. Not handling null or empty strings

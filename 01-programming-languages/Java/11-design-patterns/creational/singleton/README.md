@@ -3,12 +3,74 @@
 ## Overview
 Singleton ensures a class has only one instance and provides a global point of access to it.
 
+## History
+
+| Version | Change |
+|---------|--------|
+| Pre-JDK | Singleton pattern formalized in GoF book (1994) — Java developers adopted it to manage shared resources like connection pools and configuration |
+| JDK 5 | Enum singleton recommended by Joshua Bloch — the simplest thread-safe implementation with serialization support |
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+- Explain why Singleton exists and what problem it solves
+- Implement Singleton using 4 different approaches
+- Know when Singleton helps and when it hurts
+- Test code that uses Singleton
+- Replace Singleton with dependency injection
+
 ## When to Use
 - Database connection pools
 - Configuration managers
 - Logging services
 - Cache managers
 - Thread pools
+
+## When NOT to Use Singleton
+
+Singleton is one of the most overused patterns. Avoid it when:
+
+**Testing becomes hard:**
+```java
+// Singleton makes testing difficult — you can't mock it easily
+public class UserService {
+    private final Database db = Database.getInstance();  // Hard to mock
+}
+
+// Better: dependency injection
+public class UserService {
+    private final Database db;
+    public UserService(Database db) { this.db = db; }  // Easy to mock
+}
+```
+
+**It creates hidden dependencies:**
+```java
+// Bad — UserService secretly depends on Database
+public class UserService {
+    public void save(User user) {
+        Database.getInstance().save(user);  // Hidden dependency
+    }
+}
+```
+
+**You need multiple instances:**
+```java
+// Singleton forces one instance — what if you need two databases?
+// Singleton can't handle this.
+```
+
+**It violates Single Responsibility:**
+```java
+// Singleton does two things: manages its lifecycle AND does its actual job
+public class Config {
+    private static Config instance;
+    // ... lifecycle management ...
+
+    public String get(String key) { ... }  // Actual job
+}
+```
 
 ## Implementation Approaches
 
@@ -63,18 +125,158 @@ public enum Singleton {
 - Static holder is inherently thread-safe
 - Enum approach is thread-safe by JVM guarantee
 
+## Best Practices
+
+1. **Use dependency injection instead:**
+```java
+// Bad — Singleton
+public class UserService {
+    private static UserService instance;
+    public static UserService getInstance() { ... }
+}
+
+// Good — Dependency Injection
+public class UserService {
+    private final Database db;
+    public UserService(Database db) { this.db = db; }
+}
+```
+
+2. **If you must use Singleton, use enum:**
+```java
+public enum Database {
+    INSTANCE;
+    public void query(String sql) { ... }
+}
+```
+
+3. **Lazy initialization for expensive resources:**
+```java
+public class Config {
+    private static Config instance;
+    public static synchronized Config getInstance() {
+        if (instance == null) instance = new Config();
+        return instance;
+    }
+}
+```
+
+4. **Thread safety is your responsibility:**
+```java
+// Double-checked locking for lazy initialization
+public class Singleton {
+    private static volatile Singleton instance;
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) instance = new Singleton();
+            }
+        }
+        return instance;
+    }
+}
+```
+
+5. **Document why it's a Singleton:**
+```java
+/**
+ * Configuration manager. Singleton because multiple instances
+ * would cause conflicting configuration states.
+ */
+public class ConfigManager { ... }
+```
+
 ## Common Mistakes
-1. Using Singleton when dependency injection works better
-2. Forgetting volatile in double-checked locking
-3. Making Singleton testable (static methods hard to mock)
-4. Overusing Singleton as global state
+
+### Mistake 1: Not thread-safe
+```java
+// BAD — not thread-safe
+public class Singleton {
+    private static Singleton instance;
+    public static Singleton getInstance() {
+        if (instance == null) instance = new Singleton();  // Race condition
+        return instance;
+    }
+}
+```
+
+### Mistake 2: Using it for everything
+```java
+// BAD — Singleton overkill
+public class StringUtils {
+    private static StringUtils instance;
+    public static StringUtils getInstance() { ... }
+    public boolean isEmpty(String s) { return s == null || s.isEmpty(); }
+}
+
+// GOOD — just a static utility
+public class StringUtils {
+    private StringUtils() {}  // Prevent instantiation
+    public static boolean isEmpty(String s) { return s == null || s.isEmpty(); }
+}
+```
+
+### Mistake 3: Forgetting about testing
+```java
+// BAD — hard to test
+public class UserService {
+    public void save(User user) {
+        Database.getInstance().save(user);  // Can't mock in tests
+    }
+}
+
+// GOOD — easy to test
+public class UserService {
+    private final Database db;
+    public UserService(Database db) { this.db = db; }
+}
+```
+
+## Trade-offs
+
+Singleton gives you global access but costs:
+- Testing: Hard to mock, hard to reset between tests
+- Coupling: Classes secretly depend on the singleton
+- Concurrency: Must handle thread safety
+- Lifecycle: Hard to control initialization order
+
+Use Singleton when:
+- You genuinely need exactly one instance (connection pool, config)
+- You're building a simple utility (not a service)
+- Testing isn't a concern
+
+Avoid Singleton when:
+- You're building services (use DI instead)
+- You need to test your code
+- You need multiple instances
+- You're in a framework that manages lifecycles (Spring)
+
+## Alternatives
+
+| Approach | Testability | Lifecycle Control | Complexity | Use When |
+|----------|-------------|-------------------|------------|----------|
+| Singleton | Hard | Manual | Low | Simple cases, no testing |
+| Dependency Injection | Easy | Framework | Low | Most production code |
+| Enum Singleton | Easy | JVM | Lowest | Simple constants |
+| Container-managed | Easy | Framework | Medium | Spring, Jakarta EE |
+| Static utility | Easy | None | Lowest | Stateless helpers |
 
 ## Interview Questions
-1. What are the three ways to implement Singleton in Java?
-2. Why is double-checked locking thread-safe?
-3. What is the advantage of enum Singleton?
-4. When should you avoid Singleton?
-5. How does Static Holder pattern achieve lazy initialization?
+
+1. **What is Singleton?**
+   A pattern that ensures only one instance of a class exists and provides global access to it.
+
+2. **What are the 4 ways to implement Singleton?**
+   Eager initialization, lazy initialization, double-checked locking, enum.
+
+3. **Why is Singleton considered an anti-pattern?**
+   It makes testing hard, creates hidden dependencies, and violates Single Responsibility.
+
+4. **When would you use Singleton?**
+   Connection pools, configuration managers, logging — when you genuinely need one instance.
+
+5. **How do you test code that uses Singleton?**
+   Replace with dependency injection, or use a testing framework that can mock singletons.
 
 ## Performance
 
@@ -94,28 +296,12 @@ Singleton initialization has negligible overhead. Double-checked locking adds a 
 - Concurrency patterns need multiple instances
 - Application server classloader lifecycle is a concern
 
-### Better Alternatives
-
-| Alternative | When to use |
-|-------------|-------------|
-| Dependency Injection | When DI container manages lifecycle |
-| Enum Singleton | When serialization safety is required |
-| Static utility class | When no state or instance is needed |
-| Per-request instance | When statelessness is preferred |
-
 ### Production Examples
 - Database connection pool manager
 - Application configuration loader
 - Logging service initialization
 - Cache manager for shared data
 - Thread pool for async task execution
-
-### Common Production Mistakes
-- Using Singleton when DI works better (tight coupling)
-- Forgetting volatile in double-checked locking (broken on some JVMs)
-- Making Singleton testable with static methods (hard to mock)
-- Holding resources that prevent application undeployment
-- Overusing Singleton as global mutable state
 
 ## Production Checklist
 
@@ -202,25 +388,6 @@ public class CacheManager {
 3. **Testability**: Static `getInstance()` makes mocking difficult without frameworks like Mockito
 4. **Class loader leaks**: In app servers, singleton held by a web app's class loader can prevent undeployment
 5. **Overuse**: Use dependency injection instead when possible; singletons are often a code smell
-
-## Alternatives
-
-| Approach | Lazy Init | Thread-Safe | Testable | Serialization Safe | Use When |
-|----------|-----------|-------------|----------|-------------------|----------|
-| Singleton (enum) | No | Yes | Hard | Yes | Guaranteed single instance |
-| Singleton (static holder) | Yes | Yes | Hard | No | Lazy initialization needed |
-| Singleton (DCL) | Yes | Yes (volatile) | Hard | No | Performance-critical lazy init |
-| Dependency Injection | N/A | Container-managed | Easy | Yes | When DI container available |
-| Per-request instance | N/A | N/A | Easy | N/A | Stateless services |
-
-## Trade-offs
-
-Singleton provides global access because it:
-- Makes unit testing harder (static methods hard to mock, use DI instead)
-- Introduces global mutable state (prefer immutable singletons)
-- Can cause classloader leaks in app servers (clean up resources on undeployment)
-- Overuse couples components tightly (use DI for loose coupling)
-- Double-checked locking requires volatile (use enum or static holder instead)
 
 ## Engineering Maturity Levels
 

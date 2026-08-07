@@ -34,7 +34,7 @@ String fromChars = new String(new char[]{'H', 'e', 'l', 'l', 'o'});
 - `.compareTo()` lexicographic comparison
 
 ## Code References
-- `StringBasics.java` - Comprehensive examples
+- `StringBasics.java` - Detailed examples
 
 ## Common Mistakes
 1. Using `==` instead of `.equals()` for string comparison

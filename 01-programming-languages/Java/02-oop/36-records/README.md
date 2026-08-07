@@ -1,6 +1,23 @@
 # Records
 
+## History
+
+| Version | Change |
+|---------|--------|
+| JDK 14 | Records preview introduced — Java added a concise syntax for immutable data carriers to eliminate getter/equals/hashCode/toString boilerplate |
+| JDK 16 | Records finalized — sealed classes and pattern matching integrated |
+
 Records (introduced in Java 16, preview in 14/15) provide a concise way to declare immutable data carriers. The compiler auto-generates the constructor, getters, `equals()`, `hashCode()`, and `toString()`.
+
+## Learning Objectives
+
+By the end of this topic you will be able to:
+
+• Explain why records exist and what problem they solve
+• Create records with compact constructors and validation
+• Use records with pattern matching (Java 21+)
+• Know when records are better than classes
+• Understand record limitations (immutability, no inheritance)
 
 ## Record Declaration Syntax
 
@@ -38,6 +55,36 @@ public record Color(int r, int g, int b) {
     }
 }
 ```
+
+## Internal Working
+
+Records are syntactic sugar for immutable data carriers. When you write:
+```java
+public record Point(int x, int y) {}
+```
+
+The compiler generates:
+```java
+public final class Point {
+    private final int x;
+    private final int y;
+
+    public Point(int x, int y) { this.x = x; this.y = y; }
+
+    public int x() { return x; }
+    public int y() { return y; }
+
+    @Override public boolean equals(Object o) { ... }
+    @Override public int hashCode() { ... }
+    @Override public String toString() { ... }
+}
+```
+
+Key points:
+- The class is `final` (can't be extended)
+- Fields are `final` (immutable)
+- No setters (immutable)
+- `x()` not `getX()` (accessor method naming)
 
 ## Compact Canonical Constructor
 
@@ -144,42 +191,53 @@ Need a data carrier? → Yes → Need mutability? → No → Use Record
 Need mutability? → Yes → Use Class
 Need complex behavior? → Yes → Use Class
 
-| Criteria | Record | Class |
-|----------|--------|-------|
-| Immutable by default | Yes | No (must enforce) |
-| Boilerplate | Auto-generated | Manual |
-| Pattern matching | Built-in | Manual |
-| Performance | Same | Same |
-| Use when | Data carrier, DTO, value object | Mutable state, complex behavior |
+## When NOT to Use Records
 
-### Decision Flowchart
-Need a data carrier? → Yes → Need mutability? → No → Use Record
-Need mutability? → Yes → Use Class
-Need complex behavior? → Yes → Use Class
+Records are not always the right choice:
+
+**When you need mutability:**
+```java
+// Records can't have mutable fields
+public record User(String name) {
+    // Can't add: public void setName(String name) { this.name = name; }
+}
+// Use a class instead
+```
+
+**When you need inheritance:**
+```java
+// Records can't extend classes (they're implicitly final)
+// public record Employee(String name) extends Person { }  // COMPILE ERROR
+// Use a class with extends instead
+```
+
+**When you need no-arg constructors:**
+```java
+// Records always have the canonical constructor
+// You can add a compact constructor, but not a no-arg one
+// Use a class with a builder pattern instead
+```
+
+**When you need validation across multiple fields:**
+```java
+// Records validate per-field in compact constructor
+// For cross-field validation, use a class with a factory method
+```
 
 ## Engineering Decision Framework
 
-### ✅ Use Records when:
+### Use Records when:
 - Data carriers or DTOs with no mutable state
 - Value objects that need equals/hashCode/toString
 - Map entries, tuple-like returns, or intermediate data
 - Pattern matching with switch expressions (Java 21+)
 - Reducing boilerplate for immutable data classes
 
-### ❌ Avoid Records when:
+### Avoid Records when:
 - Mutable fields are required after construction
 - Complex behavior or business logic in the class
 - Custom equals/hashCode implementation is needed
 - Serialization with custom protocols (JSON, etc.)
-
-### Better Alternatives
-
-| Alternative | When to use |
-|-------------|-------------|
-| Classes with final fields | Need constructor validation logic |
-| Sealed classes | Restricting type hierarchies with records |
-| Lombok @Value | Pre-Java 16 immutable classes |
-| Builder pattern | Complex object construction with many optional fields |
 
 ### Production Examples
 - API response DTOs (UserResponse, OrderSummary)
@@ -195,37 +253,132 @@ Need complex behavior? → Yes → Use Class
 - Assuming records are always more efficient (same as classes)
 - Using records when sealed classes with interfaces would be better
 
-## Production Checklist
-
-### ✅ Before using Records in production:
-
-☐ I know the time/space complexity
-☐ I know thread safety guarantees
-☐ I know memory impact
-☐ I know common mistakes
-☐ I know alternatives
-☐ I know limitations
-☐ I know how to debug it
-☐ I've tested with realistic data volume
-
 ## Alternatives
 
-| Approach | Immutability | Boilerplate | Custom equals | Mutable Fields | Use When |
-|----------|-------------|-------------|---------------|----------------|----------|
-| Records | Yes | Low | Not allowed | No | Immutable data carriers |
-| Classes with final fields | Yes | High | Allowed | No | Custom validation logic |
-| Sealed classes | N/A | Low | Allowed | Yes | Restricting hierarchies |
-| Lombok @Value | Yes | Low | Allowed | No | Pre-Java 16 immutable classes |
-| Tuple libraries | Yes | Low | Allowed | No | Simple pair/triple returns |
+| Approach | Immutability | Boilerplate | Validation | Pattern Matching | Use When |
+|----------|--------------|-------------|------------|------------------|----------|
+| Record | Yes | Minimal | Compact constructor | Yes (Java 21+) | Data carriers |
+| Class with getters | Configurable | High | Constructor/setter | No | Mutable objects |
+| Lombok @Value | Yes | Low | Constructor | No | Reduce boilerplate |
+| Guava ImmutableSet | Yes | Medium | Builder | No | Collections |
+| Inner class | No | Medium | Any | No | Helper objects |
 
 ## Trade-offs
 
-Records simplify data classes because they:
-- Cannot have mutable fields after construction (use classes if mutability needed)
-- Cannot customize equals/hashCode (use classes if custom equality logic needed)
-- Are not recommended for JPA entities (use classes with proxies)
-- Cannot extend classes (use sealed classes + interfaces for hierarchies)
-- All components are included in equals/hashCode (use classes if selective equality needed)
+Records give you immutability and less code but cost:
+- No inheritance (can't extend classes)
+- No mutability (fields are final)
+- No no-arg constructors (for serialization frameworks)
+- Limited validation (per-field only, not cross-field)
+
+Use records when:
+- You need immutable data carriers
+- You want equals/hashCode/toString for free
+- You're working with Java 21+ pattern matching
+- You're designing APIs that return multiple values
+
+Skip records when:
+- You need mutable state
+- You need inheritance
+- You need no-arg constructors (for JPA, Jackson)
+- You need complex validation
+
+## Best Practices
+
+1. **Use compact constructors for validation:**
+```java
+public record Email(String value) {
+    public Email {
+        if (value == null || !value.contains("@")) throw new IllegalArgumentException("Invalid email");
+    }
+}
+```
+
+2. **Use records for API return types:**
+```java
+public record SearchResult(List<Item> items, int totalHits, boolean hasMore) {}
+```
+
+3. **Use records with pattern matching (Java 21+):**
+```java
+if (obj instanceof Point(int x, int y)) {
+    System.out.println("Point at " + x + ", " + y);
+}
+```
+
+4. **Keep records small** — Records with 1-6 fields are ideal. Larger records become unwieldy.
+
+5. **Don't use records for JPA entities** — JPA requires setters and no-arg constructors. Use classes instead.
+
+## Common Mistakes
+
+### Mistake 1: Trying to make records mutable
+```java
+// COMPILE ERROR — records are implicitly final
+public record Point(int x, int y) {
+    // Can't do this:
+    public void setX(int x) { this.x = x; }  // Error
+}
+```
+
+### Mistake 2: Extending records
+```java
+// COMPILE ERROR — records are implicitly final
+public record Employee(String name) extends Person { }  // Error
+```
+
+### Mistake 3: Using records for JPA
+```java
+// BAD — JPA needs setters and no-arg constructor
+@Entity
+public record User(String name) { }  // Won't work with JPA
+
+// GOOD — use a class for JPA
+@Entity
+public class User {
+    private String name;
+    // JPA needs this
+}
+```
+
+### Mistake 4: Confusing accessor naming
+```java
+public record Point(int x, int y) {}
+
+Point p = new Point(1, 2);
+p.x();   // Correct — accessor method
+// p.getX();  // COMPILE ERROR — no getX()
+```
+
+## Interview Questions
+
+1. **What is a record?**
+   A concise way to create immutable data carriers. The compiler generates constructor, accessors, equals, hashCode, toString.
+
+2. **What can't records do?**
+   Can't extend classes, can't have mutable fields, can't have no-arg constructors.
+
+3. **How do records work with pattern matching?**
+   Java 21+ allows `if (obj instanceof Point(int x, int y))` to destructure records.
+
+4. **When would you use a class instead of a record?**
+   When you need mutability, inheritance, or no-arg constructors (JPA, Jackson).
+
+5. **What's the difference between a record and a tuple?**
+   Records are named (Point, not Pair), can have validation, and work with pattern matching.
+
+## Production Checklist
+
+### Before using Records in production:
+
+- I know the time/space complexity
+- I know thread safety guarantees
+- I know memory impact
+- I know common mistakes
+- I know alternatives
+- I know limitations
+- I know how to debug it
+- I've tested with realistic data volume
 
 ## Engineering Maturity Levels
 
@@ -259,11 +412,11 @@ Records simplify data classes because they:
 
 ## Common Myths
 
-### ❌ Myth 1: Records are just data classes
+### Myth 1: Records are just data classes
 **Reality:** Immutability, equals/hashCode/toString are auto-generated. They enforce immutability by design.
 
-### ❌ Myth 2: Records can't have methods
+### Myth 2: Records can't have methods
 **Reality:** Can have methods. Records can contain instance methods, static methods, and even custom constructors.
 
-### ❌ Myth 3: Records are always better
+### Myth 3: Records are always better
 **Reality:** Not for mutable state. Use classes when you need mutable fields after construction.

@@ -22,7 +22,7 @@ Your e-commerce system needs to group 1 million orders by status (COMPLETED, PEN
 - D) Use parallel streams for all operations without considering data size
 
 **Answer: B**
-**Explanation:** `Collectors.groupingBy()` provides a clean, declarative way to group elements. Combined with downstream collectors like `Collectors.summingDouble()`, this approach is concise, readable, and efficient. It avoids manual bookkeeping and leverages the Stream API's optimized implementations.
+**Explanation:** `Collectors.groupingBy()` provides a clean, declarative way to group elements. Combined with downstream collectors like `Collectors.summingDouble()`, this approach is concise, readable, and efficient. It avoids manual bookkeeping and uses the Stream API's optimized implementations.
 
 ---
 

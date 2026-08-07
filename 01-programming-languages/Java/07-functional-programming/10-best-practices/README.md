@@ -42,7 +42,7 @@ This topic consolidates the best practices for functional programming in Java. F
 2. **Pure Functions**: Avoid side effects
 3. **Composition**: Build complex logic from simple functions
 4. **Declarative Style**: Describe what, not how
-5. **Type Safety**: Leverage the type system
+5. **Type Safety**: Use the type system
 
 ---
 
@@ -220,7 +220,7 @@ list.stream()
 
 ### 7.3 Lazy Evaluation
 
-Leverage lazy evaluation:
+Use lazy evaluation:
 
 ```java
 // GOOD: Filter early
