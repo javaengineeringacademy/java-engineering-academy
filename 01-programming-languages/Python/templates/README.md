@@ -1,287 +1,138 @@
-# Python Templates — Standard Formats for Learning Content
+# Python Technology README Template
 
-Consistency makes content maintainable. Use these templates when creating new exercises, quizzes, or documentation.
+Use this template for the main README of any Python technology, library, or framework module.
 
 ---
 
-## Standard README Template
-
-Use this for any Python module, topic folder, or project.
+## Template
 
 ```markdown
-# [Title]
+# [Technology/Library Name]
 
-**Level:** [Beginner | Intermediate | Advanced]
-**Estimated Time:** [X hours/minutes]
-**Prerequisites:** [What you need to know first]
+[One-sentence summary of what it is and why it matters.]
 
----
+## Overview
 
-## What You'll Learn
+[2-3 paragraphs explaining the technology, its purpose, and where it fits in the Python ecosystem.]
 
-- [ ] Concept 1
-- [ ] Concept 2
-- [ ] Concept 3
+## Modules
 
-## Why It Matters
+| # | Module | Topics |
+|---|--------|--------|
+| 01 | [Module Name] | [Key topics covered] |
+| 02 | [Module Name] | [Key topics covered] |
+| 03 | [Module Name] | [Key topics covered] |
 
-[1-2 sentences explaining real-world relevance]
+## Quick Start
 
-## Quick Example
+```bash
+# Installation
+pip install [package-name]
 
-```python
-# The most minimal working example
-# Should run and produce output
+# Minimal working example
+python example.py
 ```
 
-## Deep Dive
+## Requirements
 
-### [Subtopic 1]
+- Python [version]+
+- [Dependency 1]
+- [Dependency 2]
 
-[Explanation with code examples]
+## Learning Path
 
-### [Subtopic 2]
-
-[Explanation with code examples]
-
-## Common Mistakes
-
-| Mistake | Why It's Wrong | Correct Approach |
-|---------|---------------|-----------------|
-| [Bad pattern] | [Reason] | [Better way] |
-
-## Exercises
-
-1. [Exercise 1 — description]
-2. [Exercise 2 — description]
-3. [Exercise 3 — description]
+1. **[Starting Point]** — [Why start here]
+2. **[Next Step]** — [What they'll learn]
+3. **[Advanced]** — [When they're ready]
 
 ## Resources
 
-- [Link 1 — description]
-- [Link 2 — description]
+- [Official Documentation](url)
+- [Community Guide](url)
+- [API Reference](url)
 
 ---
 
-*Next: [Link to next topic]*
+*Last updated: [Date]*
 ```
 
-**Filling in the template:**
-- Title should be specific: "Context Managers" not "Advanced Python"
-- Time estimates help learners plan their sessions
-- Prerequisites prevent frustration from missing foundations
-- The "Why It Matters" section answers the student's inevitable "so what?"
+---
+
+## Formatting Guidelines
+
+- Title must be specific: "FastAPI Web Framework" not "Web Stuff"
+- Overview should answer "what is it?" and "why should I care?" in under 100 words
+- Modules table must link to each module folder
+- Quick Start must be copy-pasteable and produce visible output
+- Requirements must specify exact minimum Python version
+- Learning Path guides beginners; advanced users skip to what they need
 
 ---
 
-## Standard Exercise Template
-
-Use this for individual coding exercises.
+## Example: Data Validation with Pydantic
 
 ```markdown
-# Exercise: [Name]
+# Data Validation with Pydantic
 
-**Topic:** [Concept being tested]
-**Difficulty:** [⭐ | ⭐⭐ | ⭐⭐⭐]
-**Time:** [X minutes]
+Pydantic is Python's most popular data validation library — it uses Python type hints to validate and serialize data automatically.
 
----
+## Overview
 
-## Problem Statement
+Pydantic performs runtime type coercion and validation using Python type annotations. It's the foundation of FastAPI's request/response validation and is used by thousands of production systems for configuration, APIs, and data pipelines.
 
-[Clear, specific description of what the learner needs to build or fix]
+## Modules
 
-### Requirements
+| # | Module | Topics |
+|---|--------|--------|
+| 01 | Models & Fields | BaseModel, field types, defaults, validators |
+| 02 | Validation | Custom validators, error handling, constrained types |
+| 03 | Serialization | .model_dump(), .model_validate(), JSON schema |
+| 04 | Advanced | Generic models, discriminated unions, model config |
 
-- [ ] Requirement 1
-- [ ] Requirement 2
-- [ ] Requirement 3
+## Quick Start
 
-### Constraints
-
-- [Constraint 1 — e.g., "Do not use `eval()`"]
-- [Constraint 2 — e.g., "Must handle empty input"]
-
-## Starter Code
+```bash
+pip install pydantic
+```
 
 ```python
-def solution():
-    pass
-    # Your code here
+from pydantic import BaseModel
+
+class User(BaseModel):
+    name: str
+    age: int
+    email: str
+
+user = User(name="Alice", age=30, email="alice@example.com")
+print(user.model_dump_json(indent=2))
 ```
 
-## Test Cases
+## Requirements
 
-```python
-# Example 1
-assert solution(input1) == expected1
+- Python 3.8+
+- No external dependencies for core functionality
 
-# Example 2
-assert solution(input2) == expected2
+## Learning Path
 
-# Edge case
-assert solution(edge_input) == expected_edge
+1. **01 - Models & Fields** — Start here to understand how Pydantic models work
+2. **02 - Validation** — Learn to customize validation logic
+3. **03 - Serialization** — Convert models to/from dicts and JSON
+4. **04 - Advanced** — Generic models and complex schemas
+
+---
+
+*Last updated: 2026-08-07*
 ```
 
-## Hints
-
-<details>
-<summary>Hint 1</summary>
-
-[Conceptual nudge without giving away the answer]
-
-</details>
-
-<details>
-<summary>Hint 2</summary>
-
-[More specific guidance]
-
-</details>
-
-## Solution
-
-<details>
-<summary>Click to reveal solution</summary>
-
-```python
-def solution():
-    # Implementation here
-    pass
-```
-
-**Key insight:** [What the learner should take away]
-
-**Time complexity:** O(?)
-**Space complexity:** O(?)
-
-</details>
-
 ---
 
-## Discussion
+## Checklist
 
-- What alternative approaches could work?
-- When would this pattern be useful in production?
-- What edge cases did you consider?
-```
+Before publishing a technology README:
 
-**Filling in the template:**
-- Problem statements should be unambiguous — a new reader should understand without asking
-- Test cases should cover happy path, error cases, and edge cases
-- Hints should progressively reveal the approach without spoiling the learning
-- Solutions should include complexity analysis
-
----
-
-## Standard Quiz Template
-
-Use this for knowledge-check quizzes (conceptual, not coding).
-
-```markdown
-# Quiz: [Topic]
-
-**Questions:** [N]
-**Passing Score:** [X/N]
-**Time Limit:** [Optional — X minutes]
-
----
-
-## Questions
-
-### Q1: [Question text]
-
-A) [Option A]
-B) [Option B]
-C) [Option C]
-D) [Option D]
-
-<details>
-<summary>Answer</summary>
-
-**Correct:** [Letter]
-
-**Explanation:** [Why this is correct and why others are wrong]
-
-**Code example (if applicable):**
-
-```python
-# Supporting code
-```
-
-</details>
-
----
-
-### Q2: [Question text]
-
-A) [Option A]
-B) [Option B]
-C) [Option C]
-D) [Option D]
-
-<details>
-<summary>Answer</summary>
-
-**Correct:** [Letter]
-
-**Explanation:** [Why this is correct]
-
-</details>
-
----
-
-[Repeat for each question]
-
----
-
-## Score
-
-| Metric | Result |
-|--------|--------|
-| Correct | ? / [N] |
-| Passing | [X] / [N] |
-| Status | [Pass | Fail] |
-
-## Review Topics
-
-If you scored below passing, revisit:
-- [Topic area 1]
-- [Topic area 2]
-- [Topic area 3]
-```
-
-**Filling in the template:**
-- Questions should test understanding, not memorization
-- Explanations should teach, not just state "A is correct"
-- Mix question types: conceptual, code reading, "what does this output?", bug identification
-- Include code-based questions — Python is learned by reading code
-
----
-
-## Quiz Question Types
-
-Use a mix of these:
-
-| Type | Example | Tests |
-|------|---------|-------|
-| **Conceptual** | "What does the GIL protect?" | Theoretical understanding |
-| **Code Reading** | "What does this print?" | Ability to trace execution |
-| **Bug Hunt** | "Find the bug in this code" | Debugging skills |
-| **True/False** | "EAFP is always preferred over LBYL" | Nuanced understanding |
-| **Fill-in** | "The method `__` makes objects callable" | Recall of key terms |
-| **Multiple Answer** | "Which are valid ways to create a virtual environment?" | Broad knowledge |
-
----
-
-## Usage Notes
-
-- **Exercises** should be completable in 10-45 minutes
-- **Quizzes** should have 5-15 questions per topic
-- **READMEs** should be skimmable — use headers and bullet points
-- All templates support Markdown rendering in most platforms (GitHub, VS Code, etc.)
-- Customize freely — these are starting points, not rigid rules
-
----
-
-*Use these templates to keep content consistent and learner-friendly.*
+- [ ] Title is specific and descriptive
+- [ ] Overview is under 100 words
+- [ ] All modules are listed in the table
+- [ ] Quick Start runs without errors
+- [ ] Python version requirement is explicit
+- [ ] No broken links
