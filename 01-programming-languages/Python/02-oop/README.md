@@ -1,6 +1,20 @@
 # Object-Oriented Programming
 
-Model real-world entities and bundle data with behavior using Python's class system, inheritance, polymorphism, encapsulation, and abstraction.
+## Why OOP Matters
+
+Every complex application needs to organize code into manageable, reusable components. Object-oriented programming in Python provides a way to model real-world entities and bundle data with behavior using classes, inheritance, polymorphism, encapsulation, and abstraction. Without OOP, managing large codebases becomes chaotic and error-prone.
+
+Without OOP principles, you'd end up with scattered functions and global state that's hard to debug and impossible to extend. That's why OOP exists — it provides the structural foundation for building maintainable, scalable applications where components can be reused, extended, and tested in isolation.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Design and implement classes with proper OOP principles
+- Use inheritance and polymorphism to build flexible hierarchies
+- Control access to internal state with encapsulation
+- Define abstract interfaces with the ABC module
+- Leverage magic methods for custom object behavior
 
 ## Topics
 

@@ -1,6 +1,20 @@
 # Python Fundamentals
 
-Core building blocks of Python programming — variables, operators, control flow, functions, collections, strings, and file handling.
+## Why Fundamentals Matter
+
+Every Python application needs to store data, make decisions, repeat tasks, and organize code. Python fundamentals provide these building blocks — variables, operators, control flow, functions, collections, strings, and file handling — in a dynamically-typed, expressive manner. Without them, you cannot write reliable, maintainable Python programs.
+
+Without understanding these concepts, you'd struggle to write even simple scripts, let alone production systems. That's why fundamentals exist — they form the essential syntax and constructs needed to write any Python program, ensuring code that is both readable and correct.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Declare variables and work with Python's built-in types
+- Use operators and control flow to write logic
+- Define and call functions with different argument patterns
+- Manipulate collections and strings effectively
+- Read from and write to files using context managers
 
 ## Topics
 

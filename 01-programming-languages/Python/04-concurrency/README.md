@@ -1,6 +1,20 @@
 # Concurrency
 
-Execute multiple tasks concurrently — threading for I/O-bound work, multiprocessing for CPU-bound work, and asyncio for asynchronous programs.
+## Why Concurrency Matters
+
+Every modern application needs to handle multiple tasks simultaneously — processing user requests while fetching data from databases, downloading files while updating progress bars, or running background jobs while serving responses. Python's concurrency models — threading for I/O-bound work, multiprocessing for CPU-bound work, and asyncio for asynchronous programs — provide the tools to handle these scenarios efficiently.
+
+Without concurrency, your applications would process tasks sequentially, leading to poor responsiveness and wasted resources. That's why concurrency exists — it allows your programs to make progress on multiple fronts at once, improving throughput and user experience without requiring multiple machines.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Spawn and manage threads for concurrent I/O operations
+- Use multiprocessing to bypass the GIL for CPU-bound work
+- Write asynchronous code with async/await syntax
+- Synchronize shared state with locks, queues, and shared memory
+- Choose the right concurrency model for a given problem
 
 ## Topics
 

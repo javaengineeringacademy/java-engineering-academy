@@ -2,37 +2,21 @@
 
 > "Functional programming in Python isn't about rejecting classes. It's about choosing the right tool for the job."
 
----
+## Why Functional Programming Matters
 
-## First-Class Functions
+Every Python application eventually needs to transform data, compose behaviors, and manage state in predictable ways. Functional programming in Python provides tools like first-class functions, higher-order functions, and immutability patterns that make code more testable, composable, and easier to reason about. Without these concepts, you'd write imperative code that's harder to debug and extend.
 
-In Python, functions are first-class citizens — they can be assigned to variables, passed as arguments, and returned from other functions.
+Without functional programming techniques, you'd struggle with side effects that make testing difficult, code duplication across similar transformations, and logic that's hard to parallelize. That's why functional programming exists — it provides mathematical foundations for writing code that's predictable, reusable, and maintainable at scale.
 
-```python
-# Functions as variables
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
+## What You'll Learn
 
-say_hello = greet  # Assign function to variable
-print(say_hello("Alice"))  # "Hello, Alice!"
+By the end of this module, you'll be able to:
 
-# Functions as arguments
-def apply(func, value):
-    return func(value)
-
-print(apply(str.upper, "hello"))  # "HELLO"
-
-# Functions as return values
-def create_multiplier(factor: int):
-    def multiply(x: int) -> int:
-        return x * factor
-    return multiply
-
-double = create_multiplier(2)
-print(double(5))  # 10
-```
-
-**Key insight:** First-class functions are the foundation of functional programming in Python. Everything else builds on this.
+- Use first-class functions to write flexible, composable code
+- Apply lambda functions, map, filter, and reduce for data transformations
+- Leverage closures and decorators for behavior composition
+- Understand immutability patterns and their benefits
+- Choose between functional and imperative approaches based on context
 
 ---
 

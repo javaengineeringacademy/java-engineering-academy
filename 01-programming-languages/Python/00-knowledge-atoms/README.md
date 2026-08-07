@@ -1,6 +1,21 @@
 # Python Knowledge Atoms — Core Concepts Every Python Developer Must Internalize
 
-These are the atomic ideas that shape how Python works under the hood. You don't just *know* these — you *feel* them in every line of code you write.
+## Why These Concepts Matter
+
+Every Python application, from a small automation script to a large production service, relies on foundational concepts that shape how the language works under the hood. These atomic ideas — duck typing, the GIL, reference counting, the data model — aren't just trivia. They're the difference between writing code that works and writing code that performs, scales, and maintains itself.
+
+Without internalizing these atoms, you'd have to rediscover Python's quirks through production incidents and debugging sessions. That's why these concepts exist — they form the mental model that lets you read Python source code like a native speaker reads prose, and design systems that leverage the language's strengths rather than fighting them.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Design around interfaces (duck typing) instead of inheritance hierarchies
+- Choose between EAFP and LBYL patterns based on context
+- Understand GIL limitations and when to use multiprocessing vs threading
+- Manage memory effectively through reference counting and garbage collection
+- Leverage the data model (dunder methods) to make custom objects integrate with Python syntax
+- Use ABCs and Protocols to define and enforce contracts
 
 ---
 

@@ -2,52 +2,23 @@
 
 > "File I/O is where your code meets the real world. Do it right, or lose data."
 
----
+## Why File I/O Matters
 
-## open() and File Modes
+Every application eventually needs to persist data, read configuration files, process logs, or exchange data with other systems. File I/O is where your code meets the real world — reading user inputs, writing results, and managing resources that exist beyond your program's memory. Without proper file handling, you'd lose data, corrupt files, and leak file descriptors.
 
-```python
-# Basic open
-f = open("data.txt", "r")    # Read
-f = open("data.txt", "w")    # Write (overwrites!)
-f = open("data.txt", "a")    # Append
-f = open("data.txt", "r+")   # Read + Write
-f = open("data.txt", "rb")   # Read binary
-f = open("data.txt", "wb")   # Write binary
+Without understanding file I/O, you'd write code that silently overwrites important data, forgets to close files (leading to resource leaks), or crashes on permission errors. That's why file I/O fundamentals exist — they provide the patterns for safely reading and writing data, managing resources with context managers, and handling the edge cases that cause production incidents.
 
-# ALWAYS close when done manually (don't do this)
-f = open("data.txt", "r")
-content = f.read()
-f.close()  # Easy to forget on errors!
-```
+## What You'll Learn
 
-**Mode Reference:**
+By the end of this module, you'll be able to:
 
-| Mode | Description | Creates File? | Truncates? |
-|------|-------------|---------------|------------|
-| `r` | Read only | No | No |
-| `w` | Write only | Yes | Yes |
-| `a` | Append | Yes | No |
-| `r+` | Read + Write | No | No |
-| `w+` | Write + Read | Yes | Yes |
-| `a+` | Append + Read | Yes | No |
-| `rb/wb/ab` | Binary mode | Same as above | Same as above |
-
-**Warning:** `w` mode **silently destroys** existing content. This is the #1 file I/O bug.
+- Read and write files using Python's built-in functions
+- Choose the correct file mode for each use case
+- Use context managers to guarantee resource cleanup
+- Handle large files efficiently with line-by-line processing
+- Work with binary data and file paths using pathlib
 
 ---
-
-## Context Managers (with statement)
-
-```python
-# ALWAYS use context managers — they guarantee cleanup
-with open("data.txt", "r") as f:
-    content = f.read()
-# File is automatically closed, even on exceptions
-
-# Read line by line (memory efficient)
-with open("large_file.txt", "r") as f:
-    for line in f:
         process(line)
 
 # Read/write with binary

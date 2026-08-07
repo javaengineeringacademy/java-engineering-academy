@@ -1,6 +1,20 @@
 # Testing
 
-Write reliable tests with Python's built-in unittest and the popular pytest framework.
+## Why Testing Matters
+
+Every production application needs confidence that changes won't break existing functionality. Testing in Python provides systematic ways to verify your code works correctly — from unit tests that validate individual functions to integration tests that ensure components work together. Without testing, you'd deploy code with unknown bugs and live in fear of every release.
+
+Without tests, you'd have to manually verify every feature after every change, which is impossible at scale. That's why testing exists — it provides automated regression detection, documentation of expected behavior, and the confidence to refactor and extend code without breaking things.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Write unit tests using unittest's TestCase and assertions
+- Use pytest fixtures and parametrize for concise test suites
+- Organize and run tests with test discovery
+- Mock external dependencies to isolate units under test
+- Apply test-driven development (TDD) workflows
 
 ## Topics
 

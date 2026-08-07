@@ -2,19 +2,21 @@
 
 > **Mastering errors is mastering the craft.**
 
-## What
+## Why Exception Handling Matters
 
-Exception handling is Python's mechanism for managing runtime errors gracefully. It encompasses custom exceptions, exception chaining, context variables, and structured error management. Rather than letting your program crash, you catch problems, log them meaningfully, and recover where possible.
+Every production application needs to handle unexpected situations gracefully — network timeouts, invalid user input, missing files, database failures. Exception handling is Python's mechanism for managing these runtime errors without crashing. Without it, you'd write brittle code that fails unpredictably and leaves no trace of what went wrong.
 
-Python exceptions are objects — they can carry data, be chained together, and organized into hierarchies. Understanding this transforms error handling from a chore into a powerful design tool.
+Without proper exception handling, you'd resort to return codes and sentinel values that make error handling optional and easy to forget. That's why exceptions exist — they provide a structured way to capture error context, propagate it up the call stack, and handle it at the appropriate level, turning potential crashes into manageable, loggable, recoverable events.
 
-## Why
+## What You'll Learn
 
-- **Debugging without context is guessing.** Structured exceptions tell you exactly what went wrong.
-- **Uncaught exceptions crash production.** A 2 AM page beats a silent data loss.
-- **Error handling is a contract.** It communicates to callers what can go wrong and what to expect.
-- **Proper exception design prevents anti-patterns.** Return codes and sentinel values lead to brittle code.
-- **Exception chaining preserves root causes.** You never lose the original error information.
+By the end of this module, you'll be able to:
+
+- Use try/except/else/finally blocks effectively
+- Design custom exception hierarchies for your domain
+- Chain exceptions to preserve root cause information
+- Handle exceptions at the right abstraction level
+- Write exception-safe code that doesn't leak resources
 
 ## When
 

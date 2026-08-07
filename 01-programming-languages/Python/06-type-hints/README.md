@@ -2,31 +2,21 @@
 
 > "Type hints are not about making Python typed. They're about making Python code *communicate* better."
 
----
+## Why Type Hints Exist
 
-## What Are Type Hints and Why They Exist
+Every Python codebase eventually reaches a point where functions become hard to understand, bugs hide in unexpected type conversions, and new team members struggle to figure out what parameters a function expects. Type hints solve this by providing optional annotations that describe the expected types of variables, function parameters, and return values. Without them, you'd rely on documentation that quickly becomes outdated, or worse, reading implementation details to understand interfaces.
 
-Type hints (introduced in Python 3.5 via PEP 484) are optional annotations that describe the expected types of variables, function parameters, and return values.
+Without type hints, you'd spend hours debugging type-related errors that a static checker could catch in seconds, and IDE support would be limited to basic syntax highlighting. That's why type hints exist — they bridge the gap between Python's dynamic nature and the need for clear, maintainable, and toolable code in production teams.
 
-**Why they exist:**
+## What You'll Learn
 
-- **Documentation that never lies** — Code is the source of truth, not a separate doc
-- **IDE support** — Autocomplete, error detection, refactoring tools
-- **Catch bugs before runtime** — Static type checkers (mypy, pyright) find errors at development time
-- **Team communication** — Senior engineers signal intent to junior engineers
-- **API contracts** — External consumers know exactly what to expect
+By the end of this module, you'll be able to:
 
-```python
-# Without type hints — what does this return?
-def process(data):
-    return data["value"] * 2
-
-# With type hints — crystal clear
-def process(data: dict[str, int]) -> int:
-    return data["value"] * 2
-```
-
-**Key insight:** Type hints are *hints*, not enforced constraints at runtime. Python remains dynamically typed. The value is in the tooling ecosystem, not runtime enforcement.
+- Annotate functions and variables with proper type hints
+- Use static type checkers (mypy, pyright) to catch bugs before runtime
+- Leverage type hints for better IDE support and code documentation
+- Understand the difference between gradual typing and strict typing
+- Apply type hints effectively in team environments
 
 ---
 

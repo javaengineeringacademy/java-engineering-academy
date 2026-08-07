@@ -1,564 +1,1101 @@
 # Python Internals
 
-A detailed guide to CPython internals and how Python works under the hood.
+## Why Internals Matter
+
+Every Python developer eventually encounters performance bottlenecks, confusing behaviors, or the need to optimize code beyond surface-level improvements. Understanding CPython internals — how Python compiles code, manages memory, and executes bytecode — gives you the knowledge to debug mysterious issues, optimize performance, and make informed architectural decisions. Without this knowledge, you'd optimize blindly and miss the real bottlenecks.
+
+Without understanding internals, you'd write code that fights the interpreter instead of working with it, waste time on optimizations that don't matter, and struggle to explain why certain patterns are fast while others are slow. That's why internals exist — they provide the mental model for reasoning about Python's behavior at a deeper level, enabling you to write code that's not just correct but efficient and predictable.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Trace Python's compilation pipeline from source to bytecode
+- Understand how the GIL affects concurrency and when to work around it
+- Inspect bytecode to understand what your code actually does
+- Navigate Python's import system and module loading
+- Leverage knowledge of memory architecture for optimization
 
 ## Table of Contents
 
-- [CPython Architecture](#cpython-architecture)
-- [Bytecode](#bytecode)
-- [Global Interpreter Lock (GIL)](#global-interpreter-lock-gil)
-- [Import System](#import-system)
-- [Data Model](#data-model)
-- [Memory Architecture](#memory-architecture)
-- [Object Model](#object-model)
+1. [Object Memory Layout](#1-object-memory-layout)
+2. [Reference Counting](#2-reference-counting)
+3. [Cyclic Garbage Collector](#3-cyclic-garbage-collector)
+4. [Descriptor Protocol](#4-descriptor-protocol)
+5. [Method Resolution Order (MRO)](#5-method-resolution-order-mro)
+6. [Import System](#6-import-system)
+7. [Bytecode Execution](#7-bytecode-execution)
+8. [Frame Objects](#8-frame-objects)
+9. [GIL Scheduler](#9-gil-scheduler)
+10. [Vectorcall (Python 3.8+)](#10-vectorcall-python-38)
+11. [Specialization (Python 3.11+)](#11-specialization-python-311)
 
 ---
 
-## CPython Architecture
+## 1. Object Memory Layout
 
-### Compilation Pipeline
+### The PyObject Head
 
-```python
-# Source Code -> Tokens -> AST -> Bytecode -> Execution
-
-# 1. Lexical Analysis (Tokenization)
-import tokenize
-import io
-
-code = "x = 1 + 2"
-tokens = list(tokenize.generate_tokens(io.StringIO(code).readline))
-for token in tokens:
-    print(token)
-
-# 2. Parsing (AST Generation)
-import ast
-
-code = "x = 1 + 2"
-tree = ast.parse(code)
-print(ast.dump(tree, indent=2))
-
-# 3. Code Object (Bytecode)
-code_obj = compile(tree, '<string>', 'exec')
-print(code_obj.co_code)  # Raw bytecode
-print(code_obj.co_consts)  # Constants
-print(code_obj.co_varnames)  # Variable names
-
-# 4. Execution
-exec(code_obj)
-```
-
-### Python Virtual Machine (PVM)
+Every object in CPython starts with two fields: `ob_refcnt` and `ob_type`. This is the minimum memory cost for any object.
 
 ```python
-# The PVM is a stack-based interpreter
-# It executes bytecode instructions
+import sys
 
-# Disassemble bytecode
-import dis
+# The C struct for every Python object:
+# typedef struct _object {
+#     Py_ssize_t ob_refcnt;      // reference count
+#     PyTypeObject *ob_type;     // pointer to type object
+# } PyObject;
 
-def add(a, b):
-    return a + b
+# Variable-size objects add ob_size:
+# typedef struct {
+#     PyObject ob_base;
+#     Py_ssize_t ob_size;        // number of elements
+# } PyVarObject;
 
-dis.dis(add)
-# Output:
-# 2     0 LOAD_FAST      0 (a)
-#       2 LOAD_FAST      1 (b)
-#       4 BINARY_ADD
-#       6 RETURN_VALUE
+# Concrete examples:
+print(sys.getsizeof(0))           # 28 bytes (int)
+print(sys.getsizeof(""))          # 49 bytes (str)
+print(sys.getsizeof([]))          # 56 bytes (list)
+print(sys.getsizeof({}))          # 64 bytes (dict)
+print(sys.getsizeof(()))          # 40 bytes (tuple)
+print(sys.getsizeof(set()))       # 216 bytes (set)
 
-# Bytecode instructions
-# LOAD_FAST: Load local variable
-# LOAD_CONST: Load constant value
-# BINARY_ADD: Add top two stack items
-# RETURN_VALUE: Return top of stack
-```
-
----
-
-## Bytecode
-
-### Code Objects
-
-```python
-import dis
-
-def example(x, y):
-    z = x + y
-    return z * 2
-
-# Code object properties
+# Code objects are variable-size
+def example(): pass
 code = example.__code__
-print(f"Code object: {code}")
-print(f"Bytecode: {code.co_code}")
-print(f"Constants: {code.co_consts}")
-print(f"Variable names: {code.co_varnames}")
-print(f"Argument count: {code.co_argcount}")
-print(f"Stack size: {code.co_stacksize}")
-print(f"Flags: {code.co_flags}")
-
-# Disassemble
-dis.dis(example)
+print(f"co_code length: {len(code.co_code)}")
+print(f"co_consts: {code.co_consts}")
+print(f"co_names: {code.co_names}")
+print(f"co_varnames: {code.co_varnames}")
 ```
 
-### Bytecode Instructions
-
-```python
-import dis
-
-# Common bytecode instructions
-def example():
-    # LOAD_CONST    0 (1)
-    # STORE_FAST    0 (x)
-    x = 1
-
-    # LOAD_FAST     0 (x)
-    # LOAD_CONST    1 (2)
-    # BINARY_ADD
-    # STORE_FAST    1 (y)
-    y = x + 2
-
-    # LOAD_FAST     1 (y)
-    # RETURN_VALUE
-    return y
-
-dis.dis(example)
-
-# Instruction sets
-# Stack manipulation: POP_TOP, DUP_TOP, ROT_TWO, ROT_THREE
-# Variables: LOAD_FAST, STORE_FAST, LOAD_GLOBAL, STORE_GLOBAL
-# Constants: LOAD_CONST
-# Operations: BINARY_ADD, BINARY_SUBTRACT, BINARY_MULTIPLY
-# Control: JUMP_FORWARD, JUMP_IF_TRUE, JUMP_IF_FALSE
-# Functions: CALL_FUNCTION, MAKE_FUNCTION, RETURN_VALUE
-```
-
-### Bytecode Optimization
-
-```python
-# Python performs some bytecode optimizations
-# 1. Constant folding
-x = 2 + 3  # Compiled as LOAD_CONST 5
-
-# 2. Dead code elimination
-def example():
-    return 1
-    print("This is never executed")  # Removed from bytecode
-
-# 3. String concatenation optimization
-s = "hello" + " " + "world"  # May be folded to "hello world"
-
-#查看优化后的字节码
-import dis
-dis.dis(lambda: 2 + 3)
-```
-
----
-
-## Global Interpreter Lock (GIL)
-
-### How the GIL Works
-
-```python
-# The GIL is a mutex in CPython
-# Only one thread can execute Python bytecode at a time
-
-# GIL switching interval
-import sys
-print(sys.getswitchinterval())  # Default: 5ms
-
-# Set switch interval
-sys.setswitchinterval(0.001)  # 1ms
-
-# The GIL is released during:
-# 1. I/O operations
-# 2. C extension calls that release GIL
-# 3. time.sleep()
-
-import threading
-import time
-
-def cpu_bound():
-    total = 0
-    for i in range(10**7):
-        total += i
-    return total
-
-# Threading won't help for CPU-bound tasks
-# due to GIL
-
-# For CPU-bound tasks, use multiprocessing:
-from multiprocessing import Pool
-
-with Pool(4) as p:
-    results = p.map(cpu_bound, range(4))
-```
-
-### GIL and C Extensions
-
-```python
-# C extensions can release the GIL
-# NumPy releases GIL for array operations
-
-import numpy as np
-import time
-import threading
-
-# This runs in parallel despite GIL
-a = np.random.rand(10000, 10000)
-b = np.random.rand(10000, 10000)
-
-start = time.time()
-c = np.dot(a, b)  # GIL released during computation
-print(f"NumPy: {time.time() - start:.2f}s")
-
-# Pure Python (GIL limits parallelism)
-def pure_python_sum(n):
-    return sum(range(n))
-
-# Use concurrent.futures for simple parallelism
-from concurrent.futures import ProcessPoolExecutor
-
-with ProcessPoolExecutor() as executor:
-    results = list(executor.map(pure_python_sum, range(4)))
-```
-
----
-
-## Import System
-
-### Import Machinery
-
-```python
-# Python's import system
-# 1. Finds the module (finders)
-# 2. Loads the module (loaders)
-# 3. Executes the module code
-
-# 查看import hooks
-import sys
-print(sys.meta_path)  # List of finders
-print(sys.path_hooks)  # List of path hooks
-
-# Custom finder
-class MyFinder:
-    @classmethod
-    def find_module(cls, fullname, path=None):
-        print(f"Finding module: {fullname}")
-        return None  # Let next finder handle it
-
-sys.meta_path.insert(0, MyFinder())
-
-# Custom loader
-class MyLoader:
-    @classmethod
-    def load_module(cls, fullname):
-        print(f"Loading module: {fullname}")
-        import types
-        module = types.ModuleType(fullname)
-        module.__loader__ = cls
-        module.__file__ = f"<custom {fullname}>"
-        return module
-
-# 查看已导入的模块
-print(sys.modules.keys())
-```
-
-### Module Cache
+### Memory Layout Comparison
 
 ```python
 import sys
 
-# sys.modules is the module cache
-print('os' in sys.modules)  # True (already imported)
-
-# Clear module from cache
-del sys.modules['os']
-import os  # Re-imports
-
-# Force reimport
-import importlib
-importlib.reload(os)
-
-# 查看模块信息
-import os
-print(os.__file__)  # File path
-print(os.__spec__)  # Module spec
-print(os.__path__)  # Package path
-```
-
-### Package Structure
-
-```python
-# Package directory structure
-# mypackage/
-# ├── __init__.py
-# ├── module1.py
-# ├── module2.py
-# └── subpackage/
-#     ├── __init__.py
-#     └── submodule.py
-
-# __init__.py controls what gets imported
-# mypackage/__init__.py
-from .module1 import Class1
-from .module2 import Class2
-
-__all__ = ['Class1', 'Class2']
-
-# Relative imports
-from . import module1
-from .module1 import Class1
-from .. import other_package
-```
-
----
-
-## Data Model
-
-### Python Data Model
-
-```python
-# Everything in Python is an object
-# Objects have:
-# - Identity (id)
-# - Type (type)
-# - Value (data)
-
-# 查看对象属性
-x = 42
-print(id(x))      # Identity (memory address)
-print(type(x))    # Type (<class 'int'>)
-print(x)          # Value (42)
-
-# Type hierarchy
-print(type(int))       # <class 'type'>
-print(type(type))      # <class 'type'> (metaclass)
-print(type(object))    # <class 'type'>
-print(isinstance(int, type))  # True
-```
-
-### Attribute Access
-
-```python
-class Example:
-    class_attr = "class"
-
-    def __init__(self):
-        self.instance_attr = "instance"
-
-obj = Example()
-
-# Attribute lookup order:
-# 1. Data descriptors (from class and its bases)
-# 2. Instance __dict__
-# 3. Non-data descriptors (from class and its bases)
-
-# 查看__dict__
-print(obj.__dict__)  # {'instance_attr': 'instance'}
-print(Example.__dict__.keys())  # Class attributes
-
-# Descriptor protocol
-class Descriptor:
-    def __get__(self, obj, objtype=None):
-        print("Getting attribute")
-        return 42
-
-    def __set__(self, obj, value):
-        print("Setting attribute")
-
-class WithDescriptor:
-    attr = Descriptor()
-
-obj = WithDescriptor()
-print(obj.attr)  # Getting attribute, 42
-obj.attr = 10    # Setting attribute
-```
-
-### Special Methods
-
-```python
-class MyClass:
-    def __new__(cls, *args, **kwargs):
-        """Called before __init__"""
-        print("__new__ called")
-        return super().__new__(cls)
-
-    def __init__(self, value):
-        """Initialize instance"""
-        print("__init__ called")
-        self.value = value
-
-    def __del__(self):
-        """Called when garbage collected"""
-        print("__del__ called")
-
-    def __repr__(self):
-        """Unambiguous representation"""
-        return f"MyClass({self.value!r})"
-
-    def __str__(self):
-        """Readable representation"""
-        return f"MyClass: {self.value}"
-
-    def __format__(self, format_spec):
-        """Format string"""
-        return f"{self.value:{format_spec}}"
-
-    def __bytes__(self):
-        """Bytes representation"""
-        return bytes(str(self.value), 'utf-8')
-
-    def __bool__(self):
-        """Boolean truth value"""
-        return bool(self.value)
-
-    def __hash__(self):
-        """Hash value"""
-        return hash(self.value)
-
-    def __eq__(self, other):
-        """Equality comparison"""
-        return self.value == other.value
-
-# Usage
-obj = MyClass(42)
-print(repr(obj))   # MyClass(42)
-print(str(obj))    # MyClass: 42
-print(f"{obj:.2f}")  # 42.00
-print(bytes(obj))  # b'42'
-print(bool(obj))   # True
-```
-
----
-
-## Memory Architecture
-
-### Object Memory Layout
-
-```python
-import sys
-
-# Every Python object has:
-# 1. Reference count (Py_ssize_t)
-# 2. Pointer to type object
-# 3. Object-specific data
-
-# 查看对象大小
-print(sys.getsizeof(0))      # 24 bytes (int)
-print(sys.getsizeof(""))     # 49 bytes (str)
-print(sys.getsizeof([]))     # 56 bytes (list)
-print(sys.getsizeof({}))     # 64 bytes (dict)
-
-# For custom objects
 class Empty:
     pass
 
 class WithSlots:
     __slots__ = ('x', 'y')
 
-print(sys.getsizeof(Empty()))     # 48 bytes
-print(sys.getsizeof(WithSlots()))  # 40 bytes
+class WithDict:
+    def __init__(self):
+        self.x = 1
+        self.y = 2
+
+# Empty class: just PyObject_HEAD + __dict__ pointer + weakref pointer
+print(f"Empty: {sys.getsizeof(Empty())} bytes")
+
+# __slots__: no __dict__, no weakref
+print(f"WithSlots: {sys.getsizeof(WithSlots())} bytes")
+
+# With __dict__: stores attributes in dict
+print(f"WithDict: {sys.getsizeof(WithDict())} bytes")
+# But WithDict also has __dict__ overhead:
+print(f"WithDict __dict__: {sys.getsizeof(WithDict().__dict__)} bytes")
+# Total for WithDict: 56 + 64 = 120 bytes vs 48 for WithSlots
 ```
 
-### Memory Allocation
+### Production Implications
+
+- `sys.getsizeof()` only reports the object itself, not referenced objects
+- For containers, use recursive size calculation:
 
 ```python
-# Small objects (<= 512 bytes) use memory pools
-# Organized by size class (8 bytes to 512 bytes)
-
-# 查看内存分配
-import tracemalloc
-
-tracemalloc.start()
-
-# Your code
-data = [i for i in range(1000)]
-
-current, peak = tracemalloc.get_traced_memory()
-print(f"Current: {current / 1024:.2f} KB")
-print(f"Peak: {peak / 1024:.2f} KB")
-
-# Integer caching (-5 to 256)
-a = 256
-b = 256
-print(a is b)  # True (cached)
-
-a = 257
-b = 257
-print(a is b)  # False (not cached)
+def deep_getsizeof(obj, seen=None):
+    if seen is None:
+        seen = set()
+    obj_id = id(obj)
+    if obj_id in seen:
+        return 0
+    seen.add(obj_id)
+    size = sys.getsizeof(obj)
+    if isinstance(obj, dict):
+        size += sum(deep_getsizeof(k, seen) + deep_getsizeof(v, seen) for k, v in obj.items())
+    elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+        size += sum(deep_getsizeof(i, seen) for i in obj)
+    return size
 ```
+
+### Common Misconception
+
+`sys.getsizeof()` does NOT include the size of objects referenced by container types. A list of 1000 integers is reported as ~88 bytes, but the actual memory usage includes all 1000 integer objects.
 
 ---
 
-## Object Model
+## 2. Reference Counting
 
-### Type System
+### How Reference Counting Works
+
+Every object has an `ob_refcnt` field. When you create an assignment, the count increases. When an object goes out of scope or is deleted, the count decreases.
 
 ```python
-# Everything is an object
-# Types are objects too
+import sys
 
-print(type(42))        # <class 'int'>
-print(type(int))       # <class 'type'>
-print(type(type))      # <class 'type'>
+class Tracked:
+    def __init__(self, name):
+        self.name = name
+    def __del__(self):
+        print(f"  __del__ called for {self.name}")
 
-# Type hierarchy
-print(int.__bases__)   # (<class 'object'>,)
-print(object.__bases__)  # ()
+a = Tracked("A")           # refcount = 1
+print(sys.getrefcount(a))   # refcount = 2 (1 from a + 1 temporary from getrefcount)
 
-# 创建类型
-MyType = type('MyType', (object,), {'attr': 42})
-obj = MyType()
-print(obj.attr)  # 42
-print(type(obj))  # <class '__main__.MyType'>
+b = a                      # refcount = 2 (+1 from b)
+print(sys.getrefcount(a))   # 3
+
+del b                      # refcount = 1
+print(sys.getrefcount(a))   # 2
+
+# When function returns, 'a' goes out of scope, refcount drops to 0
+# __del__ is called, memory is freed
 ```
 
-### Metaclasses
+### Strong vs Weak References
 
 ```python
-class Meta(type):
-    def __new__(cls, name, bases, dict):
-        print(f"Creating class: {name}")
-        return super().__new__(cls, name, bases, dict)
+import weakref
+import sys
 
-class MyClass(metaclass=Meta):
-    pass
+class HeavyObject:
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return f"HeavyObject({self.name})"
 
-# Output: Creating class: MyClass
+obj = HeavyObject("data")
+print(f"Strong ref: {obj}")
+print(f"Refcount: {sys.getrefcount(obj) - 1}")  # -1 for getrefcount arg
+
+# Weak reference: doesn't increase refcount
+weak = weakref.ref(obj)
+print(f"Weak ref: {weak}")
+print(f"Dereferenced: {weak()}")
+print(f"Refcount after weak ref: {sys.getrefcount(obj) - 1}")  # Still 1
+
+# When strong reference is deleted, weak reference returns None
+del obj
+print(f"After deletion: {weak()}")  # None
+
+# WeakValueDictionary: auto-cleans when values are garbage collected
+cache = weakref.WeakValueDictionary()
+obj1 = HeavyObject("first")
+cache["key1"] = obj1
+print(f"Cache keys: {list(cache.keys())}")  # ['key1']
+
+del obj1
+import gc; gc.collect()
+print(f"Cache after del: {list(cache.keys())}")  # []
 ```
 
-### Descriptor Protocol
+### Production Implications
+
+- Reference counting is O(1) but has overhead: every assignment increments/decrements
+- `__del__` is unreliable: it runs when refcount hits 0, but with cycles it may run much later or never
+- Use context managers (`with` statement) instead of `__del__` for resource cleanup
+- `weakref` is essential for caches that shouldn't prevent garbage collection
+
+### Common Misconception
+
+`sys.getrefcount()` includes one temporary reference from passing the object as an argument. So `sys.getrefcount(obj)` is always 1 higher than the "actual" count.
+
+---
+
+## 3. Cyclic Garbage Collector
+
+### Why Reference Counting Isn't Enough
+
+Reference counting can't handle cycles: A references B, B references A. Both have refcount >= 1, so neither is ever freed.
 
 ```python
-class Property:
-    def __init__(self, fget):
-        self.fget = fget
+import gc
+import sys
 
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.ref = None
+    def __del__(self):
+        print(f"  __del__: {self.name}")
+
+gc.disable()  # Disable automatic GC to demonstrate
+
+a = Node("A")
+b = Node("B")
+a.ref = b
+b.ref = a  # Cycle: A -> B -> A
+
+del a
+del b
+
+# Even after del, objects still exist because of the cycle
+print("After del a, b:")
+print(f"  gc.garbage: {len(gc.garbage)}")
+print(f"  gc.get_objects(): {len(gc.get_objects())}")
+
+gc.collect()  # Force collection
+print("After gc.collect():")
+# __del__ is called for both nodes
+gc.enable()
+```
+
+### Generational GC
+
+CPython's GC uses three generations. Objects start in generation 0. Surviving collections are promoted to generation 1, then generation 2.
+
+```python
+import gc
+
+# Default thresholds: (700, 10, 10)
+# Generation 0 triggers at 700 new objects
+# Generation 1 triggers at 10 gen-0 collections
+# Generation 2 triggers at 10 gen-1 collections
+
+print(f"Thresholds: {gc.get_threshold()}")   # (700, 10, 10)
+print(f"Counts: {gc.get_count()}")             # (current counts per generation)
+print(f"Stats: {gc.get_stats()}")              # Detailed statistics
+
+# Tune GC for your workload
+gc.set_threshold(1000, 15, 15)  # Less frequent collections
+
+# Disable GC for latency-sensitive sections
+gc.disable()
+# ... critical section ...
+gc.enable()
+gc.collect()  # Force collection after re-enabling
+```
+
+### GC Debugging
+
+```python
+import gc
+
+# Enable debug output
+gc.set_debug(gc.DEBUG_STATS)
+gc.set_debug(gc.DEBUG_COLLECTABLE)
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+
+gc.collect()
+print(f"Garbage objects: {len(gc.garbage)}")
+
+# Get objects in a generation
+gen0_objects = gc.get_objects(generation=0)
+print(f"Generation 0 objects: {len(gen0_objects)}")
+
+# Find referrers to an object
+obj = [1, 2, 3]
+referrers = gc.get_referrers(obj)
+print(f"Objects referencing obj: {len(referrers)}")
+```
+
+### Production Implications
+
+- In long-running services, monitor `gc.get_stats()` for unexpected collection frequency
+- `gc.disable()` + manual `gc.collect()` can reduce latency spikes in real-time systems
+- Circular references with `__del__` methods are uncollectable (stored in `gc.garbage`)
+- Use `weakref` instead of creating cycles when possible
+
+---
+
+## 4. Descriptor Protocol
+
+### How Descriptors Work
+
+A descriptor is any object with `__get__`, `__set__`, or `__delete__`. Python's attribute access is built on descriptors.
+
+```python
+class VerboseDescriptor:
+    """A data descriptor that logs access."""
+    def __set_name__(self, owner, name):
+        self.name = name
     def __get__(self, obj, objtype=None):
-        return self.fget(obj)
+        print(f"  Getting {self.name}")
+        return obj.__dict__.get(self.name, "default")
+    def __set__(self, obj, value):
+        print(f"  Setting {self.name} = {value}")
+        obj.__dict__[self.name] = value
+    def __delete__(self, obj):
+        print(f"  Deleting {self.name}")
+        del obj.__dict__[self.name]
 
 class MyClass:
-    @Property
-    def value(self):
-        return 42
+    x = VerboseDescriptor()
+    y = VerboseDescriptor()
 
 obj = MyClass()
-print(obj.value)  # 42
+obj.x = 42        # Setting x = 42
+print(obj.x)      # Getting x -> 42
+del obj.x         # Deleting x
+print(obj.x)      # Getting x -> default
 ```
+
+### Data Descriptors vs Non-Data Descriptors
+
+```python
+# Data descriptor: has __set__ or __delete__ (takes priority over instance dict)
+# Non-data descriptor: only has __get__ (instance dict takes priority)
+
+class DataDescriptor:
+    def __get__(self, obj, objtype=None):
+        return "from data descriptor"
+    def __set__(self, obj, value):
+        pass
+
+class NonDataDescriptor:
+    def __get__(self, obj, objtype=None):
+        return "from non-data descriptor"
+
+class Test:
+    data = DataDescriptor()
+    nond = NonDataDescriptor()
+
+obj = Test()
+
+# Data descriptor: instance dict can't override
+obj.__dict__['data'] = 'from instance dict'
+print(obj.data)  # "from data descriptor"
+
+# Non-data descriptor: instance dict overrides
+obj.__dict__['nond'] = 'from instance dict'
+print(obj.nond)  # "from instance dict"
+```
+
+### How Properties Work Internally
+
+```python
+# property is a data descriptor
+# Simplified CPython implementation:
+class property:
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        self.fget = fget
+        self.fset = fset
+        self.fdel = fdel
+        self.__doc__ = doc or (fget.__doc__ if fget else None)
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        if self.fget is None:
+            raise AttributeError("unreadable attribute")
+        return self.fget(obj)
+
+    def __set__(self, obj, value):
+        if self.fset is None:
+            raise AttributeError("can't set attribute")
+        self.fset(obj, value)
+
+    def __delete__(self, obj):
+        if self.fdel is None:
+            raise AttributeError("can't delete attribute")
+        self.fdel(obj)
+
+class Circle:
+    def __init__(self, radius):
+        self._radius = radius
+
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, value):
+        if value < 0:
+            raise ValueError("radius must be non-negative")
+        self._radius = value
+```
+
+### How classmethod/staticmethod Work
+
+```python
+# classmethod binds the class; staticmethod returns the function unchanged
+
+class classmethod:
+    def __init__(self, func):
+        self.func = func
+    def __get__(self, obj, objtype=None):
+        if objtype is None:
+            objtype = type(obj)
+        def method(*args, **kwargs):
+            return self.func(objtype, *args, **kwargs)
+        return method
+
+class staticmethod:
+    def __init__(self, func):
+        self.func = func
+    def __get__(self, obj, objtype=None):
+        return self.func
+
+class Example:
+    @classmethod
+    def from_string(cls, s):
+        return cls(int(s))
+
+    @staticmethod
+    def validate(x):
+        return x > 0
+
+# classmethod receives the class as first argument
+e = Example.from_string("42")  # cls = Example
+
+# staticmethod receives nothing special
+Example.validate(42)  # Just a regular function call
+```
+
+### Production Implications
+
+- Understanding descriptors explains: `property`, `classmethod`, `staticmethod`, `super()`, and bound methods
+- Data descriptors override instance dict; non-data descriptors don't
+- This is why methods defined in a class are overridden by instance attributes of the same name (non-data descriptor)
+- `__slots__` works because it creates data descriptors for each slot
 
 ---
 
-## Summary
+## 5. Method Resolution Order (MRO)
 
-Python internals:
+### The C3 Linearization Algorithm
 
-- **CPython** is the reference implementation
-- **Bytecode** is compiled from source code
-- **GIL** limits true parallelism for CPU-bound tasks
-- **Import system** is extensible via finders and loaders
-- **Data model** defines how objects behave
-- **Memory architecture** uses pools and generations
-- Understanding internals helps write better Python code
+MRO determines the order in which base classes are searched. Python 3 uses C3 linearization.
+
+```python
+class A:
+    def hello(self):
+        return "A"
+
+class B(A):
+    def hello(self):
+        return "B"
+
+class C(A):
+    def hello(self):
+        return "C"
+
+class D(B, C):
+    pass
+
+# MRO: D -> B -> C -> A -> object
+print(D.__mro__)
+# (<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)
+
+print(D().hello())  # B (first in MRO with hello)
+
+# Verify the order
+print([cls.__name__ for cls in D.__mro__])  # ['D', 'B', 'C', 'A', 'object']
+```
+
+### Diamond Inheritance
+
+```python
+class Base:
+    def __init__(self):
+        print("Base.__init__")
+
+class Left(Base):
+    def __init__(self):
+        super().__init__()
+        print("Left.__init__")
+
+class Right(Base):
+    def __init__(self):
+        super().__init__()
+        print("Right.__init__")
+
+class Diamond(Left, Right):
+    def __init__(self):
+        super().__init__()
+        print("Diamond.__init__")
+
+# MRO ensures Base.__init__ is called only once
+print("MRO:", [c.__name__ for c in Diamond.__mro__])
+# MRO: ['Diamond', 'Left', 'Right', 'Base', 'object']
+
+d = Diamond()
+# Base.__init__
+# Left.__init__
+# Right.__init__
+# Diamond.__init__
+```
+
+### super() and MRO
+
+```python
+# super() doesn't mean "parent class"
+# It means "next class in the MRO"
+
+class A:
+    def process(self):
+        return "A"
+
+class B(A):
+    def process(self):
+        return f"B -> {super().process()}"
+
+class C(A):
+    def process(self):
+        return f"C -> {super().process()}"
+
+class D(B, C):
+    def process(self):
+        return f"D -> {super().process()}"
+
+# super() in D calls B (next in MRO)
+# super() in B calls C (next in MRO)
+# super() in C calls A (next in MRO)
+print(D().process())  # D -> B -> C -> A
+```
+
+### Production Implications
+
+- Use `inspect.getmro(D)` or `D.__mro__` to debug inheritance issues
+- `super()` is cooperative: it calls the next class in MRO, not the parent
+- In multiple inheritance, design classes to be cooperative: accept `*args, **kwargs` and pass them through
+- MRO errors at class definition time catch design issues early
+
+---
+
+## 6. Import System
+
+### The Import Machinery
+
+```python
+import sys
+import importlib
+
+# Import pipeline:
+# 1. __import__(name) is called
+# 2. sys.meta_path finders are checked
+# 3. Finder returns a ModuleSpec
+# 4. Loader executes the module
+# 5. Module is cached in sys.modules
+
+print("Meta path finders:")
+for finder in sys.meta_path:
+    print(f"  {finder}")
+
+print(f"\nPath hooks:")
+for hook in sys.path_hooks:
+    print(f"  {hook}")
+
+# sys.modules is the cache
+print(f"\nCached modules: {len(sys.modules)}")
+print(f"'os' in sys.modules: {'os' in sys.modules}")
+```
+
+### Custom Finder and Loader
+
+```python
+import sys
+import types
+import importlib.abc
+
+class SimpleFinder(importlib.abc.MetaPathFinder):
+    def find_module(self, fullname, path=None):
+        if fullname == "fake_module":
+            return SimpleLoader()
+        return None
+
+class SimpleLoader(importlib.abc.Loader):
+    def load_module(self, fullname):
+        if fullname in sys.modules:
+            return sys.modules[fullname]
+        module = types.ModuleType(fullname)
+        module.__file__ = f"<fake {fullname}>"
+        module.x = 42
+        sys.modules[fullname] = module
+        return module
+
+# Install custom finder
+sys.meta_path.insert(0, SimpleFinder())
+
+# Now we can import fake_module
+import fake_module
+print(fake_module.x)  # 42
+
+# Clean up
+del sys.modules["fake_module"]
+sys.meta_path.pop(0)
+```
+
+### .pyc Files and __pycache__
+
+```python
+import importlib
+
+# Python caches bytecode in __pycache__/
+# .cpython-311.pyc for Python 3.11
+
+# Check if a module has cached bytecode
+spec = importlib.util.find_spec("os")
+print(f"Module spec: {spec}")
+print(f"Origin: {spec.origin}")
+
+# The import timestamp in .pyc files prevents stale bytecode
+```
+
+### Production Implications
+
+- Circular imports happen when module A imports B which imports A
+- Fix circular imports: move imports inside functions, use late binding, restructure code
+- Use lazy imports (`importlib.import_module()`) for startup time optimization
+- `sys.modules` cache means importing a module twice doesn't re-execute it
+- Use `importlib.reload()` in development, but not in production
+
+---
+
+## 7. Bytecode Execution
+
+### Disassembling Code
+
+```python
+import dis
+
+def example(x, y):
+    z = x + y
+    if z > 10:
+        return "big"
+    return "small"
+
+# Full disassembly
+dis.dis(example)
+
+# Structured instruction access
+for instr in dis.get_instructions(example):
+    print(f"{instr.offset:4d} {instr.opname:20s} {instr.argval!r}")
+
+# Output:
+#    0 LOAD_FAST                0 (x)
+#    2 LOAD_FAST                1 (y)
+#    4 BINARY_ADD
+#    6 STORE_FAST               2 (z)
+#    8 LOAD_FAST                2 (z)
+#   10 LOAD_CONST               1 (10)
+#   12 COMPARE_OP               4 (>)
+#   14 POP_JUMP_IF_FALSE       20
+#   16 LOAD_CONST               2 ('big')
+#   18 RETURN_VALUE
+#   20 LOAD_CONST               3 ('small')
+#   22 RETURN_VALUE
+```
+
+### Common Bytecodes
+
+```python
+import dis
+
+# Variable access
+def variable_access():
+    x = 10        # LOAD_CONST 10, STORE_FAST x
+    y = x         # LOAD_FAST x, STORE_FAST y
+    return y      # LOAD_FAST y, RETURN_VALUE
+
+# Stack operations
+def stack_ops():
+    a = 1         # LOAD_CONST, STORE_FAST
+    b = 2         # LOAD_CONST, STORE_FAST
+    c = a + b     # LOAD_FAST, LOAD_FAST, BINARY_ADD, STORE_FAST
+    return c
+
+# Function calls
+def function_calls():
+    result = len([1, 2, 3])  # LOAD_CONST, CALL_FUNCTION, STORE_FAST
+    return result
+
+# Control flow
+def control_flow(x):
+    if x > 0:           # LOAD_FAST, LOAD_CONST, COMPARE_OP, POP_JUMP_IF_FALSE
+        return "positive"  # LOAD_CONST, RETURN_VALUE
+    return "non-positive"
+
+# Loop
+def loop_example():
+    total = 0
+    for i in range(10):   # FOR_ITER, JUMP_ABSOLUTE
+        total += i        # LOAD_FAST, LOAD_FAST, BINARY_ADD, STORE_FAST
+    return total
+
+for func in [variable_access, stack_ops, function_calls, control_flow, loop_example]:
+    print(f"\n=== {func.__name__} ===")
+    dis.dis(func)
+```
+
+### Bytecode Optimization
+
+```python
+import dis
+
+# Constant folding
+def constant_fold():
+    return 2 + 3  # Compiled as LOAD_CONST 5
+
+# Dead code elimination
+def dead_code():
+    return 1
+    print("never executed")  # Not in bytecode
+
+# String concatenation
+def string_concat():
+    return "hello" + " " + "world"  # May be folded to "hello world"
+
+for func in [constant_fold, dead_code, string_concat]:
+    print(f"\n=== {func.__name__} ===")
+    dis.dis(func)
+```
+
+### Production Implications
+
+- Use `dis.dis()` to debug performance-critical code paths
+- Fewer bytecode instructions = faster execution
+- List comprehensions generate faster bytecode than equivalent for loops
+- Use `cProfile` to identify hotspots, then `dis.dis()` to understand why
+
+---
+
+## 8. Frame Objects
+
+### Frame Structure
+
+```python
+import sys
+
+def outer():
+    x = 10
+    def inner():
+        y = 20
+        frame = sys._getframe(0)  # Current frame
+        print(f"Frame: {frame}")
+        print(f"  Code: {frame.f_code.co_name}")
+        print(f"  Line: {frame.f_lineno}")
+        print(f"  Locals: {frame.f_locals}")
+        print(f"  Back: {frame.f_back}")
+        return frame
+    return inner()
+
+outer()
+```
+
+### Frame Chaining
+
+```python
+import sys
+
+def level3():
+    return sys._getframe(2)
+
+def level2():
+    return level3()
+
+def level1():
+    frame = level2()
+    print(f"Current: {sys._getframe(0).f_code.co_name}")
+    print(f"Callee:  {frame.f_code.co_name}")
+    print(f"Caller:  {frame.f_back.f_code.co_name}")
+    return frame
+
+level1()
+```
+
+### Traceback Objects
+
+```python
+import traceback
+import sys
+
+def error_function():
+    raise ValueError("something went wrong")
+
+def caller():
+    try:
+        error_function()
+    except Exception:
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        print(f"Exception type: {exc_type.__name__}")
+        print(f"Exception value: {exc_value}")
+        print(f"Traceback frames:")
+        tb = exc_tb
+        while tb:
+            print(f"  {tb.tb_frame.f_code.co_name} at line {tb.tb_lineno}")
+            tb = tb.tb_next
+
+caller()
+```
+
+### Frame Introspection
+
+```python
+import sys
+
+def decorator(func):
+    def wrapper(*args, **kwargs):
+        frame = sys._getframe(1)
+        print(f"Calling {func.__name__} from {frame.f_code.co_name}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@decorator
+def target():
+    return 42
+
+target()  # Calling target from <module>
+```
+
+### Production Implications
+
+- `sys._getframe()` is for debugging only; avoid in production
+- Tracebacks are chains of frame objects; `traceback.format_exception()` converts them to strings
+- Frame objects hold all local variables; memory-intensive in recursive functions
+- Use `logging` module instead of frame inspection for production debugging
+
+---
+
+## 9. GIL Scheduler
+
+### How the GIL Works
+
+```python
+import sys
+import threading
+import time
+
+# The GIL is released every N bytecodes (default: switch interval)
+print(f"Switch interval: {sys.getswitchinterval()} seconds")  # 0.005 (5ms)
+
+# Set switch interval (lower = more responsive, higher = more throughput)
+sys.setswitchinterval(0.001)  # 1ms
+
+# The GIL is released during:
+# 1. I/O operations (file, network, sleep)
+# 2. C extensions that explicitly release it
+# 3. Bytecode execution boundary (every N bytecodes)
+
+import concurrent.futures
+
+def cpu_bound(n):
+    total = 0
+    for i in range(n):
+        total += i
+    return total
+
+start = time.time()
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(cpu_bound, 10**7) for _ in range(4)]
+    results = [f.result() for f in futures]
+thread_time = time.time() - start
+
+start = time.time()
+with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(cpu_bound, 10**7) for _ in range(4)]
+    results = [f.result() for f in futures]
+process_time = time.time() - start
+
+print(f"Threads: {thread_time:.2f}s (limited by GIL)")
+print(f"Processes: {process_time:.2f}s (true parallelism)")
+```
+
+### When GIL Is Released
+
+```python
+import time
+import threading
+
+# I/O releases GIL
+def io_bound():
+    time.sleep(1)
+    return "done"
+
+# Threading works for I/O-bound tasks
+start = time.time()
+threads = [threading.Thread(target=io_bound) for _ in range(4)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+print(f"I/O bound with threads: {time.time() - start:.2f}s")  # ~1s, not ~4s
+
+# NumPy releases GIL for array operations
+# import numpy as np
+# def numpy_operation():
+#     a = np.random.rand(1000, 1000)
+#     b = np.random.rand(1000, 1000)
+#     return np.dot(a, b)  # GIL released during C computation
+```
+
+### Choosing Concurrency Model
+
+```
+CPU-bound + pure Python:    Use multiprocessing
+CPU-bound + NumPy/C ext:    Use threading (GIL released)
+I/O-bound:                  Use threading or asyncio
+Mixed:                      multiprocessing for CPU, asyncio/threading for I/O
+```
+
+### Production Implications
+
+- `sys.setswitchinterval()` can be tuned for latency-sensitive applications
+- Use `multiprocessing` for CPU-bound work, not `threading`
+- Use `threading` or `asyncio` for I/O-bound work
+- Free-threaded Python (PEP 703) removes GIL in Python 3.13+ (experimental)
+
+---
+
+## 10. Vectorcall (Python 3.8+)
+
+### The Problem Vectorcall Solves
+
+```python
+# Before vectorcall, function calls used PyObject_Call:
+# - Created a tuple for positional args
+# - Created a dict for keyword args
+# - Called the function
+# - Deallocated tuple and dict
+#
+# This created overhead for every function call
+#
+# Vectorcall passes args as a C array + kwargs dict
+# Avoids creating tuple/dict wrapper objects
+
+def example(a, b, c):
+    return a + b + c
+
+# The old calling convention:
+example(1, 2, 3)  # Internally: args=(1,2,3), kwargs={}
+
+# Vectorcall (internal, not directly visible in Python):
+# Calls C function with: (callable, args_array, nargsf, kwargs_dict)
+```
+
+### Performance Impact
+
+```python
+import timeit
+
+def simple_func(a, b):
+    return a + b
+
+# Vectorcall reduces overhead for C functions
+# In benchmarks, vectorcall is ~10-30% faster for C functions
+
+t1 = timeit.timeit('simple_func(1, 2)', globals=globals(), number=1000000)
+print(f"Time: {t1:.3f}s")
+
+# For Python functions, the overhead is similar
+# Vectorcall mainly benefits C-implemented functions
+```
+
+### Production Implications
+
+- Vectorcall is transparent to Python code; it's a CPython optimization
+- If writing C extensions, implement `tp_vectorcall_offset` for speed
+- Python functions don't benefit as much as C functions
+- The optimization is automatic; no code changes needed
+
+---
+
+## 11. Specialization (Python 3.11+)
+
+### Adaptive Interpreter
+
+```python
+import sys
+
+# Python 3.11+ specializes bytecodes at runtime
+# The interpreter starts with generic bytecodes
+# After a few executions, it specializes based on actual types
+
+# Example: BINARY_OP
+# First execution: BINARY_OP (generic)
+# After specialization: BINARY_OP_ADD_INT, BINARY_OP_ADD_FLOAT, etc.
+
+import timeit
+
+def add_ints():
+    a = 1
+    b = 2
+    return a + b
+
+def add_floats():
+    a = 1.0
+    b = 2.0
+    return a + b
+
+def add_mixed():
+    a = 1
+    b = 2.0
+    return a + b
+
+# Specialized int+int is faster than generic
+t_int = timeit.timeit(add_ints, number=10000000)
+t_float = timeit.timeit(add_floats, number=10000000)
+t_mixed = timeit.timeit(add_mixed, number=10000000)
+
+print(f"int+int: {t_int:.3f}s")
+print(f"float+float: {t_float:.3f}s")
+print(f"int+float: {t_mixed:.3f}s")
+```
+
+### Common Specializations
+
+```
+LOAD_ATTR becomes:
+  LOAD_ATTR_INSTANCE_VALUE    (attribute in instance __dict__)
+  LOAD_ATTR_SLOT              (attribute in __slots__)
+  LOAD_ATTR_CLASS             (class attribute)
+  LOAD_ATTR_MODULE            (module attribute)
+
+BINARY_OP becomes:
+  BINARY_OP_ADD_INT
+  BINARY_OP_ADD_FLOAT
+  BINARY_OP_MULTIPLY_INT
+  etc.
+
+LOAD_GLOBAL becomes:
+  LOAD_GLOBAL_MODULE          (module attribute)
+  LOAD_GLOBAL_BUILTIN         (built-in attribute)
+
+COMPARE_OP becomes:
+  COMPARE_OP_INT
+  COMPARE_OP_FLOAT
+  COMPARE_OP_STR
+```
+
+### Production Implications
+
+- Python 3.11+ is 10-60% faster than 3.10 due to specialization
+- Write type-homogeneous code for best specialization (don't mix int/float in same function)
+- The adaptive interpreter monitors hot loops and specializes aggressively
+- Deoptimization happens when assumptions are violated (type changes)
+
+---
+
+## One-Minute Revision
+
+| Topic | Key Insight | Production Action |
+|-------|------------|-------------------|
+| Memory Layout | Every object: ob_refcnt + ob_type. Containers don't report referenced object sizes | Use `__slots__` for high-instance classes; use `deep_getsizeof` for accurate measurement |
+| Reference Counting | O(1) but overhead per assignment. `__del__` is unreliable | Use context managers, not `__del__`; use `weakref` for caches |
+| Cyclic GC | Three generations; cycles need GC to collect; `__del__` cycles are uncollectable | Monitor `gc.get_stats()`; `gc.disable()` for latency-sensitive sections |
+| Descriptor Protocol | Data descriptors (have `__set__`) override instance dict; non-data don't | Explains `property`, `classmethod`, `staticmethod`, `super()`, bound methods |
+| MRO | C3 linearization; children before parents; left-to-right | Use `D.__mro__` to debug; `super()` calls next in MRO, not parent |
+| Import System | Finders -> Loaders -> `sys.modules` cache -> execute module | Lazy imports for startup; avoid circular imports; don't `reload()` in production |
+| Bytecode | Stack-based; `dis.dis()` for inspection; constant folding optimization | Fewer instructions = faster; use `cProfile` then `dis` for hotspots |
+| Frame Objects | Each call = frame; `sys._getframe()` for introspection | Don't use in production; use `logging` instead |
+| GIL | Released every 5ms, during I/O, during C extensions | `multiprocessing` for CPU-bound; `threading`/`asyncio` for I/O-bound |
+| Vectorcall | C array args instead of tuple/dict; ~10-30% faster for C functions | Automatic; implement in C extensions via `tp_vectorcall_offset` |
+| Specialization | 3.11+ specializes bytecodes based on runtime types | Write type-homogeneous code; 10-60% faster than 3.10 |
+
+## Common Myths
+
+1. **"Python is interpreted"** — CPython compiles to bytecode first; the PVM executes bytecode
+2. **"GIL prevents all parallelism"** — C extensions release GIL; multiprocessing bypasses it entirely
+3. **"Import is always fast"** — First import executes module code; use lazy imports for startup time
+4. **"All objects are on the heap"** — Small ints and strings are interned; tuples may be optimized
+5. **"CPython is Python"** — CPython is one implementation; PyPy, Jython, GraalPy exist
+6. **"Bytecode is optimized"** — Python does constant folding and dead code elimination, but no JIT
+7. **"super() calls parent"** — super() calls the next class in MRO, not the parent
+8. **"sys.getsizeof() is accurate for containers"** — It only measures the container, not referenced objects
+9. **"Threads are always slower than processes"** — For I/O-bound, threads are fine; for CPU-bound, use processes
+10. **"Python 3.11 is just a bugfix release"** — The specializing adaptive interpreter makes it 10-60% faster
 
 ## Production Checklist
 
@@ -571,35 +1108,8 @@ Python internals:
 - [ ] Monitor integer caching behavior (`is` vs `==` for small ints)
 - [ ] Avoid `__del__` in production; rely on context managers and explicit cleanup
 - [ ] Use `tracemalloc` to debug memory leaks in long-running processes
-- [ ] Understand attribute lookup order (data descriptors → instance dict → non-data descriptors)
-
-## Maturity Levels
-
-| Level | Description |
-|-------|-------------|
-| **Beginner** | Understands Python compiles to bytecode; knows GIL limits CPU-bound threading |
-| **Intermediate** | Can read `dis.dis()` output; uses `sys.getsizeof()` and `sys.getrefcount()` |
-| **Advanced** | Writes C extensions; custom import hooks; tunes GIL switch interval |
-| **Expert** | Hacks CPython internals; implements custom bytecode optimizations; contributes to CPython |
-
-## Common Myths
-
-1. **"Python is interpreted"** — CPython compiles to bytecode first; the PVM executes bytecode
-2. **"GIL prevents all parallelism"** — C extensions release GIL; multiprocessing bypasses it entirely
-3. **"Import is always fast"** — First import executes module code; use lazy imports for startup time
-4. **"All objects are on the heap"** — Small ints and strings are interned; tuples may be optimized
-5. **"CPython is Python"** — CPython is one implementation; Jython, PyPy, GraalPy exist
-6. **"Bytecode is optimized"** — Python does constant folding and dead code elimination, but no JIT
-
-## One-Minute Revision
-
-- **Compilation pipeline**: Source → Tokens → AST → Bytecode → PVM execution
-- **Bytecode**: Stack-based instructions; `dis.dis()` for disassembly; cached per module
-- **GIL**: Mutex; one thread executes bytecode at a time; released during I/O and C extensions
-- **Import system**: Finders locate modules; loaders execute code; `sys.modules` caches results
-- **Data model**: Dunder methods define object behavior; attribute lookup follows descriptor protocol
-- **Memory**: Reference counting (primary) + generational GC (cyclic); memory pools for small objects
-- **Object model**: Everything is an object; types are objects too; metaclasses control type creation
-- **Integer caching**: -5 to 256 are cached; `is` works for cached values; use `==` for comparison
-- **String interning**: Short strings interned; use `sys.intern()` for repeated lookups
-- **C extensions**: Can release GIL; NumPy uses them for vectorized parallel operations
+- [ ] Understand attribute lookup order (data descriptors -> instance dict -> non-data descriptors)
+- [ ] Use `gc.get_stats()` to monitor GC behavior in production
+- [ ] Write type-homogeneous code for Python 3.11+ specialization benefits
+- [ ] Use `weakref` for caches to avoid preventing garbage collection
+- [ ] Prefer `multiprocessing` for CPU-bound, `threading`/`asyncio` for I/O-bound

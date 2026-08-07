@@ -1,6 +1,20 @@
 # Advanced Python
 
-Powerful language features — decorators, generators, context managers, comprehensions, and lambda functions.
+## Why Advanced Features Matter
+
+Every Python application eventually needs to handle cross-cutting concerns, process large datasets efficiently, manage resources safely, and write concise, expressive code. Advanced Python features — decorators, generators, context managers, comprehensions, and lambda functions — provide elegant solutions to these challenges. Without them, you'd write verbose, repetitive code that's hard to maintain.
+
+Without these advanced features, you'd have to implement resource management manually, write loops for every data transformation, and duplicate boilerplate code across functions. That's why these features exist — they let you write Pythonic code that's concise, efficient, and leverages the language's full expressive power.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Write and compose decorators for cross-cutting concerns
+- Use generators for memory-efficient iteration
+- Create custom context managers for resource management
+- Write concise comprehensions for data transformation
+- Apply lambda functions with map, filter, and reduce
 
 ## Topics
 

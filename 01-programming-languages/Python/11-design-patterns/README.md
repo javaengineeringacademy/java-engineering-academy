@@ -1,6 +1,20 @@
 # Pythonic Design Patterns
 
-Python's dynamic nature and first-class functions enable unique implementations of classic GoF patterns. Many traditional patterns become simpler or unnecessary in Python.
+## Why Design Patterns Matter
+
+Every growing codebase faces recurring design problems — how to create objects efficiently, how to extend behavior without modifying existing code, how to coordinate complex workflows. Design patterns provide proven solutions to these problems, and Python's dynamic nature makes many patterns simpler or unnecessary compared to statically-typed languages. Without patterns, you'd reinvent solutions to problems that have already been solved.
+
+Without design patterns, you'd write code that's hard to extend, test, and maintain as requirements evolve. That's why patterns exist — they provide a shared vocabulary for engineers, time-tested solutions to common problems, and architectural frameworks that make codebases more predictable and maintainable.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Recognize when classic GoF patterns apply to Python problems
+- Implement patterns using Python's unique features (decorators, metaclasses, duck typing)
+- Choose between pattern implementations based on trade-offs
+- Avoid over-engineering by knowing when patterns are unnecessary
+- Communicate design decisions using a shared vocabulary
 
 ## Pattern Categories
 

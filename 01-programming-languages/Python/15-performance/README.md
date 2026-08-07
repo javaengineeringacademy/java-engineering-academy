@@ -1,6 +1,20 @@
 # Python Performance
 
-A detailed guide to Python performance optimization, profiling, and benchmarking.
+## Why Performance Matters
+
+Every Python application eventually faces performance constraints — slow APIs, memory-hungry processes, or unresponsive user interfaces. Understanding how to profile, benchmark, and optimize Python code is critical for building applications that scale and meet user expectations. Without performance knowledge, you'd optimize blindly, waste time on non-bottlenecks, and miss the improvements that actually matter.
+
+Without performance optimization skills, you'd either accept slow code as "good enough" or make changes that don't address the real bottlenecks. That's why performance optimization exists — it provides the tools and techniques to measure, analyze, and improve your code's speed and resource usage systematically, ensuring your applications can handle real-world load.
+
+## What You'll Learn
+
+By the end of this module, you'll be able to:
+
+- Profile Python code to identify performance bottlenecks
+- Write meaningful benchmarks that measure real improvements
+- Apply optimization techniques from algorithmic to system-level
+- Leverage C extensions, Cython, and NumPy for performance-critical code
+- Make informed decisions about when to optimize and when to accept trade-offs
 
 ## Table of Contents
 

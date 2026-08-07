@@ -2,19 +2,21 @@
 
 > **If you can't see it, you can't fix it.**
 
-## What
+## Why Logging Matters
 
-Python's `logging` module provides a flexible framework for emitting log messages from your application. It's built on four core components: Loggers (where logs originate), Handlers (where logs go), Formatters (how logs look), and Filters (what gets through).
+Every production application needs visibility into its behavior — what's happening, when, and why. Python's `logging` module provides a flexible framework for emitting log messages with context like timestamps, thread IDs, and request traces. Without proper logging, you'd debug production issues blind, relying on guesswork instead of evidence.
 
-Structured logging goes beyond plain text — it embeds machine-readable data in your logs, making them searchable, analyzable, and actionable at scale.
+Without logging, you'd have no audit trail, no monitoring data, and no way to understand your application's behavior in production. That's why logging exists — it provides the observability foundation for debugging, monitoring, compliance, and understanding how your application behaves under real-world conditions.
 
-## Why
+## What You'll Learn
 
-- **Print statements die in production.** Logging persists, rotates, and ships to central systems.
-- **Debugging requires context.** Logs carry timestamps, thread IDs, request traces — print doesn't.
-- **Monitoring depends on logs.** Alerting, metrics extraction, and dashboards all start with proper logging.
-- **Log levels are a feature.** Debug in dev, info in prod, error for alerts — one framework, multiple views.
-- **Compliance often mandates logging.** Audit trails, access logs, error logs — regulations require them.
+By the end of this module, you'll be able to:
+
+- Configure Python's logging module with handlers, formatters, and filters
+- Use log levels appropriately to control verbosity
+- Implement structured logging for machine-readable, searchable logs
+- Set up logging for production environments with rotation and aggregation
+- Integrate logging with monitoring and alerting systems
 
 ## When
 
