@@ -24,6 +24,12 @@ if [ $? -ne 0 ]; then
     TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
 fi
 
+echo -e "\n${YELLOW}--- Python Validation ---${NC}"
+bash "$SCRIPT_DIR/validate-python.sh"
+if [ $? -ne 0 ]; then
+    TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+fi
+
 echo -e "\n${YELLOW}--- Structure Validation ---${NC}"
 bash "$SCRIPT_DIR/validate-structure.sh"
 if [ $? -ne 0 ]; then
