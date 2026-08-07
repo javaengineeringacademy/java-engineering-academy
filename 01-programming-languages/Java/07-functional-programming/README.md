@@ -4,14 +4,14 @@
 > **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
 
 ## Overview
-The Java Stream API provides a functional approach to processing collections of objects. Streams support operations like filter, map, reduce, and aggregate to process data declaratively, enabling parallel processing and lazy evaluation.
+Processing collections with loops and mutable accumulators produces verbose, error-prone code that's hard to parallelize. The Stream API lets you process data declaratively — filtering, transforming, and aggregating with method chaining — while enabling lazy evaluation and automatic parallelization. This module covers streams, lambda expressions, functional interfaces, and the Collectors API.
 
 ## Learning Objectives
-- Master Stream creation and intermediate operations
-- Understand terminal operations and lazy evaluation
-- Use Collectors for complex aggregations
-- Apply parallel streams for performance
-- Build custom stream operations
+- Build stream pipelines that filter, transform, and aggregate data declaratively
+- Explain how lazy evaluation defers work until a terminal operation triggers it
+- Choose the right Collector for grouping, joining, reducing, and partitioning data
+- Decide when parallel streams improve performance and when they hurt it
+- Write custom collectors and stream operations for specialized aggregation needs
 
 ## Prerequisites
 - Collections framework knowledge

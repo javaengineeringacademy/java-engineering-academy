@@ -4,16 +4,15 @@
 > **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
 
 ## Overview
-The Java Collections Framework provides interfaces, implementations, and algorithms for working with collections of objects. It includes List, Set, Queue, and Map interfaces with various implementations.
+Almost every Java application needs to store and manipulate groups of objects efficiently. Arrays are fixed-size and lack built-in methods for common operations. The Collections Framework gives you standard data structures — List, Set, Queue, and Map — with proven implementations and algorithms, so you don't have to reinvent them.
 
 ## Learning Objectives
-- Master Collection interfaces
-- Understand implementation differences
-- Use appropriate collections
-- Apply algorithms and utilities
-- Handle thread-safe collections
-- Master all iteration methods
-- Use Lambda expressions and Stream API
+- Choose the right collection type based on access patterns, ordering, and thread-safety needs
+- Explain why similar-looking collections (ArrayList vs LinkedList) behave differently
+- Select the best data structure based on performance requirements
+- Iterate collections safely using iterators, for-each, forEach, and Stream API
+- Build thread-safe collections using ConcurrentHashMap and concurrent utilities
+- Apply Collectors to transform, group, and aggregate stream data
 
 ## Prerequisites
 - OOP concepts

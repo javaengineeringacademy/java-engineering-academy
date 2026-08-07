@@ -4,7 +4,7 @@
 > **Reading:** 20 min | **Practice:** 30 min | **Total:** 50 min
 
 ## Overview
-Master Java's exception handling mechanism to build reliable, fault-tolerant applications. Learn to anticipate, catch, and gracefully handle runtime errors while maintaining program stability. This detailed module covers everything from basic try-catch blocks to advanced enterprise patterns like circuit breakers and retry mechanisms.
+Real applications inevitably encounter failures — invalid input, network timeouts, unavailable resources. Without proper exception handling, programs crash unpredictably and leave resources leaking. Java's exception handling mechanism lets you separate error-handling logic from normal code, propagate errors up the call stack, and clean up resources reliably. This module covers everything from basic try-catch blocks to advanced enterprise patterns like circuit breakers and retry mechanisms.
 
 ## Why This Concept Exists
 Without proper exception handling, programs crash unpredictably on invalid input, network failures, or resource unavailability. Exception handling provides a structured way to:
@@ -33,14 +33,12 @@ Without proper exception handling, programs crash unpredictably on invalid input
 
 By the end of this module, you will be able to:
 
-- Understand the exception hierarchy and types in Java
-- Implement proper try-catch-finally blocks
-- Use throw and throws keywords effectively
-- Create and use custom exceptions
-- Apply best practices for exception handling
-- Design fault-tolerant real-world applications
-- Implement retry and circuit breaker patterns
-- Build detailed exception handling frameworks
+- Distinguish between checked and unchecked exceptions and choose the right type
+- Write try-catch-finally blocks that handle errors without hiding them
+- Create custom exceptions that carry meaningful context for debugging
+- Design retry and circuit breaker patterns for fault-tolerant systems
+- Prevent resource leaks using try-with-resources
+- Translate low-level exceptions into domain-specific errors for cleaner APIs
 
 ## Prerequisites
 

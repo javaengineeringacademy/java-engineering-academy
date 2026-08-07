@@ -4,14 +4,14 @@
 > **Reading:** 40 min | **Practice:** 90 min | **Total:** 130 min
 
 ## Overview
-Object-Oriented Programming (OOP) is a programming approach based on objects that contain data and code. Java is a pure OOP language supporting encapsulation, inheritance, polymorphism, and abstraction.
+As applications grow, organizing code into flat scripts becomes unmanageable. Object-Oriented Programming structures software around objects that combine state and behavior, making it possible to model real-world entities, reuse code through inheritance, and swap implementations through polymorphism. Java is a pure OOP language, and these principles are foundational to every Java application.
 
 ## Learning Objectives
-- Master OOP principles
-- Understand classes and objects
-- Apply inheritance and polymorphism
-- Use interfaces and abstract classes
-- Implement design principles
+- Design classes that encapsulate state and expose controlled behavior
+- Build class hierarchies using inheritance and composition
+- Write code that leverages polymorphism to swap implementations at runtime
+- Choose between interfaces and abstract classes for different design needs
+- Apply SOLID principles to keep code maintainable and extensible
 
 ## Prerequisites
 - Basic Java syntax

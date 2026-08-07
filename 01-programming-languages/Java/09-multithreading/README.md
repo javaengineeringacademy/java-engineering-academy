@@ -4,14 +4,14 @@
 > **Reading:** 40 min | **Practice:** 60 min | **Total:** 100 min
 
 ## Overview
-Java multithreading enables concurrent execution of multiple threads. It includes thread creation, synchronization, concurrency utilities, and the java.util.concurrent package.
+Single-threaded applications can't use multiple CPUs, block on I/O, and offer poor responsiveness. Java's multithreading capabilities let you execute tasks concurrently, keep applications responsive under load, and utilize all available hardware. This module covers thread creation, synchronization, executor services, concurrent collections, and virtual threads.
 
 ## Learning Objectives
-- Create and manage threads
-- Understand synchronization
-- Use concurrency utilities
-- Implement thread pools
-- Handle concurrent data structures
+- Create threads using Thread, Runnable, and virtual threads
+- Prevent race conditions using synchronized blocks, locks, and atomic variables
+- Configure thread pools with ExecutorService for scalable task execution
+- Use CompletableFuture to compose asynchronous operations
+- Identify and diagnose deadlocks, starvation, and other concurrency bugs
 
 ## Prerequisites
 - OOP concepts

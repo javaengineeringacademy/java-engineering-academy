@@ -4,14 +4,14 @@
 > **Reading:** 45 min | **Practice:** 30 min | **Total:** 75 min
 
 ## Overview
-Understanding JVM internals is crucial for Java performance tuning, debugging, and troubleshooting. The JVM handles class loading, memory management, garbage collection, and bytecode execution.
+When a production Java application runs slowly, crashes with OutOfMemoryError, or behaves unpredictably, the root cause often lies in how the JVM loads classes, manages memory, runs garbage collection, and compiles bytecode. Understanding these internals lets you diagnose production issues, tune performance, and choose the right garbage collector for your workload.
 
 ## Learning Objectives
-- Understand JVM architecture
-- Master class loading process
-- Understand memory management
-- Analyze JVM performance
-- Use JVM monitoring tools
+- Explain JVM architecture and how class loading, execution, and memory management fit together
+- Diagnose memory issues using heap dumps, GC logs, and JVM monitoring tools
+- Choose and tune garbage collectors (G1, ZGC, Shenandoah) for different latency requirements
+- Configure JVM flags to optimize heap sizing, thread stacks, and JIT compilation
+- Use JFR and JMX to profile production applications without significant overhead
 
 ## Prerequisites
 - Core Java knowledge

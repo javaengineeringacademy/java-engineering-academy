@@ -4,7 +4,7 @@
 > **Reading:** 30 min | **Practice:** 60 min | **Total:** 90 min
 
 ## Overview
-This module covers the essential building blocks of Java programming — data types, operators, control flow, methods, arrays, strings, packages, build tools, and reserved keywords. These are the foundation every Java developer must master before moving to object-oriented programming.
+Every application needs to store data, make decisions, repeat tasks, and organize code. Java fundamentals provide these building blocks — data types, operators, control flow, methods, arrays, strings, packages, and build tools — in a strongly-typed, platform-independent manner. Without them, you cannot write reliable, maintainable Java programs.
 
 ## Why This Concept Exists
 Every programming language needs a way to store data, make decisions, repeat tasks, and organize code. Java fundamentals provide these building blocks in a strongly-typed, platform-independent manner. Without understanding these concepts, you cannot write reliable, maintainable Java programs.

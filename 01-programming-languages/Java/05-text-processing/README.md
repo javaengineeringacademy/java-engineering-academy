@@ -4,9 +4,7 @@
 > **Reading:** 25 min | **Practice:** 40 min | **Total:** 65 min
 
 ## Overview
-Java provides a rich set of APIs for text processing, string manipulation,
-and working with character data. This module covers the essential text
-processing capabilities available in the Java standard library.
+Applications constantly handle text — user input, file content, network data, configuration, and output display. Java's text processing APIs let you manipulate, validate, and transform text without worrying about encoding, memory management, or immutability pitfalls. This module covers String, StringBuilder, regular expressions, text blocks, and internationalization.
 
 ## Why This Concept Exists
 Applications constantly handle text — user input, file content, network data, configuration, and output display. Java's text processing APIs provide:

@@ -4,14 +4,14 @@
 > **Reading:** 30 min | **Practice:** 60 min | **Total:** 90 min
 
 ## Overview
-Design patterns are reusable solutions to common software design problems. This module covers all 23 Gang of Four (GoF) patterns with real-world examples.
+Developers repeatedly encounter the same design problems: creating objects efficiently, adapting incompatible interfaces, notifying multiple objects of state changes. Design patterns are proven, reusable solutions to these recurring problems, giving teams a shared vocabulary and battle-tested approaches. This module covers all 23 Gang of Four (GoF) patterns with real-world examples.
 
 ## Learning Objectives
-- Understand all GoF design patterns
-- Apply creational patterns (5 patterns)
-- Use structural patterns (7 patterns)
-- Implement behavioral patterns (11 patterns)
-- Choose appropriate patterns for specific problems
+- Identify which pattern category (creational, structural, behavioral) solves a given design problem
+- Implement Singleton, Factory, Builder, and other creational patterns with thread safety in mind
+- Apply Adapter, Decorator, Facade, and Proxy patterns to structure classes and manage complexity
+- Use Strategy, Observer, Command, and other behavioral patterns to decouple components
+- Recognize anti-patterns and avoid over-engineering when simpler code suffices
 
 ## Prerequisites
 - OOP concepts

@@ -4,7 +4,7 @@
 > **Reading:** 20 min | **Practice:** 30 min | **Total:** 50 min
 
 ## Overview
-This module covers Java logging frameworks including SLF4J, Logback, and Log4j2 for application logging and monitoring.
+Without logging, production debugging becomes guesswork. Logging frameworks provide structured, leveled output that helps you trace issues, audit user actions, and monitor system health. This module covers SLF4J, Logback, and Log4j2 — from basic configuration to performance-optimized async logging and structured output for log aggregation.
 
 ## Key Concepts
 

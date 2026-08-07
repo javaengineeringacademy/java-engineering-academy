@@ -4,7 +4,7 @@
 > **Reading:** 30 min | **Practice:** 40 min | **Total:** 70 min
 
 ## Overview
-This module covers Java Reflection API and Annotations, enabling runtime inspection and modification of classes, methods, fields, and creating custom annotations.
+Frameworks like Spring, Hibernate, and JUnit need to inspect and modify classes at runtime without compile-time dependencies. Java's Reflection API and Annotations make this possible — reflection lets you examine and invoke class members dynamically, while annotations attach metadata that processors can act on at compile time or runtime. This module covers both, including performance trade-offs and practical patterns.
 
 ## Key Concepts
 

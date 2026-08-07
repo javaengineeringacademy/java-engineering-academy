@@ -4,14 +4,14 @@
 > **Reading:** 25 min | **Practice:** 45 min | **Total:** 70 min
 
 ## Overview
-Debugging is the process of finding and resolving defects in software. Effective debugging uses breakpoints, logging, profiling, and systematic analysis to identify and fix issues.
+Bugs inevitably slip into production — logic errors, runtime exceptions, concurrency issues, and memory leaks. Debugging is the systematic process of finding and fixing those defects using breakpoints, logging, profiling, and structured analysis. This module covers IDE debugging, remote debugging, stack trace analysis, and production troubleshooting techniques.
 
 ## Learning Objectives
-- Master IDE debugging
-- Use logging effectively
-- Analyze stack traces
-- Debug production issues
-- Apply systematic debugging
+- Set breakpoints and step through code to isolate bugs in the IDE
+- Analyze stack traces to trace exceptions back to their root cause
+- Configure and use logging effectively to trace production behavior
+- Connect to remote JVMs for live debugging without redeploying
+- Apply systematic debugging workflows to reproduce and fix issues efficiently
 
 ## Prerequisites
 - Java fundamentals

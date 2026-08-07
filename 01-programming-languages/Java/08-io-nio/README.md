@@ -4,14 +4,14 @@
 > **Reading:** 30 min | **Practice:** 45 min | **Total:** 75 min
 
 ## Overview
-Java I/O provides classes for reading and writing data through streams, readers, and writers. NIO (New I/O) adds channels, buffers, and selectors for non-blocking I/O operations.
+Applications need to read and write files, handle network requests, and serialize data. Java's I/O and NIO APIs manage encoding, buffering, and resource cleanup automatically — so you can focus on your data, not the plumbing. This module covers byte and character streams, NIO channels and buffers, file operations, and serialization.
 
 ## Learning Objectives
-- Master stream-based I/O
-- Understand byte and character streams
-- Use NIO channels and buffers
-- Implement file operations
-- Handle serialization
+- Read and write files using both traditional streams and modern NIO.2 APIs
+- Choose between byte streams and character streams based on data type
+- Use NIO channels and buffers for efficient, non-blocking I/O
+- Manage resources safely with try-with-resources to prevent leaks
+- Implement serialization for object persistence and network transfer
 
 ## Prerequisites
 - Basic Java knowledge

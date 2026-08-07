@@ -5,7 +5,7 @@
 
 ## Overview
 
-Generics enable you to write code that works with any object type while providing compile-time type safety. Introduced in Java 5, generics eliminate the need for explicit type casting and catch type mismatches at compile time rather than runtime.
+Without generics, every collection stores Objects and requires manual casting at retrieval — a source of runtime ClassCastException bugs that compilers can't catch. Generics let you write a single class or method that works with any type while catching type mismatches at compile time. Introduced in Java 5, they eliminated explicit casting and made APIs like the Collections Framework type-safe.
 
 ## Why This Concept Exists
 
@@ -25,11 +25,11 @@ With generics:
 
 By the end of this module, you will be able to:
 
-- Understand generic classes, interfaces, and methods
-- Apply bounded type parameters
-- Use wildcards correctly
-- Avoid type erasure pitfalls
-- Design type-safe APIs
+- Write generic classes and methods that work with any type while catching errors at compile time
+- Restrict type parameters using bounded types to call specific methods on generic arguments
+- Apply the PECS principle (Producer Extends, Consumer Super) to design flexible APIs
+- Avoid common type erasure pitfalls that cause runtime surprises
+- Design type-safe APIs that eliminate explicit casting in client code
 
 ## Topics
 
