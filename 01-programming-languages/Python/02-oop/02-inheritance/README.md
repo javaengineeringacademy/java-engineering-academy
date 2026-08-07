@@ -84,6 +84,63 @@ Inheritance enables code reuse by creating new classes from existing ones. Pytho
 ### ❌ Myth 3: `super()` always calls the parent class
 **Reality:** `super()` calls the next class in the MRO, which may not be the direct parent.
 
+## Production Incidents
+
+### Incident 1: MRO Issue Causing Method Resolution Failure
+
+**Problem:** `super()` calls skip expected classes in the hierarchy, causing methods to not execute in the expected order or not at all.
+
+**Cause:** Incorrect method resolution order (MRO) due to complex inheritance hierarchies. `super()` follows the MRO, not the direct parent class, leading to unexpected behavior when classes are added or reordered.
+
+**Impact:** Parent class initialization is skipped. Business logic that depends on method call order breaks silently. Bugs appear only when specific class combinations are used.
+
+**Detection:** Print `ClassName.__mro__` to verify resolution order. Add logging at the start of `__init__` methods to trace execution order.
+
+**Solution:** Keep inheritance hierarchies shallow. Explicitly call parent methods when MRO-based resolution is confusing:
+```python
+class Child(ParentA, ParentB):
+    def __init__(self):
+        super().__init__()  # follows MRO: Child → ParentA → ParentB
+        ParentB.__init__(self)  # explicit call if needed
+```
+
+** Prevention:** Prefer composition over deep inheritance. Use `__mro__` inspection in tests to verify expected resolution order.
+
+---
+
+### Incident 2: Diamond Inheritance Problem
+
+**Problem:** Multiple parent classes with a common ancestor cause duplicate initialization, leading to resource leaks or inconsistent state.
+
+**Cause:** Class C inherits from both A and B, which both inherit from D. Without proper `super()` usage, D's `__init__` is called multiple times.
+
+**Impact:** Database connections opened multiple times. File handles leaked. Memory consumption doubles. Inconsistent state from partial initialization.
+
+**Detection:** Add logging in `__init__` to track how many times a base class is initialized. Use `id()` to check if objects are the same instance.
+
+**Solution:** Use cooperative multiple inheritance with `super()` throughout the hierarchy:
+```python
+class D:
+    def __init__(self):
+        print("D init")
+
+class A(D):
+    def __init__(self):
+        super().__init__()  # calls D
+        print("A init")
+
+class B(D):
+    def __init__(self):
+        super().__init__()  # calls D
+        print("B init")
+
+class C(A, B):
+    def __init__(self):
+        super().__init__()  # follows MRO: C → A → B → D (D called once)
+```
+
+** Prevention:** Use `@dataclass` with `frozen=True` for value objects. Apply composition over multiple inheritance for complex hierarchies.
+
 ## One-Minute Revision
 
 | Aspect | Value |

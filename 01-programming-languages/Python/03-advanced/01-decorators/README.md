@@ -86,6 +86,59 @@ Decorators modify or extend function/class behavior without changing the origina
 ### ❌ Myth 3: Class decorators are always better than function decorators
 **Reality:** Function decorators are simpler for most cases; class decorators are for complex state.
 
+## Production Incidents
+
+### Incident 1: Decorator Losing Function Metadata
+
+**Problem:** Decorated functions lose their `__name__`, `__doc__`, and `__module__`, breaking introspection, documentation generators, and debugging tools.
+
+**Cause:** Not using `@functools.wraps` in the decorator wrapper function. The wrapper replaces the original function's metadata.
+
+**Impact:** API documentation shows wrong function names. Debugging stack traces show `wrapper` instead of the actual function name. `help()` returns empty docs.
+
+**Detection:** Test for metadata preservation with `assert decorated.__name__ == 'original_name'`. Run documentation generation to verify output.
+
+**Solution:** Always use `@functools.wraps` in decorators:
+```python
+import functools
+
+def my_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+** Prevention:** Add linting rules to enforce `@wraps` usage. Write tests that verify decorated function metadata.
+
+---
+
+### Incident 2: Closure Variable Capture Issue
+
+**Problem:** Decorator closures capture variables by reference, causing unexpected behavior when the variable changes after decorator definition.
+
+**Cause:** Python closures capture variables by reference, not by value. When the captured variable is modified later, all closures using it see the new value.
+
+**Impact:** All decorated functions share the same mutable state. Caching decorators return stale results. Race conditions in concurrent code.
+
+**Detection:** Add logging to track closure variable values. Use `id()` to check if variables are shared across instances.
+
+**Solution:** Capture variables by value using default arguments:
+```python
+def make_decorator(value):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            # Bad: captures reference
+            # print(value)
+            # Good: captures value at definition time
+            captured = value
+            return func(captured, *args, **kwargs)
+        return wrapper
+    return decorator
+```
+
+** Prevention:** Use immutable defaults to capture values. Write tests that verify closure isolation between different decorator instances.
+
 ## One-Minute Revision
 
 | Aspect | Value |

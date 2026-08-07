@@ -90,6 +90,49 @@ Python provides four built-in collection types, each with distinct characteristi
 ### ❌ Myth 3: Sets can't contain lists
 **Reality:** Sets can't contain mutable types (like lists), but can contain tuples and frozensets.
 
+## Production Incidents
+
+### Incident 1: Mutable Default Argument Causing Shared State
+
+**Problem:** All instances of a class share the same list as a default argument, causing data to leak between instances.
+
+**Cause:** Using a mutable default argument (e.g., `def __init__(self, items=[])`) in a function or method. The default list is created once at definition time and reused across all calls.
+
+**Impact:** Users see other users' data mixed together. Data corruption across sessions. Difficult to reproduce since it depends on call order.
+
+**Detection:** Check for unexpected shared state between instances using `id()` on mutable attributes. Add logging to track when default values are reused.
+
+**Solution:** Replace mutable defaults with `None` and create new instances inside the function body:
+```python
+def __init__(self, items=None):
+    self.items = items if items is not None else []
+```
+
+** Prevention:** Use linters (pylint's `dangerous-default-value`) that flag mutable defaults. Write tests that verify instances don't share state.
+
+---
+
+### Incident 2: List Comprehension Memory Explosion
+
+**Problem:** A list comprehension loads millions of items into memory at once, causing the application to crash with `MemoryError`.
+
+**Cause:** Using a list comprehension `[f(x) for x in large_dataset]` instead of a generator expression `(f(x) for x in large_dataset)` when processing large datasets.
+
+**Impact:** Application crashes with `MemoryError` or gets OOM-killed by the OS. Other services on the same host may be affected.
+
+**Detection:** Monitor memory usage with `psutil` or `/proc/meminfo`. Profile memory with `tracemalloc` to identify allocation hotspots.
+
+**Solution:** Replace list comprehensions with generator expressions when intermediate results don't need indexing:
+```python
+# Bad: loads all into memory
+results = [transform(x) for x in million_items]
+
+# Good: lazy evaluation
+results = (transform(x) for x in million_items)
+```
+
+** Prevention:** Set memory budgets for critical paths. Use generators for streaming data. Add `tracemalloc`-based tests in CI for memory-sensitive code.
+
 ## One-Minute Revision
 
 | Aspect | Value |

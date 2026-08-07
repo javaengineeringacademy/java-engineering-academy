@@ -39,3 +39,58 @@ pytest is a mature, feature-rich testing framework. It's simpler than unittest a
 2. How do fixtures work?
 3. When would you use @pytest.mark.parametrize?
 4. What is conftest.py?
+
+## Production Incidents
+
+### Incident 1: Flaky Test Causing False Positives
+
+**Problem:** A test intermittently passes and fails without code changes, causing CI to report false failures and eroding team confidence in the test suite.
+
+**Cause:** Test depends on external state (network, time, random values, shared databases) or has race conditions with other tests. Order-dependent tests expose hidden coupling.
+
+**Impact:** Developers ignore test failures ("it's just flaky"). Real bugs slip through. CI pipeline becomes unreliable. Release velocity slows as teams manually re-run tests.
+
+**Detection:** Run tests multiple times in CI (`pytest --count=10`). Track test failure rates over time. Use `pytest-randomly` to detect order dependencies.
+
+**Solution:** Make tests deterministic:
+```python
+# Bad: depends on current time
+def test_expiry():
+    assert token.expires_at > datetime.now()
+
+# Good: controls time
+def test_expiry(monkeypatch):
+    fixed_time = datetime(2025, 1, 1)
+    monkeypatch.setattr(datetime, "now", lambda: fixed_time)
+    assert token.expires_at > fixed_time
+```
+
+** Prevention:** Mock external dependencies. Use `pytest-randomly` to randomize test order. Add flaky test detection to CI. Isolate tests with fixtures.
+
+---
+
+### Incident 2: Missing Mock Causing Test Pollution
+
+**Problem:** A test modifies real database records or files, affecting subsequent tests and causing cascading failures across the test suite.
+
+**Cause:** Tests interact with real external services (databases, APIs, filesystem) without proper mocking or isolation. Fixtures don't clean up after themselves.
+
+**Impact:** Tests fail unpredictably based on execution order. Data corruption in test databases. CI takes hours to debug due to cascading failures.
+
+**Detection:** Run tests in isolation to identify polluting tests. Check for database records after test runs. Use `pytest --forked` to detect state leakage.
+
+**Solution:** Use proper mocking and fixtures with cleanup:
+```python
+@pytest.fixture
+def db_session():
+    session = create_session()
+    yield session
+    session.rollback()  # cleanup
+    session.close()
+
+@pytest.fixture
+def mock_api(monkeypatch):
+    monkeypatch.setattr("myapp.api.requests.get", lambda url: mock_response())
+```
+
+** Prevention:** Use `conftest.py` for shared fixtures. Always yield in fixtures for cleanup. Use `pytest-forked` for test isolation. Mock external services by default.

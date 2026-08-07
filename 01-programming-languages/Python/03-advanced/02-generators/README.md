@@ -85,6 +85,65 @@ Generators produce values on-demand using `yield` instead of returning a list. T
 ### ❌ Myth 3: `yield` always pauses execution
 **Reality:** `yield` only pauses when the generator is being iterated; not during function call.
 
+## Production Incidents
+
+### Incident 1: Generator Memory Leak with Large Datasets
+
+**Problem:** A generator holds references to large objects (file handles, database cursors) even after iteration is complete, causing memory to not be freed.
+
+**Cause:** Not closing generators properly with `contextlib.closing()` or using `try/finally` blocks. Generators with `yield` hold their frame alive until garbage collected.
+
+**Impact:** Memory usage grows unbounded over time. Application eventually gets OOM-killed. File handles are exhausted.
+
+**Detection:** Monitor memory usage over time. Use `gc.get_referrers()` to find objects holding references to generators.
+
+**Solution:** Use `contextlib.closing()` or explicit cleanup:
+```python
+from contextlib import closing
+
+def data_generator():
+    conn = get_connection()
+    try:
+        for row in conn.query():
+            yield row
+    finally:
+        conn.close()
+
+# Proper cleanup
+with closing(data_generator()) as gen:
+    for item in gen:
+        process(item)
+```
+
+** Prevention:** Always use generators with context managers. Add memory profiling tests in CI for long-running generators.
+
+---
+
+### Incident 2: Generator Not Closing Properly
+
+**Problem:** A generator's `finally` block doesn't execute when the caller breaks out of the loop early, leaving resources unreleased.
+
+**Cause:** Generators entered via `for` loops are closed automatically, but manually iterated generators with `next()` are not. The caller may not realize resources are held.
+
+**Impact:** Database connections left open. File handles leaked. Locks not released, causing deadlocks in concurrent code.
+
+**Detection:** Add logging in generator `finally` blocks to verify cleanup. Track open resource counts.
+
+**Solution:** Use `contextlib.closing()` for manual iteration or ensure `for` loops are used:
+```python
+from contextlib import closing
+
+gen = my_generator()
+try:
+    for item in gen:
+        if condition:
+            break  # generator is closed by for-loop
+finally:
+    gen.close()  # ensure cleanup for manual iteration
+```
+
+** Prevention:** Use context managers for all generators that hold resources. Write tests that verify cleanup on early termination.
+
 ## One-Minute Revision
 
 | Aspect | Value |

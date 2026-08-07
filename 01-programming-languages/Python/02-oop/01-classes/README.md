@@ -83,6 +83,58 @@ Classes are the foundation of OOP in Python. They bundle data (attributes) and b
 ### ❌ Myth 3: Instance methods can't access class state
 **Reality:** Instance methods can access class attributes via `self.__class__` or `ClassName`.
 
+## Production Incidents
+
+### Incident 1: Class Variable Shared Across Instances
+
+**Problem:** All instances of a class share the same list/dict defined as a class variable, causing data from one user to appear in another user's session.
+
+**Cause:** Defining a mutable object (list, dict, set) as a class variable instead of an instance variable. The class variable is shared by all instances.
+
+**Impact:** Data leakage between users. Security vulnerability if user-specific data is exposed. Difficult to reproduce since it depends on timing and order of operations.
+
+**Detection:** Use `id()` to check if mutable attributes share the same memory address across instances. Add instrumentation to track attribute origins.
+
+**Solution:** Move mutable state to `__init__` as instance variables:
+```python
+class UserSession:
+    # Bad: shared across all instances
+    tokens = []
+
+    def __init__(self):
+        # Good: unique per instance
+        self.tokens = []
+```
+
+** Prevention:** Use `__slots__` or dataclasses to enforce instance-level attributes. Add linter rules to flag class-level mutable defaults.
+
+---
+
+### Incident 2: Missing `__hash__` Causing Dict Issues
+
+**Problem:** Custom class instances can't be used as dictionary keys or in sets after `__eq__` is defined without `__hash__`, causing `TypeError: unhashable type`.
+
+**Cause:** Python automatically sets `__hash__` to `None` when you define `__eq__` without defining `__hash__`. This makes instances unhashable.
+
+**Impact:** `TypeError` crashes when trying to use instances as dict keys or in sets. Code that worked in development fails in production with different data patterns.
+
+**Detection:** Run tests with instances used as dict keys. Add `try/except TypeError` around dictionary operations to catch unhashable types early.
+
+**Solution:** Implement both `__eq__` and `__hash__` together:
+```python
+class Entity:
+    def __init__(self, id):
+        self.id = id
+
+    def __eq__(self, other):
+        return isinstance(other, Entity) and self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
+```
+
+** Prevention:** Use `@dataclass(frozen=True)` for immutable value objects. Add tests that verify instances are hashable when expected.
+
 ## One-Minute Revision
 
 | Aspect | Value |

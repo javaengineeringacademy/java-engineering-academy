@@ -39,3 +39,107 @@ Threading enables concurrent execution. Python's GIL limits true parallelism for
 2. What is the difference between Lock and RLock?
 3. When would you use Queue over a shared list?
 4. How do you handle thread exceptions?
+
+## Production Incidents
+
+### Incident 1: Race Condition in Shared State
+
+**Problem:** Two threads simultaneously modify a shared counter, causing lost updates and incorrect final values.
+
+**Cause:** Non-atomic read-modify-write operations (`counter += 1`) without proper synchronization. The GIL doesn't prevent race conditions at the Python level.
+
+**Impact:** Incorrect totals in financial calculations. Inventory counts drift. Data corruption that's hard to reproduce and debug.
+
+**Detection:** Run concurrent tests with high thread counts. Use `threading.Barrier` to force race conditions in tests. Add assertions on final values.
+
+**Solution:** Use `threading.Lock` for critical sections:
+```python
+import threading
+
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    with lock:  # atomic operation
+        counter += 1
+```
+
+** Prevention:** Prefer `Queue` over shared state. Use `threading.local()` for thread-specific data. Write concurrent tests in CI.
+
+---
+
+### Incident 2: GIL Causing CPU-Bound Slowdown
+
+**Problem:** CPU-intensive workloads run slower with multiple threads than with a single thread due to GIL contention.
+
+**Cause:** Python's Global Interpreter Lock (GIL) allows only one thread to execute Python bytecode at a time. CPU-bound threads spend time acquiring and releasing the GIL.
+
+**Impact:** Application throughput drops 2-10x compared to sequential execution. CPU usage shows high context switching overhead. Response times increase under load.
+
+**Detection:** Profile with `cProfile` to identify CPU-bound hotspots. Monitor CPU usage across cores. Benchmark single vs. multi-threaded performance.
+
+**Solution:** Use `multiprocessing` instead of `threading` for CPU-bound tasks:
+```python
+from multiprocessing import Pool
+
+def cpu_intensive(x):
+    return sum(i * i for i in range(x))
+
+with Pool(4) as p:
+    results = p.map(cpu_intensive, data_chunks)
+```
+
+** Prevention:** Profile early to identify CPU vs. I/O bound work. Use `concurrent.futures.ProcessPoolExecutor` for CPU-bound work. Consider `asyncio` for I/O-bound work.
+
+## Production Incidents
+
+### Incident 1: Race Condition in Shared State
+
+**Problem:** Two threads simultaneously modify a shared counter, causing lost updates and incorrect final values.
+
+**Cause:** Non-atomic read-modify-write operations (`counter += 1`) without proper synchronization. The GIL doesn't prevent race conditions at the Python level.
+
+**Impact:** Incorrect totals in financial calculations. Inventory counts drift. Data corruption that's hard to reproduce and debug.
+
+**Detection:** Run concurrent tests with high thread counts. Use `threading.Barrier` to force race conditions in tests. Add assertions on final values.
+
+**Solution:** Use `threading.Lock` for critical sections:
+```python
+import threading
+
+counter = 0
+lock = threading.Lock()
+
+def increment():
+    global counter
+    with lock:  # atomic operation
+        counter += 1
+```
+
+** Prevention:** Prefer `Queue` over shared state. Use `threading.local()` for thread-specific data. Write concurrent tests in CI.
+
+---
+
+### Incident 2: GIL Causing CPU-Bound Slowdown
+
+**Problem:** CPU-intensive workloads run slower with multiple threads than with a single thread due to GIL contention.
+
+**Cause:** Python's Global Interpreter Lock (GIL) allows only one thread to execute Python bytecode at a time. CPU-bound threads spend time acquiring and releasing the GIL.
+
+**Impact:** Application throughput drops 2-10x compared to sequential execution. CPU usage shows high context switching overhead. Response times increase under load.
+
+**Detection:** Profile with `cProfile` to identify CPU-bound hotspots. Monitor CPU usage across cores. Benchmark single vs. multi-threaded performance.
+
+**Solution:** Use `multiprocessing` instead of `threading` for CPU-bound tasks:
+```python
+from multiprocessing import Pool
+
+def cpu_intensive(x):
+    return sum(i * i for i in range(x))
+
+with Pool(4) as p:
+    results = p.map(cpu_intensive, data_chunks)
+```
+
+** Prevention:** Profile early to identify CPU vs. I/O bound work. Use `concurrent.futures.ProcessPoolExecutor` for CPU-bound work. Consider `asyncio` for I/O-bound work.

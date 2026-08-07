@@ -39,3 +39,105 @@ asyncio provides single-threaded concurrent execution using coroutines. It's ide
 2. How does asyncio.gather work?
 3. When would you use a Semaphore in asyncio?
 4. What is the event loop?
+
+## Production Incidents
+
+### Incident 1: Blocking Call in Async Function
+
+**Problem:** An async function calls a blocking library (e.g., `requests`, `time.sleep`), freezing the entire event loop and blocking all other coroutines.
+
+**Cause:** Using synchronous/blocking functions inside `async def` without `await`. The blocking call holds the event loop thread, preventing other coroutines from running.
+
+**Impact:** All concurrent HTTP requests timeout. Database connection pools exhausted. Application becomes unresponsive under load. Health checks fail.
+
+**Detection:** Monitor event loop latency. Add timeouts to all I/O operations. Profile with `asyncio` debug mode enabled.
+
+**Solution:** Use `asyncio.to_thread()` or `loop.run_in_executor()` for blocking calls:
+```python
+import asyncio
+import requests  # blocking library
+
+async def fetch_data(url):
+    # Bad: blocks event loop
+    # response = requests.get(url)
+
+    # Good: runs in thread pool
+    response = await asyncio.to_thread(requests.get, url)
+    return response.json()
+```
+
+** Prevention:** Enable asyncio debug mode (`PYTHONASYNCIODEBUG=1`). Use async-native libraries (aiohttp, asyncpg). Add linting rules to flag blocking calls in async functions.
+
+---
+
+### Incident 2: Event Loop Starvation
+
+**Problem:** A long-running coroutine monopolizes the event loop, preventing other coroutines from executing. All tasks appear to hang.
+
+**Cause:** A coroutine performs too much work in a single iteration without yielding control via `await`. This blocks the event loop's single thread.
+
+**Impact:** All scheduled tasks are delayed. Heartbeats fail, causing load balancers to mark the service as unhealthy. Cascading failures in dependent services.
+
+**Detection:** Monitor task execution times. Add heartbeats that verify event loop responsiveness. Use `asyncio.all_tasks()` to check for stuck tasks.
+
+**Solution:** Break long-running work into smaller chunks with `await asyncio.sleep(0)`:
+```python
+async def process_large_batch(items):
+    for i, item in enumerate(items):
+        await process(item)
+        if i % 100 == 0:
+            await asyncio.sleep(0)  # yield control
+```
+
+** Prevention:** Set timeouts on all coroutines. Use `asyncio.wait_for()` for bounded execution. Add monitoring for event loop latency.
+
+## Production Incidents
+
+### Incident 1: Blocking Call in Async Function
+
+**Problem:** An async function calls a blocking library (e.g., `requests`, `time.sleep`), freezing the entire event loop and blocking all other coroutines.
+
+**Cause:** Using synchronous/blocking functions inside `async def` without `await`. The blocking call holds the event loop thread, preventing other coroutines from running.
+
+**Impact:** All concurrent HTTP requests timeout. Database connection pools exhausted. Application becomes unresponsive under load. Health checks fail.
+
+**Detection:** Monitor event loop latency. Add timeouts to all I/O operations. Profile with `asyncio` debug mode enabled.
+
+**Solution:** Use `asyncio.to_thread()` or `loop.run_in_executor()` for blocking calls:
+```python
+import asyncio
+import requests  # blocking library
+
+async def fetch_data(url):
+    # Bad: blocks event loop
+    # response = requests.get(url)
+
+    # Good: runs in thread pool
+    response = await asyncio.to_thread(requests.get, url)
+    return response.json()
+```
+
+** Prevention:** Enable asyncio debug mode (`PYTHONASYNCIODEBUG=1`). Use async-native libraries (aiohttp, asyncpg). Add linting rules to flag blocking calls in async functions.
+
+---
+
+### Incident 2: Event Loop Starvation
+
+**Problem:** A long-running coroutine monopolizes the event loop, preventing other coroutines from executing. All tasks appear to hang.
+
+**Cause:** A coroutine performs too much work in a single iteration without yielding control via `await`. This blocks the event loop's single thread.
+
+**Impact:** All scheduled tasks are delayed. Heartbeats fail, causing load balancers to mark the service as unhealthy. Cascading failures in dependent services.
+
+**Detection:** Monitor task execution times. Add heartbeats that verify event loop responsiveness. Use `asyncio.all_tasks()` to check for stuck tasks.
+
+**Solution:** Break long-running work into smaller chunks with `await asyncio.sleep(0)`:
+```python
+async def process_large_batch(items):
+    for i, item in enumerate(items):
+        await process(item)
+        if i % 100 == 0:
+            await asyncio.sleep(0)  # yield control
+```
+
+** Prevention:** Set timeouts on all coroutines. Use `asyncio.wait_for()` for bounded execution. Add monitoring for event loop latency.
