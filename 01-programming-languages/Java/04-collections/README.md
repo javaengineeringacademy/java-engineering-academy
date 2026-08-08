@@ -1,95 +1,123 @@
-# Module 04: Collections Framework
+# Java Collections Framework
 
-> **Difficulty:** Intermediate
-> **Reading:** 35 min | **Practice:** 60 min | **Total:** 95 min
+## 1. Introduction
 
-## Overview
+The Java Collections Framework (JCF) is a unified architecture for representing and manipulating groups of objects. Introduced in Java 1.2, it provides a coherent set of interfaces, implementations, and algorithms that replace the legacy `Vector`, `Hashtable`, and manual array management with a modern, high-performance system.
 
-Almost every Java application needs to store and manipulate groups of objects efficiently. Arrays are fixed-size and lack built-in methods for common operations. The Collections Framework gives you standard data structures — List, Set, Queue, and Map — with proven implementations and algorithms, so you don't have to reinvent them.
+## 2. Why It Exists
 
-## Module Structure
+Before JCF, Java developers faced several problems:
 
-| # | Topic | Description |
-|---|-------|-------------|
-| 01 | [Introduction](01-introduction/) | Framework overview, hierarchy, when to use what |
-| 02 | [List](02-list/) | ArrayList, LinkedList, Vector, Stack, CopyOnWriteArrayList |
-| 03 | [Set](03-set/) | HashSet, LinkedHashSet, TreeSet |
-| 04 | [Map](04-map/) | HashMap, LinkedHashMap, TreeMap, ConcurrentHashMap |
-| 05 | [Queue](05-queue/) | PriorityQueue, Deque (ArrayDeque) |
-| 06 | [Enumeration](06-enumeration/) | Legacy traversal (Vector, Hashtable, StringTokenizer) |
-| 07 | [Iterator](07-iterator/) | Iterator, ListIterator, Iterable, iterator internals |
-| 08 | [Comparable & Comparator](08-comparable-comparator/) | Natural ordering, custom ordering, sorting strategies |
-| 09 | [Fail-Fast vs Fail-Safe](09-fail-fast-vs-fail-safe/) | ConcurrentModificationException, concurrent iteration |
-| 10 | [Collection Algorithms](10-collection-algorithms/) | Collections utility methods (sort, search, shuffle) |
-| 11 | [Collections Utilities](11-collections-utilities/) | Unmodifiable, synchronized, empty/singleton wrappers |
-| 12 | [Internals](12-internals/) | ArrayList internals, HashMap internals, cache locality |
-| 13 | [Memory](13-memory/) | Memory footprint analysis for different collections |
-| 14 | [Stream Operations](14-stream-operations/) | Stream API, Collectors, parallel streams |
-| 15 | [Why Not](15-why-not/) | When NOT to use LinkedList, Hashtable, Vector, Stack |
+| Problem | Description |
+|---------|-------------|
+| No unified API | Each class (Vector, Hashtable, Stack) had its own methods |
+| Poor performance | Legacy classes synchronized everything, adding overhead |
+| No algorithms | No standard sort, search, or shuffle |
+| No interoperability | Difficult to convert between collection types |
+| Type safety | Raw Object storage required manual casting |
 
-## Supporting Resources
+JCF provides a consistent API, high-performance implementations, standard algorithms, and generics for type safety.
 
-| Resource | Description |
-|----------|-------------|
-| [Roadmap](roadmap.md) | Learning path and prerequisites |
-| [Exercises](exercises/) | Practice exercises for each topic |
-| [Solutions](solutions/) | Exercise solutions |
-| [Quizzes](quizzes/) | Knowledge checks |
-| [Interview](interview/) | Common interview questions |
-| [Projects](projects/) | Mini-project: Student Management System |
-| [Examples](examples/) | Additional code examples |
-| [References](references/) | External resources and documentation |
+## 3. History
 
-## Quick Reference: Choosing the Right Collection
+| Version | Change |
+|---------|--------|
+| Java 1.2 | Collections Framework introduced (List, Set, Map, Queue) |
+| Java 5 | Generics added for type safety |
+| Java 6 | NavigableMap, NavigableSet added |
+| Java 7 | Deque interface completed |
+| Java 8 | Stream API, lambda support, default methods |
+| Java 9 | List.of(), Map.of(), Set.of() factory methods |
+| Java 10 | CopyOnWriteArrayList improvements |
+| Java 16 | Record types as Map keys |
+| Java 21 | SequencedCollection interface |
+
+## 4. Arrays vs Collections
+
+| Feature | Arrays | Collections |
+|---------|--------|-------------|
+| Size | Fixed | Dynamic |
+| Type safety | Runtime | Compile-time (generics) |
+| API | Basic (length, clone) | Rich (add, remove, search, sort) |
+| Memory | Primitives allowed | Objects only |
+| Performance | Fastest | Slight overhead |
+
+## 5. Framework Hierarchy
 
 ```
-Need ordered, duplicates?        → List (ArrayList default)
-Need unique elements?            → Set (HashSet default)
-Need key-value pairs?            → Map (HashMap default)
-Need priority processing?        → PriorityQueue
-Need FIFO queue?                 → ArrayDeque
-Need stack?                      → ArrayDeque (not Stack!)
-Need thread-safe map?            → ConcurrentHashMap
-Need thread-safe list (read)?    → CopyOnWriteArrayList
-Need sorted keys?                → TreeMap
-Need sorted elements?            → TreeSet
-Need insertion order?            → LinkedHashSet / LinkedHashMap
+Iterable<E>
+├── Collection<E>
+│   ├── List<E>       → ArrayList, LinkedList, Vector
+│   ├── Set<E>        → HashSet, LinkedHashSet, TreeSet
+│   ├── Queue<E>      → PriorityQueue, ArrayDeque
+│   └── Deque<E>      → ArrayDeque, LinkedList
+
+Map<K,V>
+├── HashMap<K,V>      → LinkedHashMap
+├── TreeMap<K,V>
+├── Hashtable<K,V>
+└── ConcurrentHashMap<K,V>
 ```
 
-## Performance Comparison
+## 6. Collection vs Map
 
-| Collection | Access | Insert | Delete | Thread-Safe |
-|------------|--------|--------|--------|-------------|
-| ArrayList | O(1) | O(n) | O(n) | No |
-| LinkedList | O(n) | O(1) | O(1) | No |
-| HashSet | O(1) | O(1) | O(1) | No |
-| TreeSet | O(log n) | O(log n) | O(log n) | No |
-| HashMap | O(1) | O(1) | O(1) | No |
-| TreeMap | O(log n) | O(log n) | O(log n) | No |
-| ConcurrentHashMap | O(1) | O(1) | O(1) | Yes |
+| Aspect | Collection | Map |
+|--------|-----------|-----|
+| Stores | Individual elements | Key-value pairs |
+| Duplicates | Depends on subinterface | No duplicate keys |
+| Interface | Collection<E> | Map<K,V> |
+| Hierarchy | Part of Collection | Separate hierarchy |
 
-## History
+## 7. Interface vs Implementation
 
-- **1996** — Java 1.0: Vector, Hashtable, Enumeration
-- **1998** — Java 1.2: Collections Framework (List, Set, Map, Iterator)
-- **2001** — Java 1.3: Collections.unmodifiable* wrappers
-- **2004** — Java 5: Generics, for-each, autoboxing
-- **2011** — Java 7: Diamond operator, NavigableMap/NavigableSet
-- **2014** — Java 8: Stream API, forEach, removeIf
-- **2017** — Java 9: Factory methods (List.of, Set.of, Map.of)
-- **2021** — Java 16: Stream.toList()
-- **2021** — Java 17: SequencedCollection interface
+| Interface | Purpose | Common Implementation |
+|-----------|---------|----------------------|
+| List | Ordered, duplicates | ArrayList |
+| Set | Unique elements | HashSet |
+| Queue | FIFO processing | ArrayDeque |
+| Deque | Double-ended queue | ArrayDeque |
+| Map | Key-value pairs | HashMap |
 
-## Prerequisites
+## 8. Thread-Safe Overview
 
-- OOP concepts
-- Generics basics
-- Exception handling
+| Collection | Thread-Safe | Alternative |
+|------------|------------|-------------|
+| ArrayList | No | CopyOnWriteArrayList |
+| HashMap | No | ConcurrentHashMap |
+| HashSet | No | Collections.synchronizedSet() |
+| TreeMap | No | Collections.synchronizedSortedMap() |
+| Vector | Yes (all sync) | Avoid in new code |
+| Hashtable | Yes (all sync) | Avoid in new code |
 
-## Cross-References
+## 9. Performance Overview
 
-- **Previous Module:** [03 - Exception Handling](../03-exception-handling/)
-- **Next Module:** [05 - Text Processing](../05-text-processing/)
-- **Related:** [06 - Generics](../06-generics/) — parameterized collection types
-- **Related:** [07 - Functional Programming](../07-functional-programming/) — Stream API for collection processing
-- **Related:** [09 - Multithreading](../09-multithreading/) — thread-safe collections
+| Operation | ArrayList | LinkedList | HashSet | HashMap | TreeMap |
+|-----------|-----------|------------|---------|---------|---------|
+| Add | O(1) amortized | O(1) | O(1) | O(1) | O(log n) |
+| Remove | O(n) | O(n) | O(1) | O(1) | O(log n) |
+| Contains | O(n) | O(n) | O(1) | O(1) | O(log n) |
+| Get by index | O(1) | O(n) | N/A | N/A | N/A |
+| Get by key | N/A | N/A | N/A | O(1) | O(log n) |
+
+## 10. Learning Roadmap
+
+```
+Phase 1: Basics
+├── Collection interface
+├── List (ArrayList)
+├── Set (HashSet)
+└── Map (HashMap)
+
+Phase 2: Intermediate
+├── LinkedList, ArrayDeque
+├── TreeMap, LinkedHashMap
+├── Iterators, Comparators
+└── Sorting, Searching
+
+Phase 3: Advanced
+├── PriorityQueue
+├── ConcurrentHashMap
+├── CopyOnWriteArrayList
+├── Streams with Collections
+└── Performance tuning
+```
