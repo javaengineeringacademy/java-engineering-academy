@@ -1,8 +1,18 @@
 # Senior Level — C Language
 
-## The Problem
+## Why It Matters
 
-Senior C developers face challenges beyond writing correct code: designing systems that last years, making technology decisions that affect entire organizations, mentoring teams, and balancing competing constraints (performance vs maintainability, features vs stability, speed vs correctness). This module bridges the gap between writing code and leading engineering.
+When you're leading C engineering teams, challenges go beyond writing correct code: designing systems that last years, making technology decisions affecting entire organizations, mentoring teams, and balancing competing constraints — performance vs maintainability, features vs stability, speed vs correctness. This module bridges the gap between writing code and leading engineering.
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Architectural decisions, ABI-stable APIs, cross-platform layers | Simple code for small, isolated modules |
+| When NOT to use | Over-engineering for current needs | Start simple, refactor as needed |
+| Alternatives | Design reviews, ADRs, pair programming | Different approaches to decision-making |
+| Production Examples | Linux kernel ABI stability, OpenSSL versioning, database engines | Opaque pointers for ABI stability |
+| Common Mistakes | ABI breaks from struct layout changes, tight coupling, no ADRs | Append-only structs, modular design, document decisions |
 
 ## What It Is
 

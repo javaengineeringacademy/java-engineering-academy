@@ -1,14 +1,18 @@
 # Preprocessor — C Language
 
-## The Problem
+## Why It Matters
 
-Without a preprocessor, you would need to copy-paste code across files, manually create platform-specific builds, and maintain multiple versions of the same logic. The preprocessor solves three fundamental problems:
+When you're building cross-platform software or large C projects, you need code reuse across files, platform-independent builds, and compile-time abstractions — without runtime cost. The preprocessor solves these by letting you share declarations with `#include`, write one codebase for multiple platforms with `#ifdef`, and define constants with `#define`. It's a separate text-processing engine that runs before the compiler, not part of C syntax itself.
 
-1. **Code reuse**: `#include` lets you share declarations across files
-2. **Platform independence**: `#ifdef` lets you write one codebase for multiple platforms
-3. **Compile-time computation**: `#define` macros enable zero-cost abstractions
+## Engineering Decision Framework
 
-The preprocessor is not part of the C language — it is a separate text-processing engine that runs before the compiler. This distinction is critical: the preprocessor does not understand C syntax, types, or scope.
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Platform-specific code, compile-time constants, include guards | Inline functions for type-safe macros |
+| When NOT to use | Complex logic in macros (use inline functions instead) | Macros have no type checking or scope |
+| Alternatives | C11 `_Generic`, C99 inline functions, build-system flags | More type safety, less portability |
+| Production Examples | Linux kernel `#ifdef CONFIG_*`, header include guards | Every major C project uses preprocessor |
+| Common Mistakes | Unparenthesized macro args, missing include guards, side-effect macros | Always parenthesize: `#define MAX(a,b) ((a)>(b)?(a):(b))` |
 
 ## What It Is
 

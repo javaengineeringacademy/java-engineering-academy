@@ -1,14 +1,18 @@
 # Build Systems — C Language
 
-## The Problem
+## Why It Matters
 
-A C project with 10 source files has 10 compilation units. With dependencies between them, rebuilding everything from scratch takes minutes. Without a build system, you manually type `gcc` commands — error-prone, slow, and unrepeatable. With a build system, you type `make` and it:
+When you're building a C project with multiple source files and dependencies, manually typing `gcc` commands is error-prone, slow, and unrepeatable. A build system automates recompilation of only changed files, resolves dependencies, runs tests, installs correctly, and works identically on every developer's machine — turning minutes of manual rebuilding into seconds of incremental compilation.
 
-- Recompiles only changed files
-- Resolves dependencies automatically
-- Runs tests
-- Installs to the correct location
-- Works identically on every developer's machine
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any project with >1 source file, or needing CI/CD | Direct `gcc` for single-file prototypes |
+| When NOT to use | One-off scripts or throwaway code | Keep it simple |
+| Alternatives | Meson, Ninja, Bazel, xmake | Different trade-offs in complexity and features |
+| Production Examples | Linux kernel (Make), CMake-based projects, Meson (systemd) | Build systems scale with project size |
+| Common Mistakes | Not tracking header deps (`-MMD -MP`), implicit flags, no `make clean` | Use `-MMD -MP`, explicit `CFLAGS`, always support clean |
 
 ## What It Is
 

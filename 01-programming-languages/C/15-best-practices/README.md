@@ -1,10 +1,18 @@
 # Best Practices — C Language
 
-## The Problem
+## Why It Matters
 
-C code that works today becomes unmaintainable tomorrow without consistent practices. Different developers use different naming conventions, different error handling strategies, different memory management patterns. The result: a codebase that nobody wants to touch, where every change risks breaking something.
+When you're building C codebases that teams maintain for years, inconsistent practices lead to code nobody wants to touch, where every change risks breaking something. Best practices transform individual skill into team productivity — consistent naming conventions, error handling strategies, and memory management patterns make code readable, maintainable, and safe regardless of who wrote it.
 
-Best practices transform individual skill into team productivity. They make code readable, maintainable, and safe — regardless of who wrote it.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | All team projects, shared codebases, long-lived code | Less formality for personal/throwaway scripts |
+| When NOT to use | Over-documenting obvious code | Comments explain *why*, not *what* |
+| Alternatives | MISRA C, CERT C, Linux kernel coding style | Domain-specific standards |
+| Production Examples | Linux kernel style, SQLite style, PostgreSQL style | Each project adapts conventions |
+| Common Mistakes | Inconsistent naming, no error handling docs, magic numbers | Enforce style, document APIs, use named constants |
 
 ## What It Is
 
@@ -14,7 +22,7 @@ Best practices are guidelines that professional C developers follow:
 |----------|---------|--------|
 | Naming conventions | Consistent, readable code | Faster onboarding |
 | Code organization | Modular, testable code | Easier maintenance |
-| Error handling | Robust, reliable code | Fewer production bugs |
+| Error handling | Reliable code | Fewer production bugs |
 | Documentation | Understandable interfaces | Faster development |
 | Memory discipline | Leak-free, safe code | Fewer crashes |
 | Testing | Verified correctness | Confident refactoring |

@@ -1,10 +1,18 @@
 # Networking — C Language
 
-## The Problem
+## Why It Matters
 
-Programs need to communicate with other programs — across processes, machines, and networks. Without networking, there are no web servers, no databases, no APIs, no internet. C provides the foundational networking API through BSD sockets, which is the basis for every networked application in existence.
+When you're building web servers, databases, APIs, or any application that communicates across processes, machines, or networks, you need networking. Without it, there are no web servers, no databases, no internet. C's BSD sockets API is the universal foundation for every networked application, giving you maximum control and performance — close to the metal — along with maximum responsibility for managing connections, buffers, and protocols directly.
 
-C's networking is "close to the metal" — you manage connections, buffers, and protocols directly. This gives you maximum control and performance, but also maximum responsibility.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | TCP/UDP servers, low-level network programming | High-level frameworks (libuv, libevent) for apps |
+| When NOT to use | Simple HTTP clients (use libcurl) | Don't reimplement TLS, DNS resolution |
+| Alternatives | Go net, Rust tokio, libuv, Boost.Asio | Higher-level abstractions, different trade-offs |
+| Production Examples | Nginx, HAProxy, Redis (TCP), memcached | Event-driven for high concurrency |
+| Common Mistakes | Not handling partial sends, missing `SO_REUSEADDR`, not closing fds | Loop on send, set `SO_REUSEADDR`, close in all paths |
 
 ## What It Is
 

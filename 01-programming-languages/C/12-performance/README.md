@@ -1,10 +1,18 @@
 # Performance — C Language
 
-## The Problem
+## Why It Matters
 
-C is already fast — but fast is not fast enough. A database engine that processes 10K queries/sec needs to process 100K. A network packet classifier that handles 200K packets/sec needs to handle 1M. Performance optimization is the difference between a system that works and a system that works at scale.
+When you're building a database processing 10K queries/sec that needs to handle 100K, or a packet classifier handling 200K packets/sec that needs to handle 1M, performance optimization is the difference between a system that works and one that works at scale. C is already fast, but fast is not fast enough — the key is to profile first, identify bottlenecks, and optimize the critical 1% of code that accounts for 99% of execution time, avoiding premature optimization that wastes time and creates complexity.
 
-But premature optimization wastes time and creates complexity. The key is to profile first, identify bottlenecks, and optimize the critical 1% of code that accounts for 99% of execution time.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Hot paths identified by profiling, latency/throughput-critical code | Don't optimize cold paths |
+| When NOT to use | Before profiling — premature optimization wastes time | Correctness first, optimize after |
+| Alternatives | Rust (LLVM backend), C++ (same performance, more abstractions) | Same perf potential, different ergonomics |
+| Production Examples | Redis (event loop), Linux kernel (BPF), SQLite (query optimizer) | Profile-driven optimization |
+| Common Mistakes | Optimizing before profiling, ignoring cache behavior, branch-heavy code | Profile first, use cache-friendly access, branchless |
 
 ## What It Is
 

@@ -1,8 +1,18 @@
 # Advanced Pointers — C Language
 
-## The Problem
+## Why It Matters
 
-Basic pointers let you pass addresses and dereference them. But C's real power lies in advanced pointer patterns: function pointers for callbacks and dynamic dispatch, pointer-to-pointer for modifying pointers in other functions, opaque pointers for API design, and complex declarations for flexible data layouts. Without these, you cannot implement data structures, callback systems, plugin architectures, or any polymorphic behavior in C.
+When you're building data structures, callback systems, plugin architectures, or any polymorphic behavior in C, you need advanced pointer patterns beyond basic dereferencing. Function pointers enable callbacks and dynamic dispatch, opaque pointers enable API design, and pointer-to-pointer enables modifying pointers in other functions. Without these, you cannot implement the building blocks of real-world C libraries.
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Callbacks, dynamic dispatch, API boundaries, output parameters | Simple pointers for straightforward cases |
+| When NOT to use | When typedefs make code unclear (overuse of function pointers) | Keep interfaces simple |
+| Alternatives | C++ virtual methods, Rust trait objects, Go interfaces | More abstraction, different trade-offs |
+| Production Examples | Linux VFS (`file_operations`), SQLite VFS, OpenSSL callbacks | Every major C library uses function pointers |
+| Common Mistakes | Dangling function pointers after `dlclose`, not checking `realloc` temp | Always null-check, use temp ptr for realloc |
 
 ## What It Is
 

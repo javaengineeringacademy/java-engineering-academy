@@ -1,10 +1,18 @@
 # Data Structures — C Language
 
-## The Problem
+## Why It Matters
 
-Arrays are fast but inflexible — inserting in the middle requires shifting all elements. Fixed-size arrays waste memory or overflow. Without proper data structures, you cannot build efficient databases, compilers, operating systems, or any application that manages non-trivial amounts of data.
+When you're building databases, compilers, operating systems, or any application managing non-trivial amounts of data, arrays alone won't cut it — they're fast but inflexible, with O(n) insertions and wasted or overflowing fixed sizes. C has no built-in collections, so you implement data structures from scratch using structs and pointers, gaining speed, size, and predictability that managed-language counterparts cannot match.
 
-C has no built-in collections (no `ArrayList`, no `HashMap`, no `TreeSet`). You implement data structures from scratch using structs and pointers. This is not a limitation — it is why C data structures are faster, smaller, and more predictable than their managed-language counterparts.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Dynamic data, fast lookup, sorted iteration, priority queues | Arrays for small, fixed collections |
+| When NOT to use | Linked lists for most cases (poor cache locality) | Dynamic arrays (`realloc`) often faster |
+| Alternatives | C++ STL, Rust collections, third-party libraries | More features, less control |
+| Production Examples | Redis dict (hash table), Linux scheduler (rbtree), SQLite btree | Custom allocators for performance |
+| Common Mistakes | Recursive tree traversal (stack overflow), no load factor monitoring | Use iterative traversal, monitor load factor |
 
 ## What It Is
 

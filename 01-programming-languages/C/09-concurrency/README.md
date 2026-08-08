@@ -1,15 +1,18 @@
 # Concurrency — C Language
 
-## The Problem
+## Why It Matters
 
-Single-threaded programs cannot utilize multiple CPU cores and cannot handle I/O while processing. A web server that processes requests sequentially can only handle one client at a time — useless for any real workload. Concurrency lets you:
+When you're building web servers, databases, or any system handling multiple tasks simultaneously, single-threaded programs can't utilize multiple CPU cores or overlap I/O with processing. Concurrency lets you handle thousands of connections simultaneously, keep UIs responsive during computation, and improve throughput — but it introduces new bug classes: race conditions, deadlocks, and data corruption impossible in single-threaded code.
 
-- Utilize multiple CPU cores for parallel computation
-- Overlap I/O with processing (read network while computing)
-- Keep applications responsive (UI doesn't freeze during computation)
-- Improve throughput (handle thousands of connections simultaneously)
+## Engineering Decision Framework
 
-But concurrency introduces new classes of bugs: race conditions, deadlocks, and data corruption that are impossible in single-threaded code.
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Multi-core utilization, overlapping I/O, responsive UIs | Single-threaded with async I/O for simple cases |
+| When NOT to use | When synchronization overhead exceeds parallelism benefit | Event-driven (epoll/kqueue) for I/O-bound loads |
+| Alternatives | Go goroutines, Rust async/tokio, Erlang processes | Higher-level abstractions, different trade-offs |
+| Production Examples | Nginx (worker processes), Redis (single-threaded + I/O threads), PostgreSQL | Threading models vary by workload |
+| Common Mistakes | `volatile` for thread safety, not checking `pthread_cond_wait` return | Use `stdatomic.h`, always use `while` loop for condvars |
 
 ## What It Is
 

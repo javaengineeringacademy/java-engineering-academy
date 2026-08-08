@@ -1,10 +1,18 @@
 # File I/O — C Language
 
-## The Problem
+## Why It Matters
 
-Programs need to persist data beyond their execution lifetime and read data from external sources. Without file I/O, every program would start from scratch — no configuration files, no logs, no databases, no saved state. File I/O is the bridge between a running program and the outside world.
+When you're building any program that needs to persist data beyond execution — configuration files, logs, databases, saved state — you need file I/O. Without it, every program starts from scratch. C's `stdio.h` library works identically across Unix, Windows, and embedded systems, which is why C is used for configuration parsers, log processors, database engines, and data migration tools.
 
-C provides a standard, portable file I/O library (`stdio.h`) that works identically across Unix, Windows, and embedded systems. This portability is why C is used for configuration parsers, log processors, database engines, and data migration tools.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Text/binary file operations, cross-platform I/O | Memory-mapped files (`mmap`) for large files |
+| When NOT to use | High-frequency small writes (buffering overhead) | Custom buffered I/O or `mmap` |
+| Alternatives | `mmap` for random access, POSIX `pread`/`pwrite` | Better performance for specific patterns |
+| Production Examples | SQLite file format, Redis AOF, Nginx logs | All use buffered stdio or raw syscalls |
+| Common Mistakes | Not calling `fclose`, ignoring `fread` return, text vs binary mode | Always close, check returns, use `"rb"/"wb"` |
 
 ## What It Is
 
@@ -225,14 +233,14 @@ int lookup_record(const char *datafile, const char *indexfile,
 }
 ```
 
-### Error Handling and Robustness
+### Error Handling and Reliability
 
 ```c
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 
-// Robust file copy with error handling
+// Reliable file copy with error handling
 int copy_file(const char *src, const char *dst) {
     FILE *in = fopen(src, "rb");
     if (!in) {

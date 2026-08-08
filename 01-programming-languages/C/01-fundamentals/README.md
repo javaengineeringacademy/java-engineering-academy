@@ -1,10 +1,18 @@
 # Fundamentals — C Language
 
-## The Problem
+## Why It Matters
 
-Every C program, from a 20-line embedded firmware to a 10-million-line operating system, is built from the same atoms: variables, operators, control flow, functions, arrays, strings, pointers, and memory basics. Without mastery of these, you cannot write correct C code — you will fight syntax errors, undefined behavior, and subtle bugs that experienced developers avoid instinctively.
+When you're writing anything from a 20-line embedded firmware to a 10-million-line operating system, you need the same building blocks: variables, operators, control flow, functions, arrays, strings, pointers, and memory basics. Without mastering these, you fight syntax errors, undefined behavior, and subtle bugs that experienced developers avoid instinctively. The fundamentals are not just syntax — they are the mental model for how C thinks about data and execution.
 
-The fundamentals are not just syntax — they are the mental model for how C thinks about data and execution.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any C program, from embedded to OS kernels | Higher-level languages for rapid prototyping |
+| When NOT to use | N/A — these are foundational | N/A |
+| Alternatives | Rust ownership, Go garbage collection | Less control, less transparency |
+| Production Examples | Linux kernel, SQLite, Redis | All built on these fundamentals |
+| Common Mistakes | Uninitialized variables, unchecked return values, signed/unsigned mixing | Use `-Wall -Wextra -Werror` |
 
 ## What It Is
 

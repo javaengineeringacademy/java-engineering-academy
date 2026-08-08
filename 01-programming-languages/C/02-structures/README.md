@@ -1,10 +1,18 @@
 # Structures & Unions — C Language
 
-## The Problem
+## Why It Matters
 
-As programs grow beyond simple variables, you need to group related data together. A database record has a name, age, and salary. A network packet has source, destination, port, and payload. Without structures, you would manage dozens of separate variables — error-prone and unmanageable.
+When you're building anything beyond simple variables — a database record with name, age, and salary, or a network packet with source, destination, port, and payload — you need to group related data together. Without structures, you manage dozens of separate variables, which is error-prone and unmanageable. Structures provide the foundation for all data abstraction in C: linked lists, trees, hash tables, I/O buffers, and every complex data type in systems programming.
 
-Structures provide the foundation for all data abstraction in C: linked lists, trees, hash tables, I/O buffers, and every complex data type in systems programming.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Grouping related data, API boundaries, ABI-stable interfaces | Simple variables for trivial cases |
+| When NOT to use | Returning large structs by value (copies entire struct) | Use pointers or output parameters |
+| Alternatives | C++ classes (OOP), Rust enums (tagged unions) | More features, different trade-offs |
+| Production Examples | Linux `file_operations`, SQLite VFS, network protocols | Packed structs for wire formats |
+| Common Mistakes | Forgetting padding, not checking union tags, shallow copying pointers | Use `offsetof()`, always check tags |
 
 ## What It Is
 

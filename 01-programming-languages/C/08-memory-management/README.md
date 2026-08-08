@@ -1,10 +1,18 @@
 # Memory Management — C Language
 
-## The Problem
+## Why It Matters
 
-C gives you direct control over memory — and direct responsibility for getting it right. Without a garbage collector, every byte you allocate must be explicitly freed. Get it wrong, and you get memory leaks (memory exhausted over time), dangling pointers (using freed memory), double frees (corrupting the allocator), or buffer overflows (writing past allocated boundaries).
+When you're building systems that need direct control over memory — without garbage collector pauses, with predictable allocation timing, and with minimal footprint — C gives you that power along with direct responsibility. Every byte you allocate must be explicitly freed, and getting it wrong leads to memory leaks, dangling pointers, double frees, or buffer overflows — the most dangerous class of software vulnerabilities, behind Heartbleed, the Morris worm, and countless remote code execution exploits.
 
-Memory bugs are the most dangerous class of software vulnerabilities. The Heartbleed bug, the Morris worm, and countless remote code execution exploits all trace back to memory management errors in C code.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Performance-critical systems, embedded, kernel code | Garbage-collected languages for rapid development |
+| When NOT to use | When you can't guarantee careful audit of every allocation | Rust ownership, Go GC |
+| Alternatives | Rust (ownership), Go (GC), custom allocators (arena, pool) | Different safety/performance trade-offs |
+| Production Examples | Redis (jemalloc), Linux kernel (slab allocator), SQLite (scratch memory) | Custom allocators for specific workloads |
+| Common Mistakes | Not checking malloc return, forgetting to free, use-after-free | Always check returns, NULL after free, ASan |
 
 ## What It Is
 

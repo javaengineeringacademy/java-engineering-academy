@@ -1,10 +1,18 @@
 # Algorithms — C Language
 
-## The Problem
+## Why It Matters
 
-Data structures store data; algorithms process it. Without algorithms, you cannot sort search results, find shortest paths in networks, compress files, or solve optimization problems. C's lack of a standard library for complex algorithms means you must understand the fundamentals to implement them correctly and efficiently.
+When you need to sort search results, find shortest paths in networks, compress files, or solve optimization problems, data structures alone aren't enough — you need algorithms to process the data. C's lack of a standard library for complex algorithms means you must understand the fundamentals to implement them correctly and efficiently, choosing the right algorithm for your data size to avoid the difference between milliseconds and hours of runtime.
 
-Every algorithm has time and space complexity trade-offs. Choosing the wrong algorithm for your data size can mean the difference between milliseconds and hours of runtime.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Sorting, searching, graph traversal, optimization problems | Standard library (`qsort`, `bsearch`) for simple cases |
+| When NOT to use | Premature optimization — profile first | Algorithmic improvements beat micro-optimizations |
+| Alternatives | C++ `<algorithm>`, Rust iterators, specialized libraries | More abstractions, less control |
+| Production Examples | Linux scheduler (rbtree), Redis (quicklist), SQLite (btree) | Custom algorithms for specific workloads |
+| Common Mistakes | QuickSort on sorted input (O(n²)), integer overflow in binary search mid | Median-of-three pivot, overflow-safe mid |
 
 ## What It Is
 

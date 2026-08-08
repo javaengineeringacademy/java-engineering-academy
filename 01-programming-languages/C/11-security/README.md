@@ -1,10 +1,18 @@
 # Security — C Language
 
-## The Problem
+## Why It Matters
 
-C gives you direct access to memory and hardware — and direct responsibility for security. Buffer overflows, format string vulnerabilities, integer overflows, and use-after-free bugs are not theoretical — they are the most exploited vulnerability class in production systems. The Morris worm (1988), Heartbleed (2014), and countless zero-day exploits all trace back to memory safety issues in C code.
+When you're building any system that handles untrusted input — network services, parsers, configuration readers — C gives you direct access to memory and hardware, but also direct responsibility for security. Buffer overflows, format string vulnerabilities, integer overflows, and use-after-free bugs are not theoretical; they are the most exploited vulnerability class in production systems, behind the Morris worm (1988), Heartbleed (2014), and countless zero-day exploits. Security must be baked into every line of C code you write.
 
-Security is not a feature you add later — it must be baked into every line of C code you write.
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any C code handling untrusted input | Memory-safe languages for high-risk code |
+| When NOT to use | Trusted internal code with verified inputs | Still use compiler flags as safety net |
+| Alternatives | Rust (ownership prevents most vulns), Go (GC + bounds checking) | More safety, less control |
+| Production Examples | OpenSSL hardening, Linux kernel `CONFIG_HARDENED_USERCOPY` | Defense in depth: code + flags + runtime |
+| Common Mistakes | Using `strcpy`/`sprintf`, not checking integer overflow, format strings | Use `strncpy`/`snprintf`, validate arithmetic, `%s` format |
 
 ## What It Is
 

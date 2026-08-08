@@ -1,6 +1,6 @@
 # Knowledge Atoms — C Language
 
-## The Problem
+## Why It Matters
 
 Before writing any C code, you need to understand the mental model C uses. Unlike managed languages (Java, Python, Go), C gives you direct control over memory, types, and compilation. Without understanding these foundational concepts, every subsequent module becomes harder to learn and every bug harder to diagnose.
 

@@ -1,10 +1,18 @@
 # Testing — C Language
 
-## The Problem
+## Why It Matters
 
-C code has no runtime type safety, no bounds checking, and no garbage collector. Bugs manifest as crashes, memory corruption, or silent wrong answers. Without testing, you discover these bugs in production — when customers are affected, data is lost, or systems go down.
+When you're building C code with no runtime type safety, no bounds checking, and no garbage collector, bugs manifest as crashes, memory corruption, or silent wrong answers. Without testing, you discover these in production — when customers are affected, data is lost, or systems go down. A bug found in development costs 1x to fix; in production, it costs 10-100x more due to customer impact, data recovery, and reputation damage.
 
-Testing catches bugs early, when they are cheap to fix. A bug found in development costs 1x to fix. In production, it costs 10-100x more (customer impact, data recovery, reputation damage).
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | All production C code, especially parsers and input handlers | Manual testing only for throwaway scripts |
+| When NOT to use | 100% coverage is not the goal — focus on critical paths | Coverage measures paths, not correctness |
+| Alternatives | Property-based testing (QuickCheck), fuzzing campaigns | More thorough, more effort |
+| Production Examples | SQLite (>99% branch coverage), Linux kernel (0day bots), OpenSSL | Fuzz testing catches real vulnerabilities |
+| Common Mistakes | Testing only happy paths, not running under Valgrind/ASan | Test edge cases, NULL, empty, boundary values |
 
 ## What It Is
 
