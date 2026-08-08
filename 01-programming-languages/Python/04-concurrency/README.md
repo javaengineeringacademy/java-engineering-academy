@@ -202,3 +202,60 @@ process.start()
 | Best Alternative | concurrent.futures for simple pool-based parallelism |
 | When to Use | I/O-bound (threading), CPU-bound (multiprocessing), high-concurrency network (asyncio) |
 | When to Avoid | Simple sequential scripts, shared mutable state without synchronization |
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Race condition in shared counter | `threading.enumerate()` + lock inspection | Add `threading.Lock` around shared state; use `Queue` for thread communication |
+| Deadlock from inconsistent lock ordering | Thread dump via `faulthandler` or debugger | Enforce consistent lock acquisition order; use `threading.RLock` for reentrant locks |
+| GIL starving CPU-bound threads | `sys.getswitchinterval()` monitoring | Move CPU work to `multiprocessing`; tune GIL interval for latency |
+| Asyncio event loop blocking | `asyncio.debug()` mode enabled | Ensure no blocking I/O in async functions; use `asyncio.to_thread()` for sync code |
+| Thread-unsafe global state | `threading.local()` inspection | Use `threading.local()` for per-thread state; avoid module-level mutable globals |
+
+## Code Review Checklist
+
+- [ ] `threading.Lock` used for all shared mutable state
+- [ ] Lock acquisition order documented and consistent across codebase
+- [ ] CPU-bound work delegated to `multiprocessing`, not `threading`
+- [ ] Async I/O functions are non-blocking; no sync calls in `async def`
+- [ ] Thread-unsafe globals protected with `threading.local()` or locks
+- [ ] `concurrent.futures` used for simple pool-based parallelism
+- [ ] `asyncio` used for high-concurrency network I/O, not CPU-bound tasks
+
+## Architecture Considerations
+
+Concurrency models determine system throughput and responsiveness. Threading suits I/O-bound work with moderate concurrency. Multiprocessing provides true parallelism for CPU-bound tasks. Asyncio enables high-concurrency with low overhead but requires careful coroutine design. The choice depends on workload type and latency requirements.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Threading with Lock | I/O-bound with shared state | Simple but GIL limits CPU parallelism |
+| ProcessPoolExecutor | CPU-bound computation | True parallelism but IPC overhead |
+| Asyncio with aiohttp | High-concurrency network I/O | Scalable but requires async ecosystem |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Race condition exposing shared data | Data corruption or information leakage | Use `threading.Lock` or `Queue` for thread communication |
+| Thread-unsafe module-level state | Concurrent modification bugs | Use `threading.local()` for per-thread state |
+| Asyncio task cancellation not handled | Resource leak or inconsistent state | Use `try/finally` in async context managers; implement proper cancellation |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.12+ | Task groups (`asyncio.TaskGroup`) | Replace `asyncio.gather()` with `TaskGroup` for structured concurrency |
+| Python 3.13+ | Free-threaded mode (no GIL) | Test with `PYTHON_GIL=0`; prepare for true threading parallelism |
+| Python 3.14+ | Per-interpreter GIL (PEP 684) | Enable sub-interpreters for isolation; reduces GIL contention |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `asyncio` | 3.4+ | Stable, mature async framework |
+| `concurrent.futures` | 3.2+ | Stable, thread/process pool abstraction |
+| `asyncio.TaskGroup` | 3.11+ | Stable, structured concurrency |
+| Free-threaded mode | 3.13+ experimental | Available behind `PYTHON_GIL=0` |

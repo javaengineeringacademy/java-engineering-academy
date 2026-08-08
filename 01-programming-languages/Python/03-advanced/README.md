@@ -202,3 +202,60 @@ def get_db_connection():
 | Best Alternative | itertools for iteration, functools for function transformation |
 | When to Use | Memory-efficient pipelines, cross-cutting concerns, concise transforms |
 | When to Avoid | When readability suffers, when debugging stack traces matter |
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Generator exhaustion silently returning empty | Add `len()` check or use `itertools.tee()` | Document generator behavior; convert to list if multiple passes needed |
+| Decorator order causing logic bypass | `inspect.getsource()` to trace applied decorators | Establish ordering policy: auth before cache; use `@functools.wraps` |
+| Context manager not releasing resource on exception | Test exception paths explicitly | Always use `try/finally` in context managers; test with `pytest.raises` |
+| Decorator adding call overhead | `cProfile` on decorated vs undecorated function | Use `@functools.wraps` to minimize overhead; avoid stacking when performance matters |
+| Lambda capturing loop variable by value | Print lambda defaults at creation time | Use default argument `i=i` or `functools.partial` to bind current value |
+
+## Code Review Checklist
+
+- [ ] `@functools.wraps` used in all custom decorators to preserve metadata
+- [ ] Generator exhaustion documented; consumers aware of single-pass nature
+- [ ] Context managers use `try/finally` for guaranteed resource cleanup
+- [ ] Decorator ordering verified (security decorators outermost)
+- [ ] Lambda limited to simple expressions; complex logic uses `def`
+- [ ] Generator expressions used for large datasets instead of list comprehensions
+- [ ] `map`/`filter` only when function is already defined; comprehensions preferred otherwise
+
+## Architecture Considerations
+
+Advanced Python features enable elegant cross-cutting concerns. Decorators provide AOP-like behavior for logging, auth, and caching. Generators enable memory-efficient data pipelines that process infinite streams. Context managers enforce resource lifecycle guarantees. Together, these patterns compose into declarative, maintainable architectures that separate concerns cleanly.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Decorator stacking | Logging, auth, caching, retry | Readable but order-dependent; adds call overhead |
+| Generator pipelines | Data processing, streaming | Memory efficient but single-pass; harder to debug |
+| Context managers | Resource lifecycle (DB, files, connections) | Guaranteed cleanup but requires explicit `with` blocks |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Decorator order bypassing auth | Unauthenticated access to protected endpoints | Place security decorators outermost; test decorator stacking order |
+| Generator yielding sensitive data to unauthorized consumers | Data leakage | Ensure generators are consumed by authorized callers only |
+| Context manager exception swallowing | Resource leak or security bypass | Use `try/finally` explicitly; test exception paths |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.7+ | `contextlib.AsyncContextManager` | Use for async resource management in `async with` |
+| Python 3.9+ | `functools.cache` (unbounded) | Replace `lru_cache(maxsize=None)` with `@cache` |
+| Python 3.12+ | Generator expression improvements | Use for cleaner pipeline expressions |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `@contextmanager` | 3.2+ | Stable, preferred for simple context managers |
+| Generator expressions `()` | 3.0+ | Stable, memory-efficient iteration |
+| `functools.lru_cache` | 3.2+ | Stable, memoization for pure functions |
+| `contextlib.asynccontextmanager` | 3.7+ | Stable, async resource management |

@@ -207,3 +207,60 @@ def test_config():
 | Best Alternative | unittest for stdlib-only, pytest for rich ecosystem |
 | When to Use | Any production code, CI/CD pipelines, refactoring safety net |
 | When to Avoid | Throwaway scripts, trivial one-off utilities |
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Flaky tests failing randomly | Mock time/network/DB with `pytest-mock` | Isolate external dependencies; use fixtures for deterministic setup/teardown |
+| Test pollution between tests | Run with `pytest --lf` to isolate | Avoid global state; use fixtures; each test should be independent |
+| Mock too deep hiding real bugs | Integration tests alongside unit tests | Mock only external boundaries; test real behavior when possible |
+| Tests passing locally but failing in CI | `PYTHONHASHSEED` for deterministic ordering | Pin hash seed; test with `pytest --randomly`; ensure test isolation |
+| Exception test not verifying traceback | `pytest.raises(match=...)` with regex | Verify both exception type and message; test exception chain preservation |
+
+## Code Review Checklist
+
+- [ ] Every `except` block has a corresponding test
+- [ ] Tests mock only external boundaries (APIs, filesystem), not internal logic
+- [ ] Fixtures used for setup/teardown instead of global state
+- [ ] Tests are independent; no shared mutable state between tests
+- [ ] `pytest.raises` verifies both exception type and message content
+- [ ] Parametrize used for data-driven tests to reduce duplication
+- [ ] Test coverage targets >80% for critical paths
+
+## Architecture Considerations
+
+Testing strategy determines deployment confidence. A balanced testing pyramid (unit > integration > E2E) provides fast feedback with realistic coverage. Mock boundaries must match real system boundaries to avoid false positives. Test fixtures should mirror production configuration to catch environment-specific bugs.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Unit tests with mocks | Fast feedback, isolated logic | Fast but may miss integration issues |
+| Integration tests | Component interaction validation | Realistic but slower and more complex |
+| Parametrized tests | Data-driven edge cases | Reduces duplication but harder to debug failures |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Test data containing real secrets | Credential leakage in CI logs | Use fake/test credentials; scan for secrets in test data |
+| Over-mocking hiding security bugs | Vulnerabilities reaching production | Test real security behavior; include security-focused tests |
+| Test pollution modifying shared config | Security settings altered between tests | Use fixtures to restore config; never modify global settings |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| pytest 7+ | `@pytest.mark.parametrize` improvements | Use for cleaner data-driven tests |
+| pytest 8+ | Better async test support | Use `pytest-asyncio` with native support |
+| Python 3.12+ | Improved assertion introspection | Upgrade for better error messages in test failures |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `unittest.mock` | 3.3+ | Stable, built-in mocking |
+| `pytest` (third-party) | 3.0+ | Stable, preferred testing framework |
+| `pytest-cov` | Third-party | Stable, coverage reporting |
+| `pytest.mark.parametrize` | 3.0+ | Stable, data-driven tests |

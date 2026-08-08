@@ -861,3 +861,60 @@ result = arr * 2  # In-place
 
 ### Q5: What is the difference between lazy and eager evaluation?
 **Answer:** Lazy: compute on demand (generators, iterators). Eager: compute immediately (lists, dicts). Lazy saves memory, eager is simpler.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| String concatenation causing O(n²) | `timeit` benchmark + `"".join()` | Replace `+=` with `join()` or f-strings for loops |
+| Cache stampede under load | Lock per key + jitter on expiry | Use `threading.Lock` per cache key; add random jitter to TTL |
+| NumPy array conversion eating memory | Profile with `tracemalloc` | Stay in NumPy for processing; minimize list↔array conversions |
+| Profiling in production unsafe | `py-spy` (sampling profiler) | Use sampling profiler for low-overhead production profiling |
+| Premature optimization wasting time | `cProfile` to identify actual bottlenecks | Profile first; optimize only hot paths; verify with benchmarks |
+
+## Code Review Checklist
+
+- [ ] `cProfile` or `py-spy` used before any optimization claims
+- [ ] Built-in functions (`sum`, `min`, `max`, `sorted`) used over manual loops
+- [ ] List comprehensions used for simple transformations
+- [ ] Generators used for large datasets to reduce memory pressure
+- [ ] `@lru_cache` or `@cache` applied to expensive pure functions
+- [ ] `deque` used for queue operations; `set` for membership testing
+- [ ] String concatenation replaced with `join()` or f-strings
+
+## Architecture Considerations
+
+Performance optimization must be data-driven. Profiling identifies actual bottlenecks, not assumed ones. Caching eliminates redundant computation. Async I/O parallelizes network operations. C extensions provide maximum throughput for CPU-bound code. The architecture must balance performance with maintainability.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `@lru_cache` for memoization | Expensive pure function calls | Fast but cache invalidation is complex |
+| NumPy vectorization | Numerical computation | 10-100x faster but adds dependency |
+| C extensions via ctypes/Cython | CPU-critical paths | Maximum performance but complex build |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Cache leaking sensitive data | Credential exposure | Don't cache sensitive data; use bounded cache with TTL |
+| Profiling in production exposing internals | Information disclosure | Use sampling profiler; restrict profiling access |
+| C extension buffer overflow | Remote code execution | Validate inputs; use safe C APIs |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.9+ | `functools.cache` (unbounded) | Replace `lru_cache(maxsize=None)` with `@cache` |
+| Python 3.11+ | Specializing adaptive interpreter | Upgrade for 10-60% automatic speedup |
+| Python 3.12+ | Improved bytecode optimization | Upgrade for reduced overhead |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `cProfile` | 2.5+ | Stable, function-level profiling |
+| `functools.lru_cache` | 3.2+ | Stable, memoization |
+| `py-spy` (third-party) | 3.4+ | Stable, sampling profiler |
+| NumPy | Third-party | Stable, vectorized computation |

@@ -597,3 +597,60 @@ def process_data(raw: list[dict]) -> list[dict]:
 - **Immutability:** Prefer tuples, frozensets, frozen dataclasses when possible
 - **Use functional for:** Data pipelines, transformations, pure computations
 - **Avoid functional for:** Heavy I/O, mutable state, team unfamiliar with patterns
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| `reduce` producing unreadable stack trace | Replace with named functions + `sum()` | Use `sum()` for simple accumulation; name complex reduce functions |
+| `lru_cache` causing memory leak | `cache_info()` to check size; set `maxsize` | Bound cache with `maxsize=1000`; use TTL cache for time-sensitive data |
+| Side effects in lambda causing non-determinism | Materialize generators before operations | Use `list()` to force evaluation; avoid side effects in lambdas |
+| `itertools.groupby` not grouping all items | Sort data by key before calling `groupby` | Always `.sort(key=...)` before `groupby`; it only groups consecutive elements |
+| `map`/`filter` returning iterator consumed once | Convert to list if needed multiple times | Use `itertools.tee()` for multiple consumers; document single-pass behavior |
+
+## Code Review Checklist
+
+- [ ] Comprehensions used instead of `map`/`filter` for simple cases
+- [ ] `functools.wraps` used in all custom decorators
+- [ ] `lru_cache` bounded with `maxsize` to prevent memory leaks
+- [ ] Lambda functions limited to simple, single-expression logic
+- [ ] `partial` used for callback specialization instead of complex lambdas
+- [ ] Pure functions preferred; side effects isolated and documented
+- [ ] Generator expressions used for large datasets to save memory
+
+## Architecture Considerations
+
+Functional programming enables composable, testable data pipelines. Pure functions are trivially testable and parallelizable. Immutability prevents race conditions in concurrent code. However, forcing functional style on inherently stateful domains (counters, accumulators) leads to awkward code. The balance is to use functional patterns for data transformations while embracing OOP for domain modeling.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Function composition | ETL pipelines, data transformations | Readable pipeline but harder to debug |
+| `itertools` chains | Lazy iteration over large datasets | Memory efficient but single-pass |
+| Frozen dataclasses | Immutable configuration | Safe concurrency but no mutation methods |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| `lru_cache` leaking sensitive data | Cached credentials or tokens | Use bounded cache; clear with `cache_clear()`; avoid caching secrets |
+| Lambda capturing sensitive variable | Credentials in closure scope | Use `functools.partial` with explicit arguments |
+| `reduce` on unvalidated input | Arbitrary code execution via malicious data | Validate input before reduce; avoid `eval` in reduce operations |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.9+ | `functools.cache` (unbounded) | Replace `lru_cache(maxsize=None)` with `@cache` |
+| Python 3.10+ | `match` for pattern matching | Replace complex `filter`/`reduce` logic with pattern matching |
+| Python 3.12+ | Generator expression improvements | Use for cleaner pipeline expressions |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `functools.lru_cache` | 3.2+ | Stable, bounded memoization |
+| `functools.cache` | 3.9+ | Stable, unbounded memoization |
+| `itertools.groupby` | 2.3+ | Stable, must sort before grouping |
+| `functools.singledispatch` | 3.4+ | Stable, type-based dispatch |

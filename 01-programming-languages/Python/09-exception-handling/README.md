@@ -332,3 +332,60 @@ signal.signal(signal.SIGTERM, signal_handler)
 ---
 
 > **Remember:** Exception handling isn't about preventing errors — it's about handling them gracefully when they inevitably occur.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| `except Exception` hiding real bug | Remove broad catches; catch specific types | Catch `ValueError`, `KeyError`, etc. specifically; log and re-raise |
+| Exception chain lost in production | Use `raise ... from e` always | Chain exceptions with `from`; use `from None` only to hide internal details |
+| `finally` not running on SIGTERM | Register `signal.signal(SIGTERM, handler)` | Don't rely on `finally` for critical cleanup; use signal handlers and `atexit` |
+| `logger.exception()` outside `except` block | Use `exc_info=True` explicitly | Call `logger.exception()` only inside `except`; use `exc_info=True` elsewhere |
+| Exception group handling in asyncio | `except*` syntax (Python 3.11+) | Use `ExceptionGroup` for concurrent errors; handle with `except*` |
+
+## Code Review Checklist
+
+- [ ] No bare `except:` clauses; always catch specific exception types
+- [ ] `raise ... from e` used to chain exceptions and preserve root cause
+- [ ] Custom exception hierarchy defined with base `AppError` class
+- [ ] Every `except` block has a corresponding test
+- [ ] Exceptions logged with full context (request ID, user ID, timestamps)
+- [ ] `finally` blocks used for resource cleanup, not `__del__`
+- [ ] No exceptions used for normal control flow
+
+## Architecture Considerations
+
+Exception handling determines system resilience. A well-designed exception hierarchy maps to domain errors, enabling precise error handling at appropriate abstraction levels. Exception chaining preserves root cause information for debugging. Centralized exception handlers ensure consistent error responses in APIs.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Custom exception hierarchy | Domain-specific error handling | Clear semantics but requires upfront design |
+| Exception chaining with `from` | Preserving root cause | Debugging-friendly but adds exception nesting |
+| Centralized exception handler | API error responses | Consistent but may hide specific error context |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Exception message leaking internal details | Information disclosure in API responses | Sanitize exception messages; log full details server-side only |
+| `except` swallowing security errors | Security vulnerabilities undetected | Never silently catch `PermissionError`, `AuthenticationError` |
+| Exception in `finally` masking original error | Data loss or inconsistent state | Keep `finally` blocks simple; log secondary exceptions |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.11+ | `ExceptionGroup` and `except*` | Adopt for concurrent error handling in asyncio |
+| Python 3.12+ | Improved exception messages | Upgrade for better debugging; no code changes needed |
+| Python 3.13+ | Free-threaded exception handling | Test exception behavior in free-threaded mode |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| Exception chaining (`from`) | 3.0+ | Stable, always use `from` |
+| `ExceptionGroup` | 3.11+ | Stable, concurrent error handling |
+| `except*` syntax | 3.11+ | Stable, handle exception groups |
+| `except Exception` (best practice) | All versions | Stable, catch specific types |

@@ -654,3 +654,43 @@ except Exception:
 - Verified against: Python 3.12+
 - Syntax features used: f-strings (3.6+), walrus operator examples (3.8+), `match` statement awareness (3.10+)
 - Recommended: Python 3.11+ for best error messages and performance improvements
+
+---
+
+## Code Review Checklist
+
+- [ ] No mutable default arguments (`def f(x=[]):`); use `None` sentinel instead
+- [ ] `copy.deepcopy()` used for nested structures when independence needed
+- [ ] `encoding="utf-8"` specified in all `open()` calls for text files
+- [ ] Context managers (`with` statement) used for all file operations
+- [ ] f-strings used for string formatting; no `%` formatting in new code
+- [ ] Set used for membership testing instead of list (`O(1)` vs `O(n)`)
+- [ ] `collections.defaultdict` and `Counter` used to reduce boilerplate counting/grouping
+
+## Architecture Considerations
+
+Fundamentals are the building blocks of every Python system. Choosing the right collection (set vs list vs dict) directly impacts performance at scale. Proper scoping rules (LEGB) prevent accidental global state mutations. Understanding reference semantics enables designing systems where data flows predictably through functions without unintended side effects.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| None sentinel for defaults | Function parameters with mutable defaults | Clear intent but slightly more verbose than direct default |
+| Generator expressions | Streaming large datasets | Memory efficient but single-pass only |
+| `collections.defaultdict` | Grouping/counting operations | Cleaner than `setdefault` but adds import dependency |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Path traversal in file operations | Reading/writing arbitrary files | Validate paths with `pathlib`; restrict to allowed directories |
+| Unescaped string concatenation in SQL | SQL injection | Use parameterized queries; never interpolate user input into SQL |
+| Mutable shared state in concurrent code | Data corruption | Use `threading.Lock` or `multiprocessing` for shared state |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.6+ | f-strings replace `.format()` | Convert `format()` and `%` to f-strings for readability |
+| Python 3.10+ | `match` statement | Replace long `if/elif` chains with structural pattern matching |
+| Python 3.12+ | Improved error messages | Upgrade for better debugging; no code changes needed |
+
+

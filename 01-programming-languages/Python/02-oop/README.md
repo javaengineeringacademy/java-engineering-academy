@@ -207,3 +207,60 @@ class Child(Base):
 | Best Alternative | Dataclasses for data-only classes, Protocols for duck typing |
 | When to Use | Complex domains with state, polymorphic behavior, frameworks |
 | When to Avoid | Simple scripts, performance-critical inner loops |
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| MRO causing infinite recursion | `inspect.getmro(Class)` or `Class.__mro__` | Check MRO order; ensure `super()` calls are cooperative with `*args, **kwargs` |
+| Mutable class attribute shared across instances | `inspect.getmembers()` on class vs instance | Initialize mutable attributes in `__init__`; use `@dataclass` which handles this correctly |
+| Property override breaking encapsulation | Test property access patterns in subclass | Always define both getter and setter when overriding properties |
+| `__hash__` missing after defining `__eq__` | Add `__hash__` or set `__hash__ = None` | Define both `__eq__` and `__hash__` for hashable classes; set `__hash__ = None` for unhashable |
+| Diamond inheritance confusion | `D.__mro__` to visualize resolution order | Design cooperative classes; accept `*args, **kwargs`; check MRO at class definition time |
+
+## Code Review Checklist
+
+- [ ] Classes have `__repr__` defined for debugging
+- [ ] `__eq__` and `__hash__` defined together or `__hash__ = None` set
+- [ ] Mutable attributes initialized in `__init__`, not at class level
+- [ ] Properties have both getter and setter when overriding parent properties
+- [ ] MRO checked for multiple inheritance hierarchies
+- [ ] Composition preferred over deep inheritance chains
+- [ ] Abstract methods enforced via ABC or Protocol, not just docstrings
+
+## Architecture Considerations
+
+OOP provides the structural foundation for modeling complex domains. Class hierarchies enable polymorphic behavior, but depth must be balanced against simplicity. Composition over inheritance creates loosely coupled systems that are easier to test and modify. The choice between ABCs and Protocols determines whether interfaces are enforced or structural.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Composition over inheritance | Domain models, plugin systems | Flexible but requires explicit delegation |
+| ABC enforcement | Framework APIs, plugin contracts | Compile-time safety but adds coupling |
+| Protocol structural typing | Duck typing with type safety | No inheritance required but no runtime enforcement |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Mutable class attribute privilege escalation | Permission corruption across instances | Initialize mutable attributes in `__init__`; use `@dataclass` |
+| Property setter bypass in subclass | Encapsulation violated | Test property access in inheritance hierarchies; use `@property` with setters |
+| `__new__` returning wrong type | Type confusion in object creation | Validate `__new__` return types; ensure `super().__new__()` is called |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.7+ | `@dataclass` for data containers | Replace manual `__init__`/`__repr__`/`__eq__` with `@dataclass` |
+| Python 3.12+ | `type` parameter syntax for generics | Use `class Stack[T]` instead of `TypeVar` boilerplate |
+| Python 3.12+ | `@override` decorator | Add to subclass methods that override parent for static checking |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `@dataclass` | 3.7+ | Stable, preferred for data containers |
+| `__init_subclass__` | 3.6+ | Stable, alternative to metaclasses for subclass hooks |
+| `Protocol` (PEP 544) | 3.8+ | Stable, structural subtyping |
+| `type` parameter syntax | 3.12+ | Stable, cleaner generic syntax |

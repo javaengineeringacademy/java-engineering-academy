@@ -985,3 +985,53 @@ def process_input(data):
 
 ### Q5: What is the difference between defaultdict and dict?
 **Answer:** defaultdict calls factory function for missing keys. No KeyError. dict raises KeyError for missing keys. Use defaultdict for grouping/counting.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| `list.pop(0)` causing O(n²) performance | `timeit` to benchmark; `collections.deque` | Switch to `deque.popleft()` for O(1) queue operations |
+| Hash randomization breaking test ordering | `PYTHONHASHSEED=42` for deterministic runs | Use `OrderedDict` when order matters; pin hash seed in tests |
+| `defaultdict` sharing mutable default | Check factory function vs mutable default | Use `defaultdict(list)` not `defaultdict([])` |
+| Set membership test failing with unhashable types | Convert to `frozenset` | Use `frozenset` for sets-of-sets; validate hashability |
+| Dict memory usage unexpected | `sys.getsizeof()` + `deep_getsizeof()` | Account for hash table overhead; use `__slots__` for memory-critical classes |
+
+## Code Review Checklist
+
+- [ ] `deque` used for FIFO/LIFO queue operations instead of `list`
+- [ ] `Counter` used for frequency counting instead of manual loops
+- [ ] `defaultdict` used for grouping instead of `setdefault` boilerplate
+- [ ] `frozenset` used for immutable sets that need to be hashable
+- [ ] `namedtuple` or `@dataclass` used for fixed-structure records
+- [ ] `PYTHONHASHSEED` set for deterministic test ordering
+- [ ] `__slots__` used for classes with many instances to reduce memory
+
+## Architecture Considerations
+
+Collection choice directly impacts performance and memory usage. Deques provide O(1) queue operations. Sets provide O(1) membership testing. Dicts provide O(1) key lookup. Understanding CPython's implementation (hash tables, over-allocation) enables informed decisions about data structure selection.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `deque` for queues | FIFO/LIFO operations | O(1) both ends vs O(n) for list front ops |
+| `Counter` for frequency | Text analysis, log processing | Optimized but adds import dependency |
+| `defaultdict` for grouping | Data transformation pipelines | Cleaner than `setdefault` but factory overhead |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Hash DoS attack on dict/set | O(n²) performance degradation | Keep hash randomization enabled; validate input size |
+| `defaultdict` shared mutable default | Permission escalation | Use factory functions (`list`, `dict`) not mutable instances |
+| Unhashable elements in set operations | `TypeError` at runtime | Validate hashability; use `frozenset` for nested sets |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.7+ | Dict insertion order guaranteed | Remove `OrderedDict` unless `move_to_end` needed |
+| Python 3.9+ | `dict`, `list`, `tuple` as generic types | Use `dict[str, int]` instead of `Dict[str, int]` |
+| Python 3.12+ | Type parameter syntax | Use `class MyDict[T]` for custom generic collections |
+
+

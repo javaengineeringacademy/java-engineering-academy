@@ -1216,3 +1216,53 @@ def process_data():
 
 ### Q5: What is the GIL and what are its alternatives?
 **Answer:** GIL prevents concurrent Python execution. Alternatives: multiprocessing (separate processes), asyncio (cooperative), C extensions (release GIL), free-threaded Python (3.13+).
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Integer caching causing identity bug | `sys.getrefcount()` check | Use `==` for value comparison; use `is` only for `None`, `True`, `False` |
+| GIL switch interval causing latency spikes | `sys.setswitchinterval()` tuning | Reduce to 1ms for latency-sensitive work; use `multiprocessing` for CPU-bound |
+| Import side effects slowing startup | `cProfile` on import time | Use lazy imports (`importlib.import_module()`); move heavy imports inside functions |
+| Bytecode confusion about performance | `dis.dis()` to inspect opcodes | Fewer bytecodes = faster; compare bytecode output for optimization |
+| Descriptor attribute lookup order wrong | Check data vs non-data descriptor | Data descriptors (have `__set__`) override instance dict; non-data don't |
+
+## Code Review Checklist
+
+- [ ] `dis.dis()` used to inspect bytecode for performance-critical functions
+- [ ] `cProfile` used before claiming Python is too slow
+- [ ] GIL release during C extensions understood for NumPy/I/O operations
+- [ ] `sys.setswitchinterval()` tuned for latency-sensitive applications
+- [ ] `__slots__` used for high-instance-count classes to reduce memory
+- [ ] `weakref` used for caches to prevent preventing garbage collection
+- [ ] Type-homogeneous code written for Python 3.11+ specialization benefits
+
+## Architecture Considerations
+
+Understanding CPython internals enables informed architectural decisions. The GIL determines whether threading or multiprocessing is appropriate. Memory layout and reference counting inform data structure choices for memory-constrained systems. Bytecode optimization knowledge guides performance-critical code design.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `multiprocessing` for CPU-bound | True parallelism | IPC overhead; process spawn cost |
+| Lazy imports for startup | Reduce application boot time | More complex import management |
+| `__slots__` for memory optimization | High-instance-count classes | No dynamic attributes; less flexible |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| `sys._getframe()` leaking stack info | Information disclosure | Avoid in production; use `logging` for debugging |
+| Integer caching bypassing `is` checks | Logic errors in comparisons | Use `==` for values; `is` only for singletons |
+| GIL manipulation causing race conditions | Data corruption | Don't manipulate GIL manually; use proper synchronization |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.11+ | Specializing adaptive interpreter | Write type-homogeneous code for 10-60% speedup |
+| Python 3.12+ | Improved bytecode optimization | Upgrade for automatic performance improvements |
+| Python 3.13+ | Free-threaded mode (no GIL) | Test with `PYTHON_GIL=0`; prepare for true parallelism |
+
+

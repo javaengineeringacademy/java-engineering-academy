@@ -1096,3 +1096,60 @@ class Settings(BaseSettings):
 
 ### Q5: What is the difference between a docstring and comments?
 **Answer:** Docstrings describe what something does (accessible via __doc__). Comments explain why. Use docstrings for public APIs, comments for implementation details.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Dependency confusion attack | `pip-audit` + explicit package index | Use `--index-url` for internal packages; scan dependencies |
+| Missing type hints causing runtime errors | `mypy --strict` in CI | Add type hints to all public APIs; run mypy on every commit |
+| Hardcoded secrets in repository | GitHub secret scanning + `.gitignore` | Use environment variables; add `.env` to `.gitignore`; rotate keys |
+| Import conflicts between modules | Check `sys.modules` cache | Use absolute imports; restructure circular dependencies |
+| Linter not catching style issues | Pre-commit hooks with `ruff`/`black` | Install pre-commit; run on every commit |
+
+## Code Review Checklist
+
+- [ ] PEP 8 enforced with `ruff` or `black` in CI
+- [ ] Type hints on all public APIs; `mypy` passes with zero errors
+- [ ] Tests for every feature; >80% coverage on critical paths
+- [ ] Virtual environments used; dependencies pinned in `requirements.txt`
+- [ ] Pre-commit hooks for linting and formatting
+- [ ] Public APIs documented with Google/NumPy docstrings
+- [ ] `src/` layout used to prevent accidental imports
+
+## Architecture Considerations
+
+Best practices ensure codebases remain maintainable as teams and codebases grow. Consistent style reduces cognitive load. Type hints enable static analysis. Testing prevents regressions. Proper project structure enables independent module development and testing.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `src/` layout | Preventing accidental imports | Cleaner but less common |
+| Pre-commit hooks | Enforcing standards | Prevents issues but adds commit overhead |
+| `pyproject.toml` | Modern package configuration | Single file but less flexible than `setup.py` |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Dependency confusion attack | Malicious code execution | Use explicit package indexes; scan with `pip-audit` |
+| Secrets committed to Git | Credential exposure | Use `.gitignore`; secret scanning; rotate keys |
+| Missing input validation | Injection attacks | Validate all inputs; use Pydantic for request validation |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.8+ | `pyproject.toml` (PEP 621) | Migrate from `setup.py` to `pyproject.toml` |
+| Python 3.12+ | `ruff` as all-in-one linter | Replace `flake8` + `isort` + `black` with `ruff` |
+| Python 3.12+ | `@override` decorator | Add to subclass methods for static checking |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `pyproject.toml` | 3.7+ (PEP 621) | Stable, modern packaging |
+| `ruff` (third-party) | 3.7+ | Stable, fast Rust-based linter |
+| `black` (third-party) | 3.6+ | Stable, opinionated formatter |
+| `pre-commit` (third-party) | 3.0+ | Stable, git hook framework |

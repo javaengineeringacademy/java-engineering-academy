@@ -489,3 +489,53 @@ mypy --strict --disallow-untyped-defs --disallow-incomplete-defs src/
 
 ## Version Validation
 - Verified against: Python 3.12+ (PEP 695 syntax), Python 3.10+ (X | Y syntax)
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Type hint lying about return value | `mypy --strict` in CI | Use `X | None` for nullable returns; run `mypy` on every commit |
+| Generic type accepted at runtime despite wrong type | `mypy` + runtime validation | Add runtime checks for critical paths; use `TypeGuard` for narrowing |
+| Complex type annotation slowing IDE | Simplify with `TypeAlias` | Name complex types; keep annotations readable over precise |
+| `Any` used everywhere defeating purpose | `mypy --disallow-any-expr` | Replace `Any` with specific types; document unavoidable `Any` usage |
+| `TypeVar` not inferring correctly | Check bound/constraint usage | Use `bound=` for type hierarchy; use constraints for union of types |
+
+## Code Review Checklist
+
+- [ ] All public APIs have full type annotations (parameters + return)
+- [ ] `Optional` or `X | None` used for nullable returns
+- [ ] `Any` avoided; documented when unavoidable
+- [ ] `TypeAlias` used for complex nested types
+- [ ] `mypy --strict` passes in CI with zero errors
+- [ ] `py.typed` marker included for library packages
+- [ ] No `# type: ignore` without explanation comment
+
+## Architecture Considerations
+
+Type hints bridge Python's dynamic nature with static analysis tooling. They enable IDE autocompletion, catch bugs at development time, and serve as living documentation. Protocols enable structural subtyping without inheritance coupling, aligning with Python's duck typing philosophy while providing type safety.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Protocol for structural typing | Plugin systems, duck-typed interfaces | Flexible but no runtime enforcement |
+| TypedDict for structured dicts | API responses, config data | Clear structure but verbose |
+| `TypeVar` with bounds | Generic containers | Type-safe but adds complexity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Type hint revealing internal structure | Information leakage in API | Use `TypeAlias` to control public type exposure |
+| `TypeGuard` logic bypassing validation | Unsafe type narrowing | Verify `TypeGuard` implementations with tests |
+| `cast()` hiding type mismatch | Runtime `TypeError` in production | Minimize `cast()` usage; prefer runtime checks |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.10+ | `X \| Y` union syntax | Replace `Union[X, Y]` with `X \| Y` |
+| Python 3.12+ | PEP 695 type parameter syntax | Replace `TypeVar` boilerplate with inline syntax |
+| Python 3.13+ | Type defaults for generics | Use `class Stack[T=int]` for default type parameters |
+
+

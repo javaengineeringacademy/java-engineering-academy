@@ -858,3 +858,60 @@ Checklist: Code quality, Security, Performance, Deployment, Operations
 
 ### Q5: What is the difference between SRE and DevOps?
 **Answer:** DevOps: culture and practices for collaboration. SRE: specific implementation of DevOps with error budgets, SLIs, SLOs.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Microservice communication failure | Circuit breaker pattern | Use `circuitbreaker` library; implement fallback to cache |
+| Database connection pool exhaustion | Connection pool monitoring | Use `asyncpg.create_pool()` with min/max size; monitor utilization |
+| Logging sensitive data in production | Structured logging with field filtering | Sanitize sensitive fields; never log passwords or tokens |
+| Cascading failure in distributed system | Distributed tracing (OpenTelemetry) | Add trace IDs to requests; implement timeouts and retries |
+| Container OOM in Kubernetes | `kubectl top pod` + memory profiling | Set memory limits; use `tracemalloc` to find leaks |
+
+## Code Review Checklist
+
+- [ ] Type hints on all functions; `mypy` passes in CI
+- [ ] Docstrings on public APIs with Google/NumPy style
+- [ ] Unit test coverage >80%; integration tests for critical paths
+- [ ] Input validation using Pydantic models
+- [ ] SQL parameterized queries; no string interpolation
+- [ ] CORS configured; rate limiting implemented
+- [ ] Health checks and graceful shutdown implemented
+
+## Architecture Considerations
+
+Production mastery bridges development and operations. Architecture patterns (MVC, microservices, event-driven) determine system scalability and maintainability. Deployment strategies (Docker, K8s, CI/CD) ensure reliable releases. Monitoring and observability enable proactive issue detection. The key is choosing patterns appropriate for team size and system complexity.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Modular monolith | Small-to-medium teams | Simpler than microservices but less scalable |
+| Event-driven architecture | Decoupled services | Scalable but adds complexity |
+| Circuit breaker | Distributed system resilience | Prevents cascading failures but adds latency |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| SQL injection in API endpoints | Data breach | Use parameterized queries; validate all inputs |
+| Secrets in environment variables leaked | Credential exposure | Use secret management (Vault, K8s secrets); rotate regularly |
+| Missing CORS configuration | Cross-origin attacks | Configure CORS explicitly; restrict origins |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.12+ | Improved performance | Upgrade for faster startup and lower memory |
+| Docker + K8s | Container orchestration | Adopt for scalable deployment |
+| OpenTelemetry | Distributed tracing | Replace manual logging with structured tracing |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `asyncpg` | 3.5+ | Stable, async PostgreSQL |
+| `FastAPI` | 3.6+ | Stable, modern async web framework |
+| `Docker` (third-party) | 3.7+ | Stable, containerization |
+| `Kubernetes` (third-party) | Any | Stable, container orchestration |

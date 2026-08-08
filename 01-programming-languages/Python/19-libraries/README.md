@@ -143,3 +143,60 @@ for user in users:
 
 ### Q5: What is the difference between SQLAlchemy Core and ORM?
 **Answer:** Core: SQL expressions, faster, more control. ORM: object-oriented, easier for complex domains. Use Core for performance, ORM for productivity.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Requests library timeout hanging | Set explicit `timeout=` parameter | Use `requests.get(url, timeout=(5, 30))` for connect/read timeout |
+| Pandas memory explosion on large CSV | Optimize dtypes + chunking | Use `dtype={'col': 'int32'}` and `chunksize=10000` |
+| SQLAlchemy N+1 query problem | Enable query logging + `joinedload` | Use `options(joinedload(Relationship))` for eager loading |
+| Flask/Django app slow under load | `cProfile` + `py-spy` profiling | Profile hot paths; use async views for I/O-bound endpoints |
+| Redis connection pool exhaustion | Monitor connection count | Use connection pooling; set `max_connections`; monitor with `INFO` |
+
+## Code Review Checklist
+
+- [ ] HTTP requests have explicit `timeout` set
+- [ ] Pandas dtypes optimized for memory efficiency
+- [ ] SQLAlchemy queries use eager loading for relationships
+- [ ] Redis connections use connection pooling
+- [ ] Third-party library versions pinned in `requirements.txt`
+- [ ] `pip-audit` run to check for vulnerable dependencies
+- [ ] Library alternatives evaluated (requests vs httpx, Flask vs FastAPI)
+
+## Architecture Considerations
+
+Third-party libraries extend Python's capabilities but add dependency risk. The choice between libraries should consider maintenance status, community size, and alignment with project needs. Lightweight libraries (requests, Flask) suit simple projects. Full-featured libraries (Django, pandas) suit complex domains.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| requests for HTTP | Simple API calls | Synchronous; use httpx for async |
+| Flask for web | Lightweight APIs | Flexible but batteries-not-included |
+| pandas for data | Data analysis | Powerful but memory-hungry for large datasets |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Vulnerable third-party library | Known CVE exploitation | Run `pip-audit` regularly; pin versions |
+| Unvalidated library input | Injection attacks | Validate all data before passing to libraries |
+| Library logging sensitive data | Credential exposure | Configure library logging to filter sensitive fields |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.12+ | Improved library compatibility | Upgrade for better error messages |
+| FastAPI over Flask | Async web frameworks | Adopt for new APIs; migrate gradually |
+| httpx over requests | Async HTTP support | Use `httpx` for async applications |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `requests` | 2.20+ | Stable, synchronous HTTP |
+| `FastAPI` | 0.100+ | Stable, async web framework |
+| `pandas` | 1.5+ | Stable, data manipulation |
+| `SQLAlchemy` | 2.0+ | Stable, SQL toolkit and ORM |

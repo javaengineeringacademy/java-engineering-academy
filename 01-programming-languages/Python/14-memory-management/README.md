@@ -981,3 +981,60 @@ def process():
 
 ### Q5: How do you detect memory leaks in Python?
 **Answer:** Use tracemalloc, objgraph, memory_profiler. Track allocations over time. Check for growing object counts.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Circular reference preventing GC | `gc.set_debug(gc.DEBUG_LEAK)` + `gc.collect()` | Use `weakref` for parent references; avoid `__del__` methods |
+| String interning causing unexpected identity | `sys.getrefcount()` and `id()` check | Use `==` for value comparison; use `is` only for `None`, `True`, `False` |
+| Large object not being garbage collected | `tracemalloc` snapshot comparison | Delete large objects explicitly; check closures holding references |
+| Memory growing linearly over time | `objgraph.show_growth()` | Monitor object counts; use `WeakValueDictionary` for caches |
+| `sys.getsizeof()` inaccurate for containers | Use `pympler.asizeof()` for deep size | Account for referenced objects; use `deep_getsizeof()` recursively |
+
+## Code Review Checklist
+
+- [ ] `tracemalloc.start()` called at application entry for profiling
+- [ ] `weakref.WeakValueDictionary` used for caches to prevent leaks
+- [ ] `__slots__` implemented for classes with many instances
+- [ ] Generators used for large datasets instead of list comprehensions
+- [ ] `del large_obj` called explicitly after use to free memory
+- [ ] GC thresholds tuned with `gc.set_threshold()` for long-running processes
+- [ ] No `__del__` methods; context managers used for cleanup
+
+## Architecture Considerations
+
+Memory management determines application stability under load. Reference counting provides immediate deallocation but can't handle cycles. Generational GC handles cycles but adds pause times. Memory pools optimize small object allocation. Understanding these mechanisms enables designing memory-efficient systems.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `weakref` for caches | Preventing memory leaks | Auto-cleanup but adds complexity |
+| `__slots__` for instances | Memory-constrained classes | Saves memory but no dynamic attributes |
+| Generators for large data | Streaming processing | Constant memory but single-pass |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Memory leak causing OOM | Service crash under load | Monitor memory growth; use `tracemalloc` to profile |
+| Sensitive data lingering in memory | Credential exposure after processing | Overwrite sensitive data; minimize retention time |
+| `__del__` preventing GC of sensitive objects | Memory leak with security data | Use context managers; avoid `__del__` |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.11+ | Improved GC performance | Upgrade for automatic memory optimizations |
+| Python 3.12+ | Memory allocator improvements | Upgrade for reduced fragmentation |
+| Python 3.13+ | Free-threaded memory management | Test memory behavior in free-threaded mode |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `tracemalloc` | 3.4+ | Stable, memory profiling |
+| `weakref.WeakValueDictionary` | 2.1+ | Stable, auto-cleaning caches |
+| `gc.set_threshold()` | 2.0+ | Stable, GC tuning |
+| `__slots__` | 2.2+ | Stable, memory optimization |

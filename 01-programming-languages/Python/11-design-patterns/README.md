@@ -234,3 +234,60 @@ class ProductA: pass
 
 ### Q5: What is dependency injection?
 **Answer:** Passing dependencies as parameters instead of creating them internally. Makes code testable, loosely coupled. Use constructor injection.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Singleton retaining state between tests | Module-level state or dependency injection | Replace Singleton with module-level instance; reset in test fixtures |
+| Observer pattern memory leak | `weakref.WeakSet` for observer lists | Use weak references; implement unsubscribe; test memory behavior |
+| Factory pattern violating open/closed | Registry pattern with `__init_subclass__` | Use decorator-based registration; avoid if/elif chains |
+| Metaclass conflict in inheritance | Check `__mro__` for metaclass compatibility | Use `__init_subclass__` instead of metaclasses |
+| Strategy pattern creating too many classes | Use simple callables (functions, lambdas) | Strategies don't need classes; functions are first-class citizens |
+
+## Code Review Checklist
+
+- [ ] Module-level state preferred over Singleton pattern
+- [ ] `@dataclass` used for simple data containers instead of Builder
+- [ ] `functools.singledispatch` used instead of Visitor for type-based dispatch
+- [ ] Strategy pattern implemented with simple callables, not complex class hierarchies
+- [ ] Context managers used for resource management patterns
+- [ ] Observer lists use `weakref.WeakSet` to prevent memory leaks
+- [ ] `__init_subclass__` used for Factory Method without metaclasses
+
+## Architecture Considerations
+
+Design patterns provide proven solutions to recurring problems, but Python's dynamic nature simplifies many GoF patterns. Decorators, context managers, and first-class functions eliminate the need for complex class hierarchies. The key is choosing Pythonic idioms over rigid pattern implementations.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Module-level Singleton | Shared state without class overhead | Simple but hard to test |
+| `functools.singledispatch` | Type-based dispatch | Pythonic but limited to single argument |
+| Context Manager | Resource lifecycle | Guarantees cleanup but requires `with` blocks |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Singleton holding sensitive data | Credential exposure across requests | Use module-level state with explicit reset; never cache secrets |
+| Observer pattern leaking event data | Information disclosure | Use weak references; validate event data before publishing |
+| Factory creating objects from untrusted input | Object injection attacks | Validate input types; restrict factory to known types |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.7+ | `@dataclass` for data containers | Replace manual Builder pattern with `@dataclass` |
+| Python 3.8+ | `functools.cached_property` | Replace manual caching in Strategy pattern |
+| Python 3.12+ | `@override` decorator | Use in Template Method pattern to enforce method overrides |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `functools.singledispatch` | 3.4+ | Stable, type-based dispatch |
+| `__init_subclass__` | 3.6+ | Stable, alternative to metaclasses |
+| `@dataclass` | 3.7+ | Stable, replaces Builder for simple containers |
+| `contextlib.contextmanager` | 3.2+ | Stable, resource management patterns |

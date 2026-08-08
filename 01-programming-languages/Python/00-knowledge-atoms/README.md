@@ -552,3 +552,60 @@ class Parent:
 ---
 
 *Next: Explore the `projects/` folder for hands-on practice with these concepts.*
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| GIL blocking CPU-bound threads | `multiprocessing` or `sys.setswitchinterval()` | Switch to `multiprocessing.Pool` for CPU work; tune GIL interval for latency-sensitive I/O |
+| Circular reference memory leak | `gc.get_objects()`, `objgraph` | Use `gc.set_debug(gc.DEBUG_LEAK)` and `gc.collect()` to find uncollectable cycles |
+| `__del__` not being called | `tracemalloc` snapshot comparison | Replace `__del__` with context managers; monitor memory growth over time |
+| Descriptor not overriding instance attribute | `dis.dis()` on class definition | Check if descriptor is data vs non-data; data descriptors override instance `__dict__` |
+| Name mangling breaking subclass access | `inspect.getmembers()` on mangled class | Use `_ClassName__attr` or switch to single-underscore `_attr` convention |
+
+## Code Review Checklist
+
+- [ ] Duck typing used instead of `isinstance()` checks where appropriate
+- [ ] EAFP pattern preferred over LBYL for most operations
+- [ ] GIL limitations considered; `multiprocessing` used for CPU-bound work
+- [ ] No circular references in object graphs; `weakref` used for parent references
+- [ ] Dunder methods (`__repr__`, `__eq__`, `__hash__`) implemented for custom classes
+- [ ] ABCs or Protocols used for formal interfaces, not duck typing alone
+- [ ] Descriptor protocol used correctly; data vs non-data distinction understood
+
+## Architecture Considerations
+
+Python knowledge atoms form the mental model that shapes every architectural decision. Understanding the GIL determines whether you design with threading or multiprocessing. Duck typing and protocols let you define interfaces without inheritance coupling, enabling plugin architectures that are easy to extend. Reference counting and garbage collection mechanics inform memory-sensitive designs in long-running services.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Protocol-based interfaces | Plugin systems, dependency injection | Flexible but no compile-time enforcement |
+| EAFP error handling | Network calls, file I/O, user input | Clean but can obscure control flow |
+| Descriptor-driven validation | ORM fields, config management | Powerful but adds indirection overhead |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Race condition from GIL assumptions | Data corruption in shared mutable state | Use `threading.Lock` for shared state; prefer `multiprocessing` for CPU-bound parallelism |
+| Name mangling bypass | Internal attributes accessed by external code | Use single-underscore `_name` for private-by-convention; don't rely on `__name` for security |
+| Reference leak via `__del__` | Memory exhaustion in long-running services | Avoid `__del__`; use context managers for cleanup |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.8+ | `Protocol` for structural subtyping | Replace ABCs with Protocols for lighter-weight contracts |
+| Python 3.11+ | Exception groups (`except*`) | Adopt for concurrent error handling in asyncio |
+| Python 3.13+ | Experimental free-threaded mode (no GIL) | Test CPU-bound code with `PYTHON_GIL=0`; prepare for true parallelism |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| Duck typing | All versions | Stable, core language feature |
+| GIL removal (PEP 703) | 3.13+ experimental | Available behind `PYTHON_GIL=0` flag |
+| `Protocol` (PEP 544) | 3.8+ | Stable, recommended for structural typing |
+| `__slots__` optimization | All versions | Stable, reduces memory per instance |

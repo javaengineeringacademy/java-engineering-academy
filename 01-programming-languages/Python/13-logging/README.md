@@ -368,3 +368,60 @@ except Exception as e:
 
 ### Q5: What is log rotation?
 **Answer:** Automatically rotating log files when they reach size limit. Prevents disk exhaustion. Use RotatingFileHandler or TimedRotatingFileHandler.
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Log injection attack breaking parsers | Sanitize user input before logging | Use `re.sub(r'[\n\r\t]', '_', msg)`; validate log format |
+| Log flooding causing disk exhaustion | Environment-based log levels | Set `LOG_LEVEL` env var; use `RotatingFileHandler`; monitor disk |
+| `logger.exception()` outside `except` block | Use `exc_info=True` explicitly | Call `logger.exception()` only in `except`; use `exc_info=True` elsewhere |
+| Performance degradation from expensive logging | `isEnabledFor()` check before formatting | Use lazy evaluation; check level before expensive string formatting |
+| Async logging causing thread safety issues | `QueueHandler` + `QueueListener` | Use queue-based logging for async applications |
+
+## Code Review Checklist
+
+- [ ] Structured JSON logging used in production
+- [ ] Log rotation configured (size or time-based)
+- [ ] Appropriate log levels set per environment
+- [ ] Request context (request ID, user ID) included in every log line
+- [ ] No sensitive data (passwords, tokens, PII) in logs
+- [ ] Lazy evaluation used for expensive log formatting
+- [ ] `logger.exception()` used only inside `except` blocks
+
+## Architecture Considerations
+
+Logging provides observability into application behavior. Structured JSON logging enables machine parsing and search. Log levels control verbosity per environment. Centralized log collection (ELK, Datadog) enables aggregation and alerting. Async-safe logging prevents thread contention in high-throughput systems.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Structured JSON logging | Production log aggregation | Machine-readable but harder to read manually |
+| Log rotation | Disk space management | Prevents exhaustion but may lose context across rotations |
+| Async-safe QueueHandler | High-throughput applications | Prevents contention but adds complexity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Sensitive data in logs | Credential exposure in log systems | Never log passwords, tokens, PII; use field filtering |
+| Log injection breaking parsers | Log aggregation system crashes | Sanitize user input; use structured logging |
+| Excessive logging exposing internals | Information disclosure | Use appropriate log levels; avoid DEBUG in production |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.2+ | `logging.handlers.QueueHandler` | Use for async-safe logging |
+| Python 3.12+ | Improved `logging` module | Upgrade for better error messages |
+| Third-party `structlog` | Structured logging | Replace manual JSON formatters with `structlog` |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `logging` module | 2.3+ | Stable, standard logging |
+| `RotatingFileHandler` | 2.3+ | Stable, size-based rotation |
+| `TimedRotatingFileHandler` | 2.3+ | Stable, time-based rotation |
+| `QueueHandler` | 3.2+ | Stable, async-safe logging |

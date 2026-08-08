@@ -512,3 +512,60 @@ def read_config(path: Path) -> dict:
 - **YAML:** Always use `yaml.safe_load()` (not `yaml.load()`)
 - **Async I/O:** For concurrent file operations, use `aiofiles`
 - **Error handling:** Catch `FileNotFoundError`, `PermissionError`, `JSONDecodeError`
+
+---
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| File descriptor leak under load | `ulimit -n` and `lsof` inspection | Always use `with` statement; add file descriptor monitoring |
+| Encoding error corrupting data | `sys.getdefaultencoding()` check | Always specify `encoding="utf-8"`; add linting rule |
+| Non-atomic write causing partial data | Write to temp file + rename | Use `tempfile.NamedTemporaryFile` + `Path.rename()` for atomic writes |
+| `PermissionError` on file operations | Check file permissions with `os.stat()` | Validate file permissions before operations; handle gracefully |
+| CSV parsing error with special characters | `csv.Sniffer` to detect dialect | Specify `newline=""` in `open()`; use `csv.QUOTE_ALL` for safety |
+
+## Code Review Checklist
+
+- [ ] Context managers (`with`) used for ALL file operations
+- [ ] `encoding="utf-8"` specified in all text file operations
+- [ ] Atomic writes used for critical data (temp file + rename)
+- [ ] `pathlib.Path` used instead of `os.path` for path manipulation
+- [ ] File existence validated before read/write operations
+- [ ] Binary mode (`rb`/`wb`) used for non-text files
+- [ ] `json.load()` and `yaml.safe_load()` used for parsing (not `eval`)
+
+## Architecture Considerations
+
+File I/O is the bridge between application state and persistent storage. Atomic writes prevent data corruption on crashes. Encoding handling ensures cross-platform compatibility. Context managers guarantee resource cleanup. The choice between sync and async I/O depends on whether file operations are in the critical path.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Atomic write (temp + rename) | Critical configuration files | Safe but adds complexity |
+| `pathlib.Path` for all paths | Cross-platform path handling | Modern and readable but slower than `os.path` |
+| Async file I/O with `aiofiles` | Concurrent file operations | Scalable but adds async complexity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Path traversal allowing arbitrary file access | Reading/writing sensitive files | Validate paths with `pathlib`; restrict to allowed directories |
+| Unsafe YAML `load()` enabling code execution | Remote code execution | Always use `yaml.safe_load()`; never use `yaml.load()` with untrusted input |
+| File descriptor leak exposing sensitive files | Resource exhaustion or data leak | Use context managers; close files explicitly on error |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Python 3.6+ | `pathlib.Path` improvements | Replace `os.path` with `pathlib` for all path operations |
+| Python 3.8+ | `fspath` protocol | Use `os.fspath()` for path-like objects |
+| Python 3.12+ | Improved `pathlib` features | Use `Path.walk()` instead of `os.walk()` |
+
+## Version Validation
+
+| Feature | Python Version | Status |
+|---------|---------------|--------|
+| `pathlib.Path` | 3.4+ | Stable, preferred over `os.path` |
+| `aiofiles` (third-party) | 3.4+ | Stable, async file I/O |
+| `json.loads()` | 2.6+ | Stable, JSON parsing |
+| `yaml.safe_load()` | Third-party | Stable, safe YAML parsing |
