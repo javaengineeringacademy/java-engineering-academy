@@ -103,21 +103,22 @@ Map<K,V>
 
 ```
 Phase 1: Basics
-├── Collection interface
-├── List (ArrayList)
-├── Set (HashSet)
-└── Map (HashMap)
+├── 00-collection/        Collection interface
+├── 01-list/              ArrayList
+├── 02-set/               HashSet
+└── 03-map/               HashMap
 
 Phase 2: Intermediate
-├── LinkedList, ArrayDeque
-├── TreeMap, LinkedHashMap
-├── Iterators, Comparators
-└── Sorting, Searching
+├── 04-queue/             PriorityQueue, ArrayDeque
+├── 05-iteration/         Iterators, Lambda, Streams
+├── 06-sorting/           Comparable, Comparator
+└── 07-searching/         Linear, Binary search
 
 Phase 3: Advanced
-├── PriorityQueue
-├── ConcurrentHashMap
-├── CopyOnWriteArrayList
-├── Streams with Collections
-└── Performance tuning
+├── 08-stream-operations/ Filter, Map, Reduce, Collect
+├── 09-exercises/         Practice problems
+├── 10-solutions/         Solution code
+├── 11-references/        External docs
+├── 12-quiz.md            50 questions
+└── 13-roadmap.md         Visual path
 ```
