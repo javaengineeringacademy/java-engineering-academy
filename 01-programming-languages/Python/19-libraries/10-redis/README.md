@@ -114,3 +114,10 @@ for message in pubsub.listen():
 - [11-celery](../11-celery/) - Task queue with Redis backend
 - [05-django](../05-django/) - Django cache framework
 - [04-flask](../04-flask/) - Flask caching integration
+
+## References
+- Redis Documentation: https://redis.io/docs/
+- redis-py Documentation: https://redis-py.readthedocs.io/
+
+## Version Validation
+- Verified against: redis-py 5.0+, Python 3.10+

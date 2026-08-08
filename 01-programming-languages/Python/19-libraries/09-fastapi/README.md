@@ -110,3 +110,10 @@ async def get_user(user_id: int):
 - [04-flask](../04-flask/) - Lightweight alternative
 - [05-django](../05-django/) - Full-stack alternative
 - [15-pydantic](../15-pydantic/) - Data validation foundation
+
+## References
+- FastAPI Documentation: https://fastapi.tiangolo.com/
+- FastAPI Source: https://github.com/tiangolo/fastapi
+
+## Version Validation
+- Verified against: FastAPI 0.104+, Python 3.10+

@@ -110,3 +110,10 @@ with Session(engine) as session:
 - [04-flask](../04-flask/) - Web framework integration
 - [05-django](../05-django/) - Django ORM alternative
 - [17-sqlite3](../17-sqlite3/) - Built-in SQLite alternative
+
+## References
+- SQLAlchemy Documentation: https://docs.sqlalchemy.org/
+- SQLAlchemy Source: https://github.com/sqlalchemy/sqlalchemy
+
+## Version Validation
+- Verified against: SQLAlchemy 2.0+, Python 3.10+

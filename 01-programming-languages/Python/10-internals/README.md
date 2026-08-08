@@ -1113,3 +1113,16 @@ COMPARE_OP becomes:
 - [ ] Write type-homogeneous code for Python 3.11+ specialization benefits
 - [ ] Use `weakref` for caches to avoid preventing garbage collection
 - [ ] Prefer `multiprocessing` for CPU-bound, `threading`/`asyncio` for I/O-bound
+
+## References
+- CPython Source: https://github.com/python/cpython
+- PEP 703: Making the Global Interpreter Lock Optional
+- PEP 659: Specializing Adaptive Interpreter
+- PEP 702: Marking Deprecated Functions
+- Python Docs: gc module
+- Python Docs: dis module
+- Python Docs: sys module
+- Fluent Python (Luciano Ramalho)
+
+## Version Validation
+- Verified against: Python 3.12+ (specialization), Python 3.13+ (free-threaded preview)

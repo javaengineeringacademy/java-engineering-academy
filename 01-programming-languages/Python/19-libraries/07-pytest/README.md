@@ -109,3 +109,10 @@ def test_is_even(input, expected):
 - [04-flask](../04-flask/) - Testing Flask apps
 - [05-django](../05-django/) - Django test runner
 - [06-sqlalchemy](../06-sqlalchemy/) - Database testing
+
+## References
+- pytest Documentation: https://docs.pytest.org/
+- pytest Source: https://github.com/pytest-dev/pytest
+
+## Version Validation
+- Verified against: pytest 7.4+, Python 3.10+

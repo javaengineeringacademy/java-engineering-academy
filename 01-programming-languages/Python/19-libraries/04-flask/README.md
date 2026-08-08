@@ -107,3 +107,11 @@ def users():
 - [05-django](../05-django/) - Full-stack alternative
 - [09-fastapi](../09-fastapi/) - Async API framework
 - [06-sqlalchemy](../06-sqlalchemy/) - Database integration
+
+## References
+- Flask Documentation: https://flask.palletsprojects.com/
+- Flask Source: https://github.com/pallets/flask
+- Werkzeug Documentation
+
+## Version Validation
+- Verified against: Flask 3.0+, Python 3.10+

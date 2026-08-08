@@ -106,3 +106,13 @@ copy = arr[1:4].copy() # Independent data
 - [02-pandas](../02-pandas/) - Built on NumPy for tabular data
 - [14-matplotlib](../14-matplotlib/) - Visualization built on NumPy
 - [15-pydantic](../15-pydantic/) - Typed NumPy arrays with NDArray
+
+## References
+- NumPy Documentation: https://numpy.org/doc/
+- NumPy Tutorial: https://numpy.org/doc/stable/user/quickstart.html
+- NumPy Source: https://github.com/numpy/numpy
+- PEP 3118: Rebuffering Protocol
+- NumPy: A guide to NumPy (T. Oliphant)
+
+## Version Validation
+- Verified against: NumPy 1.26+, Python 3.10+

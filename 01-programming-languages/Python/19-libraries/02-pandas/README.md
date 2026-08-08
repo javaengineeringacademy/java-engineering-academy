@@ -110,3 +110,11 @@ merged = pd.merge(df1, df2, on='key', how='left')
 - [01-numpy](../01-numpy/) - NumPy foundation for Pandas internals
 - [06-sqlalchemy](../06-sqlalchemy/) - Database ↔ DataFrame pipeline
 - [14-matplotlib](../14-matplotlib/) - Visualization from DataFrames
+
+## References
+- Pandas Documentation: https://pandas.pydata.org/docs/
+- Pandas User Guide: https://pandas.pydata.org/docs/user_guide/index.html
+- 10 Minutes to Pandas: https://pandas.pydata.org/docs/user_guide/10min.html
+
+## Version Validation
+- Verified against: Pandas 2.1+, Python 3.10+

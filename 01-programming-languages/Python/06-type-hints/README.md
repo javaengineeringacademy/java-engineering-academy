@@ -382,3 +382,15 @@ mypy --strict --disallow-untyped-defs --disallow-incomplete-defs src/
 - **No runtime cost** — pure static analysis tool
 - Start with mypy in CI, gradually increase strictness
 - Type hints **complement, not replace** tests
+
+## References
+- PEP 484: Type Hints
+- PEP 604: Union Types (X | Y)
+- PEP 585: Type Hinting Generics In Standard Collections
+- PEP 695: Type Parameter Syntax
+- mypy Documentation
+- pyright Documentation
+- Typing PEPs: https://peps.python.org/topic/typing/
+
+## Version Validation
+- Verified against: Python 3.12+ (PEP 695 syntax), Python 3.10+ (X | Y syntax)

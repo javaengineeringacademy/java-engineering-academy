@@ -108,3 +108,11 @@ for post in posts:  # SQL executed here
 - [04-flask](../04-flask/) - Lightweight alternative
 - [06-sqlalchemy](../06-sqlalchemy/) - Alternative ORM
 - [10-redis](../10-redis/) - Caching and task queue backend
+
+## References
+- Django Documentation: https://docs.djangoproject.com/
+- Django Source: https://github.com/django/django
+- Django REST Framework
+
+## Version Validation
+- Verified against: Django 5.0+, Python 3.10+

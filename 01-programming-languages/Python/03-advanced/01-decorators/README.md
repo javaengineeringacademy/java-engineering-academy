@@ -736,3 +736,12 @@ It's not — if you understand the basics. The most common issues are:
 - Can debug decorator issues in production
 - Can design custom decorator frameworks
 - Understands interaction with async/await, generators, and context managers
+
+## References
+- Python Docs: functools
+- PEP 318: Decorators for Functions and Methods
+- PEP 614: Relaxed Grammar Restrictions on Decorators
+- Real Python: Decorators Tutorial
+
+## Version Validation
+- Verified against: Python 3.12+

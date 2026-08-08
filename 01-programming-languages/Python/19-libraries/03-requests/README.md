@@ -116,3 +116,11 @@ except requests.HTTPError as e:
 - [04-flask](../04-flask/) - Server-side API building
 - [05-django](../05-django/) - REST framework for Django
 - [09-fastapi](../09-fastapi/) - Async API framework
+
+## References
+- Requests Documentation: https://requests.readthedocs.io/
+- Requests Source: https://github.com/psf/requests
+- HTTP/1.1 Spec (RFC 7230)
+
+## Version Validation
+- Verified against: Requests 2.31+, Python 3.10+

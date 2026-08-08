@@ -878,3 +878,15 @@ d['a'] = 1  # Hash: some other value
 ---
 
 > **Remember:** Data structure choice is algorithm choice. Understanding CPython internals isn't trivia — it's what separates code that works from code that works at scale.
+
+## References
+- Python Docs: collections module
+- Python Docs: list
+- Python Docs: dict
+- Python Docs: set
+- PEP 412: Key-Sharing Dictionary
+- PEP 572: Assignment Expressions
+- Fluent Python (Luciano Ramalho) - Chapter 2
+
+## Version Validation
+- Verified against: Python 3.7+ (dict ordering guaranteed)

@@ -111,3 +111,10 @@ def greet(name):
 - [16-typer](../16-typer/) - Type-hint-based CLI framework
 - [04-flask](../04-flask/) - Flask CLI integration
 - [05-django](../05-django/) - Django management commands
+
+## References
+- Click Documentation: https://click.palletsprojects.com/
+- Click Source: https://github.com/pallets/click
+
+## Version Validation
+- Verified against: Click 8.1+, Python 3.10+
