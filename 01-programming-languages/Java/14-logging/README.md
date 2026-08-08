@@ -187,6 +187,71 @@ Logging exists because:
 
 Without proper logging, production debugging becomes guesswork, and system behavior becomes opaque.
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Sensitive data in logs | Log file search + redaction | Search for PII patterns (email, SSN); implement log sanitization filters |
+| Log level misconfiguration | Configuration file review | Verify log levels per package; check for `DEBUG` in production |
+| Performance degradation from logging | JFR + async-profiler | Profile logging overhead; check string concatenation in disabled log statements |
+| Missing log context | MDC configuration review | Add request ID, user ID to MDC; verify MDC is cleared after request |
+| Log file disk space issues | Disk monitoring + rotation config | Configure `SizeAndTimeBasedRollingPolicy`; set max file count and size |
+
+## Code Review Checklist
+
+- [ ] SLF4J facade used (not `System.out` or direct Log4j)
+- [ ] Parameterized logging used (no string concatenation)
+- [ ] No sensitive data logged (passwords, tokens, PII)
+- [ ] Log levels appropriate for message type
+- [ ] Exception logged with context (not just `e.getMessage()`)
+- [ ] MDC used for request-scoped context
+- [ ] Log rotation configured with size and time limits
+
+## Architecture Considerations
+
+Logging architecture determines system observability. At scale, centralized logging (ELK, Splunk, Datadog) requires structured output (JSON) with correlation IDs. For distributed systems, trace propagation (OpenTelemetry) links logs across services. For high-throughput systems, async logging with bounded queues prevents I/O from blocking business logic.
+
+In microservices, logging architecture affects debugging capability — each service must log with consistent formats and correlation IDs. For compliance-regulated industries, audit logging requires immutable, tamper-evident log storage.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Structured JSON logging | Log aggregation systems | Pros: Machine-parseable, searchable; Cons: Human-unreadable raw |
+| Async logging with bounded queue | High-throughput applications | Pros: Non-blocking; Cons: May lose logs on queue overflow |
+| MDC for request context | Distributed tracing | Pros: Correlation across calls; Cons: Thread-local overhead |
+| Log sampling | High-volume debug logging | Pros: Reduces I/O; Cons: May miss rare events |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Sensitive data in logs (PII, credentials) | Compliance violation, data breach | Implement log redaction; never log passwords, tokens, or PII |
+| Log injection attacks | Log forgery, log analysis disruption | Sanitize user input; use structured logging |
+| Log file tampering | Evidence destruction | Use append-only log storage; implement integrity checks |
+| Excessive logging causing DoS | Disk space exhaustion, CPU overhead | Configure log rotation; set appropriate log levels |
+| Debug logging in production | Performance degradation, information exposure | Use conditional logging; disable debug in production |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | `System.out.println` | Replace with SLF4J logging framework |
+| Java 1.2 | `java.util.logging` | Use SLF4J facade over JUL for flexibility |
+| Java 1.4 | Log4j 1.x | Upgrade to Logback or Log4j2 |
+| Java 8 | Lambda-based logging | Use lambda for deferred message construction |
+| Java 9+ | Logback 1.3+, Log4j2 2.x | Upgrade to latest stable versions |
+| Java 17 | Structured logging support | Configure JSON layout for log aggregation |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| SLF4J 2.x | Java 8+ | Stable |
+| Logback 1.4+ | Java 11+ | Stable |
+| Log4j2 2.x | Java 8+ | Stable |
+| `java.util.logging` | Java 1.4+ | Stable (JDK built-in) |
+| OpenTelemetry logging | Java 8+ | Stable |
+| Structured logging (JSON) | Framework-dependent | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Sensitive Data Logged in Production

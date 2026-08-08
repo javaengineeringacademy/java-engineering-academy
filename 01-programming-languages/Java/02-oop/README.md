@@ -564,6 +564,71 @@ OOP is fundamental to Java development. Master the four pillars and apply design
 - [Fundamentals](../01-fundamentals/README.md)
 - [Pass by Value](../00-knowledge-atoms/pass-by-value/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Deep inheritance issues | IntelliJ class hierarchy diagram | Use `Ctrl+H` to view full hierarchy; identify tight coupling and depth |
+| Polymorphism dispatch confusion | Step-through debugger | Set breakpoint in base class method; step into to see which override executes |
+| Mutable shared state race conditions | Thread dump analysis (`jstack`) | Capture thread dumps during load; look for threads waiting on same monitor |
+| Circular dependencies | Dependency graph tools (jdeps) | Run `jdeps --class-path` to identify circular package references |
+| Interface vs abstract class confusion | Architecture review | Ask: Does subclass need state? → Abstract class. Pure contract? → Interface |
+
+## Code Review Checklist
+
+- [ ] Classes follow Single Responsibility Principle
+- [ ] Inheritance hierarchies are shallow (max 2–3 levels)
+- [ ] Composition preferred over inheritance for code reuse
+- [ ] Access modifiers are as restrictive as possible (private by default)
+- [ ] Classes are immutable when possible
+- [ ] No circular dependencies between packages
+- [ ] Interfaces used for contracts, abstract classes for shared implementation
+
+## Architecture Considerations
+
+OOP patterns directly shape system architecture. At scale, composition over inheritance enables more flexible service designs where components can be swapped without cascading changes. In microservices, interface-based programming allows each service to define clean contracts that independent teams can implement separately. Polymorphism enables strategy-based routing (different payment processors, different auth providers) without conditionals scattered throughout the codebase.
+
+For enterprise systems, SOLID principles at the class level translate to architectural boundaries at the system level. Dependency injection (facilitated by programming to interfaces) enables testability, observability, and graceful degradation in production.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Composition over inheritance | Service composition, plugin systems | Pros: Flexible, testable, loose coupling; Cons: More boilerplate, delegation overhead |
+| Interface segregation | API design, microservice contracts | Pros: Clients depend only on what they use; Cons: More interfaces to manage |
+| Strategy pattern | Multiple algorithm implementations | Pros: Runtime switching, testable; Cons: More classes, indirection |
+| Factory pattern | Object creation with type variation | Pros: Encapsulates creation logic; Cons: Adds abstraction layer |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Mutable shared state in multi-threaded contexts | Race conditions, data corruption | Use immutable objects, synchronized access, or concurrent collections |
+| Exposed internal state via getters | Information leakage, unauthorized modification | Return defensive copies; provide read-only views |
+| Tight coupling through inheritance | Security patch propagation delays | Favor composition; use interfaces for security boundaries |
+| God classes with excessive permissions | Privilege escalation, attack surface | Apply principle of least privilege; split responsibilities |
+| Missing validation in constructors | Object injection, invalid state | Validate all inputs in constructors; use builder pattern with validation |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Classes, interfaces, basic inheritance | Adopt SOLID principles; refactor deep hierarchies |
+| Java 5 | Generics, enums, annotations | Type-safe collections; replace int constants with enums |
+| Java 8 | Default methods in interfaces | Add default methods for interface evolution without breaking implementations |
+| Java 9 | Module system | Define module boundaries; encapsulate package internals |
+| Java 14 | Records (preview) | Replace data carrier classes with records |
+| Java 17 | Sealed classes | Use sealed classes for controlled inheritance hierarchies |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Default methods in interfaces | Java 8 | Stable |
+| Enums with methods/constants | Java 5 | Stable |
+| Records | Java 16 | Stable |
+| Sealed classes | Java 17 | Stable |
+| Pattern matching for instanceof | Java 16 | Stable |
+| Switch expressions | Java 14 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: God Class Causing Maintenance Nightmare

@@ -426,6 +426,72 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 - [Multithreading](../09-multithreading/README.md)
 - [Java Memory Model](../00-knowledge-atoms/java-memory-model/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| OutOfMemoryError diagnosis | Heap dump + Eclipse MAT | Enable `-XX:+HeapDumpOnOutOfMemoryError`; analyze dominator tree in MAT |
+| Long GC pauses | GC logs + GCViewer/GCEasy | Enable GC logging; analyze pause times and frequency with visualization tools |
+| Metaspace leak | `jmap -histo` + classloader analysis | Count class instances; identify dynamic class generation leaks |
+| StackOverflowError | Increase stack size + iterative refactor | Use `-Xss` to increase; convert recursion to iteration for deep call stacks |
+| JIT compilation issues | JFR + `-XX:+PrintCompilation` | Monitor compilation events; identify hot methods not being compiled |
+
+## Code Review Checklist
+
+- [ ] Heap sizing appropriate for workload (`-Xms` = `-Xmx` to avoid resizing)
+- [ ] GC algorithm chosen for latency requirements (G1/ZGC/Shenandoah)
+- [ ] `-XX:+HeapDumpOnOutOfMemoryError` enabled in production
+- [ ] GC logging enabled for monitoring
+- [ ] Metaspace limits set for dynamic class generation
+- [ ] Thread stack size appropriate for recursion depth
+- [ ] JFR enabled for low-overhead production profiling
+
+## Architecture Considerations
+
+JVM configuration is an architectural decision that affects every component. At scale, GC algorithm choice determines tail latency — G1 for balanced workloads, ZGC for sub-millisecond pauses, Shenandoah for consistent low latency. Heap sizing affects both memory cost and GC pause duration. For containerized deployments, JVM flags must align with container memory limits.
+
+In microservices, each service's JVM configuration affects the overall system's resource efficiency. Smaller heaps with ZGC may be more efficient than large heaps with G1 for latency-sensitive services. For batch processing, throughput-oriented GC (Parallel GC) may be more appropriate than latency-oriented GC.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| G1 GC (default) | Balanced throughput/latency | Pros: Predictable pauses, good throughput; Cons: Higher memory than ZGC |
+| ZGC | Ultra-low latency (<10ms) | Pros: Sub-ms pauses; Cons: Higher memory overhead, lower throughput |
+| Shenandoah | Consistent low latency | Pros: Concurrent compaction; Cons: CPU overhead, newer |
+| `-Xms` = `-Xmx` | Production stability | Pros: Avoids heap resizing pauses; Cons: May waste memory if workload varies |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| JVM flag injection | Configuration manipulation | Secure JVM argument sources; validate configuration in deployment pipelines |
+| Heap dump containing sensitive data | Data exposure | Restrict heap dump file permissions; redact sensitive data before analysis |
+| JFR recording in production | Performance overhead, data exposure | Limit JFR recording duration; secure JFR output files |
+| Denial of service via memory exhaustion | Application crash | Set appropriate heap limits; configure OOM handler; monitor memory |
+| Unsafe JVM flags in production | Instability, security bypass | Review all JVM flags; avoid experimental flags in production |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Classic VM, basic GC | Upgrade to HotSpot VM |
+| Java 5 | PermGen, annotations | Monitor PermGen; prepare for Metaspace (Java 8) |
+| Java 8 | Metaspace replaces PermGen | Remove `-XX:MaxPermSize`; monitor Metaspace |
+| Java 9 | G1 GC becomes default | Verify G1 behavior; tune for your workload |
+| Java 11 | ZGC introduced (experimental) | Evaluate for latency-critical services |
+| Java 17 | ZGC, Shenandoah production-ready | Choose based on latency requirements |
+| Java 21 | Virtual threads | Evaluate for I/O-bound services; adjust thread pool configs |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| G1 GC (default) | Java 9 | Stable |
+| ZGC | Java 21 | Stable |
+| Shenandoah | Java 21 | Stable |
+| Metaspace | Java 8 | Stable |
+| JFR (Flight Recorder) | Java 11 | Stable |
+| Virtual threads | Java 21 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: OutOfMemoryError from Metaspace Leak

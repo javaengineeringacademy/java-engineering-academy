@@ -640,6 +640,71 @@ Without patterns, every team would solve the same problems differently, making c
 
 - [OOP](../02-oop/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Singleton causing test pollution | Dependency injection refactor | Replace singleton with DI-managed scoped beans; reset state in test setup |
+| Observer memory leak | Heap dump + reference tracing | Identify listeners not being unregistered; check for strong references |
+| Factory creating excessive objects | Allocation profiling (JFR) | Track object creation rate; identify factory hotspots |
+| Over-engineered pattern usage | Code review + complexity metrics | Evaluate if simpler code would work; measure cyclomatic complexity |
+| Strategy pattern not swapping correctly | Step-through debugger | Verify strategy assignment; check if context holds correct reference |
+
+## Code Review Checklist
+
+- [ ] Patterns solve real problems, not hypothetical ones
+- [ ] Dependency injection used instead of singleton for testability
+- [ ] Observer listeners properly unregistered on component destroy
+- [ ] Factory methods have appropriate object pooling or caching
+- [ ] Strategy implementations are thread-safe if shared
+- [ ] Decorator stack depth is reasonable (not excessive indirection)
+- [ ] No God classes combining multiple pattern responsibilities
+
+## Architecture Considerations
+
+Design patterns are architectural building blocks. At scale, pattern selection affects system modifiability, testability, and performance. For microservices, Factory and Abstract Factory patterns enable service implementation flexibility. Strategy patterns enable runtime behavior changes without redeployment. Observer patterns power event-driven architectures and pub/sub messaging.
+
+In enterprise systems, patterns compose to form architectural styles — MVC (Model-View-Controller) combines Observer, Strategy, and Composite. Clean Architecture uses Factory, Strategy, and Adapter patterns at different layers. Understanding pattern trade-offs at scale prevents over-engineering while ensuring extensibility.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Strategy | Algorithm selection at runtime | Pros: Flexible, testable; Cons: More classes, indirection |
+| Observer | Event notification | Pros: Decoupled, extensible; Cons: Debugging complexity, memory leaks |
+| Factory | Object creation abstraction | Pros: Encapsulates creation; Cons: Adds abstraction layer |
+| Decorator | Dynamic behavior addition | Pros: Stackable, composable; Cons: Many small classes, indirection |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Singleton global state in security contexts | Unauthorized access, state tampering | Use DI with request-scoped beans; avoid mutable singletons |
+| Observer pattern leaking sensitive data | Information disclosure | Use weak references; implement proper listener cleanup |
+| Proxy pattern bypassing security | Security check bypass | Ensure proxy applies security checks before delegation |
+| Factory creating unauthorized instances | Privilege escalation | Validate inputs in factory methods; implement access controls |
+| Strategy pattern with untrusted implementations | Code injection | Validate strategy implementations; use whitelisting |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Manual pattern implementation | Adopt framework-supported patterns (Spring, etc.) |
+| Java 5 | Enums for Singleton pattern | Replace complex singleton implementations with enum singleton |
+| Java 8 | Lambda-based Strategy pattern | Replace anonymous Strategy classes with lambdas |
+| Java 9 | Module system | Define module boundaries for pattern implementations |
+| Java 14 | Records for immutable DTOs | Replace Builder pattern for simple data carriers with records |
+| Java 17 | Sealed classes for State pattern | Use sealed classes to restrict state implementations |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Enum-based Singleton | Java 5 | Stable |
+| Lambda-based Strategy | Java 8 | Stable |
+| Records for DTOs | Java 16 | Stable |
+| Sealed classes for State | Java 17 | Stable |
+| Pattern matching for Visitor | Java 21 | Preview |
+| Virtual threads with patterns | Java 21 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Singleton Causing Testing Difficulties

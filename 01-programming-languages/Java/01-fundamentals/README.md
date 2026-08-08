@@ -230,6 +230,71 @@ public class ControlFlow {
 
 No prerequisites — this is the starting point.
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| `==` vs `.equals()` confusion | IntelliJ debugger + Evaluate Expression | Use Evaluate to compare `str1 == str2` vs `str1.equals(str2)` at runtime |
+| ArrayIndexOutOfBoundsException | Step-through debugging | Set breakpoint before loop; step through with F7 to watch index values |
+| NullPointerException on config loading | Stack trace analysis | Read stack trace bottom-up; identify last line before exception to find null source |
+| String concatenation performance | JMH microbenchmarks | Benchmark `+=` vs `StringBuilder` in loops to quantify O(n²) impact |
+| Integer overflow | Unit tests with edge cases | Test with `Integer.MAX_VALUE` and verify wraparound behavior |
+
+## Code Review Checklist
+
+- [ ] String comparisons use `.equals()`, never `==`
+- [ ] Loop boundaries use `<` not `<=` for array access
+- [ ] Null checks performed before method calls on references
+- [ ] `StringBuilder` used for string concatenation in loops
+- [ ] Variables declared close to first use
+- [ ] Magic numbers replaced with named constants
+- [ ] No `System.out.println` in production code
+
+## Architecture Considerations
+
+Java fundamentals underpin every layer of a system architecture. At scale, choices around data types (primitive vs wrapper), string handling, and control flow directly affect memory footprint and throughput. For microservices, understanding JVM fundamentals like stack vs heap allocation enables proper sizing of container memory limits. For event-driven systems, knowing how strings are interned and how autoboxing works prevents memory leaks in high-throughput message processors.
+
+When building large-scale systems, fundamental patterns like defensive copying, input validation, and error handling at method boundaries create robust APIs that scale across teams. These fundamentals become the contract that distributed systems depend on.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Input validation at boundaries | API endpoints, method entry | Pros: Fail-fast, clear error messages; Cons: Code duplication across layers |
+| Defensive copying | Returning mutable objects from APIs | Pros: Prevents external mutation; Cons: Object allocation overhead |
+| Constants over magic numbers | Configuration, thresholds | Pros: Readability, single source of truth; Cons: Slightly more code |
+| Optional for nullable returns | Method return values | Pros: Explicit null handling; Cons: API verbosity, learning curve |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| String comparison via `==` in authentication | Bypass authentication, unauthorized access | Use `.equals()` or `MessageDigest.isEqual()` for security comparisons |
+| Buffer overflow via unchecked array access | Data corruption, crashes | Validate array bounds before access; use enhanced for-each loops |
+| Null pointer injection | Denial of service, information leakage | Validate all inputs; use `Objects.requireNonNull()` for preconditions |
+| Integer overflow in financial calculations | Incorrect balances, data corruption | Use `BigDecimal` for financial values; validate ranges |
+| Information leakage via exception messages | Attack surface exposure | Return generic messages to clients; log detailed errors server-side |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Basic types, no generics | Migrate raw types to generic equivalents (Java 5+) |
+| Java 5 | Generics, autoboxing, enhanced for | Replace raw collections with parameterized types; review autoboxing |
+| Java 7 | try-with-resources, diamond operator | Replace manual finally blocks with try-with-resources |
+| Java 8 | Lambda, Stream API | Replace anonymous classes with lambdas; use Streams for bulk operations |
+| Java 10 | `var` for local variables | Use `var` for obvious type declarations to reduce verbosity |
+| Java 17 | Text blocks, sealed classes, records | Use records for immutable data carriers; use text blocks for multi-line strings |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| `var` local variable inference | Java 10 | Stable |
+| Text blocks (`"""`) | Java 15 | Stable |
+| Switch expressions | Java 14 | Stable |
+| Records | Java 16 | Stable |
+| Pattern matching for instanceof | Java 16 | Stable |
+| Sealed classes | Java 17 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: String Comparison Bug in Authentication System

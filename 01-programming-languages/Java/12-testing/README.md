@@ -494,6 +494,71 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 
 - [OOP](../02-oop/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Flaky tests (non-deterministic failures) | Test isolation + deterministic data | Remove shared state; use `@BeforeEach` cleanup; use Testcontainers |
+| Stack trace analysis | IDE stack trace navigation | Click links in stack trace; find "caused by" chain; identify root exception |
+| Remote debugging setup | IntelliJ remote debug config | Configure JDWP agent; set host/port; attach debugger to running JVM |
+| Memory leak in production | Heap dump + MAT | Capture dump with `jmap -dump`; analyze dominator tree for leak suspects |
+| Concurrency bug reproduction | Stress testing + Thread.sleep | Run tests in tight loop; use `CountDownLatch` for synchronization |
+
+## Code Review Checklist
+
+- [ ] Tests cover happy path, edge cases, and error conditions
+- [ ] Tests are isolated (no shared mutable state between tests)
+- [ ] External dependencies mocked or use Testcontainers
+- [ ] Test data cleaned up after each test
+- [ ] Assertions are specific (not just `assertNotNull`)
+- [ ] Test names describe the scenario being tested
+- [ ] Exception paths tested with expected exception assertions
+
+## Architecture Considerations
+
+Testing architecture determines system quality guarantees. At scale, the test pyramid (many unit tests, fewer integration tests, minimal E2E tests) balances speed and coverage. For microservices, contract testing (Pact) ensures service interfaces remain compatible. For data pipelines, property-based testing (jqwik) verifies invariants across input ranges.
+
+In CI/CD pipelines, test architecture affects deployment velocity. Parallel test execution, test selection (running only affected tests), and test impact analysis optimize feedback loops. For production systems, chaos engineering (testing failure scenarios) validates resilience patterns.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Test pyramid | General test strategy | Pros: Fast feedback, good coverage; Cons: Requires discipline |
+| Contract testing | Microservice interfaces | Pros: Catch integration issues early; Cons: Setup complexity |
+| Property-based testing | Algorithm verification | Pros: Finds edge cases; Cons: Harder to write, debug |
+| Snapshot testing | UI/API response verification | Pros: Catches unexpected changes; Cons: Brittle, maintenance burden |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Test data containing real sensitive data | Data exposure, compliance violation | Use synthetic data; anonymize production data for tests |
+| Tests bypassing security controls | False confidence, production vulnerabilities | Test security controls explicitly; include security test scenarios |
+| Mock objects hiding security bugs | Security vulnerabilities undetected | Integration test with real security implementations |
+| Test infrastructure exposing secrets | Credential leakage | Use secret management; rotate test credentials |
+| Missing tests for security-critical code | Vulnerabilities in production | Mandate tests for authentication, authorization, input validation |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Manual testing, JUnit 3 | Upgrade to JUnit 5; adopt annotation-based tests |
+| Java 5 | JUnit 4 annotations (`@Test`) | Migrate from `TestCase` to `@Test` annotations |
+| Java 8 | Lambda-based assertions | Use lambda assertions for custom validation |
+| Java 9+ | JUnit 5, Testcontainers, Mockito 2+ | Adopt JUnit 5 extensions; use Testcontainers for integration tests |
+| Java 17 | AssertJ, AssertJ 3.x | Use fluent assertions for better readability |
+| Java 21 | Virtual threads for test parallelism | Evaluate virtual threads for test execution |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| JUnit 5 (Jupiter) | Java 8+ | Stable |
+| Testcontainers | Java 8+ | Stable |
+| Mockito 5+ | Java 11+ | Stable |
+| AssertJ 3.x | Java 8+ | Stable |
+| JaCoCo code coverage | Java 5+ | Stable |
+| jshell for quick tests | Java 9+ | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Flaky Tests Masking Real Bugs

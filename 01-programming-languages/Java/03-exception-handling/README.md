@@ -340,6 +340,71 @@ After completing this module, you should be able to:
 
 - [OOP](../02-oop/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Swallowed exception (empty catch) | IDE inspection + grep | Search for `catch.*\\{\\s*\\}` patterns; use SonarQube for empty catch blocks |
+| Missing finally resource cleanup | Try-with-resources refactor | Identify manual close() calls; refactor to try-with-resources |
+| Exception masking (exception in finally) | Stack trace inspection | Check if stack trace shows unexpected exception type; inspect finally block logic |
+| Deep exception propagation | Structured logging with cause chain | Use `logger.error("msg", exception)` to preserve full cause chain |
+| Checked exception overuse | API design review | Evaluate if exception is truly recoverable; convert to unchecked for programming errors |
+
+## Code Review Checklist
+
+- [ ] Catch specific exceptions, not generic `Exception`
+- [ ] No empty catch blocks — always log or rethrow
+- [ ] Try-with-resources used for `AutoCloseable` resources
+- [ ] Exception causes preserved when wrapping (`new Exception("msg", cause)`)
+- [ ] Custom exceptions extend appropriate base (checked vs unchecked)
+- [ ] No exceptions used for normal control flow
+- [ ] Input validation performed before operations that throw
+
+## Architecture Considerations
+
+Exception handling architecture defines system resilience. At scale, exception translation patterns (catch low-level exceptions, wrap in domain exceptions) create clean API boundaries between service layers. In microservices, consistent exception handling across services enables standardized error responses and circuit breaker patterns. The choice between checked and unchecked exceptions affects API ergonomics — checked exceptions force callers to handle errors but add verbosity.
+
+For event-driven architectures, exception handling in message consumers determines whether messages are retried, dead-lettered, or lost. For batch processing, exception aggregation (collect all errors, report at end) is preferable to fail-fast for non-critical validations.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Exception translation | Layered service architectures | Pros: Clean API boundaries; Cons: Potential information loss |
+| Circuit breaker | External service calls | Pros: Prevents cascading failure; Cons: Adds complexity, may mask transient issues |
+| Retry with backoff | Transient failures (network, DB) | Pros: Self-healing; Cons: May amplify load during outages |
+| Result type (no exceptions) | Functional pipelines | Pros: Explicit error handling; Cons: Verbosity, unfamiliar to some teams |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Exception messages leaking sensitive data | Information disclosure to attackers | Return generic messages; log details server-side only |
+| Unchecked exceptions exposing stack traces | Attack surface mapping | Disable stack traces in production responses; use error IDs |
+| Resource leaks from missing finally/try-with-resources | Denial of service, file descriptor exhaustion | Always use try-with-resources; configure file descriptor limits |
+| Exception in finally masking original error | Silent data corruption | Keep finally blocks simple; log original exception before finally |
+| Denial of service via crafted input triggering exceptions | Application crashes | Validate inputs at boundaries; implement rate limiting |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Checked/unchecked exceptions, try-catch-finally | Adopt consistent exception hierarchy; define project-wide conventions |
+| Java 5 | `AutoCloseable` interface | Implement `AutoCloseable` for resources; prepare for try-with-resources |
+| Java 7 | Multi-catch, try-with-resources | Replace multiple catch blocks with multi-catch; use try-with-resources |
+| Java 8 | Functional interfaces with exceptions | Create `CheckedFunction`, `CheckedSupplier` for exception-handling lambdas |
+| Java 17 | Helpful NullPointerException messages | Upgrade JVM; leverage improved NPE messages for debugging |
+| Java 21 | Virtual threads exception handling | Ensure exception handling works correctly with virtual thread carrier threads |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Multi-catch (`catch (A | B e)`) | Java 7 | Stable |
+| Try-with-resources | Java 7 | Stable |
+| `AutoCloseable` | Java 7 | Stable |
+| Helpful NullPointerException messages | Java 17 | Stable |
+| Virtual threads exception propagation | Java 21 | Stable |
+| Structured concurrency (preview) | Java 21 | Preview |
+
 ## Production Incidents
 
 ### Incident 1: Swallowed Exception Causing Silent Data Loss

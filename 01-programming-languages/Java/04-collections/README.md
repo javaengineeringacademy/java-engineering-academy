@@ -409,6 +409,72 @@ System.out.println(aWords); // [apple, avocado]
 - [OOP](../02-oop/README.md)
 - [Equals & HashCode](../00-knowledge-atoms/equals-hashcode/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| ConcurrentModificationException | IntelliJ debugger + stack trace | Identify iteration/modification point; check for shared mutable state |
+| HashMap performance degradation | VisualVM + jstack | Profile CPU; check hash collision rate via `jmap -histo` |
+| Memory leak from static collections | Heap dump analysis (MAT) | Use Eclipse MAT to find dominator tree; identify static collection roots |
+| Wrong collection type chosen | Time complexity analysis | Map operations to O(1)/O(n)/O(log n); profile with JMH if needed |
+| Fail-fast iterator issues | Step-through debugging | Set breakpoint at iteration; step through to find concurrent modification |
+
+## Code Review Checklist
+
+- [ ] Interface types used for declarations (`List<String>` not `ArrayList<String>`)
+- [ ] `ConcurrentHashMap` used for concurrent access, not `Collections.synchronizedMap()`
+- [ ] No modification of collection during for-each iteration
+- [ ] `hashCode()` and `equals()` consistent for Map keys
+- [ ] Pre-sized collections when capacity is known
+- [ ] `entrySet()` used when both key and value needed from Map
+- [ ] Immutable collections used where possible (`List.of()`, `Set.of()`)
+
+## Architecture Considerations
+
+The Collections Framework is the data backbone of every Java application. At scale, collection choices affect memory usage, GC pressure, and throughput. For event streaming systems, choosing between `ArrayList` (cache-friendly sequential access) and `LinkedList` (frequent insertions at head) can significantly impact throughput. For distributed caches, `ConcurrentHashMap` design decisions propagate to cache consistency guarantees across service instances.
+
+In large-scale data pipelines, collection strategies become architectural decisions: in-memory collections for small datasets, off-heap storage for large datasets, and database-backed collections for persistent state. The choice between eager loading (all data in memory) and lazy loading (streaming from source) determines memory profile and startup time.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| ConcurrentHashMap for caching | Shared read-heavy caches | Pros: Lock-free reads, high concurrency; Cons: Memory overhead per entry |
+| CopyOnWriteArrayList for config | Rarely-changing listener lists | Pros: Lock-free iteration; Cons: Expensive writes, memory duplication |
+| Unmodifiable collections | API return values, configuration | Pros: Thread-safe, prevents mutation; Cons: Cannot add/remove elements |
+| Guava ImmutableList | Persistent state, constants | Pros: Compact, efficient; Cons: Third-party dependency |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Hash collision DoS attacks | Degraded HashMap performance, denial of service | Use `ConcurrentHashMap`; validate `hashCode()` distribution; consider randomized hash seeds |
+| ConcurrentModificationException information leakage | Stack trace exposure revealing internal structure | Catch and wrap exceptions; use generic error messages |
+| Null key/value injection in Maps | NullPointerException, data corruption | Validate inputs; use `Objects.requireNonNull()`; prefer `Map.of()` which rejects nulls |
+| Unbounded collection growth | Out of memory, denial of service | Implement bounded collections; use eviction policies |
+| Thread-unsafe collection usage | Data corruption, inconsistent state | Use concurrent collections; document thread-safety guarantees |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | Vector, Hashtable (synchronized) | Replace with `ArrayList`, `HashMap`, `ConcurrentHashMap` |
+| Java 1.2 | Collections Framework (List, Set, Map) | Migrate legacy collections to framework interfaces |
+| Java 5 | Generics for type safety | Add type parameters to all collection declarations |
+| Java 7 | Diamond operator | Simplify constructor calls: `new ArrayList<>()` |
+| Java 8 | Stream API for collections | Replace loops with stream pipelines where appropriate |
+| Java 9 | Factory methods (`List.of()`, `Set.of()`) | Replace `Arrays.asList()` and `Collections.unmodifiableList()` |
+| Java 16 | `Stream.toList()` | Replace `stream().collect(Collectors.toList())` |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| `List.of()`, `Set.of()`, `Map.of()` | Java 9 | Stable |
+| `Map.copyOf()`, `List.copyOf()` | Java 10 | Stable |
+| `Collectors.toUnmodifiableList()` | Java 10 | Stable |
+| `Stream.toList()` | Java 16 | Stable |
+| `SequencedCollection` | Java 21 | Stable |
+| `Map.merge()` default method | Java 8 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: ConcurrentModificationException in Production

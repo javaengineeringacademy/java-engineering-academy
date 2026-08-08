@@ -49,6 +49,71 @@ Java knowledge atoms are fundamental building blocks that every Java developer m
 | Pass by Value | Copies of references, not references to references | Confusing with C++ pointers |
 | Type Safety | Compile-time type checking | Using raw types |
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Integer cache mismatch | IntelliJ Debugger | Inspect `Integer` values with `==` in watch expression; verify cache range (-128 to 127) |
+| GC pause causing timeouts | JFR (Java Flight Recorder) | Enable JFR recording; analyze GC pause events and duration in JFR Viewer |
+| Broken HashSet/HashMap | Unit tests + equals/hashCode contract | Write tests verifying `equals()` and `hashCode()` consistency for custom objects |
+| Thread visibility issues | JMM happens-before analysis | Use `jconsole` or `jstack` to inspect thread states; verify `volatile` and `synchronized` usage |
+| Autoboxing performance hotspots | VisualVM sampler | Profile CPU usage; identify autoboxing in hot loops via allocation profiling |
+
+## Code Review Checklist
+
+- [ ] Verify `equals()` and `hashCode()` are overridden together when needed
+- [ ] Check that immutable objects have all fields `final` and no setters
+- [ ] Ensure `volatile` is used for flags shared across threads
+- [ ] Verify no autoboxing in performance-critical loops (use primitive collections)
+- [ ] Confirm GC configuration matches latency requirements
+- [ ] Check that `String.intern()` is not used excessively (memory leak risk)
+- [ ] Verify `Comparable` implementation is consistent with `equals()`
+
+## Architecture Considerations
+
+Knowledge atoms form the foundational layer that every other Java module depends on. At scale, choices like garbage collector selection (G1 vs ZGC vs Shenandoah), memory model compliance, and immutability guarantees directly impact system reliability and performance. For distributed systems, understanding pass-by-value semantics prevents subtle serialization bugs, while proper equals/hashCode contracts ensure correct behavior in distributed caches and hash-based data structures.
+
+When designing large-scale systems, immutability should be the default for value objects shared across threads or services. The Java Memory Model's happens-before relationships must be explicitly managed through synchronization, volatile fields, or concurrent utilities rather than relying on assumptions about JVM behavior.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Immutable value objects | DTOs, cache keys, configuration | Pros: Thread-safe, cacheable, hashable; Cons: Object creation overhead, new instance for changes |
+| Primitive-specialized collections | High-frequency numeric processing | Pros: No autoboxing overhead, lower GC pressure; Cons: API fragmentation, third-party dependency |
+| Defensive copying | Exposing mutable internal state | Pros: Prevents external mutation; Cons: Performance cost per copy |
+| Thread-local caching | Per-thread computation results | Pros: No synchronization needed; Cons: Memory overhead, thread pool leaks |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Weak equals/hashCode enabling hash collision attacks | DoS via degraded HashMap performance | Override `hashCode()` with randomized salt; use `ConcurrentHashMap` with proper hash distribution |
+| Mutable objects in security contexts | State tampering, authentication bypass | Make security-relevant objects immutable; validate state on construction |
+| GC information leakage via timing attacks | Side-channel vulnerability | Use constant-time comparison for security checks; avoid timing-dependent code paths |
+| Unsafe deserialization of equals/hashCode-dependent objects | Remote code execution | Implement `readObject()` validation; use `ObjectInputFilter` for deserialization filtering |
+| Thread-unsafe immutable object construction | Partially constructed object visibility | Ensure all fields are `final` or published safely through synchronization |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Raw collections, manual equals/hashCode | Migrate to generics (Java 5+); use IDE-generated equals/hashCode |
+| Java 5–7 | Autoboxing introduced, basic GC | Review autoboxing in loops; profile GC behavior |
+| Java 8 | Default methods in interfaces | Update equals/hashCode contracts for default method interactions |
+| Java 9+ | Module system restricts reflective access | Use public APIs instead of reflection for equals/hashCode testing |
+| Java 12–16 | Switch expressions, records | Use `record` for immutable data classes (auto-generates equals/hashCode) |
+| Java 21 | Virtual threads, sequenced collections | Verify equals/hashCode correctness in virtual thread contexts |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Autoboxing/unboxing | Java 5 | Stable |
+| Records (auto equals/hashCode) | Java 16 | Stable |
+| `sealed` classes | Java 17 | Stable |
+| Pattern matching for switch | Java 21 | Stable |
+| Virtual threads | Java 21 | Stable |
+| ZGC (production) | Java 21 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Autoboxing Memory Leak in Production Cache

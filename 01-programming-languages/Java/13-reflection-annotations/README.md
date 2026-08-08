@@ -154,6 +154,71 @@ Without reflection, every framework would require compile-time code generation o
 3. Performance overhead of reflection
 4. Not considering security implications
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| `InaccessibleObjectException` (module system) | `--add-opens` flags + module-info review | Add `--add-opens` for required packages; refactor to use public APIs |
+| Annotation not found at runtime | Retention policy check | Verify `@Retention(RetentionPolicy.RUNTIME)`; check annotation is not `SOURCE` or `CLASS` |
+| Dynamic proxy not intercepting | `InvocationHandler` debugging | Set breakpoint in handler; verify proxy implements correct interface |
+| Reflection performance issues | JFR + allocation profiling | Cache `Method`/`Field` objects; use `MethodHandle` for hot paths |
+| `ClassNotFoundException` in reflection | Classloader hierarchy check | Verify classpath; check classloader isolation in application servers |
+
+## Code Review Checklist
+
+- [ ] Reflection usage justified (no compile-time alternative exists)
+- [ ] `Method`, `Field`, `Class` objects cached for repeated access
+- [ ] `setAccessible(true)` used sparingly with justification
+- [ ] Module system compatibility verified (`--add-opens` documented)
+- [ ] Custom annotations have correct retention policy
+- [ ] Dynamic proxy `InvocationHandler` handles all methods correctly
+- [ ] Performance impact assessed for reflective operations
+
+## Architecture Considerations
+
+Reflection and annotations are the backbone of framework architecture. At scale, reflection enables convention-over-configuration (Spring, Hibernate) that reduces boilerplate but adds runtime overhead. For plugin architectures, reflection enables dynamic loading of implementations without compile-time dependencies. For AOP (Aspect-Oriented Programming), dynamic proxies enable cross-cutting concerns without modifying business logic.
+
+In enterprise systems, annotation processing (compile-time code generation with Lombok, MapStruct) provides the performance benefits of reflection without runtime cost. Understanding when to use runtime reflection vs. compile-time processing is an architectural decision affecting performance, maintainability, and debugging.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Runtime reflection | Framework magic, dynamic behavior | Pros: Flexible, convention-over-configuration; Cons: Slow, hard to debug |
+| Compile-time annotation processing | Code generation (Lombok, MapStruct) | Pros: Fast, type-safe; Cons: Build complexity, IDE support |
+| Dynamic proxy | AOP, logging, security interception | Pros: Non-invasive; Cons: Interface-only, performance overhead |
+| `MethodHandle` (Java 7+) | Near-direct dynamic invocation | Pros: Fast, JIT-optimizable; Cons: Complex API, less familiar |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Reflection bypassing access controls | Privilege escalation, data exposure | Use module system to restrict access; validate reflective access |
+| Annotation processing code injection | Remote code execution | Validate annotation inputs; use sandboxed annotation processors |
+| Dynamic proxy interception of sensitive methods | Security bypass, data leakage | Apply security checks in proxy handlers; validate proxy targets |
+| Deserialization via reflection | Remote code execution | Use `ObjectInputFilter`; validate types during deserialization |
+| Module system `--add-opens` overuse | Weakened encapsulation | Minimize `--add-opens`; prefer public APIs |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | Basic reflection (`Class.forName`, `getMethod`) | Adopt modern reflection APIs; cache results |
+| Java 5 | Annotations, `@Retention`, `@Target` | Use annotations for metadata; define custom annotations |
+| Java 7 | `MethodHandle` | Use for dynamic invocation where performance matters |
+| Java 9 | Module system | Define module boundaries; update `--add-opens` as needed |
+| Java 12–16 | Switch expressions, records | Use records to reduce need for reflection-based DTOs |
+| Java 17 | Strong encapsulation | Test with `--illegal-access=deny`; refactor reflective access |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Annotations (`@Retention`, `@Target`) | Java 5 | Stable |
+| `MethodHandle` | Java 7 | Stable |
+| Module system | Java 9 | Stable |
+| `--add-opens` for reflective access | Java 9 | Stable |
+| Records (reduces reflection need) | Java 16 | Stable |
+| Pattern matching (reduces reflection need) | Java 16 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Reflection Breaking with Java Module System

@@ -509,6 +509,71 @@ Multithreading enables concurrent execution. Use synchronization and concurrency
 
 - [OOP](../02-oop/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Deadlock detection | `jstack <pid>` or JConsole | Look for "BLOCKED" threads with circular lock dependencies |
+| Race condition identification | Thread sanitizer / stress tests | Run concurrent tests repeatedly; use `Thread.sleep()` to amplify timing issues |
+| Thread pool exhaustion | JMX monitoring + thread dumps | Monitor `activeCount`, `queueSize`; capture dumps when pool is saturated |
+| Memory leak from ThreadLocal | Heap dump + MAT analysis | Search for `ThreadLocal` entries in thread-local storage; check `remove()` calls |
+| CompletableFuture not completing | Debug with `whenComplete()` | Add `whenComplete()` callbacks to trace completion; check for unhandled exceptions |
+
+## Code Review Checklist
+
+- [ ] Thread pools sized appropriately for workload type (CPU-bound vs I/O-bound)
+- [ ] Lock ordering documented and consistent across codebase
+- [ ] `volatile` used for flags shared across threads
+- [ ] Atomic variables preferred over `synchronized` for simple operations
+- [ ] `InterruptedException` properly handled (not swallowed)
+- [ ] `ThreadLocal` cleaned up in finally blocks
+- [ ] Concurrent collections used for shared state
+
+## Architecture Considerations
+
+Multithreading architecture defines system throughput and responsiveness. At scale, the choice between platform threads, virtual threads (Java 21), and thread pools determines resource utilization. For I/O-bound services, virtual threads eliminate thread pool sizing complexity. For CPU-bound work, fixed-size pools with work-stealing algorithms maximize core utilization.
+
+In distributed systems, thread architecture within each service affects system-wide behavior — thread pool exhaustion in one service causes cascading timeouts. Proper thread isolation (bulkheads) prevents failures from propagating. For message-driven architectures, thread pools for consumers must be sized to handle peak message rates without exhausting resources.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Fixed thread pool | CPU-bound work | Pros: Predictable resource usage; Cons: Task queuing under load |
+| Virtual threads (Java 21) | I/O-bound work | Pros: Millions of threads; Cons: Still learning ecosystem support |
+| CompletableFuture composition | Async pipelines | Pros: Non-blocking composition; Cons: Debugging complexity |
+| ReadWriteLock | Read-heavy shared state | Pros: Concurrent reads; Cons: Write starvation risk |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Race condition in authentication | Bypass security checks | Synchronize critical sections; use atomic operations for auth state |
+| Deadlock causing denial of service | Application hangs, unavailable | Use `tryLock()` with timeout; establish lock ordering protocol |
+| Thread pool exhaustion | Cascading failure, DoS | Size pools appropriately; implement circuit breakers; add queue limits |
+| Sensitive data in ThreadLocal | Data leakage across requests | Remove ThreadLocal in finally blocks; use request-scoped alternatives |
+| Unsafe publication of shared objects | Visibility bugs, inconsistent state | Use `volatile`, `final`, or proper synchronization for publication |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | `Thread` class, `Runnable` | Use `Runnable`/`Callable` with ExecutorService |
+| Java 5 | `ExecutorService`, `Lock`, `Semaphore` | Replace manual thread creation with thread pools |
+| Java 7 | `ForkJoinPool`, `Phaser` | Use for divide-and-conquer and phased computation |
+| Java 8 | `CompletableFuture`, parallel streams | Replace callback hell with composition; benchmark parallel streams |
+| Java 9 | `Flow` API (reactive streams) | Adopt for backpressure-aware processing |
+| Java 21 | Virtual threads (standard) | Evaluate for I/O-bound workloads; replace thread pools where appropriate |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| `ExecutorService` | Java 5 | Stable |
+| `CompletableFuture` | Java 8 | Stable |
+| `ForkJoinPool` | Java 7 | Stable |
+| `Flow` API (reactive streams) | Java 9 | Stable |
+| Virtual threads | Java 21 | Stable |
+| Structured concurrency | Java 21 | Preview |
+
 ## Production Incidents
 
 ### Incident 1: Deadlock in Payment Processing System

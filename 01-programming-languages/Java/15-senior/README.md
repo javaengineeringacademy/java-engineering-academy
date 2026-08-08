@@ -41,6 +41,71 @@ Senior Java developers tackle challenges that go beyond writing code: profiling 
 | When to Use | Senior-level work |
 | When to Avoid | Junior-level tasks |
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Production memory leak | Heap dump + MAT analysis | Capture with `jmap -dump`; analyze dominator tree; identify retention paths |
+| JVM configuration mismatch | Environment comparison + config diff | Compare JVM flags between environments; document production configuration |
+| Performance bottleneck | JFR + async-profiler | Record with JFR; flame graph with async-profiler; identify hot methods |
+| Thread contention under load | Thread dump analysis | Capture multiple dumps; compare thread states; identify lock contention points |
+| Algorithm complexity issues | JMH microbenchmarking | Benchmark with production-like data volumes; verify O(n log n) behavior |
+
+## Code Review Checklist
+
+- [ ] Profile before optimizing — measure, don't guess
+- [ ] Algorithm complexity appropriate for data volumes
+- [ ] JVM configuration documented and version-controlled
+- [ ] Health checks and readiness probes implemented
+- [ ] Structured logging with correlation IDs enabled
+- [ ] Performance requirements documented in design docs
+- [ ] Monitoring and alerting configured for key metrics
+
+## Architecture Considerations
+
+Senior-level architecture decisions define system evolution. At scale, architectural choices — monolith vs. microservices, synchronous vs. event-driven, centralized vs. distributed — determine system capabilities and constraints. For global systems, data residency, latency requirements, and fault tolerance drive architectural patterns (CQRS, event sourcing, circuit breakers).
+
+In enterprise environments, architecture must balance competing concerns: performance vs. maintainability, consistency vs. availability, simplicity vs. flexibility. Technical debt management, refactoring strategies, and migration planning are architectural activities that determine long-term system health.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| CQRS | Complex domain with read/write optimization | Pros: Optimized reads/writes; Cons: Eventual consistency, complexity |
+| Event sourcing | Audit trail, temporal queries | Pros: Complete history, replayability; Cons: Storage overhead, complexity |
+| Circuit breaker | External service dependency | Pros: Prevents cascading failure; Cons: Adds complexity, may mask issues |
+| Strangler fig | Monolith to microservice migration | Pros: Incremental, low risk; Cons: Extended transition period |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| JVM configuration exposing secrets | Credential leakage | Use secret management; avoid secrets in JVM flags |
+| Insufficient monitoring leading to blind spots | Undetected outages | Implement comprehensive monitoring; configure alerts |
+| Inadequate testing of failure scenarios | Production incidents | Implement chaos engineering; test disaster recovery |
+| Technical debt accumulating | Security vulnerabilities, slow development | Regular refactoring; architectural fitness functions |
+| Knowledge silos | Bus factor risk | Document architectural decisions; cross-train team members |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Basic Java development | Adopt modern Java features incrementally |
+| Java 5–8 | Generics, lambdas, streams | Modernize codebase to use functional patterns |
+| Java 9–11 | Module system, LTS releases | Adopt modules; align with LTS release cadence |
+| Java 17 | Records, sealed classes, pattern matching | Use modern language features for cleaner code |
+| Java 21 | Virtual threads, sequenced collections | Evaluate for I/O-bound services; adopt where beneficial |
+| Future | Project Loom, Panama, Valhalla | Monitor early-access features; plan migration paths |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Records | Java 16 | Stable |
+| Sealed classes | Java 17 | Stable |
+| Pattern matching for instanceof | Java 16 | Stable |
+| Virtual threads | Java 21 | Stable |
+| ZGC (production) | Java 21 | Stable |
+| Structured concurrency | Java 21 | Preview |
+
 ## Production Incidents
 
 ### Incident 1: Production Memory Leak from ThreadLocal

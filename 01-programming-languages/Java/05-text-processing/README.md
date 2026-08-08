@@ -371,6 +371,71 @@ public class RegexExample {
 
 - [Fundamentals](../01-fundamentals/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Encoding mismatch (garbled characters) | Charset detection + explicit encoding | Use `StandardCharsets.UTF_8` explicitly; verify with hex dump of bytes |
+| String concatenation in loops | JMH benchmarking | Benchmark `+=` vs `StringBuilder`; profile with async-profiler |
+| Regex pattern compilation overhead | JFR + code review | Cache compiled `Pattern` objects; move `Pattern.compile()` outside loops |
+| String pool memory issues | Heap dump analysis | Use `jmap -histo` to count String instances; identify `intern()` abuse |
+| Text block indentation issues | IDE preview + manual inspection | Verify leading whitespace stripping; check `\s` escape in text blocks |
+
+## Code Review Checklist
+
+- [ ] `.equals()` used for String comparison, never `==`
+- [ ] `StringBuilder` used for concatenation in loops
+- [ ] Compiled `Pattern` objects cached and reused
+- [ ] Charset explicitly specified when reading/writing files
+- [ ] Text blocks (`"""`) used for multi-line strings (Java 15+)
+- [ ] `String.isBlank()` used instead of `trim().isEmpty()` (Java 11+)
+- [ ] No `new String("literal")` — use literals directly
+
+## Architecture Considerations
+
+Text processing touches every layer of a system — from HTTP request parsing to database storage to UI rendering. At scale, string handling choices affect memory usage (string interning policies), performance (StringBuilder vs concatenation), and correctness (encoding consistency). For internationalized systems, character encoding must be consistent across all components — database, application, API gateway, and frontend.
+
+In distributed systems, text encoding mismatches between services cause silent data corruption. Standardizing on UTF-8 across the entire stack prevents these issues. For high-throughput text processing (log analysis, data pipelines), streaming approaches (NIO `CharsetDecoder`) avoid loading entire files into memory.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Explicit charset everywhere | Cross-service data exchange | Pros: Prevents encoding mismatches; Cons: More verbose code |
+| StringBuilder for text building | Log message construction, SQL building | Pros: Efficient concatenation; Cons: Less readable than `+` |
+| Text blocks for templates | SQL queries, JSON templates, HTML | Pros: Readable multi-line strings; Cons: Java 15+ only |
+| Compiled Pattern caching | Regex-heavy processing | Pros: Avoids repeated compilation; Cons: Memory usage for cached patterns |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Regex denial of service (ReDoS) | Application hangs, CPU exhaustion | Use atomic regex engines; limit input length; test with adversarial patterns |
+| Encoding injection attacks | Data corruption, cross-site scripting | Validate and normalize input encoding; escape output appropriately |
+| Log injection via user input | Log forgery, log analysis disruption | Sanitize user input before logging; use structured logging |
+| Sensitive data in string literals | Secret exposure in memory dumps | Use `char[]` or `ByteBuffer` for sensitive data; zero arrays after use |
+| Unicode normalization attacks | Authentication bypass, file path traversal | Normalize Unicode input; use canonical comparison |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | `String`, `StringBuffer` | Replace `StringBuffer` with `StringBuilder` where thread safety not needed |
+| Java 1.4 | `java.util.regex` | Use `Pattern`/`Matcher` for complex text processing |
+| Java 7 | `Files` methods for text I/O | Replace `FileReader`/`FileWriter` with `Files.newBufferedReader()` |
+| Java 11 | `String.isBlank()`, `strip()` | Replace `trim().isEmpty()` with `isBlank()` |
+| Java 15 | Text blocks (`"""`) | Replace escaped multi-line strings with text blocks |
+| Java 17 | `String.stripIndent()`, `formatted()` | Use `stripIndent()` for text block processing |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| `String.isBlank()` | Java 11 | Stable |
+| `String.strip()`, `String.stripLeading()` | Java 11 | Stable |
+| Text blocks (`"""`) | Java 15 | Stable |
+| `String.formatted()` | Java 15 | Stable |
+| `String.translateEscapes()` | Java 15 | Stable |
+| `Stream.toList()` | Java 16 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: String Concatenation in Loop Causing Performance Degradation

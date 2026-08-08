@@ -468,6 +468,71 @@ public class StreamEnterpriseExample {
 - [Generics](../06-generics/README.md)
 - [Collections](../04-collections/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Lazy evaluation causing unexpected behavior | Add `peek()` temporarily | Add `peek(System.out::println)` to trace pipeline execution; remove after debugging |
+| Parallel stream race conditions | Thread dump + synchronized access | Use `jstack` during execution; identify shared mutable state in parallel streams |
+| Stream not executing (missing terminal op) | Code review + debug | Verify terminal operation exists (`collect`, `forEach`, `reduce`) |
+| Collectors.toMap merge function missing | Unit test with duplicate keys | Test with input containing duplicate keys; provide merge function |
+| Method reference ambiguity | Explicit lambda syntax | Replace method reference with lambda to resolve ambiguity |
+
+## Code Review Checklist
+
+- [ ] Terminal operation present on every stream pipeline
+- [ ] No side effects in parallel streams
+- [ ] Primitive streams used for numeric processing (avoids boxing)
+- [ ] Method references preferred over lambdas for readability
+- [ ] Custom `ForkJoinPool` used for parallel operations (not common pool)
+- [ ] Short-circuiting operations used where applicable (`findFirst`, `limit`)
+- [ ] `Collectors.toMap` includes merge function for duplicate keys
+
+## Architecture Considerations
+
+Functional programming with streams transforms how data flows through systems. At scale, stream pipelines enable declarative data processing that's easier to reason about and parallelize. For event sourcing systems, stream operations map naturally to event transformations and aggregations. For data pipeline architectures, streams provide the composable building blocks for ETL processes.
+
+In reactive and event-driven architectures, stream concepts (lazy evaluation, composition, backpressure) become architectural principles. Understanding when to use parallel streams vs. explicit threading vs. reactive streams determines system throughput and resource utilization.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Stream pipeline | Data transformation, filtering | Pros: Declarative, composable, parallelizable; Cons: Debugging complexity |
+| Custom collector | Domain-specific aggregation | Pros: Reusable, testable; Cons: Implementation complexity |
+| Parallel stream with custom pool | CPU-bound data processing | Pros: Utilizes all cores; Cons: Pool sizing, contention risk |
+| Optional chaining | Null-safe transformations | Pros: Explicit null handling; Cons: Verbosity, unfamiliarity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Side effects in parallel streams causing data corruption | Inconsistent state, race conditions | Use pure functions; avoid shared mutable state in streams |
+| Denial of service via unbounded streams | Memory exhaustion, CPU consumption | Use `limit()` for bounded processing; validate input size |
+| Information leakage via stream operations | Data exposure through intermediate results | Don't log intermediate stream states; use `peek()` only for debugging |
+| Lambda capture of sensitive data | Secret exposure in thread pool | Avoid capturing sensitive data in lambdas; use parameters instead |
+| Lazy evaluation deferring security checks | Bypassed validation | Ensure validation happens before stream processing, not inside |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Anonymous inner classes | Replace with lambdas (Java 8+) |
+| Java 5 | `Iterable` for for-each | Use enhanced for-each for simple iteration |
+| Java 7 | `ForkJoinPool` | Use for divide-and-conquer parallelism |
+| Java 8 | Stream API, lambdas, functional interfaces | Replace loops with streams where appropriate |
+| Java 9 | `takeWhile()`, `dropWhile()`, `ofNullable()` | Use for conditional stream processing |
+| Java 16 | `Stream.toList()` | Replace `collect(Collectors.toList())` |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Lambda expressions | Java 8 | Stable |
+| Stream API | Java 8 | Stable |
+| Functional interfaces (`Predicate`, `Function`) | Java 8 | Stable |
+| `Optional` | Java 8 | Stable |
+| `takeWhile()`, `dropWhile()` | Java 9 | Stable |
+| `Stream.toList()` | Java 16 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Parallel Stream Causing Thread Contention

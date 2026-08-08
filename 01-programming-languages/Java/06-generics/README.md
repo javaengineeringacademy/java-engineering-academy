@@ -342,6 +342,71 @@ public class TypeSafeContainer {
 
 - [OOP](../02-oop/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| ClassCastException at runtime | Stack trace + type erasure awareness | Identify line causing cast; check if generic type info was erased; verify raw types |
+| Unchecked cast warning suppressed | Compiler warnings review | Search for `@SuppressWarnings("unchecked")`; verify type safety at call sites |
+| Wildcard capture issues | Type inference analysis | Use helper methods for wildcard capture; verify PECS principle application |
+| Generic array creation error | Refactor to `Object[]` or `Class<T>` | Replace `new T[]` with `Array.newInstance()` or `Object[]` with casting |
+| Type mismatch in generic method | IDE type inference | Use IDE autocomplete to verify type inference; add explicit type arguments |
+
+## Code Review Checklist
+
+- [ ] No raw types — all generics parameterized
+- [ ] Bounded types used (`<T extends Comparable<T>>`) where appropriate
+- [ ] Wildcards used correctly (Producer Extends, Consumer Super)
+- [ ] `@SuppressWarnings("unchecked")` only with documented justification
+- [ ] No `new T()` or `new T[]` (type erasure prevents this)
+- [ ] Generic methods have proper type inference
+- [ ] PECS principle applied to collection method parameters
+
+## Architecture Considerations
+
+Generics enable type-safe APIs that scale across teams. At scale, well-designed generic APIs reduce runtime errors and improve developer productivity. For library/framework authors, generic type design is an architectural decision — bounded types constrain usage, wildcards enable flexibility, and type erasure determines what's possible at runtime.
+
+In large codebases, generic type consistency prevents subtle bugs. For example, a `Repository<T, ID>` pattern must ensure type safety across all layers. For distributed systems, type erasure means serialization frameworks need explicit type tokens (`TypeToken`, `Class<T>`) to reconstruct generic types at deserialization.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Bounded type parameters | Type-safe algorithms | Pros: Compile-time safety, method access; Cons: Complexity, verbosity |
+| Wildcard capture helper | Flexible API design | Pros: Handles complex variance; Cons: Harder to understand |
+| Type-safe heterogeneous container | Mixed-type storage with type safety | Pros: Runtime type safety; Cons: Complexity, casting overhead |
+| Generic factory method | Object creation with type inference | Pros: Clean API; Cons: Type inference complexity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Unchecked cast leading to ClassCastException | Runtime crashes, data corruption | Never suppress unchecked warnings without verification; use `TypeToken` pattern |
+| Type erasure bypassing runtime checks | Security bypass, invalid state | Validate types at runtime when security-critical; use `Class.cast()` |
+| Raw type usage in security contexts | Type confusion, injection attacks | Enforce parameterized types in security-sensitive code |
+| Generic type information leakage | Information disclosure via reflection | Avoid exposing generic type info in public APIs; use wildcards |
+| Unsafe deserialization of generic types | Remote code execution | Validate type tokens; use `ObjectInputFilter` for deserialization |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Raw types, no generics | Migrate all raw types to parameterized types |
+| Java 5 | Generics, bounded types, wildcards | Adopt generics throughout; eliminate explicit casting |
+| Java 7 | Diamond operator | Simplify generic constructor calls |
+| Java 8 | Improved type inference in lambdas | Use method references; let compiler infer types |
+| Java 9 | `var` for local variables | Use `var` for obvious generic types |
+| Java 10 | Local variable type inference | Combine with generics for cleaner code |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Basic generics | Java 5 | Stable |
+| Bounded types (`extends`, `super`) | Java 5 | Stable |
+| Wildcards (`? extends`, `? super`) | Java 5 | Stable |
+| Diamond operator (`<>`) | Java 7 | Stable |
+| Type inference improvements | Java 8 | Stable |
+| `var` with generic types | Java 10 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: ClassCastException from Raw Type Usage

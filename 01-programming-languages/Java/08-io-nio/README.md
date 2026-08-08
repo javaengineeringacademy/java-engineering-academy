@@ -365,6 +365,71 @@ Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern
 
 - [Fundamentals](../01-fundamentals/README.md)
 
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| File descriptor leak | `lsof -p <pid>` or `jstack` | Monitor open file descriptors; identify unclosed streams in code |
+| Encoding mismatch (garbled output) | Hex dump comparison | Compare file bytes with expected encoding; verify `StandardCharsets` usage |
+| Memory-mapped file not released | Process monitor + explicit close | Use `FileChannel` with explicit close; avoid `MappedByteBuffer` for temp files |
+| Slow I/O performance | Async-profiler + JFR | Profile I/O wait times; identify unbuffered operations |
+| NIO channel not closing properly | Try-with-resources refactor | Replace manual `close()` calls with try-with-resources |
+
+## Code Review Checklist
+
+- [ ] All streams/channels use try-with-resources
+- [ ] Charset explicitly specified (`StandardCharsets.UTF_8`)
+- [ ] NIO.2 (`Path`, `Files`) used instead of `File` class
+- [ ] Buffered streams used for large file operations
+- [ ] `IOException` properly handled with meaningful messages
+- [ ] No memory-mapped files for temporary data
+- [ ] File descriptor limits configured in monitoring
+
+## Architecture Considerations
+
+I/O architecture determines how data flows between components. At scale, the choice between blocking I/O (traditional streams) and non-blocking I/O (NIO channels) affects thread utilization and throughput. For high-concurrency servers, NIO selectors enable handling thousands of connections with few threads. For batch processing, memory-mapped files provide efficient random access to large datasets.
+
+In microservices, file I/O architecture affects service boundaries — shared file systems vs. object storage vs. streaming. For event-driven systems, NIO channels enable efficient network I/O for message brokers and API gateways.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Try-with-resources | All resource management | Pros: Guaranteed cleanup; Cons: Nesting can be verbose |
+| NIO channels for networking | High-concurrency servers | Pros: Non-blocking, scalable; Cons: Complexity, harder to debug |
+| Memory-mapped files | Large random-access files | Pros: OS-managed caching; Cons: Resource cleanup complexity |
+| Streaming with `Files.lines()` | Large file processing | Pros: Memory-efficient; Cons: Must close stream, exception handling |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Path traversal attacks | Unauthorized file access | Validate paths; use `Path.normalize()`; check against allowed directories |
+| Symlink following vulnerabilities | File system escape | Disable symlink following in `Files.walk()` options |
+| Resource exhaustion via file descriptor leak | Denial of service | Use try-with-resources; configure file descriptor limits |
+| Encoding injection | Data corruption, security bypass | Always specify `StandardCharsets.UTF_8` explicitly |
+| Temporary file race conditions | Privilege escalation | Use `Files.createTempFile()` with secure permissions; delete after use |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0 | `InputStream`, `OutputStream` | Replace with NIO.2 for modern applications |
+| Java 1.2 | `Reader`/`Writer` | Use for character-based I/O with explicit encoding |
+| Java 1.4 | NIO (`ByteBuffer`, `Channel`) | Adopt for non-blocking I/O and large file operations |
+| Java 7 | NIO.2 (`Path`, `Files`, try-with-resources) | Replace `File` class with `Path` and `Files` |
+| Java 8 | `Files.lines()`, `Files.list()` returning streams | Use for memory-efficient file processing |
+| Java 9 | `Files.readString()`, `Files.writeString()` | Replace `BufferedReader`/`BufferedWriter` for simple operations |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Try-with-resources | Java 7 | Stable |
+| `Path`, `Files` (NIO.2) | Java 7 | Stable |
+| `Files.lines()` returning Stream | Java 8 | Stable |
+| `Files.readString()`, `Files.writeString()` | Java 9 | Stable |
+| `Files.mismatch()` | Java 12 | Stable |
+| `InputStream.transferTo()` | Java 9 | Stable |
+
 ## Production Incidents
 
 ### Incident 1: Resource Leak from Unclosed Streams
