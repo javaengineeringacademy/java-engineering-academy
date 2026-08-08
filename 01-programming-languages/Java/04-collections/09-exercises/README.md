@@ -1,13 +1,23 @@
-# Collections Exercises
+# Collections Exercises - Mixed Topics
 
 ## Difficulty Levels
-- **Exercise 1-3**: Beginner (ArrayList, HashMap basics)
-- **Exercise 4-6**: Intermediate (Streams, Predicates)
-- **Exercise 7-8**: Advanced (Function, reduce)
-- **Exercise 9-10**: Expert (Collectors, ConcurrentHashMap)
+- **Beginner** (Q1-10): Basic operations
+- **Intermediate** (Q11-25): Combining concepts
+- **Advanced** (Q26-40): Real-world scenarios
+- **Expert** (Q41-50): Complex patterns
 
-## How to Complete
-1. Read the exercise description
-2. Write your implementation in exercises.java
-3. Run to test
-4. Check solutions/ if stuck
+## Topics Covered
+- ArrayList, LinkedList
+- HashSet, TreeSet, LinkedHashSet
+- HashMap, TreeMap, LinkedHashMap
+- Iterator, ListIterator, Spliterator
+- Lambda expressions
+- Stream API
+- Functional interfaces
+- Collectors
+
+## How to Run
+```bash
+javac *.java
+java Exercises
+```
