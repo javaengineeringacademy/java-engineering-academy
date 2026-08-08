@@ -491,3 +491,72 @@ void traverse(Node *head) {
 - [Structures](../02-structures/README.md) — Structs that build data structures
 - [Algorithms](../07-algorithms/README.md) — Algorithms that operate on data structures
 - [Memory Management](../08-memory-management/README.md) — Custom allocators for data structures
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Linked list cycle (infinite loop) | Floyd's tortoise and hare | Use slow/fast pointer detection; print pointers during traversal to identify the cycle node |
+| Hash table performance degradation | Load factor monitoring + profiling | Track `count/size` ratio; rehash when > 0.75; use `perf` to profile bucket chain traversal |
+| Stack overflow from deep recursion (tree traversal) | Convert to iterative + explicit stack | Replace recursive traversal with while-loop and explicit stack; monitor stack usage with `-fstack-usage` |
+| Use-after-free in linked list node deletion | AddressSanitizer | Compile with `-fsanitize=address`; detects use-after-free immediately with stack trace |
+| Incorrect BST height after rotation (AVL tree) | In-order traversal verification | After every rotation, verify in-order traversal produces sorted output; check `_Static_assert` for node sizes |
+
+## Code Review Checklist
+
+- [ ] All `malloc`/`calloc` return values checked before use
+- [ ] All nodes/entries freed in cleanup functions (no orphaned memory)
+- [ ] Edge cases handled: empty structure, single element, full structure
+- [ ] Hash table load factor monitored; rehash triggered before degradation
+- [ ] Iterator patterns used for traversal (avoids exposing internal structure)
+- [ ] Recursive tree functions have explicit depth limit or are converted to iterative
+- [ ] Custom allocator used for high-frequency allocation patterns (pool, arena)
+
+## Architecture Considerations
+
+Data structures are the backbone of systems software: operating systems use linked lists for process queues, databases use B-trees for indexes, and networks use hash tables for routing. The choice of structure depends on access patterns — arrays for sequential access, hash tables for key lookup, trees for ordered iteration. Cache efficiency often matters more than algorithmic complexity for small-to-medium datasets.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Dynamic array (`realloc`) | General-purpose growable collection | Excellent cache locality but O(n) insertion at arbitrary positions |
+| Hash table with chaining | Fast key-value lookup | O(1) average but poor cache locality; vulnerable to hash DoS attacks |
+| Red-black tree | Sorted data with frequent insert/delete | O(log n) for all operations but complex implementation |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Hash collision DoS attacks | O(n) degradation, denial of service | Use randomized hash functions (SipHash); limit bucket chain length |
+| Recursive tree traversal stack overflow | Crash, denial of service | Convert to iterative traversal with explicit stack; set recursion depth limits |
+| Unbounded dynamic array growth | Memory exhaustion, OOM crash | Set maximum capacity; validate allocation size before `realloc` |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added flexible array members, `bool` type | Use flexible arrays for variable-length data structures |
+| C99 → C11 | Added `<stdatomic.h>` for lock-free structures, `_Static_assert` | Use atomics for concurrent data structures; add compile-time size checks |
+| C11 → C23 | Added `typeof`, improved `_Generic` | Use `typeof` for type-generic data structure operations; adopt `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| Flexible array members (`int data[]`) | C99 | Standard — preferred for variable-length structures |
+| `_Static_assert` for structure sizes | C11 | Standard — use to validate data structure layout |
+| `<stdatomic.h>` for lock-free operations | C11 | Standard — use for concurrent data structures |
+| `typeof` for type-generic macros | C23 (standardized) | Use for type-safe data structure operations |
+
+## Interview Questions
+
+1. **When would you choose a dynamic array over a linked list?**: Dynamic arrays (`realloc`) are preferred for most use cases due to better cache locality (sequential memory access). Linked lists are only preferable when you need O(1) insertion/deletion at arbitrary positions AND have a pointer to the position.
+2. **How do you prevent hash table collision DoS attacks?**: Use randomized hash functions (SipHash), limit bucket chain length, switch to tree-based collision resolution (like Java 8+), or use universal hashing. Monitor load factor and rehash proactively.
+3. **What is the trade-off between separate chaining and open addressing?**: Separate chaining uses linked lists at each bucket — simple but extra allocation overhead. Open addressing stores entries in the array itself — better cache locality but more complex deletion and higher load factor sensitivity.
+4. **How do you implement a thread-safe data structure in C?**: Use `<stdatomic.h>` for lock-free operations on simple structures (counters, stacks). For complex structures, use mutexes with fine-grained locking (per-bucket, per-node). Design for minimal critical section length.
+5. **When should you use a memory pool for a data structure?**: Use a memory pool when you allocate many small, same-sized objects (linked list nodes, hash table entries). Pools reduce `malloc` overhead, improve cache locality, and simplify cleanup (free everything at once).
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/)
+- [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

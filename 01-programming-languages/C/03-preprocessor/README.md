@@ -372,3 +372,72 @@ struct Config { int timeout; };
 - [Build Systems](../14-build-systems/README.md) — How make and CMake use preprocessor directives
 - [Best Practices](../15-best-practices/README.md) — Coding standards for macro usage
 - [Fundamentals](../01-fundamentals/README.md) — Basic C concepts
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Macro side effects (arguments evaluated multiple times) | `gcc -E` preprocessor output | Run `gcc -E file.c` to expand macros and inspect replacement text for unexpected evaluation |
+| Missing include guard causing redefinition errors | `grep -r "ifndef.*_H"` | Search headers for include guards; add `#ifndef`/`#define`/`#endif` if missing |
+| Conditional compilation producing wrong build | `gcc -dM -E file.c` | Print all predefined macros to verify `#ifdef` conditions match expected platform defines |
+| Token pasting producing unexpected identifiers | `gcc -E` + manual inspection | Expand macros and verify concatenation produces the intended token names |
+| Variadic macro argument mismatch | `-Wvariadic-macros` | Enable compiler warnings for variadic macro usage; check `__VA_ARGS__` expansion |
+
+## Code Review Checklist
+
+- [ ] Every header file has include guards (`#ifndef`/`#define`/`#endif` or `#pragma once`)
+- [ ] Multi-line macros wrapped in `do { ... } while(0)` for statement safety
+- [ ] All macro arguments fully parenthesized: `#define SQ(x) ((x)*(x))`
+- [ ] Inline functions preferred over macros when type safety matters
+- [ ] Complex macros documented with usage examples and edge cases
+- [ ] Platform-specific code uses `#ifdef` with clear feature detection, not platform names
+- [ ] `_Static_assert` validates platform assumptions at compile time
+
+## Architecture Considerations
+
+The preprocessor is a text-processing engine that runs before compilation. It is the only mechanism for conditional compilation in C and remains essential for cross-platform code, include guards, and type-generic abstractions. However, macros lack type checking and scope — prefer inline functions for computation and reserve macros for code generation, conditional compilation, and stringification.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| X-Macro | Code generation from shared data | Reduces duplication but hurts readability for newcomers |
+| Include guard (`#ifndef`) | Preventing multiple inclusion | Portable but verbose; `#pragma once` is simpler but non-standard |
+| Type-generic macro (`_Generic`) | Type-safe abstractions | More type-safe than traditional macros but only available from C11 |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Macro injection via header inclusion | Unintended code execution if headers are attacker-controlled | Validate header paths; use `-I` only for trusted directories |
+| `#include` of untrusted headers | Code injection through malicious header files | Restrict include paths; audit third-party headers |
+| Preprocessor-based data exfiltration | Leaking build environment details via `__FILE__` in release builds | Strip debug info in release builds; use `-DNDEBUG` |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `//` comments, variadic macros (`__VA_ARGS__`), `_Pragma` | Adopt `//` comments; use `##__VA_ARGS__` for empty args |
+| C99 → C11 | Added `_Generic`, `_Static_assert`, `__has_include` | Use `_Generic` for type-generic code; use `__has_include` for feature detection |
+| C11 → C23 | Added `#embed` binary inclusion, improved `constexpr` | Use `#embed` for embedding binary data; adopt `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `//` single-line comments | C99 | Standard — universally supported |
+| Variadic macros (`__VA_ARGS__`) | C99 (standardized in C99, widely available earlier) | Standard — use `##__VA_ARGS__` for empty lists |
+| `_Generic` selection | C11 | Standard — replaces pre-C11 type-generic macros |
+| `__has_include` | C23 (available as extension in GCC/Clang earlier) | Use for conditional header inclusion |
+
+## Interview Questions
+
+1. **What is the difference between a macro and an inline function?**: Macros are text substitution with no type checking, no scope, and potential side effects (arguments evaluated multiple times). Inline functions are type-safe, have proper scope, and the compiler handles optimization. Use macros for code generation and conditional compilation; use inline functions for computation.
+2. **Why wrap multi-line macros in `do { ... } while(0)`?**: Without the wrapper, using a macro inside an `if` without braces causes the `else` to bind to the wrong statement. `do { ... } while(0)` creates a single statement that is safe in all control flow contexts.
+3. **What is the X-Macro pattern?**: X-Macros define data once (e.g., a list of enum values) and generate multiple outputs (enums, name strings, arrays) by redefining the `X` macro before each inclusion. This eliminates duplication but requires understanding of macro expansion order.
+4. **How does `_Generic` improve type safety?**: `_Generic` selects expressions based on the type of a controlling expression, enabling type-safe macros. For example, `print(x)` can dispatch to `printf("%d", x)` for `int` or `printf("%s", x)` for `char*` without runtime overhead.
+5. **Why should you prefer `#pragma once` over `#ifndef` guards?**: `#pragma once` is simpler (no need to choose unique guard names) and faster (compiler skips the file immediately). However, it is non-standard. For maximum portability, use both `#pragma once` and `#ifndef` guards.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [The Preprocessor — GNU C Manual](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor.html)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)

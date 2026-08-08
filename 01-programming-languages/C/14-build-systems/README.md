@@ -326,3 +326,73 @@ CFLAGS = -Wall -Wextra -Werror -g -O2
 - [Preprocessor](../03-preprocessor/README.md) — How `#include` and conditional compilation work
 - [Best Practices](../15-best-practices/README.md) — Coding standards enforced by build flags
 - [Testing](../13-testing/README.md) — CI/CD integration
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Build not tracking header dependency changes | `make -d` debug output | Run `make -d` to see which targets are rebuilt; verify `.d` dependency files are generated with `-MMD -MP` |
+| Build fails on different machines (implicit flags) | Compare `CFLAGS` in Makefile vs manual build | Add explicit `CFLAGS` in build system; avoid relying on compiler defaults |
+| Slow rebuild after single file change | Check dependency graph | Use `make -Bn` to see rebuild plan; ensure header dependencies are correctly tracked |
+| Cross-compilation failing silently | Verify compiler path and sysroot | Use `--print-search-dirs` to verify compiler paths; set `CROSS_COMPILE` prefix explicitly |
+| `pkg-config` not finding library | Check `PKG_CONFIG_PATH` | Run `pkg-config --cflags --libs libname`; verify `.pc` files exist in `PKG_CONFIG_PATH` |
+
+## Code Review Checklist
+
+- [ ] Compiler warnings enabled (`-Wall -Wextra -Werror`) in build system
+- [ ] Header dependency tracking enabled (`-MMD -MP` in Makefile)
+- [ ] Debug and release builds separated (`-g` for debug, `-O2` for release)
+- [ ] `make clean` target available for fresh builds
+- [ ] Test target available (`make test` or `ctest`)
+- [ ] Cross-compilation support documented and tested
+- [ ] External dependencies managed through `pkg-config` or CMake `find_package`
+- [ ] Build reproducible (same flags on every machine)
+
+## Architecture Considerations
+
+Build systems automate compilation, linking, and deployment. For small projects (< 5 source files), a simple Makefile suffices. For medium projects, CMake provides cross-platform support. For large projects with complex dependencies, Meson or Bazel may be appropriate. The key principle: the build system should be the single source of truth for how the project is built — no manual `gcc` commands.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Makefile with `-MMD -MP` | Small to medium projects | Simple, portable, but verbose for complex dependency trees |
+| CMake | Cross-platform, large projects | Generates Makefiles/Ninja; powerful but has its own learning curve |
+| Meson | Modern new projects | Fast, readable syntax; less ecosystem support than CMake |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Build reproducibility failure | Unverified binaries, supply chain risk | Pin compiler versions; use deterministic build flags; verify hashes |
+| Insecure compiler flags in release | Missing security features | Enforce `-fstack-protector-strong`, `-D_FORTIFY_SOURCE=2`, `-pie -fPIE` in release builds |
+| Dependency vulnerabilities | Known CVEs in third-party libraries | Use `cve-check` tools; pin dependency versions; audit dependencies regularly |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `bool`, `//` comments, improved `Makefile` compatibility | Adopt modern Makefile practices; use `:=` for immediate assignment |
+| C99 → C11 | Added `_Static_assert`, `<stdatomic.h>` | Add `-std=c11` to `CFLAGS`; use C11 features for build-time checks |
+| C11 → C23 | Added `typeof`, improved `constexpr`, `#embed` | Add `-std=c23` to `CFLAGS` for latest features; use `#embed` for binary data |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `-std=c99` / `-std=c11` / `-std=c23` | Compiler flag | Use to specify C standard version in build system |
+| `-Wall -Wextra -Werror` | Compiler flags | Enable in all builds; `-Werror` in CI/CD |
+| `-MMD -MP` (dependency tracking) | GCC/Clang flag | Enable in Makefiles for automatic header dependency tracking |
+| `-D_FORTIFY_SOURCE=2` (buffer overflow detection) | GCC/Clang flag | Enable in release builds for runtime buffer overflow detection |
+
+## Interview Questions
+
+1. **Why use `-MMD -MP` in Makefiles?**: `-MMD` generates `.d` dependency files listing header dependencies for each `.c` file. `-MP` adds phony targets for each header to prevent errors if headers are deleted. Together they ensure header changes trigger recompilation.
+2. **What is the difference between `make` and CMake?**: `make` reads Makefiles directly and is simple but platform-specific. CMake generates platform-specific build files (Makefiles, Ninja, Visual Studio projects) from `CMakeLists.txt`. CMake is better for cross-platform projects.
+3. **How do you handle external library dependencies in C?**: Use `pkg-config` to discover compiler/linker flags. For CMake, use `find_package` or `FetchContent`. For Makefiles, use `$(shell pkg-config --cflags --libs libname)`. Pin dependency versions for reproducibility.
+4. **Why separate debug and release builds?**: Debug builds include `-g` (debug symbols) and skip optimization (`-O0`) for easier debugging. Release builds use `-O2` or `-O3` for performance and strip debug info. Mixing them causes confusing behavior (optimized-out variables in debugger).
+5. **What flags should always be in a release build?**: `-O2` (optimization), `-DNDEBUG` (disable assert), `-fstack-protector-strong` (stack canaries), `-D_FORTIFY_SOURCE=2` (buffer overflow detection), `-pie -fPIE` (ASLR), `-Wl,-z,relro -Wl,-z,now` (read-only relocations).
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [GNU Make Manual](https://www.gnu.org/software/make/manual/)
+- [CMake Documentation](https://cmake.org/cmake/help/latest/)

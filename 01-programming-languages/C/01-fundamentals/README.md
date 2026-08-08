@@ -473,3 +473,72 @@ void get_value(int *out) {
 - [Advanced Pointers](../05-pointers-advanced/README.md) — Function pointers, opaque pointers, complex declarations
 - [Memory Management](../08-memory-management/README.md) — Advanced allocation patterns, custom allocators
 - [Security](../11-security/README.md) — Preventing buffer overflows, integer overflows, and other vulnerabilities
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Uninitialized variable reads | Valgrind / AddressSanitizer | Compile with `-fsanitize=undefined` to catch reads of uninitialized memory |
+| Buffer overflow in arrays | AddressSanitizer | Compile with `-fsanitize=address` to detect out-of-bounds writes |
+| Incorrect pointer dereference | GDB backtrace | Run `gdb ./program` then `run` and `bt` to see stack trace on crash |
+| Signed/unsigned comparison bugs | Compiler warnings | Enable `-Wsign-compare` to catch implicit signed-to-unsigned conversion |
+| Incorrect string termination | `strlen` debugging | Print `strlen(str)` and `sizeof(buffer)` to verify null termination |
+
+## Code Review Checklist
+
+- [ ] All variables initialized before first use
+- [ ] Array bounds checked before every access
+- [ ] Null pointers checked before dereferencing
+- [ ] Return values from `malloc`, `fopen`, and library functions checked
+- [ ] Fixed-width types (`int32_t`, `uint64_t`) used for portability
+- [ ] `snprintf` used instead of `sprintf`, `strncpy` instead of `strcpy`
+- [ ] No signed/unsigned mixing in comparisons
+
+## Architecture Considerations
+
+Fundamentals form the foundation of every C system. Variables, control flow, and functions are the building blocks that larger modules (data structures, memory management, networking) compose upon. Proper use of types and error handling patterns at this level prevents cascading bugs in higher-level modules.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Error code returns | Simple functions, embedded systems | Clear but verbose; caller must check every call |
+| Guard clauses | Input validation, early exits | Reduces nesting but may obscure main logic path |
+| Structured error types | Complex APIs | More expressive but adds type overhead |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Uninitialized variables | Leaks sensitive data, undefined behavior | Always initialize variables at declaration; use `-Wuninitialized` |
+| Integer overflow in size calculations | Buffer overflow, heap corruption | Check arithmetic bounds before allocation; use `_Static_assert` for type sizes |
+| Unsafe string functions (`strcpy`, `sprintf`) | Remote code execution | Use `strncpy`, `snprintf`, `strlcpy` with explicit bounds |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89/C90 → C99 | Added `inline`, `_Bool`, variable-length arrays, `//` comments | Replace function macros with `inline`, use `<stdbool.h>` |
+| C99 → C11 | Added `_Generic`, `_Static_assert`, `<stdatomic.h>`, `<threads.h>` | Use `<stdatomic.h>` for thread-safe operations |
+| C11 → C23 | Added `typeof`, `typeof_unqual`, improved `constexpr`, `#embed` | Use `typeof` for type-generic macros, adopt `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `bool` type via `<stdbool.h>` | C99 | Standard — use for boolean values |
+| Variable-length arrays (VLAs) | C99 (optional in C11+) | Use sparingly; stack overflow risk with large sizes |
+| `_Static_assert` | C11 | Standard — compile-time assertion |
+| `typeof` operator | C23 (standardized) | Use directly or via `_typeof` for portability |
+
+## Interview Questions
+
+1. **What is the difference between `int *p` and `int *const p`?**: `int *p` is a pointer to int that can be changed; `int *const p` is a constant pointer that cannot point to a different address after initialization.
+2. **Why should you avoid `gets()`?**: `gets()` performs no bounds checking and always causes buffer overflow if input exceeds buffer size. It was removed in C11. Use `fgets()` instead.
+3. **What is undefined behavior in C?**: Undefined behavior occurs when code violates C language rules (e.g., signed integer overflow, null dereference, buffer overflows). The compiler may produce unexpected results.
+4. **Explain the difference between `sizeof` on an array vs a pointer**: `sizeof` on an array returns the total bytes of the array; `sizeof` on a pointer returns the pointer size (4 or 8 bytes). Arrays decay to pointers when passed to functions.
+5. **What is the significance of the `const` keyword?**: `const` declares read-only variables, prevents accidental modification, enables compiler optimizations, and documents intent. It does not make variables compile-time constants in C.
+
+## References
+
+- [The C Programming Language (K&R)](https://en.wikipedia.org/wiki/The_C_Programming_Language)
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)

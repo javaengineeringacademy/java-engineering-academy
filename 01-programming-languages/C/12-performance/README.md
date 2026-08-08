@@ -388,3 +388,73 @@ int classify(Packet *p) {
 - [Memory Management](../08-memory-management/README.md) — Custom allocators
 - [Concurrency](../09-concurrency/README.md) — Parallelism
 - [Best Practices](../15-best-practices/README.md) — Balancing performance with readability
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Cache misses causing slowdown | `perf stat -e cache-misses,cache-references` | Profile cache miss rate; restructure data for sequential access (row-major instead of column-major) |
+| Branch misprediction reducing throughput | `perf stat -e branch-misses` | Identify hot branches; replace with branchless code or sort data to make branches predictable |
+| Excessive memory allocation overhead | Memory pool + profiling | Replace `malloc`/`free` with pool allocator for hot paths; measure allocation count before/after |
+| False sharing in multi-threaded code | `perf c2c` + padding | Detect cache line sharing between threads; pad data structures to separate thread-local data onto different cache lines |
+| Compiler not optimizing hot loop | `gcc -S -O2` assembly inspection | Inspect generated assembly; add `__builtin_expect` for branch hints; use `restrict` pointers |
+
+## Code Review Checklist
+
+- [ ] Profile before optimizing — identify real bottleneck with `perf` or `gprof`
+- [ ] Hot paths (top 1% of code) optimized first
+- [ ] Data structures designed for sequential access (row-major layout)
+- [ ] Block processing used for large array operations (cache-friendly)
+- [ ] Branchless techniques applied to unpredictable hot-path branches
+- [ ] Memory pools used for high-frequency small allocations
+- [ ] Compiler optimizations enabled (`-O2 -march=native`)
+- [ ] Performance measured before and after each optimization
+
+## Architecture Considerations
+
+Performance optimization follows a hierarchy: algorithm choice (biggest impact), data structure choice (cache behavior), memory access patterns (sequential vs random), branch prediction (branchless code), SIMD (parallel data processing), and compiler optimizations (last resort). Profile first, identify the bottleneck, and optimize the critical path. Premature optimization wastes time and creates complexity.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Cache-oblivious algorithms | Unknown cache sizes, portable performance | Optimal for all cache levels but complex to implement |
+| SIMD vectorization | Data-parallel workloads (image processing, crypto) | 4-16x speedup but platform-specific and harder to debug |
+| Memory pool | High-frequency small allocations | Reduces `malloc` overhead; wastes memory if pool size is misjudged |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Constant-time operations for cryptographic code | Timing side-channel attacks | Use constant-time comparisons and operations; avoid data-dependent branches |
+| Optimized-out security checks | Compiler removes "unnecessary" validation | Use `volatile` for security-critical checks; verify with `-O2` assembly inspection |
+| Performance optimizations bypassing safety | Bounds checks removed for speed | Keep safety checks in debug builds; use `-D_FORTIFY_SOURCE=2` in release |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `restrict` qualifier (pointer aliasing), `inline` | Add `restrict` to hot-path pointer parameters; use `inline` for small functions |
+| C99 → C11 | Added `_Alignas`, `_Alignof` for cache-line alignment | Use `_Alignas(64)` for cache-line aligned structures in hot paths |
+| C11 → C23 | Added `typeof`, improved `constexpr`, `#embed` | Use `typeof` for type-generic performance macros; use `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `restrict` qualifier (aliasing optimization) | C99 | Standard — add to hot-path pointer parameters |
+| `_Alignas` / `_Alignof` (alignment control) | C11 | Standard — use for cache-line alignment |
+| `_Noreturn` (noreturn functions) | C11 | Standard — use for `abort()`, `exit()` to enable optimizer |
+| `typeof` for type-generic operations | C23 (standardized) | Use for type-safe performance macros |
+
+## Interview Questions
+
+1. **What is the performance hierarchy and why does order matter?**: The hierarchy is: algorithm choice → data structure → memory access patterns → branch prediction → SIMD → compiler optimizations. Order matters because algorithmic improvements (O(n²) → O(n log n)) dwarf micro-optimizations. Always choose the right algorithm first.
+2. **How does cache behavior affect performance?**: CPU cache hits (~1ns) are 100x faster than main memory (~100ns). Sequential access (arrays) exploits spatial locality; random access (linked lists) causes cache misses. Block processing and row-major layout improve cache utilization.
+3. **When should you use branchless programming?**: Use branchless code for unpredictable branches in hot paths (e.g., `abs()`, `max()`, conditional assignments). Branch misprediction costs ~15-20 CPU cycles. Branchless code eliminates this penalty at the cost of reduced readability.
+4. **What is false sharing and how do you fix it?**: False sharing occurs when two threads modify variables on the same cache line, causing the cache line to bounce between CPU cores. Fix by padding data structures to separate thread-local data onto different cache lines (e.g., `_Alignas(64)`).
+5. **How do you measure performance accurately?**: Use `perf stat` for hardware counters (cache misses, branch misses, cycles), `perf record` + `perf report` for function-level profiling, and `gprof` for call-graph profiling. Always run multiple iterations and warm up the CPU cache before measuring.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Computer Architecture: A Quantitative Approach (Hennessy & Patterson)](https://www.elsevier.com/books/computer-architecture/hennessy/978-0-128-20109-1)
+- [Linux perf性能分析工具](https://perf.wiki.kernel.org/index.php/Main_Page)

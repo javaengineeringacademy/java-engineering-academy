@@ -393,3 +393,72 @@ FILE *fp = fopen("data.bin", "rb");  // Binary mode — no transformation
 - [Best Practices](../15-best-practices/README.md) — Coding standards for file handling
 - [Security](../11-security/README.md) — Preventing path traversal and file injection attacks
 - [Memory Management](../08-memory-management/README.md) — Memory-mapped files and custom allocators
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Data loss after crash (unflushed buffers) | `strace` / DTrace | Trace `write()` syscalls to verify data reaches the kernel; check for missing `fclose`/`fflush` |
+| Binary file corruption on Windows | Hex diff comparison | Compare file contents in hex editor; verify `"rb"/"wb"` modes are used for binary data |
+| `fread` returning fewer bytes than expected | Check `feof()` and `ferror()` | After `fread`, check `feof(fp)` for end-of-file and `ferror(fp)` for errors |
+| File descriptor leak in long-running process | `/proc/self/fd` or `lsof` | Count open file descriptors; use `lsof -p PID` to identify leaked descriptors |
+| Incorrect file positioning with `fseek` | `ftell` debugging | Print `ftell(fp)` before and after `fseek` to verify correct position |
+
+## Code Review Checklist
+
+- [ ] `fopen` return value checked for `NULL` before use
+- [ ] `fclose` called in all code paths (including error paths)
+- [ ] Binary mode (`"rb"`, `"wb"`) used for non-text files
+- [ ] `fread`/`fwrite` return values checked against expected counts
+- [ ] `strerror(errno)` used for meaningful error messages after file operations
+- [ ] Temporary files cleaned up on error paths
+- [ ] File format validated before reading structured data
+
+## Architecture Considerations
+
+File I/O in C is built on the `FILE *` stream abstraction, which provides automatic buffering and portability across operating systems. For high-performance workloads, consider memory-mapped files (`mmap`) or direct I/O to bypass buffering overhead. The choice between buffered I/O and raw I/O depends on access patterns: buffered I/O excels for sequential writes, while `mmap` is superior for random access on large files.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Buffered stdio (`FILE *`) | General-purpose file operations | Portable, automatic buffering, but overhead for small writes |
+| Memory-mapped I/O (`mmap`) | Random access on large files | Zero-copy, OS-managed paging, but not portable to Windows without `MapViewOfFile` |
+| Direct I/O (`O_DIRECT`) | Database engines, bypassing page cache | Avoids double-buffering but requires aligned buffers |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Path traversal in file operations | Unauthorized file access | Validate and sanitize file paths; reject `..` components |
+| Symlink race conditions (TOCTOU) | File replacement between check and open | Use `O_NOFOLLOW` flag; open files with `O_CLOEXEC` |
+| Unchecked `fread`/`fwrite` return values | Silent data corruption | Always verify return counts match expected values |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `fseeko`/`ftello` (large file support), `tmpfile` improvements | Use `fseeko`/`ftello` for files > 2GB on 32-bit systems |
+| C99 → C11 | Added `fgetws`/`fputws` (wide character I/O) | Use wide character functions for Unicode file content |
+| C11 → C23 | Improved `fopen` mode handling, `_FILE_OFFSET_BITS` | Use `_FILE_OFFSET_BITS=64` for large file support on 32-bit platforms |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `fopen`/`fclose`/`fread`/`fwrite` | C89 | Standard — core file I/O |
+| `fseeko`/`ftello` (large file offset) | C99 (POSIX) | Widely available; use `_FILE_OFFSET_BITS=64` for portability |
+| `fgetws`/`fputws` (wide character) | C99 | Standard — use for Unicode file content |
+| `tmpfile` (temporary file) | C89 | Standard — file deleted on close |
+
+## Interview Questions
+
+1. **Why must you always check the return value of `fclose`?**: `fclose` flushes the stdio buffer to disk. On failure (disk full, I/O error), data may be lost. Always check `fclose` return value in production code, especially for logging or data persistence.
+2. **What is the difference between text mode and binary mode on Windows?**: Text mode translates `\n` to `\r\n` on write and `\r\n` to `\n` on read. This corrupts binary data. On Unix, text and binary modes are identical. Always use `"rb"/"wb"` for non-text files.
+3. **How do you implement safe file reading with `fread`?**: `fread` may return fewer bytes than requested (end of file, interrupted by signal). Always check the return value against the expected count, and use `feof(fp)` and `ferror(fp)` to determine the cause of short reads.
+4. **When would you use `mmap` instead of `fread`/`fwrite`?**: `mmap` provides zero-copy random access to file contents by mapping the file directly into process memory. It is superior for large files with random access patterns (databases, memory-mapped data structures) but less portable than stdio.
+5. **How do you handle file locking for concurrent access?**: Use `flock()` (BSD) or `fcntl()` (POSIX) for advisory locking. For mandatory locking, use `lockf()`. On Windows, use `LockFileEx()`. Always release locks in error paths to prevent deadlocks.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [Advanced Programming in the UNIX Environment (Stevens)](https://www.apuebook.com/)

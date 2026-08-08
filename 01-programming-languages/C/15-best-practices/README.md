@@ -425,3 +425,74 @@ int process_data(const char *input);
 - [Security](../11-security/README.md) — Secure coding practices
 - [Testing](../13-testing/README.md) — Writing testable code
 - [Build Systems](../14-build-systems/README.md) — Enforcing standards through build flags
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Inconsistent naming causing confusion | `grep -r "function_name"` across codebase | Search for naming patterns; enforce convention with `clang-format` and style guide |
+| Missing error handling (unchecked returns) | `-Wunused-result` compiler warning | Enable `-Wunused-result` for functions like `malloc`, `fwrite`; treat warnings as errors |
+| Functions too long (> 100 lines) | `wc -l *.c` + code review | Split long functions into smaller units; each function should do one thing |
+| Magic numbers without explanation | Search for bare numeric literals | Replace `4096` with `BUFFER_SIZE`, `3` with `MAX_RETRIES`; use `#define` or `const` |
+| Missing documentation on public API | Doxygen + code review | Generate documentation with `doxygen -g`; verify all public functions have `@brief` |
+
+## Code Review Checklist
+
+- [ ] Functions follow `module_action_noun` naming convention
+- [ ] All public functions documented with Doxygen (`@brief`, `@param`, `@return`)
+- [ ] Error handling covers all failure paths (no silent failures)
+- [ ] `static` used for file-scoped functions (not exposed in headers)
+- [ ] Interface (`.h`) separated from implementation (`.c`)
+- [ ] `const` used for all read-only parameters
+- [ ] Functions under 50 lines; files under 500 lines
+- [ ] No magic numbers (all constants named via `#define` or `const`)
+- [ ] Code compiles cleanly with `-Wall -Wextra -Wpedantic`
+
+## Architecture Considerations
+
+Best practices transform individual skill into team productivity. Consistent naming, error handling patterns, and memory management conventions make code readable and maintainable regardless of who wrote it. The hierarchy is: correctness → safety → readability → maintainability → performance. Optimize for readability first; only optimize hot paths after profiling proves they are bottlenecks.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| RAII-style with `goto` cleanup | Complex function with multiple allocations | Reduces error handling duplication; controversial but used in Linux kernel |
+| Output parameters for error context | Functions needing detailed error info | More flexible than error codes alone; adds parameter count |
+| Arena allocator for batch operations | Request-scoped allocations | Single `free` for all allocations; no individual deallocation |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Inconsistent error handling leaking sensitive info | Information disclosure in error messages | Log errors generically; never expose internals in user-facing errors |
+| Hardcoded secrets in source code | Credential leakage | Use environment variables, config files, or key vaults; never commit secrets |
+| Missing input validation across modules | Inconsistent security posture | Validate at every module boundary; use centralized validation functions |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| K&R C → ANSI C (1989) | Added function prototypes, `void` type, proper declarations | Update all function declarations to use prototypes |
+| ANSI C → C99 | Added `bool`, `//` comments, `inline`, `_Bool` | Use `<stdbool.h>`, `//` comments, `inline` for small functions |
+| C99 → C11 | Added `_Static_assert`, `_Noreturn`, `_Thread_local` | Use `_Static_assert` for compile-time checks; `_Noreturn` for `exit()`, `abort()` |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| Function prototypes (mandatory) | C89/C90 | Standard — always use prototypes in headers |
+| `<stdbool.h>` (`bool`, `true`, `false`) | C99 | Standard — use for boolean values |
+| `inline` keyword | C99 | Standard — use for small, frequently-called functions |
+| `_Static_assert` (compile-time checks) | C11 | Standard — use for constant validation |
+
+## Interview Questions
+
+1. **What are the most important C coding standards?**: Key standards: consistent naming conventions (`module_action_noun`), error handling patterns (return codes with `goto` cleanup), memory management discipline (free what you malloc), separation of interface and implementation, and comprehensive documentation of public APIs.
+2. **How do you handle errors in C?**: Common patterns: (1) Return error codes (most common), (2) `goto cleanup` for resource management (Linux kernel style), (3) Output parameters for detailed error context, (4) Error structs with message, file, and line. Always document error behavior in comments.
+3. **Why is `const` important in C?**: `const` declares read-only parameters and variables, prevents accidental modification, enables compiler optimizations, and documents intent. It does NOT make variables compile-time constants in C (unlike C++ `constexpr`).
+4. **How do you write maintainable C code?**: Keep functions small (< 50 lines), use descriptive names, document public interfaces with Doxygen, handle all error paths, separate interface from implementation, use `static` for internal functions, and write tests for all public functions.
+5. **When should you use `static` functions?**: Use `static` for all functions that are not part of the public API. This limits visibility to the current translation unit, enables compiler optimizations, prevents namespace pollution, and clearly documents the function's scope.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [Linux Kernel Coding Style](https://www.kernel.org/doc/html/latest/process/coding-style.html)

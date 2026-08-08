@@ -454,3 +454,72 @@ int mid = low + (high - low) / 2;  // No overflow
 - [Data Structures](../06-data-structures/README.md) — Structures that algorithms operate on
 - [Performance](../12-performance/README.md) — Profiling and optimizing algorithm performance
 - [Best Practices](../15-best-practices/README.md) — Coding standards for algorithm implementation
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| QuickSort worst case on sorted input (O(n²)) | Generate sorted test input | Test with already-sorted arrays; verify pivot selection uses median-of-three or random pivot |
+| Binary search integer overflow in midpoint | Add overflow-safe assertion | Use `int mid = low + (high - low) / 2` instead of `(low + high) / 2`; test with `INT_MAX` boundaries |
+| Graph algorithm infinite loop (missing visited check) | Print visited array at each step | Add debug prints showing `visited[v]` before and after each node visit |
+| Dynamic programming table not properly initialized | Print DP table after execution | Dump the DP table after computation; verify base cases are correctly set at indices 0 and 0 |
+| Merge sort memory leak (forgotten `free`) | AddressSanitizer | Compile with `-fsanitize=address`; detects leaked temporary arrays in merge function |
+
+## Code Review Checklist
+
+- [ ] Edge cases handled: empty input, single element, all identical values
+- [ ] Integer overflow checked in index/midpoint calculations (`low + (high - low) / 2`)
+- [ ] Standard library used when available (`qsort`, `bsearch`) unless custom implementation is required
+- [ ] All allocated memory freed in algorithms (merge sort temp arrays, DP tables)
+- [ ] Worst-case inputs tested (sorted arrays for QuickSort, dense graphs for Dijkstra)
+- [ ] Algorithm complexity documented in comments (time and space)
+- [ ] No unnecessary recursion (convert to iterative for deep recursion risk)
+
+## Architecture Considerations
+
+Algorithms are the computational engine behind data structures. The choice of algorithm depends on data size, access patterns, and performance requirements. For most production systems, use the standard library (`qsort`, `bsearch`) and profile before implementing custom algorithms. Algorithmic improvements (O(n²) → O(n log n)) dwarf micro-optimizations — choose the right algorithm first.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| QuickSort | General-purpose in-place sorting | O(n log n) average but O(n²) worst case; not stable |
+| MergeSort | Stable sort, linked lists | O(n log n) guaranteed but O(n) extra space |
+| Binary search | Lookup in sorted data | O(log n) but requires sorted input; beware integer overflow in midpoint |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Integer overflow in binary search midpoint | Incorrect comparison, out-of-bounds access | Use `low + (high - low) / 2` instead of `(low + high) / 2` |
+| Hash collision DoS in hash-based algorithms | O(n) degradation, denial of service | Use randomized hash functions (SipHash); limit chain length |
+| Unbounded recursion in divide-and-conquer | Stack overflow, crash | Convert to iterative implementation; set recursion depth limits |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `qsort`/`bsearch` standard library, `_Bool` | Use standard library for simple sorting; implement custom only when needed |
+| C99 → C11 | Added `<stdatomic.h>` for lock-free algorithms, `<threads.h>` | Use atomics for concurrent algorithms; use `<threads.h>` for portable threading |
+| C11 → C23 | Added `typeof`, improved `_Generic`, `constexpr` | Use `typeof` for type-generic algorithm macros; use `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `qsort`/`bsearch` (standard library) | C89 | Standard — use for simple sorting/searching |
+| `<stdatomic.h>` for lock-free algorithms | C11 | Standard — use for concurrent data structures |
+| `typeof` for type-generic operations | C23 (standardized) | Use for type-safe algorithm macros |
+| `restrict` for pointer aliasing optimization | C99 | Standard — add to hot-path pointer parameters |
+
+## Interview Questions
+
+1. **What is the worst case of QuickSort and how do you mitigate it?**: QuickSort is O(n²) on already-sorted or reverse-sorted input when the pivot is poorly chosen (first/last element). Mitigate with median-of-three pivot selection or random pivot. Alternatively, use IntroSort (switch to HeapSort when recursion depth exceeds O(log n)).
+2. **How do you prevent integer overflow in binary search?**: Use `int mid = low + (high - low) / 2` instead of `(low + high) / 2`. The latter overflows when `low + high > INT_MAX`. For unsigned types, the same formula applies.
+3. **When is MergeSort preferred over QuickSort?**: MergeSort is preferred for linked lists (no random access needed, O(1) extra space on linked lists), when stability is required (preserves relative order of equal elements), or when O(n log n) worst-case guarantee is needed.
+4. **How does cache behavior affect algorithm performance?**: Algorithms with sequential memory access (arrays) have better cache locality than pointer-chasing algorithms (linked lists). An O(n) algorithm with poor cache behavior can be slower than an O(n log n) algorithm with good locality. Block processing improves cache utilization.
+5. **What is memoization and when should you use it?**: Memoization caches results of recursive function calls to avoid redundant computation. Use it for problems with optimal substructure and overlapping subproblems (Fibonacci, edit distance, knapsack). It trades O(n) or O(n²) space for O(n) or O(n²) time reduction.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/)
+- [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

@@ -431,3 +431,72 @@ close(client_fd);  // Parent closes client fd
 - [Concurrency](../09-concurrency/README.md) — Multi-threaded servers
 - [Security](../11-security/README.md) — Secure network communication (TLS, input validation)
 - [Performance](../12-performance/README.md) — High-performance networking
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Partial send causing truncated messages | `strace -e sendto` | Trace syscalls to verify all bytes are sent; implement send loop checking return value |
+| Connection leak (fd exhaustion) | `lsof -p PID` / `ls /proc/PID/fd` | Count open file descriptors; identify leaked sockets in error paths |
+| `SIGPIPE` crashing server | `signal(SIGPIPE, SIG_IGN)` | Ignore or handle `SIGPIPE`; use `send` with `MSG_NOSIGNAL` flag on Linux |
+| Blocking `accept`/`recv` freezing server | Set socket timeouts | Use `setsockopt(SO_RCVTIMEO, SO_SNDTIMEO)` to prevent indefinite blocking |
+| DNS resolution hanging | Non-blocking `getaddrinfo` | Use `getaddrinfo` with `AI_ADDRCONFIG`; implement timeout around resolution |
+
+## Code Review Checklist
+
+- [ ] `SO_REUSEADDR` set on server sockets before `bind`
+- [ ] Partial sends handled with loop (check `send` return, retry until all bytes sent)
+- [ ] Socket timeouts set (`SO_RCVTIMEO`, `SO_SNDTIMEO`) to prevent indefinite blocking
+- [ ] All received data validated before processing (bounds, format, content)
+- [ ] File descriptors closed in all code paths (including error and fork paths)
+- [ ] `SIGPIPE` handled (ignored or caught) to prevent server crash
+- [ ] Address validation performed with `inet_pton` (not `inet_addr`)
+
+## Architecture Considerations
+
+C networking is built on the BSD socket API, which provides a universal abstraction for TCP, UDP, and Unix sockets. For high-concurrency servers, choose between thread-per-connection (simple), event-driven with `epoll`/`kqueue` (scalable), or hybrid models (thread pool + event loop). The choice depends on connection count, I/O patterns, and latency requirements.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Thread-per-connection | Simple servers, low connection count | Simple code but limited scalability (thread overhead) |
+| Event-driven (epoll/kqueue) | High-concurrency servers (10K+ connections) | Single-threaded simplicity; scales to millions of connections |
+| Thread pool + event loop | Mixed CPU/I/O workloads | Combines scalability with CPU parallelism |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from untrusted network input | Remote code execution | Validate all input; use bounded `recv` with size limits; enable `-fstack-protector-strong` |
+| Denial of service (connection flood) | Server exhaustion | Limit concurrent connections; set `SO_RCVBUF`/`SO_SNDBUF`; use `accept` throttling |
+| Unencrypted data transmission | Data interception | Use TLS (OpenSSL, mbedTLS); never send credentials in plaintext |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `getaddrinfo` (reentrant DNS), improved error handling | Replace `gethostbyname` with `getaddrinfo` for thread safety and IPv6 support |
+| C99 → C11 | Added `<threads.h>` for concurrent servers, `<stdatomic.h>` | Use C11 threads for portable multi-threaded servers |
+| C11 → C23 | Improved `constexpr`, potential async I/O support | Adopt modern async frameworks (libuv, libevent) for high-performance servers |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| BSD sockets (`socket`, `bind`, `listen`) | POSIX (not C standard) | Universal on Unix; use Winsock on Windows |
+| `getaddrinfo` (reentrant DNS) | POSIX | Standard on Unix; use `GetAddrInfoW` on Windows |
+| `<threads.h>` for concurrent servers | C11 | Limited platform support; prefer pthreads on Unix |
+| Non-blocking I/O (`fcntl O_NONBLOCK`) | POSIX | Standard on Unix; use `ioctlsocket` on Windows |
+
+## Interview Questions
+
+1. **Why must you set `SO_REUSEADDR` on server sockets?**: Without `SO_REUSEADDR`, a server cannot restart immediately after closing — the port remains in `TIME_WAIT` state (typically 60 seconds). `SO_REUSEADDR` allows binding to the port immediately, enabling fast server restarts.
+2. **How do you handle partial sends in `send()`?**: `send()` may send fewer bytes than requested (buffer full, signal interruption). Loop until all bytes are sent: `while (sent < len) { ssize_t n = send(fd, buf+sent, len-sent, 0); if (n <= 0) return -1; sent += n; }`.
+3. **What is the difference between TCP and UDP and when to use each?**: TCP provides reliable, ordered, byte-stream communication (HTTP, SMTP, databases). UDP provides fast, unreliable datagrams (DNS, gaming, video streaming). Use TCP when reliability matters; use UDP when speed matters and loss is acceptable.
+4. **How does `epoll` differ from `select` and why is it preferred?**: `select` has a hard limit of 1024 file descriptors and O(n) scan on every call. `epoll` scales to millions of FDs, uses O(1) event notification, and avoids rebuilding fd_sets. Use `epoll` on Linux, `kqueue` on macOS/BSD.
+5. **What causes `SIGPIPE` and how do you handle it?**: `SIGPIPE` is sent when writing to a socket that has been closed by the peer. The default action is to terminate the process. Handle it by ignoring the signal (`signal(SIGPIPE, SIG_IGN)`) and checking `send` return for `EPIPE` error.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Unix Network Programming (Stevens)](https://www.unixnetworkprogramming.org/)
+- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)

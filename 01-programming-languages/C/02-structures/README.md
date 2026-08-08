@@ -446,3 +446,72 @@ void print_var(const Var *v) {
 - [Data Structures](../06-data-structures/README.md) — Linked lists, trees, and hash tables built from structs
 - [Memory Management](../08-memory-management/README.md) — Dynamic allocation for struct members
 - [Security](../11-security/README.md) — Preventing buffer overflows in struct members
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Unexpected struct padding/sizes | `offsetof()` and `sizeof()` | Print `offsetof(struct S, member)` and `sizeof(struct S)` to verify layout assumptions |
+| Union type confusion (reading wrong member) | Compiler warnings + code review | Enable `-Wconversion` and verify tag is checked before every union access |
+| Bit field portability issues | Compile on multiple architectures | Test bit field structs on x86, ARM, and big-endian targets to catch layout differences |
+| Incorrect shallow vs deep copy | Valgrind / AddressSanitizer | Compile with `-fsanitize=address` to detect shared pointers after struct assignment |
+| Opaque struct forward declaration mismatch | Compile-time assertion | Use `_Static_assert(sizeof(struct S) >= expected, ...)` to validate struct sizes across compilation units |
+
+## Code Review Checklist
+
+- [ ] Structure members ordered largest-first to minimize padding
+- [ ] Union access always guarded by tag check (switch/enum)
+- [ ] Bit fields used only for flags/hardware registers, not for general storage
+- [ ] `typedef` used for cleaner syntax where appropriate
+- [ ] Opaque struct pattern used for API boundaries (public header exposes `typedef struct X X`)
+- [ ] `offsetof()` used to validate layout assumptions in serialization code
+- [ ] Deep copy function provided for structs containing pointers
+
+## Architecture Considerations
+
+Structures are the fundamental data modeling tool in C. Every complex system — linked lists, trees, hash tables, network packets — is composed of structs. Proper struct design determines ABI stability, memory efficiency, and API ergonomics. For public APIs, use opaque pointers (forward-declared structs) to decouple interface from implementation, allowing internal layout changes without breaking consumers.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Opaque struct | API boundaries, library interfaces | Hides internals but prevents stack allocation |
+| Packed struct | Network protocols, file formats | Saves space but may cause misaligned access penalties |
+| Tagged union | Variant types (JSON values, config options) | Flexible but requires manual tag management |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Structure padding leaking sensitive data | Information disclosure in serialized structs | Zero-initialize structs; explicitly pad or pack for serialization |
+| Union type confusion (reading wrong active member) | Undefined behavior, potential code execution | Always check tag before accessing union members |
+| Bit field underflow/overflow | Incorrect flag interpretation, logic errors | Validate bit field values at assignment; use fixed-width backing types |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89/C90 → C99 | Added designated initializers, compound literals, flexible array members | Use `.member = value` syntax; replace `malloc(sizeof(T)+extra)` with flexible arrays |
+| C99 → C11 | Added anonymous structs/unions, `_Static_assert` | Use anonymous members for nested access; add compile-time size checks |
+| C11 → C23 | Added `typeof`, improved `_Generic` support | Use `typeof` for type-generic struct operations; adopt `constexpr` for compile-time struct constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| Designated initializers (`{.x = 1}`) | C99 | Standard — universally supported |
+| Flexible array members (`int data[]`) | C99 | Standard — preferred over pointer + separate allocation |
+| Anonymous structs/unions | C11 | Standard — widely supported |
+| `_Static_assert` in structs | C11 | Standard — use for size/layout validation |
+
+## Interview Questions
+
+1. **What causes structure padding and how do you minimize it?**: The compiler inserts padding bytes between members to satisfy alignment requirements (e.g., `int` must be 4-byte aligned). Minimize by ordering members largest-first and using `__attribute__((packed))` when layout is critical (network protocols, file formats).
+2. **What is the difference between a struct and a union?**: A struct allocates separate memory for each member; a union overlays all members at the same address. Structs model "all of these properties"; unions model "one of these variants." Unions require manual tag tracking to know which member is active.
+3. **When would you use an opaque struct?**: Opaque structs hide implementation details behind a public API. Use them for library boundaries where internal layout may change across versions. The public header forward-declares the struct; only the implementation file defines it.
+4. **What are flexible array members and why were they introduced?**: Flexible array members (`char data[]` at the end of a struct) allow variable-length trailing data without pointer indirection. They were introduced in C99 as a safer alternative to the "struct hack" and reduce allocation overhead.
+5. **How do you safely serialize a struct for network transmission?**: Never send structs directly due to padding differences. Instead, serialize each field individually with fixed byte order (network byte order via `htonl`/`ntohl`) and validate sizes at both ends.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [Compilers and Alignment (深入理解计算机系统)](https://csapp.cs.cmu.edu/)

@@ -419,3 +419,73 @@ void cleanup_query(Query *q) {
 - [Performance](../12-performance/README.md) — Custom allocators and memory pools
 - [Testing](../13-testing/README.md) — Valgrind and AddressSanitizer
 - [Security](../11-security/README.md) — Preventing memory-based vulnerabilities
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Memory leaks | Valgrind `--leak-check=full` | Run `valgrind --leak-check=full --track-origins=yes ./program`; reports leaked blocks with allocation stack traces |
+| Use-after-free / double-free | AddressSanitizer | Compile with `-fsanitize=address -g`; immediate crash with stack trace on any memory error |
+| Heap buffer overflow | AddressSanitizer | Compile with `-fsanitize=address`; detects out-of-bounds writes to heap allocations |
+| Dangling pointer after `free` | Set pointer to `NULL` + ASan | Always `free(p); p = NULL;`; ASan catches dereferences of freed memory |
+| `realloc` leaking original pointer | Assign to temporary variable | Use `int *tmp = realloc(*arr, size); if (tmp) *arr = tmp;` — never `*arr = realloc(*arr, size)` directly |
+
+## Code Review Checklist
+
+- [ ] Every `malloc`/`calloc`/`realloc` return value checked for `NULL`
+- [ ] Every `malloc` paired with `free` in all code paths (including error paths)
+- [ ] Pointers set to `NULL` immediately after `free`
+- [ ] No use-after-free (dereferencing pointer after `free`)
+- [ ] No double-free (calling `free` twice on same pointer)
+- [ ] Allocation size checked for integer overflow before arithmetic
+- [ ] `sizeof(*ptr)` used instead of `sizeof(type)` for auto-updating
+- [ ] Memory pools used for high-frequency small allocations
+
+## Architecture Considerations
+
+Manual memory management is C's greatest power and greatest responsibility. The C memory model maps directly to hardware — stack for automatic allocation, heap for dynamic allocation, BSS/Data for globals. For performance-critical systems, custom allocators (arena, pool, slab) reduce `malloc` overhead and improve cache locality. The choice of allocation strategy depends on allocation patterns, lifetime requirements, and performance constraints.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Arena allocator | Batch allocation, single free | O(1) allocation, single `free` for all; no individual deallocation |
+| Pool allocator | Same-size objects (nodes, entries) | O(1) alloc/free, no fragmentation; wastes memory if sizes vary |
+| Stack allocator | Function-scoped temporary data | O(1) alloc/free, cache-friendly; limited to LIFO deallocation |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Heap buffer overflow | Remote code execution, full system compromise | Use AddressSanitizer; check bounds before every write; use `_FORTIFY_SOURCE=2` |
+| Use-after-free | Remote code execution | Set pointers to `NULL` after `free`; use reference counting; enable ASLR |
+| Double-free / heap corruption | Allocator metadata corruption, exploitable | Use `free(NULL)` pattern; track allocation state with debug headers |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `calloc`, `realloc` standardization, flexible array members | Use `calloc` for zero-initialized memory; use flexible arrays instead of pointer + separate allocation |
+| C99 → C11 | Added `<stdatomic.h>` for reference counting, `_Static_assert` | Use atomics for lock-free reference counting; assert allocation sizes at compile time |
+| C11 → C23 | Added `typeof`, improved `constexpr` | Use `typeof` for type-generic allocation macros; use `constexpr` for compile-time size calculations |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `malloc`/`calloc`/`realloc`/`free` | C89 | Standard — core allocation functions |
+| `aligned_alloc` (aligned allocation) | C11 | Standard — use for SIMD and cache-line aligned data |
+| `<stdatomic.h>` for reference counting | C11 | Standard — use for concurrent memory management |
+| `typeof` for type-generic allocation | C23 (standardized) | Use for type-safe allocation macros |
+
+## Interview Questions
+
+1. **What is the difference between `malloc` and `calloc`?**: `malloc` allocates uninitialized memory (contents are indeterminate). `calloc` allocates zero-initialized memory and takes two arguments (count and size) with overflow checking. Use `calloc` when you need zeroed memory; use `malloc` when you will initialize every element.
+2. **Why should you never write `*arr = realloc(*arr, size)`?**: If `realloc` fails and returns `NULL`, the original pointer is lost (memory leak). Always use a temporary: `int *tmp = realloc(*arr, size); if (tmp) *arr = tmp; else { /* handle error */ }`.
+3. **What is a use-after-free and how do you prevent it?**: Use-after-free is dereferencing a pointer after `free` has been called on it. The memory may be reallocated for another purpose, causing data corruption or code execution. Prevent by setting pointers to `NULL` after `free` and using AddressSanitizer in testing.
+4. **When should you use a custom allocator instead of `malloc`?**: Use custom allocators (arena, pool, slab) when: (a) you allocate many small objects of the same size (pool), (b) you need batch allocation with single deallocation (arena), (c) you need predictable allocation timing (embedded/real-time), or (d) `malloc` overhead is a bottleneck.
+5. **How does `realloc` work and when does it move memory?**: `realloc` attempts to grow or shrink an existing allocation in place. If there is not enough contiguous space, it allocates a new block, copies the data, and frees the old block. It may return a different pointer, so always update your pointer to the return value.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [Understanding and Using C Pointers (Reese)](https://www.oreilly.com/library/view/understanding-and-using-c/9781449344184/)

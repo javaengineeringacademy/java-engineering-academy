@@ -364,3 +364,73 @@ void log_message(const char *user_msg) {
 - [Testing](../13-testing/README.md) — Security testing tools
 - [Best Practices](../15-best-practices/README.md) — Coding standards for secure code
 - [Networking](../10-networking/README.md) — Secure network protocols
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Buffer overflow detection | AddressSanitizer | Compile with `-fsanitize=address -g`; immediate crash with stack trace on out-of-bounds write |
+| Format string vulnerability | `-Wformat-security -Werror=format` | Enable strict format warnings; review all `printf`/`syslog` calls for user-controlled format strings |
+| Integer overflow in size calculations | UndefinedBehaviorSanitizer | Compile with `-fsanitize=undefined`; detects signed integer overflow at runtime |
+| Use-after-free exploit | AddressSanitizer + Valgrind | ASan detects immediately; Valgrind `--tool=memcheck` provides detailed allocation/free tracking |
+| Stack buffer overflow | Stack canary verification | Compile with `-fstack-protector-strong`; canary corruption triggers SIGABRT with diagnostic |
+
+## Code Review Checklist
+
+- [ ] All input validated and sanitized before processing
+- [ ] Bounds-checked functions used (`strncpy`, `snprintf`, `strlcpy`) instead of unsafe alternatives
+- [ ] Integer overflow checked before size calculations and allocation
+- [ ] No use of `gets()`, `sprintf()`, `strcpy()` with untrusted input
+- [ ] Format strings use `%s` specifier, not user input directly
+- [ ] Compiler security flags enabled (`-fstack-protector-strong`, `-D_FORTIFY_SOURCE=2`, `-pie -fPIE`)
+- [ ] Sensitive data zeroed after use (`explicit_bzero` or `memset_s`)
+- [ ] Return values of security-sensitive functions checked
+
+## Architecture Considerations
+
+Security in C requires defense in depth: secure coding practices (input validation, bounds checking), compiler protections (stack canaries, ASLR, FORTIFY_SOURCE), runtime detection (AddressSanitizer, UBSan), and OS protections (SECCOMP, SELinux). No single layer is sufficient — vulnerabilities bypass individual protections. Design for least privilege: validate at every layer, fail safely, and minimize attack surface.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Defense in depth | All C code handling untrusted input | Multiple layers catch what individual layers miss |
+| Fail-safe defaults | Error handling, access control | Deny by default; grant access only when explicitly validated |
+| Input validation at boundary | All external interfaces | Validate once at entry; trust validated data internally |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from untrusted input | Remote code execution, full system compromise | Use bounded functions; enable `-fstack-protector-strong` and `FORTIFY_SOURCE` |
+| Format string attack | Arbitrary memory read/write | Always use `%s` format specifier; enable `-Wformat-security` |
+| Integer overflow in allocation size | Heap overflow, code execution | Check arithmetic before allocation; use `_Static_assert` for type sizes |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `_Bool`, `restrict`, improved type safety | Use `restrict` to enable compiler optimizations; adopt fixed-width types |
+| C99 → C11 | Added `_Static_assert`, `_Noreturn`, bounds-checked functions | Use `_Static_assert` for compile-time security checks; adopt `_Noreturn` for fatal functions |
+| C11 → C23 | Added `typeof`, improved `constexpr`, `#embed` | Use `typeof` for type-safe macros; adopt `constexpr` for compile-time security constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `snprintf` (bounded string formatting) | C99 | Standard — always use instead of `sprintf` |
+| `_Static_assert` (compile-time checks) | C11 | Standard — use for security-relevant size validation |
+| `explicit_bzero` / `memset_s` (secure zeroing) | C11 (Annex K) | Use to prevent compiler from optimizing away sensitive data zeroing |
+| `typeof` for type-safe macros | C23 (standardized) | Use for type-safe security validation macros |
+
+## Interview Questions
+
+1. **What is a buffer overflow and how do you prevent it?**: A buffer overflow writes past the end of an array, corrupting adjacent memory. Prevent by using bounded functions (`strncpy`, `snprintf`), validating input length, enabling stack protection (`-fstack-protector-strong`), and using AddressSanitizer in testing.
+2. **What is a format string vulnerability?**: When user input is passed as a format string to `printf`, an attacker can read/write arbitrary memory using format specifiers (`%x`, `%n`). Prevent by always using `printf("%s", user_input)` — never `printf(user_input)`.
+3. **How does AddressSanitizer work?**: ASan instruments every memory access at compile time, adding redzones around allocations and shadow memory to track validity. It detects buffer overflows, use-after-free, double-free, and memory leaks with minimal runtime overhead (~2x slowdown).
+4. **What is `FORTIFY_SOURCE` and what does it protect against?**: `FORTIFY_SOURCE` (enabled with `-D_FORTIFY_SOURCE=2`) replaces unsafe libc functions (`strcpy`, `memcpy`) with bounds-checked variants that detect buffer overflows at runtime. It adds compile-time and runtime checks for buffer sizes.
+5. **How do you securely zero sensitive data in C?**: Use `explicit_bzero()` (POSIX) or `memset_s()` (C11 Annex K) instead of `memset()`. The compiler may optimize away a `memset()` call if the buffer is not used afterward, leaving sensitive data (passwords, keys) in memory.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [OWASP C Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C_Security_Cheat_Sheet.html)

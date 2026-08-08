@@ -306,3 +306,72 @@ LINKER:       resolves symbols, combines .o files, produces executable or .so
 - [Memory Management](../08-memory-management/README.md) — Advanced memory patterns and debugging
 - [Structures](../02-structures/README.md) — Custom types built from atoms
 - [Pointers Advanced](../05-pointers-advanced/README.md) — Advanced pointer patterns
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Linker errors (undefined reference) | `nm` and `readelf` | Run `nm file.o` to list symbols; check for missing definitions across object files |
+| Preprocessor macro expansion | `gcc -E` | Run `gcc -E file.c` to see preprocessed output and verify macro substitutions |
+| Header inclusion order issues | `gcc -H` | Run `gcc -H file.c` to print header inclusion hierarchy and detect circular includes |
+| Symbol type mismatch across files | `objdump -t` | Compare symbol types in object files to find declarations inconsistent with definitions |
+| Conditional compilation not activating | `gcc -dM -E` | Run to list all predefined macros; verify platform macros like `__linux__` are defined |
+
+## Code Review Checklist
+
+- [ ] Each `.c` file compiles independently without relying on include order
+- [ ] All header files have include guards (`#ifndef`/`#define`/`#endif`)
+- [ ] No function or variable is defined in a header file (use `extern` declarations)
+- [ ] `static` is used for file-scoped functions and variables
+- [ ] Compiler warnings are enabled and zero (`-Wall -Wextra -Werror`)
+- [ ] No circular header dependencies exist between modules
+- [ ] All external symbols (`extern`) match their definitions in type and signature
+
+## Architecture Considerations
+
+Understanding the compilation model is the foundation of C system architecture. Every C project is structured as independent compilation units linked together, which dictates how modules are separated, how headers expose APIs, and how build systems track dependencies. The preprocessor enables platform-specific code without runtime cost, while the linker enforces module boundaries through symbol visibility.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Header-only libraries | Small utility functions, inline functions | Faster builds but increases compile-time coupling |
+| Separate compilation units | Large projects, independent modules | Slower initial build but incremental recompilation is fast |
+| Opaque pointer APIs | Library boundaries, ABI stability | Hides internals but requires heap allocation for all objects |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Undefined behavior from type punning | Data corruption, exploitable memory reads | Use `memcpy` for type conversions, compile with `-fstrict-aliasing` |
+| Integer overflow in size calculations | Buffer overflow, heap corruption | Check arithmetic bounds before allocation, use `_Static_assert` for type sizes |
+| Preprocessor macro side effects | Double evaluation, unexpected behavior | Parenthesize macro arguments, prefer `inline` functions over function macros |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89/C90 → C99 | Added `inline`, `_Bool`, variable-length arrays, `//` comments | Replace function macros with `inline`, use `<stdbool.h>` |
+| C99 → C11 | Added `_Generic`, `_Static_assert`, `<stdatomic.h>`, `<threads.h>` | Use `<stdatomic.h>` instead of compiler-specific atomics |
+| C11 → C23 | Added `typeof`, `typeof_unqual`, improved `constexpr`, `#embed` | Use `typeof` for type-generic macros, adopt `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `__STDC_VERSION__` macro | C99 | Standard — use for feature detection |
+| `_Static_assert` | C11 | Standard — preferred over `static_assert` |
+| `typeof` operator | C23 (standardized) | Use `typeof` directly or via `_typeof` for portability |
+| `#embed` directive | C23 | Replaces manual binary inclusion hacks |
+
+## Interview Questions
+
+1. **What are the five stages of C compilation?**: Preprocessing (text substitution), Compilation (C to assembly), Assembly (assembly to object code), Linking (combine objects and resolve symbols), Loading (OS loads executable into memory).
+2. **Why does C use a linker instead of compiling everything as one unit?**: Independent compilation enables incremental builds (only changed files recompile), modularity (separate development), and shared libraries (code reuse across programs).
+3. **What is the difference between `#define` and `const`?**: `#define` is preprocessor text substitution with no type checking or scope; `const` is a compile-time typed variable with proper scoping and debugging support.
+4. **How do include guards work and why are they necessary?**: `#ifndef SYMBOL` / `#define SYMBOL` / `#endif` prevents a header from being included multiple times in one translation unit, avoiding redefinition errors.
+5. **Explain the "as-if" rule in C compilation**: The compiler may optimize any way it wants as long as the observable behavior of the program matches the abstract machine. This allows aggressive optimization while preserving correctness.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Compiler Explorer (Godbolt)](https://godbolt.org/)
+- [Linker: What happens when you compile C](https://www.cs.cmu.edu/~fp/courses/15-213/lectures/07-linking.pdf)

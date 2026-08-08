@@ -411,3 +411,72 @@ Executor *create_process_pool_executor(int num_workers);
 - [Performance](../12-performance/README.md) — Optimization techniques
 - [Build Systems](../14-build-systems/README.md) — Cross-platform build management
 - [Security](../11-security/README.md) — Security architecture
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| ABI break in shared library (binary incompatibility) | `pahole` / `dwarfdump` | Inspect struct layout with `pahole -C struct_name lib.so`; compare layouts across versions |
+| Production crash without debug symbols | `addr2line -e program address` | Convert crash addresses to source locations; use `-g -rdynamic` in release for symbol resolution |
+| Architecture drift (code doesn't match design) | Architecture review + ADR audit | Compare code structure against Architecture Decision Records; identify divergence |
+| Performance regression after refactor | `git bisect` + profiling | Use `git bisect` to find regression commit; profile before/after with `perf` |
+| Thread-safety issues in production | ThreadSanitizer in staging | Compile with `-fsanitize=thread`; run production-like workload in staging environment |
+
+## Code Review Checklist
+
+- [ ] Security: All input validated, buffer bounds checked, integer overflow checked
+- [ ] Memory: All malloc/calloc/realloc checked, all freed, no use-after-free, no double-free
+- [ ] Error Handling: All return values checked, resources cleaned up on error paths, no silent failures
+- [ ] Concurrency: Shared data protected by mutex, lock ordering documented, no potential deadlocks
+- [ ] Maintainability: Functions under 50 lines, single responsibility, descriptive naming
+- [ ] Architecture: Opaque pointers for ABI stability, modular design, minimal coupling
+- [ ] API Design: All public interfaces documented, versioned, backward-compatible
+
+## Architecture Considerations
+
+Senior-level architecture in C focuses on designing systems that last years and survive many developers. Key principles: opaque pointers for ABI stability, modular design with clear boundaries, cross-platform abstraction layers, and architectural decision records (ADRs) to document why decisions were made. Design for change — code will be rewritten and refactored constantly.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Opaque pointer + vtable | ABI-stable library APIs | Internal changes don't break consumers; but prevents stack allocation |
+| Platform abstraction layer | Cross-platform code | Single codebase for multiple OS; but adds indirection and potential performance overhead |
+| Architecture Decision Record | Documenting design decisions | Preserves institutional knowledge; but requires discipline to maintain |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| ABI break exposing internal state | Binary incompatibility, potential exploitation | Use opaque pointers; never expose struct internals in public headers |
+| Missing input validation at API boundaries | Vulnerabilities propagated through system | Validate at every module boundary; use centralized validation functions |
+| Insecure defaults in configuration | System deployed with weak security | Secure-by-default configuration; require explicit opt-in for weaker settings |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `bool`, `restrict`, `inline`, flexible array members | Adopt `stdbool.h`, add `restrict` to hot-path pointers, use flexible arrays |
+| C99 → C11 | Added `<stdatomic.h>`, `<threads.h>`, `_Static_assert`, `_Noreturn` | Use atomics for concurrent code, `_Static_assert` for compile-time checks |
+| C11 → C23 | Added `typeof`, `constexpr`, `#embed`, improved `_Generic` | Use `typeof` for type-generic code, `constexpr` for compile-time constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| Opaque pointers (forward declaration) | C89 | Standard — use for ABI-stable APIs |
+| `_Static_assert` for structure validation | C11 | Standard — use for compile-time layout checks |
+| `<stdatomic.h>` for concurrent code | C11 | Standard — use for lock-free operations |
+| `typeof` for type-generic operations | C23 (standardized) | Use for type-safe macros and abstractions |
+
+## Interview Questions
+
+1. **How do you ensure ABI stability across library versions?**: Use opaque pointers (forward-declare structs in public headers, define in implementation). Never add/remove/reorder struct members in public APIs. Append new members at the end. Use versioned function pointers (vtables) for extensibility.
+2. **What is an Architecture Decision Record (ADR)?**: An ADR documents a significant architectural decision: the context, the decision, and the consequences. Format: Title, Status, Context, Decision, Consequences. ADRs preserve institutional knowledge and prevent repeated debates.
+3. **How do you balance performance with maintainability?**: Profile first to identify real bottlenecks. Optimize only hot paths (top 1% of code). Keep optimization changes localized and well-documented. Use abstraction layers to isolate performance-critical code from business logic.
+4. **How do you design for failure in C systems?**: Plan for: allocation failure (check every `malloc`), I/O failure (handle every `fread`/`fwrite`), network failure (timeout and retry), and corruption (checksums, CRC). Use fail-safe defaults — deny by default, grant access only when validated.
+5. **How do you mentor junior C developers?**: Focus on: memory safety (use ASan/Valgrind from day one), defensive programming (check every return value), code review (teach by reviewing), and debugging skills (GDB, `strace`, `perf`). Establish coding standards early and enforce through automated tools.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Expert C Programming: Deep C Secrets (van der Linden)](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)

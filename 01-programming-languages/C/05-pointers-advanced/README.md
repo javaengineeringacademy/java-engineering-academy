@@ -425,3 +425,72 @@ int grow(int **arr, int size) {
 - [Data Structures](../06-data-structures/README.md) — Linked lists, trees built with pointers
 - [Memory Management](../08-memory-management/README.md) — Dynamic allocation patterns
 - [Best Practices](../15-best-practices/README.md) — Coding standards for pointer usage
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Dangling function pointer after `dlclose` | GDB + backtrace | Set breakpoint on crash; inspect function pointer addresses with `info functions` and verify they point to loaded code |
+| Memory leak from realloc via pointer-to-pointer | AddressSanitizer | Compile with `-fsanitize=address`; leaked allocations are reported with stack traces |
+| Incorrect complex declaration parsing | Clockwise/Spiral Rule | Read declarations right-to-left: start at the variable name, follow parentheses and brackets outward |
+| Flexible array member misuse (accessing `data[]` before allocation) | Valgrind / ASan | Compile with `-fsanitize=address`; out-of-bounds access to flexible array triggers immediate error |
+| Function pointer type mismatch (calling with wrong signature) | `-Wincompatible-pointer-types` | Enable strict warnings; use typedef'd function pointer types to enforce signature consistency |
+
+## Code Review Checklist
+
+- [ ] All pointer dereferences preceded by null check
+- [ ] `const` used for read-only pointer parameters
+- [ ] Complex pointer declarations use typedef for readability
+- [ ] `realloc` result assigned to temporary pointer before overwriting original
+- [ ] Function pointers invalidated (set to `NULL`) after unloading associated library
+- [ ] Flexible array member is last member of struct
+- [ ] Opaque pointer pattern used for API boundaries (public header forward-declares only)
+
+## Architecture Considerations
+
+Advanced pointer patterns enable C's most powerful abstractions: function pointers provide polymorphism (dispatch tables), opaque pointers provide information hiding, and pointer-to-pointer enables output parameters. These patterns are the foundation of every major C library — Linux VFS, SQLite VFS, OpenSSL callbacks — and replace OOP constructs that languages like C++ and Rust provide natively.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Function pointer dispatch | Plugin systems, callbacks, vtables | Flexible but no compile-time type safety |
+| Opaque pointer | Library API boundaries | Hides internals but prevents stack allocation |
+| Pointer-to-pointer | Output parameters, dynamic array growth | Verbose but allows modifying pointers in called functions |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Dangling function pointer after library unload | Code execution at invalid address | Null-check function pointers before calling; invalidate on `dlclose` |
+| Use-after-free through stale pointer-to-pointer | Heap corruption, code execution | Set all pointers to `NULL` after `free`; use reference counting |
+| Arbitrary function execution via corrupted vtable | Remote code execution | Validate function pointers against known-good tables; use ASLR |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added flexible array members, restricted pointers (`restrict`), inline | Use flexible arrays instead of the "struct hack"; add `restrict` to hot-path pointer parameters |
+| C99 → C11 | Added `_Generic` for type-safe pointer dispatch, `_Static_assert` for pointer sizes | Use `_Generic` for type-generic pointer operations; assert pointer sizes at compile time |
+| C11 → C23 | Added `typeof`, improved `_Generic`, `constexpr` functions | Use `typeof` for type-generic pointer macros; use `constexpr` for compile-time pointer constants |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| Flexible array members (`int data[]`) | C99 | Standard — preferred over the "struct hack" |
+| `restrict` qualified pointers | C99 | Standard — enables compiler optimizations for non-overlapping pointers |
+| `_Generic` for type dispatch | C11 | Standard — enables type-safe pointer macros |
+| `typeof` operator | C23 (standardized) | Use for type-generic pointer operations |
+
+## Interview Questions
+
+1. **What is the clockwise/spiral rule for reading C declarations?**: Start at the variable name, move right to the type, then spiral inward through parentheses and brackets. For `int (*func)(int)`, `func` is a pointer to a function taking `int` and returning `int`.
+2. **Why use opaque pointers for library APIs?**: Opaque pointers hide implementation details, providing ABI stability (internal layout can change without recompiling callers), information hiding (users cannot access internal state), and compile-time isolation (header changes don't trigger cascading recompilation).
+3. **What is the danger of casting between unrelated struct pointer types?**: Casting between unrelated struct pointer types is undefined behavior in C (unlike `void *`, which round-trips safely). The compiler may assume the pointer types are compatible and generate incorrect code.
+4. **How does `realloc` through pointer-to-pointer differ from direct `realloc`?**: Direct `realloc` overwrites the original pointer, losing the old value on failure (memory leak). Through pointer-to-pointer, assign to a temporary first: `int *tmp = realloc(*arr, size); if (tmp) *arr = tmp;` — this preserves the original on failure.
+5. **What are flexible array members and when were they introduced?**: Flexible array members (`int data[]` as the last member of a struct) were introduced in C99. They allow variable-length trailing data without pointer indirection, reducing allocations from two (struct + array) to one.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Expert C Programming: Deep C Secrets (van der Linden)](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)

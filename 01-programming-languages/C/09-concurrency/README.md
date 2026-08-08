@@ -444,3 +444,72 @@ void *increment(void *arg) {
 - [Performance](../12-performance/README.md) — Parallelism and optimization
 - [Networking](../10-networking/README.md) — Concurrent network servers
 - [Best Practices](../15-best-practices/README.md) — Coding standards for concurrent code
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Race conditions on shared data | ThreadSanitizer | Compile with `-fsanitize=thread`; detects data races with stack traces for both access locations |
+| Deadlock from lock ordering violation | Lock hierarchy documentation + timeout | Document global lock ordering; use `pthread_mutex_timedlock` to detect potential deadlocks |
+| Spurious wakeups in condition variables | `while` loop pattern check | Ensure `pthread_cond_wait` is always in a `while` loop checking the condition, not `if` |
+| Thread creation/JOIN resource leak | Valgrind `--show-reachable=yes` | Check for unjoined threads and uninitialized mutexes/condvars in Valgrind output |
+| `volatile` misuse for thread safety | Code review + TSan | Replace `volatile` with `atomic_load`/`atomic_store` from `<stdatomic.h>`; TSan catches volatile data races |
+
+## Code Review Checklist
+
+- [ ] All shared data protected by mutex (or atomic operations)
+- [ ] Lock ordering documented and consistently followed (prevents deadlock)
+- [ ] `pthread_cond_wait` used with `while` loop (not `if`) to handle spurious wakeups
+- [ ] Mutexes and condvars initialized before use and destroyed when done
+- [ ] No locks held during I/O operations (prevents priority inversion)
+- [ ] Thread creation return values checked for errors
+- [ ] Atomic operations used for simple counters and flags (not `volatile`)
+
+## Architecture Considerations
+
+Concurrency in C maps directly to OS primitives — pthreads, mutexes, condition variables, and atomics. The choice of threading model depends on workload: shared-memory threads for CPU-bound parallelism, event-driven I/O (epoll/kqueue) for connection-bound servers, or hybrid models (thread pool + event loop). Lock-free programming with `<stdatomic.h>` eliminates mutex overhead for simple operations but requires careful memory ordering reasoning.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Thread pool | Repeated task execution, server workloads | Amortizes thread creation cost; bounded by pool size |
+| Event loop (epoll/kqueue) | High-concurrency I/O-bound servers | Single-threaded simplicity; scales to millions of connections |
+| Lock-free with atomics | Simple counters, stacks, queues | No mutex overhead; complex to verify correctness |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Race conditions on authentication/state | Bypass security checks, data corruption | Protect all shared state with mutex; use atomics for flags |
+| Priority inversion (low-priority holds lock) | High-priority thread blocked indefinitely | Use priority inheritance mutexes (`PTHREAD_PRIO_INHERIT`) |
+| Thread-unsafe library functions | Data corruption in multi-threaded context | Use `_r` variants (`strtok_r`, `asctime_r`); avoid global state |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | No native threading support | Use POSIX threads (`<pthread.h>`) on Unix; Windows threads on Windows |
+| C99 → C11 | Added `<threads.h>`, `<stdatomic.h>`, `_Thread_local` | Use `<threads.h>` for portable threading; use `<stdatomic.h>` for lock-free operations |
+| C11 → C23 | Improved `constexpr` for compile-time constants | Use `constexpr` for thread configuration constants; continue using `<stdatomic.h>` |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `<pthread.h>` (POSIX threads) | POSIX (not C standard) | Widely available on Unix; use `<threads.h>` for C11 portability |
+| `<threads.h>` (C11 threads) | C11 | Standard but limited platform support; prefer pthreads on Unix |
+| `<stdatomic.h>` (atomics) | C11 | Standard — use for lock-free operations |
+| `_Thread_local` storage | C11 | Standard — thread-local storage qualifier |
+
+## Interview Questions
+
+1. **What is the difference between a mutex and an atomic operation?**: A mutex provides mutual exclusion for critical sections of arbitrary size. Atomics provide lock-free operations on individual variables (increment, compare-and-swap). Use atomics for simple counters/flags; use mutexes for complex state.
+2. **Why must `pthread_cond_wait` be used in a `while` loop?**: Spurious wakeups can occur — the condition may not actually be true when the thread wakes up. A `while` loop rechecks the condition, ensuring the thread only proceeds when the condition is actually met.
+3. **How do you prevent deadlock in a multi-lock scenario?**: Establish a global lock ordering (e.g., always lock A before B). Document and enforce this ordering. Alternatively, use `pthread_mutex_trylock` to attempt locks and back off on failure.
+4. **What does `volatile` actually do and why is it not thread-safe?**: `volatile` prevents compiler optimization (reordering, caching in registers) but does NOT prevent CPU reordering or provide atomicity. It was designed for memory-mapped I/O, not thread safety. Use `<stdatomic.h>` for thread safety.
+5. **When should you use a thread pool instead of creating threads on demand?**: Use a thread pool when you have many short-lived tasks (server requests, queued work). Thread creation has significant overhead (stack allocation, kernel calls). A pool amortizes this cost and bounds the number of concurrent threads.
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [POSIX Threads Programming (LLNL)](https://hpc-tutorials.llc.us/posix/)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)

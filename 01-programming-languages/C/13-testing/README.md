@@ -411,3 +411,72 @@ void test_parse(void) {
 - [Best Practices](../15-best-practices/README.md) — Writing testable code
 - [Security](../11-security/README.md) — Security testing (fuzzing, static analysis)
 - [Build Systems](../14-build-systems/README.md) — CI/CD integration
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Memory leaks in test code | Valgrind `--leak-check=full` | Run `valgrind --leak-check=full --error-exitcode=1 ./test`; exit code 1 on any leak |
+| Test passes in debug but fails in release | Compare `-O0` vs `-O2` behavior | Compile with `-O2` and `-g`; undefined behavior may manifest differently at optimization levels |
+| Flaky tests (non-deterministic failures) | Run under ThreadSanitizer | Compile with `-fsanitize=thread`; race conditions cause intermittent test failures |
+| Edge case not covered by tests | Fuzz testing with AFL/libFuzzer | Feed random/mutated inputs to parser functions; crashes reveal untested code paths |
+| Test framework assertions not descriptive | Custom assertion macros | Write macros that print file, line, expression, and actual/expected values on failure |
+
+## Code Review Checklist
+
+- [ ] Tests cover happy path, edge cases (NULL, empty, boundary), and error conditions
+- [ ] Tests run with AddressSanitizer and Valgrind in CI/CD pipeline
+- [ ] Fuzz tests included for all parsers and input handlers
+- [ ] Tests are independent (no shared state between tests)
+- [ ] Regression test written for every bug fixed
+- [ ] Test output is clear (PASS/FAIL with descriptive messages)
+- [ ] Tests run on multiple compilers and platforms
+
+## Architecture Considerations
+
+Testing in C is critical because there is no runtime safety net — no exceptions, no bounds checking, no garbage collector. The testing pyramid applies: many fast unit tests at the base, integration tests in the middle, and fuzz tests at the top for crash detection. Memory testing tools (Valgrind, AddressSanitizer) are not optional — they catch bugs that manifest silently in production.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Unit test + assert | Individual function verification | Fast, focused, but doesn't test integration |
+| Fuzz testing (AFL/libFuzzer) | Parser and input handler robustness | Finds real crashes; requires seed corpus and coverage guidance |
+| Property-based testing | Algorithm correctness verification | Tests invariants rather than specific cases; more thorough but harder to write |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Untrusted input causing crashes in production | Denial of service | Fuzz test all input handlers; run under AddressSanitizer |
+| Memory leaks accumulating in long-running tests | Test environment exhaustion | Run Valgrind in CI/CD; fail build on any leak |
+| Undefined behavior masked by test environment | Bugs only manifest on specific platforms/compilers | Test on multiple platforms; compile with `-fsanitize=undefined` |
+
+## Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| C89 → C99 | Added `_Bool`, `snprintf` for safer test output | Use `snprintf` for test output formatting; adopt `stdbool.h` for test assertions |
+| C99 → C11 | Added `_Static_assert` for compile-time test validation, `<stdatomic.h>` | Use `_Static_assert` to validate test data structure sizes; use atomics for concurrent test infrastructure |
+| C11 → C23 | Added `typeof`, improved `_Generic` | Use `typeof` for type-generic test assertions; use `_Generic` for type-safe comparison macros |
+
+## Version Validation
+
+| Feature | C Standard | Status |
+|---------|-----------|--------|
+| `assert` (runtime assertion) | C89 | Standard — use for internal invariants, not input validation |
+| `_Static_assert` (compile-time assertion) | C11 | Standard — use for test data structure size validation |
+| `<stdatomic.h>` for concurrent test infrastructure | C11 | Standard — use for thread-safe test counters |
+| `typeof` for type-generic test macros | C23 (standardized) | Use for type-safe comparison and assertion macros |
+
+## Interview Questions
+
+1. **Why is testing more important in C than in managed languages?**: C has no runtime safety net — no exceptions, no bounds checking, no garbage collector. Bugs manifest as crashes, memory corruption, or silent wrong answers. Testing is the only way to catch these before production, where fixes cost 10-100x more.
+2. **What is fuzz testing and when should you use it?**: Fuzz testing feeds random or mutated inputs to a program to find crashes, hangs, and memory errors. Use it for all parsers, protocol handlers, and input processing code. Tools like AFL and libFuzzer automatically generate test cases and track code coverage.
+3. **How do you test for memory leaks in C?**: Use Valgrind (`valgrind --leak-check=full`) or AddressSanitizer (`-fsanitize=address`). Both track every allocation and report leaks at program exit. Run these in CI/CD and fail the build on any leak.
+4. **What is the difference between `assert` and input validation?**: `assert` is for catching programmer errors (internal invariants) and is removed in release builds (`-DNDEBUG`). Input validation handles user/data errors and must always be present. Never use `assert` for input validation.
+5. **How do you write testable C code?**: Separate interface from implementation (`.h` files), use dependency injection (pass function pointers for external dependencies), keep functions small and focused, avoid global state, and design for observability (return error codes, log diagnostic information).
+
+## References
+
+- [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- [Advanced Linux Programming (free)](https://www.advancedlinuxprogramming.com/)
