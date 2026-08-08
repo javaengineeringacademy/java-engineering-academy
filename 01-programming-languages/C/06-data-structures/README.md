@@ -1,126 +1,418 @@
 # Data Structures — C Language
 
-## What it is
-Data structures are organized ways to store and manage data efficiently.
+## The Problem
 
-## Why it exists
-To optimize data access, insertion, deletion, and search operations.
+Arrays are fast but inflexible — inserting in the middle requires shifting all elements. Fixed-size arrays waste memory or overflow. Without proper data structures, you cannot build efficient databases, compilers, operating systems, or any application that manages non-trivial amounts of data.
 
-## When to use it
-When built-in arrays and structures are insufficient for your needs.
+C has no built-in collections (no `ArrayList`, no `HashMap`, no `TreeSet`). You implement data structures from scratch using structs and pointers. This is not a limitation — it is why C data structures are faster, smaller, and more predictable than their managed-language counterparts.
 
-## How it works
+## What It Is
 
-### Linked List
+Data structures are organized ways to store and manage data efficiently. Each structure optimizes different operations:
+
+| Structure | Insert | Delete | Search | Ordered | Use Case |
+|-----------|--------|--------|--------|---------|----------|
+| Array | O(n) | O(n) | O(n) | Yes | Fixed collections |
+| Linked List | O(1)* | O(1)* | O(n) | No | Dynamic collections |
+| Stack | O(1) | O(1) | O(n) | No | LIFO operations |
+| Queue | O(1) | O(1) | O(n) | No | FIFO operations |
+| Hash Table | O(1) avg | O(1) avg | O(1) avg | No | Fast lookup |
+| BST | O(log n) | O(log n) | O(log n) | Yes | Sorted data |
+| Heap | O(log n) | O(log n) | O(n) | Partial | Priority queues |
+| Graph | O(1)* | O(1)* | O(V+E) | No | Relationships |
+
+*at known position
+
+## Why It Exists
+
+Every system software component is built on data structures:
+- **Operating systems**: Process lists (linked lists), file systems (trees), memory allocators (free lists)
+- **Databases**: B-trees for indexes, hash tables for caching, skip lists for sorted data
+- **Compilers**: Symbol tables (hash tables), ASTs (trees), parse stacks
+- **Networks**: Routing tables (hash tables), packet queues (circular buffers)
+
+### Architecture: Choosing the Right Structure
+
+```
+Need fast lookup by key? → Hash Table
+Need sorted iteration? → BST (AVL/Red-Black)
+Need FIFO processing? → Queue (circular buffer)
+Need LIFO processing? → Stack
+Need priority ordering? → Heap
+Need sparse connections? → Adjacency list (graph)
+```
+
+## Expanded Code Examples
+
+### Linked List — Dynamic Collection
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct Node {
     int data;
     struct Node *next;
 } Node;
 
-Node *create_node(int data) {
+// Create a new node
+Node *node_create(int data) {
     Node *node = malloc(sizeof(Node));
+    if (!node) return NULL;
     node->data = data;
     node->next = NULL;
     return node;
 }
+
+// Insert at head — O(1)
+void list_push_head(Node **head, int data) {
+    Node *node = node_create(data);
+    if (!node) return;
+    node->next = *head;
+    *head = node;
+}
+
+// Insert at tail — O(n) without tail pointer
+void list_push_tail(Node **head, int data) {
+    Node *node = node_create(data);
+    if (!node) return;
+    if (*head == NULL) {
+        *head = node;
+        return;
+    }
+    Node *curr = *head;
+    while (curr->next) curr = curr->next;
+    curr->next = node;
+}
+
+// Delete first occurrence — O(n)
+int list_delete(Node **head, int data) {
+    Node *curr = *head, *prev = NULL;
+    while (curr) {
+        if (curr->data == data) {
+            if (prev) prev->next = curr->next;
+            else *head = curr->next;
+            free(curr);
+            return 0;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    return -1;  // Not found
+}
+
+// Reverse linked list — O(n)
+void list_reverse(Node **head) {
+    Node *prev = NULL, *curr = *head, *next;
+    while (curr) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    *head = prev;
+}
+
+// Free entire list
+void list_free(Node **head) {
+    Node *curr = *head;
+    while (curr) {
+        Node *next = curr->next;
+        free(curr);
+        curr = next;
+    }
+    *head = NULL;
+}
 ```
 
-### Stack
+### Stack — LIFO Operations
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
     int *data;
     int top;
     int capacity;
 } Stack;
 
-void push(Stack *s, int value) {
-    s->data[++s->top] = value;
+Stack *stack_create(int capacity) {
+    Stack *s = malloc(sizeof(Stack));
+    if (!s) return NULL;
+    s->data = malloc(capacity * sizeof(int));
+    if (!s->data) { free(s); return NULL; }
+    s->top = -1;
+    s->capacity = capacity;
+    return s;
 }
 
-int pop(Stack *s) {
-    return s->data[s->top--];
+int stack_push(Stack *s, int value) {
+    if (s->top >= s->capacity - 1) return -1;  // Full
+    s->data[++s->top] = value;
+    return 0;
+}
+
+int stack_pop(Stack *s, int *value) {
+    if (s->top < 0) return -1;  // Empty
+    *value = s->data[s->top--];
+    return 0;
+}
+
+int stack_peek(const Stack *s, int *value) {
+    if (s->top < 0) return -1;
+    *value = s->data[s->top];
+    return 0;
+}
+
+void stack_free(Stack *s) {
+    if (s) {
+        free(s->data);
+        free(s);
+    }
+}
+
+// Application: balanced parentheses checker
+int is_balanced(const char *expr) {
+    Stack *s = stack_create(256);
+    int balanced = 1;
+
+    for (int i = 0; expr[i] && balanced; i++) {
+        char c = expr[i];
+        if (c == '(' || c == '[' || c == '{') {
+            stack_push(s, c);
+        } else if (c == ')' || c == ']' || c == '}') {
+            int top;
+            if (stack_pop(s, &top) != 0) {
+                balanced = 0;
+            } else if ((c == ')' && top != '(') ||
+                       (c == ']' && top != '[') ||
+                       (c == '}' && top != '{')) {
+                balanced = 0;
+            }
+        }
+    }
+
+    int empty = (s->top < 0);
+    stack_free(s);
+    return balanced && empty;
 }
 ```
 
-### Queue
+### Queue — FIFO with Circular Buffer
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
     int *data;
-    int front, rear, size;
+    int front;
+    int rear;
+    int size;
     int capacity;
 } Queue;
 
-void enqueue(Queue *q, int value) {
-    q->data[q->rear++] = value;
+Queue *queue_create(int capacity) {
+    Queue *q = malloc(sizeof(Queue));
+    if (!q) return NULL;
+    q->data = malloc(capacity * sizeof(int));
+    if (!q->data) { free(q); return NULL; }
+    q->front = 0;
+    q->rear = -1;
+    q->size = 0;
+    q->capacity = capacity;
+    return q;
+}
+
+int queue_enqueue(Queue *q, int value) {
+    if (q->size >= q->capacity) return -1;  // Full
+    q->rear = (q->rear + 1) % q->capacity;
+    q->data[q->rear] = value;
     q->size++;
+    return 0;
+}
+
+int queue_dequeue(Queue *q, int *value) {
+    if (q->size <= 0) return -1;  // Empty
+    *value = q->data[q->front];
+    q->front = (q->front + 1) % q->capacity;
+    q->size--;
+    return 0;
+}
+
+int queue_peek(const Queue *q, int *value) {
+    if (q->size <= 0) return -1;
+    *value = q->data[q->front];
+    return 0;
+}
+
+void queue_free(Queue *q) {
+    if (q) {
+        free(q->data);
+        free(q);
+    }
 }
 ```
 
-### Hash Table
+### Hash Table — Fast Key-Value Lookup
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define HT_INITIAL_CAPACITY 16
+
 typedef struct Entry {
     char *key;
     int value;
-    struct Entry *next;
+    struct Entry *next;  // Chaining for collisions
 } Entry;
 
 typedef struct {
     Entry **buckets;
     int size;
+    int count;
 } HashTable;
+
+// Simple hash function (djb2)
+unsigned int hash(const char *key) {
+    unsigned int hash = 5381;
+    int c;
+    while ((c = *key++)) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
+
+HashTable *ht_create(int size) {
+    HashTable *ht = malloc(sizeof(HashTable));
+    if (!ht) return NULL;
+    ht->buckets = calloc(size, sizeof(Entry *));
+    if (!ht->buckets) { free(ht); return NULL; }
+    ht->size = size;
+    ht->count = 0;
+    return ht;
+}
+
+int ht_set(HashTable *ht, const char *key, int value) {
+    unsigned int idx = hash(key) % ht->size;
+
+    // Check if key exists
+    Entry *e = ht->buckets[idx];
+    while (e) {
+        if (strcmp(e->key, key) == 0) {
+            e->value = value;
+            return 0;
+        }
+        e = e->next;
+    }
+
+    // New entry
+    e = malloc(sizeof(Entry));
+    if (!e) return -1;
+    e->key = strdup(key);
+    e->value = value;
+    e->next = ht->buckets[idx];
+    ht->buckets[idx] = e;
+    ht->count++;
+    return 0;
+}
+
+int ht_get(HashTable *ht, const char *key, int *value) {
+    unsigned int idx = hash(key) % ht->size;
+    Entry *e = ht->buckets[idx];
+    while (e) {
+        if (strcmp(e->key, key) == 0) {
+            *value = e->value;
+            return 0;
+        }
+        e = e->next;
+    }
+    return -1;  // Not found
+}
+
+void ht_free(HashTable *ht) {
+    for (int i = 0; i < ht->size; i++) {
+        Entry *e = ht->buckets[i];
+        while (e) {
+            Entry *next = e->next;
+            free(e->key);
+            free(e);
+            e = next;
+        }
+    }
+    free(ht->buckets);
+    free(ht);
+}
 ```
 
-### Tree
+### Binary Search Tree
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct TreeNode {
     int data;
     struct TreeNode *left;
     struct TreeNode *right;
 } TreeNode;
-```
 
-### Graph (Adjacency List)
+TreeNode *tree_insert(TreeNode *root, int data) {
+    if (root == NULL) {
+        TreeNode *node = malloc(sizeof(TreeNode));
+        if (!node) return NULL;
+        node->data = data;
+        node->left = node->right = NULL;
+        return node;
+    }
+    if (data < root->data)
+        root->left = tree_insert(root->left, data);
+    else if (data > root->data)
+        root->right = tree_insert(root->right, data);
+    return root;
+}
 
-```c
-typedef struct Edge {
-    int target;
-    int weight;
-    struct Edge *next;
-} Edge;
+TreeNode *tree_search(TreeNode *root, int data) {
+    if (root == NULL || root->data == data) return root;
+    if (data < root->data) return tree_search(root->left, data);
+    return tree_search(root->right, data);
+}
 
-typedef struct {
-    Edge **adj;
-    int vertices;
-} Graph;
+void tree_inorder(TreeNode *root) {
+    if (root == NULL) return;
+    tree_inorder(root->left);
+    printf("%d ", root->data);
+    tree_inorder(root->right);
+}
+
+void tree_free(TreeNode *root) {
+    if (root == NULL) return;
+    tree_free(root->left);
+    tree_free(root->right);
+    free(root);
+}
 ```
 
 ## Production Incidents
 
-### Incident 1: Stack Overflow in Linked List
+### Incident 1: Stack Overflow in Linked List Traversal
 
-**Problem:** A recursive linked list traversal crashes with stack overflow on lists longer than 10,000 nodes.
+**Problem**: Recursive linked list traversal crashes on lists longer than 10,000 nodes.
 
-**Cause:** Recursive traversal allocates a stack frame for each node:
+**Cause**: Each recursive call adds a stack frame:
 
 ```c
 void traverse(Node *head) {
     if (head == NULL) return;
     process(head->data);
-    traverse(head->next);  // Recursive call per node
+    traverse(head->next);  // Stack frame per node
 }
 ```
 
-**Impact:** Stack overflow at ~10K nodes, process crashes with SIGSEGV. Customer data pipelines fail on large datasets.
-
-**Detection:** Core dump shows stack overflow. `ulimit -s` shows 8MB default. Backtrace shows 10,000+ recursive frames.
-
-**Solution:** Convert to iterative traversal:
+**Solution**: Convert to iterative traversal:
 
 ```c
 void traverse(Node *head) {
@@ -132,86 +424,62 @@ void traverse(Node *head) {
 }
 ```
 
-**Prevention:** Prefer iterative solutions for unbounded recursion, set stack size limits, use `-Wstack-usage=N` compiler flag, profile stack depth in testing.
-
----
-
 ### Incident 2: Hash Table Collision Attack
 
-**Problem:** A web application's login endpoint slows from 10ms to 5 seconds under attack.
+**Problem**: Web application slows from 10ms to 5 seconds under attack.
 
-**Cause:** Attacker sends requests with keys that all hash to the same bucket, degrading hash table to O(n) linked list traversal:
-
-```c
-Entry *hash_lookup(HashTable *ht, const char *key) {
-    int idx = hash(key) % ht->size;
-    Entry *e = ht->buckets[idx];
-    while (e) {
-        if (strcmp(e->key, key) == 0) return e;
-        e = e->next;  // Traverses 10,000+ entries
-    }
-    return NULL;
-}
-```
-
-**Impact:** DoS condition, all users experience slow response times, service degraded for 30 minutes until rate limiting kicks in.
-
-**Detection:** Profiling shows 99% of time in `hash_lookup`. Bucket size monitoring reveals one bucket with 10,000+ entries.
-
-**Solution:** Use balanced tree for collision chains and limit bucket chain length:
+**Cause**: Attacker sends keys that all hash to the same bucket, degrading lookup to O(n):
 
 ```c
-Entry *hash_lookup(HashTable *ht, const char *key) {
-    int idx = hash(key) % ht->size;
-    Entry *e = ht->buckets[idx];
-    while (e) {
-        if (strcmp(e->key, key) == 0) return e;
-        e = e->next;
-    }
-    return NULL;
-}
-// Switch to AVL tree or red-black tree for buckets
-// Add bucket chain length limit
+// Attacker crafts 10,000 keys that all hash to bucket 0
+// hash_lookup now traverses a 10,000-element linked list per lookup
 ```
 
-**Prevention:** Use randomized hash functions (SipHash), switch to tree-based collision resolution, monitor bucket chain lengths, implement rate limiting.
+**Solution**: Use randomized hash functions (SipHash), limit bucket chain length, or switch to tree-based collision resolution.
 
 ## Production Checklist
 
 - [ ] Choose the right structure for the use case
 - [ ] Handle memory allocation failures
-- [ ] Free all allocated memory
-- [ ] Handle edge cases (empty, single element)
-- [ ] Consider cache efficiency
+- [ ] Free all allocated memory (including linked list nodes, hash entries)
+- [ ] Handle edge cases (empty, single element, full)
+- [ ] Consider cache efficiency (arrays > linked lists for traversal)
+- [ ] Use load factor monitoring for hash tables
+- [ ] Implement iterator patterns for clean traversal
 
 ## Maturity Levels
 
-| Level | Description |
-|-------|-------------|
-| Beginner | Implements linked list and stack |
-| Intermediate | Implements queue and hash table |
-| Advanced | Implements tree and graph |
+| Level | Description | Indicators |
+|-------|-------------|------------|
+| **Beginner** | Implements linked list and stack | Understands nodes, pointers, push/pop |
+| **Intermediate** | Implements queue and hash table | Handles collisions, circular buffers |
+| **Advanced** | Implements tree and graph | BST, AVL, adjacency list, BFS/DFS |
+| **Expert** | Optimizes for cache, implements custom allocators | Pool allocators, lock-free structures |
 
-## Common Myths
+## Common Myths Debunked
 
 1. **Myth**: Linked lists are always better than arrays
-   **Truth**: Arrays have better cache locality; choose based on operations
+   **Truth**: Arrays have better cache locality. For most use cases, dynamic arrays (`realloc`) outperform linked lists.
 
 2. **Myth**: Hash tables have no collisions
-   **Truth**: Collisions are inevitable; handle with chaining or probing
+   **Truth**: Collisions are inevitable. Good hash functions and collision resolution strategies (chaining, open addressing) minimize impact.
+
+3. **Myth**: You need to implement data structures from scratch in production
+   **Truth**: For critical systems, custom implementations offer control. For most applications, use well-tested libraries.
 
 ## One-Minute Revision
 
-| Structure | Access | Insert | Delete | Search |
-|-----------|--------|--------|--------|--------|
-| Array | O(1) | O(n) | O(n) | O(n) |
-| Linked List | O(n) | O(1) | O(1) | O(n) |
-| Stack | O(1) top | O(1) | O(1) | O(n) |
-| Queue | O(1) | O(1) | O(1) | O(n) |
-| Hash Table | O(1) avg | O(1) avg | O(1) avg | O(1) avg |
-| BST | O(log n) | O(log n) | O(log n) | O(log n) |
+| Structure | Access | Insert | Delete | Search | Cache |
+|-----------|--------|--------|--------|--------|-------|
+| Array | O(1) | O(n) | O(n) | O(n) | Excellent |
+| Linked List | O(n) | O(1)* | O(1)* | O(n) | Poor |
+| Stack | O(1) top | O(1) | O(1) | O(n) | Good |
+| Queue | O(1) | O(1) | O(1) | O(n) | Good |
+| Hash Table | O(1) avg | O(1) avg | O(1) avg | O(1) avg | Fair |
+| BST | O(log n) | O(log n) | O(log n) | O(log n) | Fair |
 
 ## Related Topics
 
-- [Structures](../02-structures/README.md)
-- [Algorithms](../07-algorithms/README.md)
+- [Structures](../02-structures/README.md) — Structs that build data structures
+- [Algorithms](../07-algorithms/README.md) — Algorithms that operate on data structures
+- [Memory Management](../08-memory-management/README.md) — Custom allocators for data structures
