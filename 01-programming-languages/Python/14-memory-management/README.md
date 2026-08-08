@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Use weak references and slots to reduce memory overhead
 - Apply memory-efficient patterns for production systems
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Long-running services, memory-constrained environments, large datasets | Simple scripts with small data |
+| When NOT to use | Don't optimize without profiling; don't use `__del__` | Use context managers for cleanup |
+| Alternatives | tracemalloc for profiling, weakref for caches | Simple `del` for small objects |
+| Production Examples | Web servers, data pipelines, ML training | Quick scripts, prototypes |
+| Common Mistakes | Circular references, not using weakref for caches | Profile first; use `gc.get_stats()` |
+
 ## Table of Contents
 
 - [Memory Management Overview](#memory-management-overview)
@@ -831,6 +841,80 @@ Python's memory management:
 - **Generators** provide memory-efficient iteration
 - **tracemalloc** and **objgraph** help debug memory issues
 
+## Production Incidents
+
+### Incident 1: Circular Reference Causing Memory Leak
+
+**Problem:** Service memory grew 100MB per hour until OOM
+**Cause:** Parent-child circular references with `__del__` methods
+**Impact:** Service restarts every 4 hours; degraded availability
+**Detection:** Memory monitoring showed linear growth
+**Solution:**
+```python
+# BAD: Circular reference with __del__
+class Node:
+    def __init__(self):
+        self.parent = None
+        self.children = []
+    def __del__(self):
+        print("deleted")
+
+# GOOD: Use weakref for parent
+import weakref
+class Node:
+    def __init__(self):
+        self._parent = None
+    @property
+    def parent(self):
+        return self._parent() if self._parent else None
+    @parent.setter
+    def parent(self, value):
+        self._parent = weakref.ref(value) if value else None
+```
+**Prevention:** Use `weakref` for parent references; avoid `__del__`; use context managers
+
+### Incident 2: String Interning Causing Unexpected Identity
+
+**Problem:** `is` comparison worked in tests but failed with user input
+**Cause:** String interning is implementation-dependent; not guaranteed
+**Impact:** Configuration comparison failed; service startup error
+**Detection:** Test passed locally but failed in different Python implementation
+**Solution:**
+```python
+# BAD: Identity comparison for strings
+if config_key is "production":  # May fail!
+
+# GOOD: Equality comparison
+if config_key == "production":
+```
+**Prevention:** Always use `==` for value comparison; use `is` only for `None`, `True`, `False`
+
+### Incident 3: Large Object Not Being Garbage Collected
+
+**Problem:** Memory usage spiked during data processing; didn't decrease
+**Cause:** Large list referenced in closure; not released after function return
+**Impact:** Service OOM during peak load
+**Detection:** Memory profiling showed closure holding reference
+**Solution:**
+```python
+# BAD: Closure captures large object
+def process():
+    large_data = load_huge_file()
+    def callback():
+        return large_data[0]  # Keeps entire list alive!
+    return callback
+
+# GOOD: Extract needed value, release rest
+def process():
+    large_data = load_huge_file()
+    first_item = large_data[0]
+    del large_data  # Release immediately
+    def callback():
+        return first_item
+    return callback
+```
+**Prevention:** Del large objects explicitly; use weakref for caches; profile memory usage
+
 ## Production Checklist
 
 - [ ] Use `tracemalloc.start()` at application entry for memory profiling
@@ -874,6 +958,12 @@ Python's memory management:
 - **objgraph**: Visualize object references; find growing types; detect leaks
 - **String optimization**: Use `join()` not `+=`; `sys.intern()` for repeated strings
 - **Best practice**: Profile before optimizing; use weakref for caches; prefer generators for large data
+
+## Related Topics
+
+- [10-internals](../10-internals/) - CPython memory implementation
+- [15-performance](../15-performance/) - Memory optimization techniques
+- [18-senior](../18-senior/) - Production memory management
 
 ## Interview Questions
 

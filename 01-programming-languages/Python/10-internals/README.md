@@ -14,7 +14,17 @@ By the end of this module, you'll be able to:
 - Understand how the GIL affects concurrency and when to work around it
 - Inspect bytecode to understand what your code actually does
 - Navigate Python's import system and module loading
-- Leverage knowledge of memory architecture for optimization
+- Use knowledge of memory architecture for optimization
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Debugging performance issues, optimizing hot paths, understanding CPython | Simple profiling for most cases |
+| When NOT to use | Don't optimize without profiling; don't use internal APIs in production | Use `cProfile` first; stick to public APIs |
+| Alternatives | profilers for hotspots, tracemalloc for memory | High-level optimization first |
+| Production Examples | High-frequency trading, real-time systems, C extensions | Web services, data pipelines |
+| Common Mistakes | Optimizing cold code, using `sys._getframe()` in production | Profile first; use logging for debugging |
 
 ## Table of Contents
 
@@ -1097,6 +1107,63 @@ COMPARE_OP becomes:
 9. **"Threads are always slower than processes"** — For I/O-bound, threads are fine; for CPU-bound, use processes
 10. **"Python 3.11 is just a bugfix release"** — The specializing adaptive interpreter makes it 10-60% faster
 
+## Production Incidents
+
+### Incident 1: Integer Caching Causing Identity Bug
+
+**Problem:** `is` comparison worked in tests but failed in production
+**Cause:** Small integer caching (-5 to 256) made `is` work for small numbers; failed for larger ones
+**Impact:** Configuration comparison logic broke with large port numbers
+**Detection:** Intermittent test failures; worked locally but failed in CI
+**Solution:**
+```python
+# BAD: Using identity comparison
+if port is 8080:  # Works by coincidence
+    use_ssl = True
+
+# GOOD: Using equality comparison
+if port == 8080:
+    use_ssl = True
+```
+**Prevention:** Always use `==` for value comparison; use `is` only for `None`, `True`, `False`
+
+### Incident 2: GIL Switch Interval Causing Latency Spikes
+
+**Problem:** Real-time audio processing had random 5ms glitches
+**Cause:** Default GIL switch interval (5ms) caused thread switching during processing
+**Impact:** Audio artifacts in production streaming service
+**Detection:** User complaints about audio quality; latency monitoring showed spikes
+**Solution:**
+```python
+import sys
+# Reduce switch interval for latency-sensitive work
+sys.setswitchinterval(0.001)  # 1ms instead of 5ms
+
+# Or disable GIL for critical section
+sys._disable_gil()  # Python 3.13+ experimental
+```
+**Prevention:** Tune `sys.setswitchinterval()` for latency-sensitive apps; benchmark thread switching overhead
+
+### Incident 3: Import Side Effects Causing Slow Startup
+
+**Problem:** Application took 30 seconds to start
+**Cause:** Heavy imports at module level executed on import
+**Impact:** Deployment delays; scaling delays during auto-scaling events
+**Detection:** Startup time monitoring showed degradation
+**Solution:**
+```python
+# BAD: Heavy import at module level
+import pandas as pd  # Slow!
+import numpy as np
+
+# GOOD: Lazy import
+def process_data():
+    import pandas as pd
+    import numpy as np
+    # Now use them
+```
+**Prevention:** Use lazy imports for heavy modules; profile startup time; move imports inside functions when possible
+
 ## Production Checklist
 
 - [ ] Use `dis.dis()` to inspect bytecode for performance-critical functions
@@ -1123,6 +1190,12 @@ COMPARE_OP becomes:
 - Python Docs: dis module
 - Python Docs: sys module
 - Fluent Python (Luciano Ramalho)
+
+## Related Topics
+
+- [00-knowledge-atoms](../00-knowledge-atoms/) - Core Python concepts
+- [14-memory-management](../14-memory-management/) - Memory optimization
+- [15-performance](../15-performance/) - Performance profiling and optimization
 
 ## Version Validation
 - Verified against: Python 3.12+ (specialization), Python 3.13+ (free-threaded preview)

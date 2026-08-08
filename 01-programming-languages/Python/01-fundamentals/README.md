@@ -17,6 +17,16 @@ By the end of this module, you'll be able to:
 - Read from and write to files safely using context managers and error handling
 - Recognize and avoid the most common beginner and intermediate mistakes
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any Python project, scripts, data processing | Skip for extremely simple one-liners |
+| When NOT to use | Don't use mutable defaults, don't use `is` for value comparison | Use None sentinel, use `==` |
+| Alternatives | NumPy for numeric, TypedDict for structured dicts | Use built-ins for simple cases |
+| Production Examples | Web backends, data pipelines, CLI tools | Quick prototypes, throwaway scripts |
+| Common Mistakes | Mutable defaults, shallow copy surprise, late binding closures | Learn LEGB scope, use f-strings |
+
 ## Core Concepts
 
 ### 1. Variables and Names
@@ -373,6 +383,52 @@ def read_file_safe(filepath: str) -> str | None:
 ### Q5: How do f-strings work internally?
 **Answer:** f-strings are compiled to bytecode that calls __format__ on each expression. They're faster than .format() and % formatting.
 
+## Production Incidents
+
+### Incident 1: Mutable Default Argument Bug
+
+**Problem:** User registration endpoint returned incorrect user counts
+**Cause:** `def add_user(users=[]): users.append(user); return users` shared list across calls
+**Impact:** Users saw other users' data; privacy breach in production
+**Detection:** Customer complaints about seeing wrong user list
+**Solution:**
+```python
+def add_user(user, users=None):
+    if users is None:
+        users = []
+    users.append(user)
+    return users
+```
+**Prevention:** Always use `None` sentinel for mutable defaults; linting rules to catch this pattern
+
+### Incident 2: Shallow Copy Data Corruption
+
+**Problem:** Order processing system overwrote unrelated order data
+**Cause:** `order.copy()` created shallow copy; nested dicts shared references
+**Impact:** 200 orders had corrupted shipping addresses
+**Detection:** Customer support tickets about wrong addresses
+**Solution:**
+```python
+import copy
+original_order = {"items": [...], "shipping": {"address": "..."}}
+# BAD: shallow = original_order.copy()
+correct_order = copy.deepcopy(original_order)
+```
+**Prevention:** Use `copy.deepcopy()` for nested structures; add type annotations; test copy behavior
+
+### Incident 3: Late Binding Closure in Loop
+
+**Problem:** All async callbacks received the same (last) value
+**Cause:** Lambda captured variable by reference, not value
+**Impact:** 50 background tasks all processed the same (final) record
+**Detection:** Data processing job output showed duplicates
+**Solution:**
+```python
+# BAD: callbacks = [lambda: process(i) for i in range(50)]
+# GOOD: callbacks = [lambda i=i: process(i) for i in range(50)]
+```
+**Prevention:** Use default arguments to capture loop variables; prefer `functools.partial`
+
 ## Production Checklist
 
 ### ✅ Before using fundamentals in production:
@@ -586,6 +642,12 @@ except Exception:
 - [Python Docs: `collections` module](https://docs.python.org/3/library/collections.html)
 - [Python Docs: `pathlib` module](https://docs.python.org/3/library/pathlib.html)
 - [Effective Python by Brett Slatkin](https://effectivepython.com/)
+
+## Related Topics
+
+- [00-knowledge-atoms](../00-knowledge-atoms/) - Core Python concepts
+- [06-type-hints](../06-type-hints/) - Type annotations for better code
+- [12-collections](../12-collections/) - Advanced collection patterns
 
 ## Version Validation
 

@@ -14,7 +14,17 @@ By the end of this module, you'll be able to:
 - Use inheritance and polymorphism to build flexible hierarchies
 - Control access to internal state with encapsulation
 - Define abstract interfaces with the ABC module
-- Leverage magic methods for custom object behavior
+- Use magic methods for custom object behavior
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Complex domains, state management, polymorphic behavior | Simple scripts, pure functions |
+| When NOT to use | Don't use classes for everything; prefer functions for simple logic | Use dataclasses for data-only containers |
+| Alternatives | Dataclasses, Protocols, named tuples | Module-level functions |
+| Production Examples | Web frameworks, ORMs, plugin systems | CLI tools, data pipelines |
+| Common Mistakes | Over-using inheritance, forgetting `__hash__` with `__eq__` | Prefer composition over inheritance |
 
 ## Topics
 
@@ -56,7 +66,7 @@ By the end of this module you will be able to:
 - Use inheritance and polymorphism to build flexible hierarchies
 - Control access to internal state with encapsulation
 - Define abstract interfaces with the ABC module
-- Leverage magic methods for custom object behavior
+- Use magic methods for custom object behavior
 
 ## Quick Start
 
@@ -69,6 +79,72 @@ python 04-encapsulation/encapsulation.py
 python 05-abstraction/abstraction.py
 python 06-magic-methods/magic_methods.py
 ```
+
+## Production Incidents
+
+### Incident 1: MRO Causing Infinite Recursion
+
+**Problem:** Application crashed with RecursionError during initialization
+**Cause:** Diamond inheritance with incompatible `super()` calls in metaclass hierarchy
+**Impact:** Service unavailable for 30 minutes during peak load
+**Detection:** Production logs showed stack overflow errors
+**Solution:**
+```python
+# BAD: Uncooperative multiple inheritance
+class Base:
+    def process(self):
+        return "base"
+class Left(Base):
+    def process(self):
+        return f"left -> {super().process()}"  # Calls Right, not Base
+class Right(Base):
+    def process(self):
+        return f"right -> {super().process()}"  # Calls Base
+
+# GOOD: Cooperative design with *args, **kwargs
+class Base:
+    def process(self, **kwargs):
+        return "base"
+```
+**Prevention:** Design classes to be cooperative; accept `*args, **kwargs`; check MRO with `Class.__mro__`
+
+### Incident 2: Mutable Class Attribute Shared Across Instances
+
+**Problem:** All User instances had the same `permissions` list
+**Cause:** `permissions = []` defined at class level, not instance level
+**Impact:** Permission escalation vulnerability in production
+**Detection:** Security audit found all users had admin permissions
+**Solution:**
+```python
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.permissions = []  # Instance attribute, not class attribute
+```
+**Prevention:** Initialize mutable attributes in `__init__`; use `dataclasses` which handles this correctly
+
+### Incident 3: Property Override Breaking Encapsulation
+
+**Problem:** Subclass accidentally overrode parent's `@property` without setter
+**Cause:** Child class assigned to property without defining setter
+**Impact:** AttributeError in production when updating user profile
+**Detection:** Error monitoring caught AttributeError exceptions
+**Solution:**
+```python
+class Base:
+    @property
+    def name(self):
+        return self._name
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+class Child(Base):
+    @property
+    def name(self):
+        return super().name.upper()  # Getter only, no setter
+```
+**Prevention:** Always define both getter and setter when overriding properties; test property access patterns
 
 ## Production Checklist
 
@@ -114,6 +190,12 @@ python 06-magic-methods/magic_methods.py
 
 ### ❌ Myth 3: Inheritance is always the best way to reuse code
 **Reality:** Composition is often preferred—avoid deep inheritance hierarchies. Use mixins or delegation to reduce coupling.
+
+## Related Topics
+
+- [03-advanced](../03-advanced/) - Decorators and context managers
+- [11-design-patterns](../11-design-patterns/) - Pythonic design patterns
+- [17-metaclasses](../17-metaclasses/) - Advanced class customization
 
 ## One-Minute Revision
 

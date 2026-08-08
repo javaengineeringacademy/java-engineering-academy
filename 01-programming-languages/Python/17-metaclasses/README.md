@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Know when to use metaclasses and when simpler alternatives suffice
 - Debug metaclass-related issues in complex inheritance hierarchies
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | ORM frameworks, API design, class validation, registration | `__init_subclass__` for simpler cases |
+| When NOT to use | Don't use for simple singletons; prefer decorators | Use module-level state or `@dataclass` |
+| Alternatives | `__init_subclass__`, class decorators, `type()` | Simple inheritance |
+| Production Examples | Django models, SQLAlchemy, framework internals | Simple scripts, prototypes |
+| Common Mistakes | Over-engineering, not testing metaclass behavior | Try `__init_subclass__` first |
+
 ## Table of Contents
 
 - [What Are Metaclasses](#what-are-metaclasses)
@@ -281,6 +291,96 @@ class Point(metaclass=ReprMeta):
 
 ---
 
+## Production Incidents
+
+### Incident 1: Metaclass Conflict in Inheritance
+
+**Problem:** Application crashed with TypeError during class definition
+**Cause:** Two parent classes used different metaclasses
+**Impact:** Service failed to start; required code refactor
+**Detection:** ImportError during module loading
+**Solution:**
+```python
+# BAD: Conflicting metaclasses
+class MetaA(type):
+    pass
+class MetaB(type):
+    pass
+
+class A(metaclass=MetaA):
+    pass
+class B(metaclass=MetaB):
+    pass
+
+# class C(A, B):  # TypeError: metaclass conflict!
+#     pass
+
+# GOOD: Use compatible metaclasses or __init_subclass__
+class Plugin:
+    _registry = {}
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        Plugin._registry[cls.__name__] = cls
+```
+**Prevention:** Use `__init_subclass__` instead of metaclasses; check MRO for conflicts; test inheritance hierarchies
+
+### Incident 2: Metaclass __new__ Running Multiple Times
+
+**Problem:** Class validation logic executed 10 times during import
+**Cause:** Metaclass `__new__` called for each class in hierarchy
+**Impact:** Import time increased from 100ms to 2 seconds
+**Detection:** Application startup time degradation
+**Solution:**
+```python
+# BAD: Validation runs for every class in hierarchy
+class ValidatedMeta(type):
+    def __new__(cls, name, bases, namespace):
+        # Runs for Base, Child, Grandchild...
+        validate_class(namespace)
+        return super().__new__(cls, name, bases, namespace)
+
+# GOOD: Only validate concrete classes
+class ValidatedMeta(type):
+    def __new__(cls, name, bases, namespace):
+        # Skip abstract base classes
+        if bases and name != 'Abstract':
+            validate_class(namespace)
+        return super().__new__(cls, name, bases, namespace)
+```
+**Prevention:** Check if class is abstract before validation; cache validation results; profile metaclass overhead
+
+### Incident 3: Metaclass Breaking Pickle Serialization
+
+**Problem:** Objects couldn't be pickled for caching
+**Cause:** Metaclass didn't implement `__reduce__` or `__getstate__`
+**Impact:** Redis caching failed; performance degradation
+**Detection:** PickleError in production logs
+**Solution:**
+```python
+# BAD: Metaclass without pickle support
+class CustomMeta(type):
+    pass
+
+class MyClass(metaclass=CustomMeta):
+    pass
+
+# Can't pickle MyClass instances!
+
+# GOOD: Add pickle support
+class CustomMeta(type):
+    def __reduce__(cls):
+        return (cls, ())
+
+# Or use dataclasses with metaclass
+from dataclasses import dataclass
+
+@dataclass
+class MyClass:
+    x: int
+    y: int
+```
+**Prevention:** Test pickling with metaclass; implement `__reduce__` or `__getstate__`; use dataclasses for simple cases
+
 ## Production Checklist
 
 - [ ] Prefer `__init_subclass__` over metaclasses for subclass hooks
@@ -324,6 +424,12 @@ class Point(metaclass=ReprMeta):
 - **`__init_subclass__`**: Modern alternative; runs when subclass is created; no metaclass needed
 - **Class decorator**: Simpler alternative for one-time transformations; stacks easily
 - **Best practice**: Try `__init_subclass__` first; use metaclasses only when you need `__new__` control
+
+## Related Topics
+
+- [02-oop](../02-oop/) - OOP fundamentals
+- [10-internals](../10-internals/) - Class creation internals
+- [11-design-patterns](../11-design-patterns/) - Design patterns using metaclasses
 
 ## Interview Questions
 

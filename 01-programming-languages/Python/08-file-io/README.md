@@ -8,6 +8,16 @@ Every application eventually needs to persist data, read configuration files, pr
 
 Without understanding file I/O, you'd write code that silently overwrites important data, forgets to close files (leading to resource leaks), or crashes on permission errors. That's why file I/O fundamentals exist — they provide the patterns for safely reading and writing data, managing resources with context managers, and handling the edge cases that cause production incidents.
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any file operations, config loading, data processing | In-memory operations for small data |
+| When NOT to use | Don't forget context managers; don't ignore encoding | Use `with` statement always |
+| Alternatives | pathlib for paths, aiofiles for async, pandas for complex CSV | Simple `open()` for basic cases |
+| Production Examples | Log processing, config management, data pipelines | Prototypes, quick scripts |
+| Common Mistakes | Forgetting encoding, not using atomic writes, resource leaks | Always use `with`; specify encoding |
+
 ## What You'll Learn
 
 By the end of this module, you'll be able to:
@@ -345,6 +355,68 @@ results = asyncio.run(process_files(["file1.txt", "file2.txt"]))
 
 ---
 
+## Production Incidents
+
+### Incident 1: Encoding Error Corrupting User Data
+
+**Problem:** User uploaded file with special characters got corrupted
+**Cause:** File read without specifying encoding; Windows default was not UTF-8
+**Impact:** 50 user uploads corrupted; manual data recovery required
+**Detection:** Users reported missing characters in uploaded files
+**Solution:**
+```python
+# BAD: No encoding specified
+with open("user_data.txt") as f:
+    content = f.read()
+
+# GOOD: Explicit UTF-8 encoding
+with open("user_data.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+```
+**Prevention:** Always specify `encoding="utf-8"`; add linting rule to catch missing encoding; use pathlib
+
+### Incident 2: File Descriptor Leak Under Load
+
+**Problem:** Service failed to open new files after 1000 requests
+**Cause:** `open()` without context manager; file descriptors not closed on exception
+**Impact:** "Too many open files" error; service degradation
+**Detection:** `ulimit -n` showed file descriptor exhaustion
+**Solution:**
+```python
+# BAD: Manual close
+f = open("data.txt")
+try:
+    data = f.read()
+finally:
+    f.close()  # May not execute on certain exceptions
+
+# GOOD: Context manager
+with open("data.txt") as f:
+    data = f.read()
+```
+**Prevention:** Always use `with` statement; use `resource.setrlimit` to monitor; add file descriptor monitoring
+
+### Incident 3: Non-Atomic Write Causing Partial Data
+
+**Problem:** JSON config file corrupted after crash during write
+**Cause:** `json.dump()` wrote directly to target file; crash left partial content
+**Impact:** Service couldn't restart; required manual config recovery
+**Detection:** Service startup failed with JSONDecodeError
+**Solution:**
+```python
+import tempfile
+from pathlib import Path
+
+def atomic_write(path: Path, content: str) -> None:
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=path.parent, delete=False
+    ) as tmp:
+        tmp.write(content)
+        tmp_path = Path(tmp.name)
+    tmp_path.rename(path)  # Atomic on most filesystems
+```
+**Prevention:** Use atomic writes for critical files; write to temp file then rename; backup before write
+
 ## Production Checklist
 
 - [ ] **Use context managers** — Never forget to close files
@@ -420,6 +492,12 @@ def read_config(path: Path) -> dict:
 > Reality: They're NOT. A crash during write can corrupt data. Use atomic write patterns (temp file + rename) for critical data.
 
 ---
+
+## Related Topics
+
+- [01-fundamentals](../01-fundamentals/) - String handling and encoding
+- [13-logging](../13-logging/) - File-based logging
+- [18-senior](../18-senior/) - Production file handling patterns
 
 ## One-Minute Revision
 

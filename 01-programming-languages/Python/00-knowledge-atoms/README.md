@@ -4,7 +4,7 @@
 
 Every Python application, from a small automation script to a large production service, relies on foundational concepts that shape how the language works under the hood. These atomic ideas — duck typing, the GIL, reference counting, the data model — aren't just trivia. They're the difference between writing code that works and writing code that performs, scales, and maintains itself.
 
-Without internalizing these atoms, you'd have to rediscover Python's quirks through production incidents and debugging sessions. That's why these concepts exist — they form the mental model that lets you read Python source code like a native speaker reads prose, and design systems that leverage the language's strengths rather than fighting them.
+Without internalizing these atoms, you'd have to rediscover Python's quirks through production incidents and debugging sessions. That's why these concepts exist — they form the mental model that lets you read Python source code like a native speaker reads prose, and design systems that use the language's strengths rather than fighting them.
 
 ## What You'll Learn
 
@@ -14,8 +14,20 @@ By the end of this module, you'll be able to:
 - Choose between EAFP and LBYL patterns based on context
 - Understand GIL limitations and when to use multiprocessing vs threading
 - Manage memory effectively through reference counting and garbage collection
-- Leverage the data model (dunder methods) to make custom objects integrate with Python syntax
+- Use the data model (dunder methods) to make custom objects integrate with Python syntax
 - Use ABCs and Protocols to define and enforce contracts
+
+---
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Core concepts for any Python project | Skip if only writing simple scripts |
+| When NOT to use | Don't over-engineer for trivial code | Use simpler patterns for small utilities |
+| Alternatives | N/A - these are foundational | N/A |
+| Production Examples | Web services, data pipelines, libraries | Quick scripts, prototypes |
+| Common Mistakes | Ignoring GIL, misusing `__del__`, over-using ABCs | Learn these atoms early |
 
 ---
 
@@ -431,6 +443,60 @@ Master these atoms, and you'll read Python source code like a native speaker rea
 
 ---
 
+## Production Incidents
+
+### Incident 1: GIL Causing Silent Data Corruption
+
+**Problem:** Counter increment across threads produced inconsistent results
+**Cause:** `counter += 1` is not atomic; GIL releases between LOAD_FAST and STORE_FAST
+**Impact:** Race condition caused lost updates in production metrics
+**Detection:** Unit tests with concurrent threads caught the discrepancy
+**Solution:**
+```python
+from threading import Lock
+counter_lock = Lock()
+def safe_count():
+    global counter
+    for _ in range(1_000_000):
+        with counter_lock:
+            counter += 1
+```
+**Prevention:** Use `threading.Lock` for shared mutable state; prefer `multiprocessing` for CPU-bound work
+
+### Incident 2: Circular Reference Causing Memory Leak
+
+**Problem:** Long-running service memory grew continuously until OOM
+**Cause:** Parent-child circular references with `__del__` methods
+**Detection:** `tracemalloc` showed uncollectable objects growing
+**Solution:**
+```python
+import weakref
+class Node:
+    def __init__(self):
+        self._parent = None  # Use weakref instead
+    @property
+    def parent(self):
+        return self._parent() if self._parent else None
+    @parent.setter
+    def parent(self, value):
+        self._parent = weakref.ref(value) if value else None
+```
+**Prevention:** Use `weakref` for parent references; avoid `__del__`; use context managers
+
+### Incident 3: Name Mangling Breaking Subclass Tests
+
+**Problem:** Tests accessing `__secret` attribute failed with AttributeError after refactoring
+**Cause:** Name mangling changed `_Parent__secret` to `_Child__secret` in subclass
+**Detection:** Test failures in CI after inheritance change
+**Solution:**
+```python
+# Use single underscore for "private" attributes
+class Parent:
+    def __init__(self):
+        self._secret = "hidden"  # Convention, not mangling
+```
+**Prevention:** Use `_name` for private-by-convention; document `__name` usage; test access patterns
+
 ## Production Checklist
 
 - [ ] Use duck typing for flexible interfaces; avoid unnecessary `isinstance()` checks
@@ -474,6 +540,14 @@ Master these atoms, and you'll read Python source code like a native speaker rea
 - **Descriptor Protocol**: `__get__`, `__set__`, `__delete__`; powers properties, classmethod, slots
 - **Data Model**: Dunder methods define how objects interact with Python syntax (`+`, `str`, `with`, etc.)
 - **ABCs vs Protocols**: ABCs for enforced interfaces; Protocols for structural subtyping (duck typing with type checking)
+
+---
+
+## Related Topics
+
+- [10-internals](../10-internals/) - CPython implementation details
+- [14-memory-management](../14-memory-management/) - Memory profiling and optimization
+- [17-metaclasses](../17-metaclasses/) - Advanced class creation patterns
 
 ---
 

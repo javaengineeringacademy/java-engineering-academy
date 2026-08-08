@@ -35,6 +35,16 @@ By the end of this module, you'll be able to:
 ### Q5: What is the EAFP principle?
 **Answer:** Easier to Ask Forgiveness than Permission. Try the operation and catch exceptions rather than checking conditions first. More Pythonic.
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Network calls, file operations, user input, database queries | Simple scripts with known inputs |
+| When NOT to use | Don't catch bare `Exception`; don't use exceptions for control flow | Use `if` checks for expected conditions |
+| Alternatives | Return codes for simple cases, Result types for functional style | Explicit checks before operations |
+| Production Examples | API development, data pipelines, financial systems | Quick scripts, prototypes |
+| Common Mistakes | Catching too broad, not chaining exceptions, swallowing errors | Catch specific exceptions; chain with `from` |
+
 ## When
 
 | Scenario | Exception Strategy |
@@ -194,6 +204,77 @@ async def app_error_handler(request: Request, exc: AppError):
         }
     )
 ```
+
+## Production Incidents
+
+### Incident 1: Catching Too Broad Exception Hiding Bugs
+
+**Problem:** Application silently failed to process payments
+**Cause:** `except Exception` caught `TypeError` in payment logic; returned `None`
+**Impact:** 200 payments silently dropped; customers charged but not processed
+**Detection:** Reconciliation found mismatch between charges and orders
+**Solution:**
+```python
+# BAD: Catches everything
+try:
+    result = process_payment(order)
+except Exception:
+    return None  # Hides TypeError!
+
+# GOOD: Catch specific exceptions
+try:
+    result = process_payment(order)
+except PaymentError as e:
+    logger.error(f"Payment failed: {e}")
+    raise
+except ValueError as e:
+    logger.error(f"Invalid payment data: {e}")
+    raise
+```
+**Prevention:** Catch specific exceptions; log and re-raise; never silently swallow errors
+
+### Incident 2: Exception Chain Lost in Production
+
+**Problem:** Production error showed generic "Connection failed" without root cause
+**Cause:** `raise NewError() from None` suppressed original exception context
+**Impact:** 3-hour debugging session to find actual cause (DNS resolution failure)
+**Detection:** Customer support tickets about connection errors
+**Solution:**
+```python
+# BAD: Suppresses context
+try:
+    connect_to_db()
+except ConnectionError:
+    raise ServiceError("Connection failed") from None
+
+# GOOD: Preserves context
+try:
+    connect_to_db()
+except ConnectionError as e:
+    raise ServiceError("Connection failed") from e
+```
+**Prevention:** Use `raise ... from e` to chain exceptions; log full traceback; include context in error messages
+
+### Incident 3: Finally Block Not Running on SIGTERM
+
+**Problem:** Graceful shutdown didn't flush pending writes
+**Cause:** `finally` block doesn't run on SIGTERM; process killed immediately
+**Impact:** 1000 log entries lost during deployment
+**Detection:** Missing log entries in monitoring
+**Solution:**
+```python
+import signal
+
+def signal_handler(signum, frame):
+    flush_pending_writes()
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, signal_handler)
+
+# Don't rely on finally for cleanup
+# Use signal handlers for SIGTERM/SIGINT
+```
+**Prevention:** Register signal handlers for SIGTERM/SIGINT; don't rely on `finally` for critical cleanup; use atexit for final cleanup
 
 ## Production Checklist
 

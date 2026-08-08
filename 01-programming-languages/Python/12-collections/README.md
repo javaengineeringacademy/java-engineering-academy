@@ -8,13 +8,23 @@ Every application needs to store, organize, and process data efficiently. Unders
 
 Without mastering collections, you'd write verbose, error-prone code for common data manipulation tasks and miss opportunities for significant performance improvements. That's why collections exist — they provide optimized, purpose-built data structures that let you write cleaner, faster, and more expressive code in production systems.
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any data processing, counting, grouping, deduplication | Simple lists for small datasets |
+| When NOT to use | Don't use list for queues; don't use dict for counting | Use `deque`, `Counter`, `defaultdict` |
+| Alternatives | numpy for numeric, pandas for complex data | Built-in types for simple cases |
+| Production Examples | Data pipelines, analytics, caching | Prototypes, simple scripts |
+| Common Mistakes | `list.pop(0)` in loops, ignoring hash randomization | Use `deque`; set `PYTHONHASHSEED` for tests |
+
 ## What You'll Learn
 
 By the end of this module, you'll be able to:
 
 - Choose the right collection for each use case based on performance characteristics
 - Understand CPython's internal implementations of lists, dicts, and sets
-- Leverage specialized collections like `Counter`, `defaultdict`, and `deque`
+- Use specialized collections like `Counter`, `defaultdict`, and `deque`
 - Apply memory-efficient patterns for large-scale data processing
 - Debug collection-related performance issues in production
 
@@ -850,6 +860,68 @@ d['a'] = 1  # Hash: some other value
 
 ---
 
+## Production Incidents
+
+### Incident 1: list.pop(0) Causing O(n²) Performance
+
+**Problem:** Message queue processing degraded from 1000 msg/s to 10 msg/s
+**Cause:** `list.pop(0)` is O(n); queue had 100K messages
+**Impact:** Message backlog grew; processing delayed by hours
+**Detection:** Queue depth monitoring alerted on backlog
+**Solution:**
+```python
+# BAD: O(n) per pop, O(n²) total
+queue = list(messages)
+while queue:
+    msg = queue.pop(0)  # Shifts all elements!
+
+# GOOD: O(1) per pop
+from collections import deque
+queue = deque(messages)
+while queue:
+    msg = queue.popleft()  # O(1)
+```
+**Prevention:** Use `deque` for queues; profile list operations; benchmark with realistic data sizes
+
+### Incident 2: defaultdict Shared Mutable Default
+
+**Problem:** All users had the same permissions list
+**Cause:** `defaultdict(list)` created one list shared across all keys
+**Impact:** Permission escalation vulnerability in production
+**Detection:** Security audit found all users had admin access
+**Solution:**
+```python
+# BAD: Shared mutable default
+d = defaultdict([])
+d['user1'].append('read')  # All keys share same list!
+
+# GOOD: Factory function creates new list each time
+d = defaultdict(list)
+d['user1'].append('read')  # Each key gets own list
+```
+**Prevention:** Always use `list`, `dict`, `set` as factory (not `[]`, `{}`); test defaultdict behavior
+
+### Incident 3: Hash DoS Attack on Dict
+
+**Problem:** API endpoint became unresponsive under attack
+**Cause:** Attacker sent crafted keys causing O(n²) dict lookups
+**Impact:** Service denial for 10 minutes; CPU spike to 100%
+**Detection:** Load balancer health checks failed; CPU monitoring alerted
+**Solution:**
+```python
+# Python 3.3+ has hash randomization by default
+# Ensure PYTHONHASHSEED is not 0 in production
+import sys
+print(sys.flags.hash_randomization)  # Should be 1
+
+# For extra protection: limit input size
+def process_input(data):
+    if len(data) > 10000:
+        raise ValueError("Input too large")
+    return {k: v for k, v in data.items()}
+```
+**Prevention:** Keep hash randomization enabled; validate input size; rate-limit API endpoints
+
 ## Production Checklist
 
 - [ ] **Use deque for queues** — never use list for FIFO operations
@@ -878,6 +950,12 @@ d['a'] = 1  # Hash: some other value
 ---
 
 > **Remember:** Data structure choice is algorithm choice. Understanding CPython internals isn't trivia — it's what separates code that works from code that works at scale.
+
+## Related Topics
+
+- [01-fundamentals](../01-fundamentals/) - Basic collection operations
+- [10-internals](../10-internals/) - CPython collection implementations
+- [15-performance](../15-performance/) - Collection performance optimization
 
 ## References
 - Python Docs: collections module

@@ -18,6 +18,16 @@ By the end of this module, you'll be able to:
 - Set up logging for production environments with rotation and aggregation
 - Integrate logging with monitoring and alerting systems
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any production application, debugging, auditing | `print()` for quick prototypes |
+| When NOT to use | Don't log sensitive data; don't over-log | Use appropriate log levels |
+| Alternatives | structlog for structured logging, loguru for simplicity | Basic logging for simple scripts |
+| Production Examples | Web services, microservices, data pipelines | Quick scripts, prototypes |
+| Common Mistakes | Logging sensitive data, using `print()`, not rotating logs | Use structured logging; rotate files |
+
 ## When
 
 | Scenario | Level | What to Log |
@@ -220,6 +230,69 @@ listener.start()
 async_logger = logging.getLogger('async_app')
 async_logger.addHandler(queue_handler)
 ```
+
+## Production Incidents
+
+### Incident 1: Log Injection Attack
+
+**Problem:** Logs contained malicious content that broke log parsing
+**Cause:** User input logged directly without sanitization
+**Impact:** Log aggregation system crashed; monitoring blind for 2 hours
+**Detection:** Log parser errors; monitoring gaps
+**Solution:**
+```python
+# BAD: Direct user input in logs
+logger.info(f"User {username} performed action")
+
+# GOOD: Sanitize user input
+import re
+def sanitize_log(msg):
+    return re.sub(r'[\n\r\t]', '_', msg)
+
+logger.info("User %s performed action", sanitize_log(username))
+```
+**Prevention:** Sanitize user input before logging; use structured logging; validate log format
+
+### Incident 2: Log Flooding Causing Disk Exhaustion
+
+**Problem:** Disk filled up in 10 minutes; service crashed
+**Cause:** Debug logging enabled in production; high-traffic endpoint logged every request
+**Impact:** Service outage; required manual disk cleanup
+**Detection:** Disk space alerts; service crash
+**Solution:**
+```python
+# BAD: Debug logging in production
+logger.setLevel(logging.DEBUG)
+logger.debug(f"Processing request: {request}")
+
+# GOOD: Environment-based log level
+import os
+log_level = os.getenv('LOG_LEVEL', 'INFO')
+logger.setLevel(getattr(logging, log_level))
+```
+**Prevention:** Set log level based on environment; use log rotation; monitor disk usage
+
+### Incident 3: Exception Logging Without Context
+
+**Problem:** Error alerts showed "NoneType object has no attribute"
+**Cause:** `logger.exception()` called outside `except` block; no traceback
+**Impact:** 30-minute debugging to find actual error location
+**Detection:** Error monitoring showed generic messages
+**Solution:**
+```python
+# BAD: logger.exception() outside except block
+try:
+    process_data()
+except:
+    logger.exception("Error occurred")  # No traceback!
+
+# GOOD: Use exc_info=True
+try:
+    process_data()
+except Exception as e:
+    logger.error("Error processing data: %s", e, exc_info=True)
+```
+**Prevention:** Use `logger.exception()` only in `except` blocks; use `exc_info=True` elsewhere; include context
 
 ## Production Checklist
 

@@ -1,6 +1,16 @@
 # Python Libraries
 
-Comprehensive guide to essential Python libraries for web development, data science, and system administration.
+> A detailed guide to essential Python libraries for web development, data science, and system administration.
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Web development, data science, system administration | Standard library for simple cases |
+| When NOT to use | Don't add dependencies without need; evaluate maintenance status | Use built-ins when possible |
+| Alternatives | stdlib for simple cases; lightweight alternatives | requests over urllib, flask over django |
+| Production Examples | Web APIs, data pipelines, CLI tools | Simple scripts, prototypes |
+| Common Mistakes | Not pinning versions, ignoring security updates | Use `pip-audit`; pin in requirements |
 
 ## Libraries
 
@@ -48,6 +58,74 @@ SQLite3 is included with Python's standard library.
 Each library folder contains:
 - `README.md` - Overview and concepts
 - `examples/` - Practical code examples
+
+## Production Incidents
+
+### Incident 1: Requests Library Timeout Causing Cascading Failure
+
+**Problem:** External API call hung indefinitely; thread pool exhausted
+**Cause:** `requests.get()` without timeout; default is infinite
+**Impact:** All threads blocked; service unresponsive for 10 minutes
+**Detection:** Health check timeouts; thread count spike
+**Solution:**
+```python
+# BAD: No timeout
+response = requests.get(url)
+
+# GOOD: Explicit timeout
+response = requests.get(url, timeout=(5, 30))  # (connect, read)
+```
+**Prevention:** Always set timeout; use circuit breakers; implement retry with backoff
+
+### Incident 2: Pandas Memory Explosion
+
+**Problem:** Data processing used 10GB RAM for 1GB CSV file
+**Cause:** `pd.read_csv()` loaded entire file; dtypes not optimized
+**Impact:** Service OOM; processing failed
+**Detection:** Memory monitoring showed spike
+**Solution:**
+```python
+# BAD: Load entire file
+df = pd.read_csv("large_file.csv")
+
+# GOOD: Optimize dtypes and use chunks
+dtypes = {
+    'id': 'int32',  # Instead of int64
+    'category': 'category',  # Instead of object
+}
+chunks = pd.read_csv("large_file.csv", dtype=dtypes, chunksize=10000)
+for chunk in chunks:
+    process(chunk)
+```
+**Prevention:** Optimize dtypes; use chunking for large files; profile memory usage
+
+### Incident 3: SQLAlchemy N+1 Query Problem
+
+**Problem:** API response time increased linearly with data size
+**Cause:** Accessing relationships triggered additional queries per row
+**Impact:** 1000 records caused 1001 queries; 5-second response time
+**Detection:** Query logging showed N+1 pattern
+**Solution:**
+```python
+# BAD: N+1 queries
+users = session.query(User).all()
+for user in users:
+    print(user.orders)  # Query per user!
+
+# GOOD: Eager loading
+from sqlalchemy.orm import joinedload
+
+users = session.query(User).options(joinedload(User.orders)).all()
+for user in users:
+    print(user.orders)  # No additional query
+```
+**Prevention:** Use eager loading (`joinedload`, `subqueryload`); monitor query count; use `selectinload` for collections
+
+## Related Topics
+
+- [05-testing](../05-testing/) - Testing libraries (pytest)
+- [16-best-practices](../16-best-practices/) - Library selection best practices
+- [18-senior](../18-senior/) - Production library usage patterns
 
 ## Interview Questions
 

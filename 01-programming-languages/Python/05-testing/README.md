@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Mock external dependencies to isolate units under test
 - Apply test-driven development (TDD) workflows
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any production code, CI/CD pipelines, refactoring safety net | Throwaway scripts, trivial utilities |
+| When NOT to use | Don't test implementation details; don't over-mock | Test behavior, not implementation |
+| Alternatives | unittest for stdlib-only, pytest for rich ecosystem | Manual testing for prototypes |
+| Production Examples | Web services, data pipelines, libraries | Quick scripts, prototypes |
+| Common Mistakes | Flaky tests, over-mocking, testing implementation | Write stable, isolated tests |
+
 ## Topics
 
 | # | Topic | Description |
@@ -66,6 +76,76 @@ python 02-pytest/test_basics.py
 pytest 02-pytest/
 ```
 
+## Production Incidents
+
+### Incident 1: Flaky Test Causing False Alarms
+
+**Problem:** CI/CD pipeline failed randomly on test_payment_processing
+**Cause:** Test depended on system time; timezone differences caused failures
+**Impact:** 30% of deployments delayed; team lost confidence in test suite
+**Detection:** Random test failures in CI; no pattern in failures
+**Solution:**
+```python
+# BAD: depends on real time
+def test_payment_timeout():
+    start = time.time()
+    process_payment(timeout=5)
+    assert time.time() - start < 5
+
+# GOOD: mock time
+def test_payment_timeout(mocker):
+    mock_time = mocker.patch('time.time')
+    mock_time.side_effect = [0, 6]  # Simulate 6 seconds elapsed
+    with pytest.raises(TimeoutError):
+        process_payment(timeout=5)
+```
+**Prevention:** Mock external dependencies (time, network, DB); use `pytest-mock`; isolate tests
+
+### Incident 2: Mocking Too Much Causing False Positives
+
+**Problem:** Tests passed but integration tests failed
+**Cause:** Mocks replaced real implementations; edge cases not caught
+**Impact:** Bug reached production; hotfix required
+**Detection:** Integration test failures after deployment
+**Solution:**
+```python
+# BAD: Mock everything
+def test_user_creation():
+    with mock.patch('database.save'):
+        with mock.patch('email.send'):
+            user = create_user(data)
+            assert user is not None  # Always passes!
+
+# GOOD: Test real behavior
+def test_user_creation(db_session):
+    user = create_user(data)
+    assert db_session.query(User).count() == 1
+```
+**Prevention:** Mock only external boundaries (APIs, filesystem); test real behavior when possible; use integration tests
+
+### Incident 3: Test Pollution Between Tests
+
+**Problem:** Tests passed individually but failed in suite
+**Cause:** Test modified global state (module-level variable) affecting other tests
+**Impact:** CI failures only when running full suite; slow debugging
+**Detection:** Test passed with `--lf` but failed in full run
+**Solution:**
+```python
+# BAD: modifies global state
+def test_config():
+    global_config.debug = True
+    assert process() == expected
+
+# GOOD: use fixture to isolate
+@pytest.fixture
+def test_config():
+    original = config.debug
+    config.debug = True
+    yield config
+    config.debug = original
+```
+**Prevention:** Use fixtures for setup/teardown; avoid global state; run tests in isolation
+
 ## Production Checklist
 
 ### ✅ Before using testing practices in production:
@@ -110,6 +190,12 @@ pytest 02-pytest/
 
 ### ❌ Myth 3: Tests slow down development
 **Reality:** Well-written tests catch regressions early, reduce debugging time, and enable confident refactoring—saving time long-term.
+
+## Related Topics
+
+- [09-exception-handling](../09-exception-handling/) - Testing exception paths
+- [16-best-practices](../16-best-practices/) - Testing best practices
+- [18-senior](../18-senior/) - Production testing strategies
 
 ## One-Minute Revision
 

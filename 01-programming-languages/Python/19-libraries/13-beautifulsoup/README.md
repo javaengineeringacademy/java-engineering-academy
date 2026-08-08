@@ -27,7 +27,7 @@ By the end of this section, you'll be able to:
 
 BeautifulSoup takes raw HTML/XML and builds a parse tree using a parser (lxml, html.parser, or html5lib). Each element becomes a Tag object with attributes, children, and text. The tree structure mirrors the DOM, allowing you to navigate parent-child-sibling relationships.
 
-Search operations (`find`, `find_all`, CSS selectors) traverse the tree and return matching elements. BeautifulSoup uses the parser's tree-building capability to handle malformed HTML — it automatically closes unclosed tags, fixes nesting, and handles encoding issues. This makes it robust against real-world web pages.
+Search operations (`find`, `find_all`, CSS selectors) traverse the tree and return matching elements. BeautifulSoup uses the parser's tree-building capability to handle malformed HTML — it automatically closes unclosed tags, fixes nesting, and handles encoding issues. This makes it reliable against real-world web pages.
 
 ```python
 from bs4 import BeautifulSoup

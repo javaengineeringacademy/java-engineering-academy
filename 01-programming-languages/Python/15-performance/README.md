@@ -13,8 +13,18 @@ By the end of this module, you'll be able to:
 - Profile Python code to identify performance bottlenecks
 - Write meaningful benchmarks that measure real improvements
 - Apply optimization techniques from algorithmic to system-level
-- Leverage C extensions, Cython, and NumPy for performance-critical code
+- Use C extensions, Cython, and NumPy for performance-critical code
 - Make informed decisions about when to optimize and when to accept trade-offs
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Production services, data pipelines, latency-sensitive code | Simple scripts with small data |
+| When NOT to use | Don't optimize without profiling; premature optimization is evil | Profile first; accept "good enough" |
+| Alternatives | C extensions, Cython, NumPy for hot paths | Pure Python for simplicity |
+| Production Examples | Web services, real-time systems, data processing | Prototypes, throwaway scripts |
+| Common Mistakes | Optimizing cold code, ignoring I/O bottlenecks | Profile first; focus on hot paths |
 
 ## Table of Contents
 
@@ -717,6 +727,73 @@ Python performance optimization:
 7. **Use generators** - For memory efficiency
 8. **Optimize algorithms** - O(n) vs O(n²) matters
 
+## Production Incidents
+
+### Incident 1: String Concatenation Causing O(n²) Performance
+
+**Problem:** Report generation took 10 minutes for large datasets
+**Cause:** String concatenation in loop; `result += line` creates new string each time
+**Impact:** Reports timed out; users couldn't access data
+**Detection:** Performance monitoring showed degradation with data size
+**Solution:**
+```python
+# BAD: O(n²) string concatenation
+result = ""
+for line in data:
+    result += line + "\n"
+
+# GOOD: O(n) join
+result = "\n".join(data)
+```
+**Prevention:** Use `join()` for string building; profile string operations; use f-strings
+
+### Incident 2: Cache Stampede Under Load
+
+**Problem:** Cache miss caused thundering herd; 1000 requests hit database simultaneously
+**Cause:** `@lru_cache` expired at same time for all requests
+**Impact:** Database overload; 50% of requests failed
+**Detection:** Database connection pool exhaustion; error rate spike
+**Solution:**
+```python
+# BAD: All requests compute simultaneously
+@lru_cache(maxsize=128)
+def get_user(user_id):
+    return db.query(user_id)
+
+# GOOD: Use lock to prevent stampede
+import threading
+_user_locks = {}
+
+def get_user(user_id):
+    if user_id not in _user_locks:
+        _user_locks[user_id] = threading.Lock()
+    with _user_locks[user_id]:
+        return _get_user_cached(user_id)
+```
+**Prevention:** Use locks for cache warming; implement jitter on cache expiry; use circuit breakers
+
+### Incident 3: NumPy Array Conversion Eating Memory
+
+**Problem:** Data processing used 10x more memory than expected
+**Cause:** Converting between Python lists and NumPy arrays repeatedly
+**Impact:** Service OOM during data processing
+**Detection:** Memory profiling showed conversion overhead
+**Solution:**
+```python
+# BAD: Repeated conversion
+data_list = [1, 2, 3, ...]  # 1M elements
+arr = np.array(data_list)  # Copy 1
+result = arr * 2
+data_list = result.tolist()  # Copy 2
+arr = np.array(data_list)  # Copy 3
+
+# GOOD: Stay in NumPy
+arr = np.array(data_list)  # One conversion
+result = arr * 2  # In-place
+# Keep as NumPy array until final output
+```
+**Prevention:** Stay in NumPy for processing; minimize conversions; use in-place operations
+
 ## Production Checklist
 
 - [ ] Profile before optimizing; never optimize without data
@@ -761,6 +838,12 @@ Python performance optimization:
 - **Cython**: Compile Python to C; add type declarations for 10-100x speedup
 - **C extensions**: Ultimate performance; release GIL for parallel execution
 - **Statistical benchmarking**: Run multiple iterations; report mean, median, stdev
+
+## Related Topics
+
+- [10-internals](../10-internals/) - CPython optimization internals
+- [14-memory-management](../14-memory-management/) - Memory profiling and optimization
+- [18-senior](../18-senior/) - Production performance patterns
 
 ## Interview Questions
 

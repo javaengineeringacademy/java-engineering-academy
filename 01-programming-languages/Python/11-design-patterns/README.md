@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Avoid over-engineering by knowing when patterns are unnecessary
 - Communicate design decisions using a shared vocabulary
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Recurring design problems, improving maintainability, team communication | Simple code for simple problems |
+| When NOT to use | Don't over-engineer; prefer simple solutions | Use functions for simple cases |
+| Alternatives | Pythonic idioms (decorators, context managers, dataclasses) | Module-level state over Singleton |
+| Production Examples | Web frameworks, ORMs, plugin systems | Simple scripts, prototypes |
+| Common Mistakes | Over-using Singleton, complex Factory hierarchies | Prefer composition; use `__init_subclass__` |
+
 ## Pattern Categories
 
 ### Creational Patterns
@@ -77,6 +87,85 @@ By the end of this module, you'll be able to:
 - Brandon Rhodes - *Python Design Patterns* (PyCon talks)
 - Head First Design Patterns (2nd Edition)
 
+## Production Incidents
+
+### Incident 1: Singleton Causing Test Contamination
+
+**Problem:** Tests passed individually but failed in suite
+**Cause:** Singleton retained state between tests
+**Impact:** 40% of test suite was flaky; CI/CD unreliable
+**Detection:** Random test failures; state leaking between tests
+**Solution:**
+```python
+# BAD: Singleton with mutable state
+class Database(metaclass=SingletonMeta):
+    def __init__(self):
+        self.connection = None
+
+# GOOD: Module-level state or dependency injection
+_db_connection = None
+
+def get_db():
+    global _db_connection
+    if _db_connection is None:
+        _db_connection = create_connection()
+    return _db_connection
+
+# In tests: mock the module-level variable
+```
+**Prevention:** Prefer module-level state over Singleton; use dependency injection; reset state in test fixtures
+
+### Incident 2: Observer Pattern Memory Leak
+
+**Problem:** Event system memory grew unbounded over time
+**Cause:** Observers not removed after objects were deleted
+**Impact:** Service OOM after 48 hours; required daily restarts
+**Detection:** Memory monitoring showed linear growth
+**Solution:**
+```python
+# BAD: Strong references to observers
+class EventBus:
+    def __init__(self):
+        self._handlers = []  # Never cleaned up!
+
+# GOOD: Weak references
+import weakref
+
+class EventBus:
+    def __init__(self):
+        self._handlers = weakref.WeakSet()
+```
+**Prevention:** Use `weakref.WeakSet` for observer lists; implement unsubscribe; test memory behavior
+
+### Incident 3: Factory Pattern Breaking Open/Closed Principle
+
+**Problem:** Adding new product type required modifying factory class
+**Cause:** Factory used if/elif chain; not open for extension
+**Impact:** Each new type required touching 3+ files; merge conflicts
+**Detection:** Code review flagged violation of OCP
+**Solution:**
+```python
+# BAD: if/elif factory
+def create_product(type):
+    if type == "a":
+        return ProductA()
+    elif type == "b":
+        return ProductB()  # Must modify!
+
+# GOOD: Registry pattern
+_registry = {}
+
+def register_product(type):
+    def decorator(cls):
+        _registry[type] = cls
+        return cls
+    return decorator
+
+@register_product("a")
+class ProductA: pass
+```
+**Prevention:** Use registry pattern; apply `__init_subclass__` for auto-registration; test extensibility
+
 ## Production Checklist
 
 - [ ] Use module-level singletons instead of metaclass-based Singleton
@@ -122,6 +211,12 @@ By the end of this module, you'll be able to:
 - **Iterator**: Implement `__iter__` and `__next__`; generators are built-in iterators
 - **Context Manager**: `__enter__`/`__exit__`; `contextlib` for simpler patterns
 - **Anti-patterns**: Don't use Singleton when module works; don't add Factory when constructor suffices
+
+## Related Topics
+
+- [02-oop](../02-oop/) - OOP fundamentals
+- [17-metaclasses](../17-metaclasses/) - Advanced class creation
+- [18-senior](../18-senior/) - Production architecture patterns
 
 ## Interview Questions
 

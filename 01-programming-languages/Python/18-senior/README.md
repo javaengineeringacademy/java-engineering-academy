@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Apply security best practices and handle common vulnerabilities
 - Lead technical decisions and mentor other engineers
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Production systems, team leadership, architecture decisions | Simple scripts, prototypes |
+| When NOT to use | Don't over-architect; monoliths are fine for small projects | Keep it simple |
+| Alternatives | Simpler architecture for small teams | Modular monolith |
+| Production Examples | Enterprise applications, high-traffic services | Small projects, MVPs |
+| Common Mistakes | Over-engineering, premature microservices | Start monolith; split when needed |
+
 ## Architecture Patterns
 
 ### MVC (Model-View-Controller)
@@ -658,6 +668,94 @@ class DatabasePool:
 | Developer Cost | $ | $$ | $$$ | $$$$ |
 | Best For | AI/ML, Web | Enterprise | Systems | Performance |
 
+## Production Incidents
+
+### Incident 1: Microservice Communication Failure
+
+**Problem:** Order service returned 500 when user service was down
+**Cause:** Synchronous HTTP calls between services without fallback
+**Impact:** Entire order flow failed; revenue loss
+**Detection:** Error rate spike; cascading failures
+**Solution:**
+```python
+# BAD: Synchronous call without fallback
+async def create_order(order):
+    user = await httpx.get(f"{USER_SERVICE}/users/{order.user_id}")
+    # Fails if user service is down!
+
+# GOOD: Circuit breaker with fallback
+from circuitbreaker import circuit
+
+@circuit(failure_threshold=5, recovery_timeout=60)
+async def get_user(user_id):
+    return await httpx.get(f"{USER_SERVICE}/users/{user_id}")
+
+async def create_order(order):
+    try:
+        user = await get_user(order.user_id)
+    except CircuitBreakerError:
+        user = get_user_from_cache(order.user_id)  # Fallback
+```
+**Prevention:** Implement circuit breakers; use async with timeout; cache fallback data
+
+### Incident 2: Database Connection Pool Exhaustion
+
+**Problem:** Service became unresponsive under load
+**Cause:** Each request created new database connection; pool exhausted
+**Impact:** 50% of requests failed with connection timeout
+**Detection:** Connection pool monitoring showed exhaustion
+**Solution:**
+```python
+# BAD: New connection per request
+def get_user(user_id):
+    conn = create_connection()
+    return conn.query("SELECT * FROM users WHERE id = %s", user_id)
+
+# GOOD: Connection pooling
+from contextlib import asynccontextmanager
+
+class DatabasePool:
+    def __init__(self, dsn, min_size=10, max_size=20):
+        self.pool = None
+        self.dsn = dsn
+        self.min_size = min_size
+        self.max_size = max_size
+
+    async def initialize(self):
+        self.pool = await asyncpg.create_pool(
+            self.dsn, min_size=self.min_size, max_size=self.max_size
+        )
+
+    @asynccontextmanager
+    async def acquire(self):
+        async with self.pool.acquire() as conn:
+            yield conn
+```
+**Prevention:** Use connection pooling; set pool size limits; monitor connection usage
+
+### Incident 3: Logging Sensitive Data in Production
+
+**Problem:** User passwords appeared in log aggregation system
+**Cause:** `logger.info(f"Login attempt: {username}:{password}")`
+**Impact:** Security breach; compliance violation; required incident report
+**Detection:** Security audit; log review
+**Solution:**
+```python
+# BAD: Logging sensitive data
+logger.info(f"Login attempt: {username}:{password}")
+
+# GOOD: Sanitize sensitive fields
+def sanitize(data, sensitive_fields):
+    return {k: "***" if k in sensitive_fields else v
+            for k, v in data.items()}
+
+logger.info("Login attempt: %s", sanitize(
+    {"username": username, "password": password},
+    ["password"]
+))
+```
+**Prevention:** Never log sensitive data; use structured logging with field filtering; audit log content
+
 ## Production Checklist
 
 ```markdown
@@ -737,6 +835,12 @@ Scaling: Horizontal (more machines) > Vertical (bigger machine)
 Cost: Python wins on development speed, loses on raw performance
 Checklist: Code quality, Security, Performance, Deployment, Operations
 ```
+
+## Related Topics
+
+- [13-logging](../13-logging/) - Production logging patterns
+- [15-performance](../15-performance/) - Performance optimization
+- [16-best-practices](../16-best-practices/) - Python best practices
 
 ## Interview Questions
 

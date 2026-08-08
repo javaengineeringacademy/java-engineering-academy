@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Manage dependencies and virtual environments effectively
 - Write documentation that serves as living documentation
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Any team project, long-term maintenance, open source | Quick prototypes, throwaway scripts |
+| When NOT to use | Don't over-engineer; don't add complexity without value | Keep it simple for small projects |
+| Alternatives | Company style guides, language-specific conventions | Follow PEP 8 as baseline |
+| Production Examples | Enterprise applications, libraries, team projects | Personal scripts, learning projects |
+| Common Mistakes | Inconsistent style, missing type hints, no tests | Use linters; enforce standards in CI |
+
 ## Table of Contents
 
 - [PEP 8 Style Guide](#pep-8-style-guide)
@@ -961,6 +971,63 @@ Python best practices:
 9. **Handle exceptions** - Specific and informative
 10. **Profile and optimize** - Measure before optimizing
 
+## Production Incidents
+
+### Incident 1: Dependency Confusion Attack
+
+**Problem:** Internal package name matched malicious package on PyPI
+**Cause:** Company used private package names that existed on public PyPI
+**Impact:** Malicious code executed in production; security breach
+**Detection:** Code review caught suspicious import; security audit
+**Solution:**
+```bash
+# GOOD: Use explicit index for internal packages
+pip install --index-url https://private.pypi.org/simple/ mypackage
+
+# Or use namespace packages
+pip install mycompany-mypackage
+```
+**Prevention:** Use explicit package indexes; namespace internal packages; scan dependencies
+
+### Incident 2: Missing Type Hints Causing Runtime Errors
+
+**Problem:** Function returned `None` but caller expected `dict`
+**Cause:** No type hints; IDE couldn't detect mismatch
+**Impact:** TypeError in production; 500 errors for users
+**Detection:** Error monitoring caught NoneType exceptions
+**Solution:**
+```python
+# BAD: No type hints
+def get_user(user_id):
+    return db.query(user_id)  # Can return None!
+
+# GOOD: Type hints with Optional
+def get_user(user_id: int) -> dict | None:
+    return db.query(user_id)
+```
+**Prevention:** Add type hints to all public APIs; run mypy in CI; use IDE type checking
+
+### Incident 3: Hardcoded Secrets in Repository
+
+**Problem:** API keys committed to Git history
+**Cause:** Developer committed `.env` file by mistake
+**Impact:** API keys leaked; required key rotation; security incident
+**Detection:** GitHub secret scanning alerted; security audit
+**Solution:**
+```bash
+# GOOD: Use environment variables
+export API_KEY="your-secret-key"
+
+# Or use secret management
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    api_key: str
+    class Config:
+        env_file = ".env"
+```
+**Prevention:** Add `.env` to `.gitignore`; use secret scanning; rotate keys regularly; use secret management tools
+
 ## Production Checklist
 
 - [ ] Enforce PEP 8 with `ruff` or `black` in CI
@@ -1006,6 +1073,12 @@ Python best practices:
 - **Performance**: Profile before optimizing; use built-ins; cache expensive computations
 - **Project structure**: `src/` layout; separate tests from source; `pyproject.toml` at root
 - **CI/CD**: Run linting, type checking, and tests on every push; enforce coverage thresholds
+
+## Related Topics
+
+- [05-testing](../05-testing/) - Testing best practices
+- [18-senior](../18-senior/) - Production deployment patterns
+- [19-libraries](../19-libraries/) - Essential Python libraries
 
 ## Interview Questions
 

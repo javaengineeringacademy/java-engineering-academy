@@ -8,13 +8,23 @@ Every Python application eventually needs to transform data, compose behaviors, 
 
 Without functional programming techniques, you'd struggle with side effects that make testing difficult, code duplication across similar transformations, and logic that's hard to parallelize. That's why functional programming exists — it provides mathematical foundations for writing code that's predictable, reusable, and maintainable at scale.
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Data transformations, pipelines, pure computations | Heavy I/O, mutable state, team unfamiliar |
+| When NOT to use | Don't force functional on inherently stateful code | Use simple loops for clarity |
+| Alternatives | itertools for iteration, functools for transforms | Imperative loops |
+| Production Examples | ETL pipelines, data processing, testing | Web handlers with side effects |
+| Common Mistakes | Over-using reduce, forcing functional on stateful code | Use `sum()` for simple cases |
+
 ## What You'll Learn
 
 By the end of this module, you'll be able to:
 
 - Use first-class functions to write flexible, composable code
 - Apply lambda functions, map, filter, and reduce for data transformations
-- Leverage closures and decorators for behavior composition
+- Use closures and decorators for behavior composition
 - Understand immutability patterns and their benefits
 - Choose between functional and imperative approaches based on context
 
@@ -438,6 +448,70 @@ total = sum(amounts)
 
 ---
 
+## Production Incidents
+
+### Incident 1: Reduce Causing Unreadable Stack Trace
+
+**Problem:** Production error showed cryptic traceback from `reduce` lambda
+**Cause:** Complex `reduce` with nested lambdas made debugging impossible
+**Impact:** 2-hour debugging session to understand simple accumulation error
+**Detection:** Production exception with unclear stack trace
+**Solution:**
+```python
+# BAD: Unreadable reduce
+total = reduce(lambda acc, x: acc + x['amount'] * (1 - x['discount']), orders, 0)
+
+# GOOD: Named function with clear logic
+def calculate_order_total(order):
+    return order['amount'] * (1 - order['discount'])
+
+def calculate_total(orders):
+    return sum(calculate_order_total(order) for order in orders)
+```
+**Prevention:** Use `sum()` for simple accumulation; prefer named functions over complex lambdas; document reduce usage
+
+### Incident 2: Side Effects in Lambda Causing Non-Determinism
+
+**Problem:** Sorting results differed between runs despite same input
+**Cause:** Lambda used `len()` which triggered lazy evaluation of generator
+**Impact:** Data processing output was inconsistent
+**Detection:** Comparison tests showed different results
+**Solution:**
+```python
+# BAD: Lambda evaluates generator each time
+data = [{'items': gen(x)} for x in range(10)]
+sorted_data = sorted(data, key=lambda x: len(x['items']))
+
+# GOOD: Materialize first
+data = [{'items': list(gen(x))} for x in range(10)]
+sorted_data = sorted(data, key=lambda x: len(x['items']))
+```
+**Prevention:** Avoid side effects in lambdas; materialize generators before operations that need length/order
+
+### Incident 3: lru_cache Causing Memory Leak
+
+**Problem:** Cache memory grew unbounded over 24 hours
+**Cause:** `@lru_cache` with unbounded maxsize on function with many unique arguments
+**Impact:** Service OOM after 24 hours; required restart
+**Detection:** Memory monitoring showed linear growth
+**Solution:**
+```python
+# BAD: Unbounded cache
+@lru_cache(maxsize=None)
+def process(user_id):
+    return expensive_operation(user_id)
+
+# GOOD: Bounded cache with TTL
+@lru_cache(maxsize=1000)
+def process(user_id):
+    return expensive_operation(user_id)
+
+# Or use cachetools for TTL cache
+from cachetools import TTLCache
+cache = TTLCache(maxsize=1000, ttl=300)
+```
+**Prevention:** Set `maxsize` on `lru_cache`; use TTL cache for time-sensitive data; monitor cache size
+
 ## Production Checklist
 
 - [ ] **Use comprehensions over map/filter for simple cases** — More Pythonic and usually faster
@@ -501,6 +575,12 @@ def process_data(raw: list[dict]) -> list[dict]:
 > Reality: `sum()`, `min()`, `max()` are clearer than `reduce` for simple accumulation. `reduce` shines when the accumulation logic is complex.
 
 ---
+
+## Related Topics
+
+- [03-advanced](../03-advanced/) - Generators and decorators
+- [12-collections](../12-collections/) - Collection operations
+- [15-performance](../15-performance/) - Performance optimization with functools
 
 ## One-Minute Revision
 

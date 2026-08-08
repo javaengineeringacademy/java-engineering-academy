@@ -16,6 +16,16 @@ By the end of this module, you'll be able to:
 - Synchronize shared state with locks, queues, and shared memory
 - Choose the right concurrency model for a given problem
 
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | I/O-bound (threading), CPU-bound (multiprocessing), high-concurrency (asyncio) | Sequential for simple scripts |
+| When NOT to use | Don't use threading for CPU work; don't use asyncio for CPU-bound | Use `multiprocessing` for CPU |
+| Alternatives | concurrent.futures for simple pools, multiprocessing for CPU | Sequential processing |
+| Production Examples | Web servers, data processing, background jobs | Simple scripts, prototypes |
+| Common Mistakes | Race conditions, deadlocks, thread-unsafe globals | Use `Lock`, `Queue`, shared memory |
+
 ## Topics
 
 | # | Topic | Description |
@@ -65,6 +75,72 @@ python 02-multiprocessing/multiprocessing_basics.py
 python 03-asyncio/asyncio_basics.py
 ```
 
+## Production Incidents
+
+### Incident 1: Race Condition in Counter
+
+**Problem:** Request counter showed 5000 instead of expected 10000
+**Cause:** Multiple threads incrementing shared `counter` without synchronization
+**Impact:** Metrics dashboard showed incorrect throughput numbers
+**Detection:** Comparison with load balancer logs revealed discrepancy
+**Solution:**
+```python
+from threading import Lock
+counter_lock = Lock()
+def increment():
+    global counter
+    with counter_lock:
+        counter += 1
+```
+**Prevention:** Use `threading.Lock` for shared state; prefer `Queue` for thread communication; use `threading.local()` for per-thread state
+
+### Incident 2: Deadlock in Payment Processing
+
+**Problem:** Payment service hung indefinitely under high load
+**Cause:** Two threads acquired locks in different orders (A→B and B→A)
+**Impact:** 2000+ transactions stuck; revenue loss estimated at $50K
+**Detection:** Health check timeouts; thread dumps showed deadlock
+**Solution:**
+```python
+# Enforce consistent lock ordering
+from contextlib import contextmanager
+
+@contextmanager
+def acquire_locks(lock1, lock2):
+    with lock1:
+        with lock2:
+            yield
+
+# Or use single lock for related operations
+payment_lock = Lock()
+def process_payment():
+    with payment_lock:
+        # All payment operations here
+        pass
+```
+**Prevention:** Document lock ordering; use `threading.RLock` for reentrant locks; add timeout to `acquire()`
+
+### Incident 3: GIL Causing CPU-Bound Thread Starvation
+
+**Problem:** Web server response time degraded 10x during CPU-intensive operations
+**Cause:** CPU-bound thread held GIL, starving I/O-bound request handlers
+**Impact:** API latency increased from 50ms to 500ms during data processing
+**Detection:** Response time monitoring alerted on degradation
+**Solution:**
+```python
+# Move CPU-bound work to separate process
+from multiprocessing import Process
+
+def cpu_intensive_task(data):
+    return heavy_computation(data)
+
+# Launch in separate process, not thread
+process = Process(target=cpu_intensive_task, args=(data,))
+process.start()
+# Continue handling I/O in main thread
+```
+**Prevention:** Profile to identify CPU vs I/O bound; use `multiprocessing` for CPU work; use `asyncio` for I/O
+
 ## Production Checklist
 
 ### ✅ Before using concurrency in production:
@@ -109,6 +185,12 @@ python 03-asyncio/asyncio_basics.py
 
 ### ❌ Myth 3: Multiprocessing has no overhead
 **Reality:** Process creation and IPC have significant overhead. Use it only when parallelism gains outweigh the cost.
+
+## Related Topics
+
+- [10-internals](../10-internals/) - GIL and CPython internals
+- [14-memory-management](../14-memory-management/) - Shared memory patterns
+- [15-performance](../15-performance/) - Concurrency performance optimization
 
 ## One-Minute Revision
 

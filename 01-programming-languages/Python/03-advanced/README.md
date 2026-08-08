@@ -4,7 +4,7 @@
 
 Every Python application eventually needs to handle cross-cutting concerns, process large datasets efficiently, manage resources safely, and write concise, expressive code. Advanced Python features — decorators, generators, context managers, comprehensions, and lambda functions — provide elegant solutions to these challenges. Without them, you'd write verbose, repetitive code that's hard to maintain.
 
-Without these advanced features, you'd have to implement resource management manually, write loops for every data transformation, and duplicate boilerplate code across functions. That's why these features exist — they let you write Pythonic code that's concise, efficient, and leverages the language's full expressive power.
+Without these advanced features, you'd have to implement resource management manually, write loops for every data transformation, and duplicate boilerplate code across functions. That's why these features exist — they let you write Pythonic code that's concise, efficient, and uses the language's full expressive power.
 
 ## What You'll Learn
 
@@ -15,6 +15,16 @@ By the end of this module, you'll be able to:
 - Create custom context managers for resource management
 - Write concise comprehensions for data transformation
 - Apply lambda functions with map, filter, and reduce
+
+## Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| When to use | Cross-cutting concerns, memory-efficient iteration, resource management | Simple loops for small datasets |
+| When NOT to use | Don't over-decorate; don't use generators when you need random access | Use simple functions for straightforward logic |
+| Alternatives | itertools for iteration, functools for function transforms | Basic loops and context managers |
+| Production Examples | Web middleware, data pipelines, file processing | Simple scripts, prototypes |
+| Common Mistakes | Generator exhaustion, decorator order confusion, context manager leaks | Test decorator stacking; use `@wraps` |
 
 ## Topics
 
@@ -69,6 +79,68 @@ python 04-comprehensions/comprehensions.py
 python 05-lambda/lambda_functions.py
 ```
 
+## Production Incidents
+
+### Incident 1: Generator Exhaustion in Pipeline
+
+**Problem:** Data pipeline processed only first batch, then returned empty results
+**Cause:** Generator expression was consumed once; second iteration yielded nothing
+**Impact:** 80% of data records were silently dropped
+**Detection:** Data quality dashboard showed missing records
+**Solution:**
+```python
+# BAD: generator = (process(x) for x in data)
+# Generator consumed once
+
+# GOOD: Convert to list if needed multiple times
+processed = [process(x) for x in data]
+# OR: Create generator function that regenerates
+def data_generator():
+    for x in get_data():
+        yield process(x)
+```
+**Prevention:** Document generator behavior; use `itertools.tee()` for multiple consumers; test iteration
+
+### Incident 2: Decorator Order Causing Authentication Bypass
+
+**Problem:** Authentication check was skipped on protected endpoints
+**Cause:** `@cache` decorator was applied before `@require_auth`, bypassing auth
+**Impact:** Unauthenticated users could access protected data
+**Detection:** Security audit found unprotected endpoints
+**Solution:**
+```python
+# BAD:
+@cache
+@require_auth
+def get_sensitive_data(): ...
+
+# GOOD: Auth before cache
+@require_auth
+@cache
+def get_sensitive_data(): ...
+```
+**Prevention:** Establish decorator ordering policy; test auth decorators run first; use `@functools.wraps`
+
+### Incident 3: Context Manager Not Releasing Database Connection
+
+**Problem:** Database connection pool exhausted after 100 requests
+**Cause:** Custom context manager didn't call `close()` in `finally` block on exception
+**Impact:** Service degradation; 50% of requests failed with connection timeout
+**Detection:** Connection pool monitoring alerted on exhaustion
+**Solution:**
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def get_db_connection():
+    conn = pool.acquire()
+    try:
+        yield conn
+    finally:
+        conn.close()  # Always release
+```
+**Prevention:** Always use `try/finally` in context managers; test exception paths; use `@contextmanager` decorator
+
 ## Production Checklist
 
 ### ✅ Before using advanced Python features in production:
@@ -113,6 +185,12 @@ python 05-lambda/lambda_functions.py
 
 ### ❌ Myth 3: Comprehensions are always faster than loops
 **Reality:** Comprehensions are optimized for simple cases, but complex logic with conditionals and side effects is often clearer and equivalent in speed with explicit loops.
+
+## Related Topics
+
+- [07-functional-programming](../07-functional-programming/) - Lambda, map, filter, reduce
+- [10-internals](../10-internals/) - Generator and context manager internals
+- [15-performance](../15-performance/) - Performance optimization techniques
 
 ## One-Minute Revision
 
