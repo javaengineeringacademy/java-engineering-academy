@@ -1,5 +1,10 @@
 # Iteration
 
+## Scope
+
+This folder covers all iteration patterns and approaches in Java.
+Examples and exercises compare and combine different iteration techniques: for, enhanced-for, while, Iterator, ListIterator, Enumeration, Spliterator, and stream-based traversal.
+
 ## 1. What Is Iteration
 
 Iteration is the process of traversing through elements of a collection sequentially. Java provides multiple ways to iterate over collections, each with different performance characteristics and use cases.

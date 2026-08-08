@@ -1,5 +1,10 @@
 # Vector
 
+## Scope
+
+This folder focuses exclusively on Vector.
+Examples, exercises, and quizzes in this folder cover only Vector concepts.
+
 ## 1. Why It Exists
 
 Vector was introduced in Java 1.0 as a synchronized, resizable array. It was the original dynamic array before ArrayList. In Java 1.2, ArrayList was introduced as a faster, non-synchronized alternative.

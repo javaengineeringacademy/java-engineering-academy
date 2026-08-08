@@ -1,5 +1,10 @@
 # WeakHashMap
 
+## Scope
+
+This folder focuses exclusively on WeakHashMap.
+Examples, exercises, and quizzes in this folder cover only WeakHashMap concepts.
+
 ## 1. Why It Exists
 
 WeakHashMap was introduced in Java 1.2 to provide a Map implementation where entries can be garbage collected when their keys are no longer referenced elsewhere. This is useful for caches and metadata storage where you don't want to prevent garbage collection.

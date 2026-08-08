@@ -1,5 +1,10 @@
 # Queue Interface
 
+## Scope
+
+This folder focuses on the Queue and Deque interfaces.
+Examples and exercises compare and combine all Queue implementations (PriorityQueue, Deque, BlockingQueue).
+
 ## 1. What Is It
 
 The `Queue` interface is a collection designed for holding elements prior to processing. It provides FIFO (first-in-first-out) operations, with methods to insert, extract, and inspect elements.

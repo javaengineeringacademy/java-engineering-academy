@@ -1,5 +1,10 @@
 # PriorityQueue
 
+## Scope
+
+This folder focuses exclusively on PriorityQueue.
+Examples, exercises, and quizzes in this folder cover only PriorityQueue concepts.
+
 ## 1. Why It Exists
 
 PriorityQueue was introduced in Java 1.5 to provide a priority-based queue implementation. Unlike FIFO queues, PriorityQueue processes elements based on priority (natural ordering or custom Comparator), not insertion order.

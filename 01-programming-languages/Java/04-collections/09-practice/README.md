@@ -1,5 +1,10 @@
 # Collections Exercises - Mixed Topics
 
+## Scope
+
+This folder provides mixed practice problems covering all collection types.
+Exercises combine List, Set, Map, Queue, iteration, sorting, searching, and stream operations in integrated scenarios.
+
 ## Difficulty Levels
 - **Beginner** (Q1-10): Basic operations
 - **Intermediate** (Q11-25): Combining concepts

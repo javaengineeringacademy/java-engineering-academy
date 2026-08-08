@@ -1,5 +1,10 @@
 # Sorting
 
+## Scope
+
+This folder covers all sorting approaches in Java.
+Examples and exercises compare and combine Comparable, Comparator, Collections.sort(), and TimSort.
+
 ## 1. What Is Sorting
 
 Sorting is the process of arranging elements in a specific order (ascending or descending). Java provides multiple ways to sort collections, using either natural ordering (Comparable) or custom ordering (Comparator).

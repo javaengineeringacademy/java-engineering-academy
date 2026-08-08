@@ -1,5 +1,10 @@
 # TreeSet
 
+## Scope
+
+This folder focuses exclusively on TreeSet.
+Examples, exercises, and quizzes in this folder cover only TreeSet concepts.
+
 ## 1. Why It Exists
 
 TreeSet was introduced in Java 1.2 to provide a Set implementation that maintains elements in sorted order. HashSet loses ordering, which is problematic when you need both unique elements and sorted iteration.

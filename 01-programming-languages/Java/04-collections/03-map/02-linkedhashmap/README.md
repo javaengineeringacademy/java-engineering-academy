@@ -1,5 +1,10 @@
 # LinkedHashMap
 
+## Scope
+
+This folder focuses exclusively on LinkedHashMap.
+Examples, exercises, and quizzes in this folder cover only LinkedHashMap concepts.
+
 ## 1. Why It Exists
 
 LinkedHashMap was introduced in Java 1.4 to provide a Map implementation that maintains either insertion order or access order. HashMap loses ordering, which is problematic when you need both key-value mapping and predictable iteration order.

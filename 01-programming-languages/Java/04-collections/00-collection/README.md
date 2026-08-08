@@ -1,5 +1,10 @@
 # Collection Interface
 
+## Scope
+
+This folder focuses on the Collection interface.
+Examples and exercises cover the core contract shared by all collections: add, remove, contains, size, iterator, and bulk operations.
+
 ## 1. What Is It
 
 The `Collection` interface is the root interface in the Java Collections Framework hierarchy (excluding `Iterable`). It represents a group of objects known as elements.

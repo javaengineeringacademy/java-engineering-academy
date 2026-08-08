@@ -1,5 +1,10 @@
 # LinkedList
 
+## Scope
+
+This folder focuses exclusively on LinkedList.
+Examples, exercises, and quizzes in this folder cover only LinkedList concepts.
+
 ## 1. Why It Exists
 
 Before LinkedList, developers who needed frequent insertions and deletions in the middle of a list had to use ArrayList (O(n) shifts) or implement their own linked list from scratch. LinkedList provides a standard, tested doubly-linked list implementation with O(1) insert/remove at known positions.

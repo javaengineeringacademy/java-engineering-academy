@@ -1,5 +1,10 @@
 # Searching
 
+## Scope
+
+This folder covers all search approaches in Java.
+Examples and exercises compare and combine linear search, binary search, and Collections.indexOf.
+
 ## 1. What Is Searching
 
 Searching is the process of finding a specific element in a collection. Java provides multiple ways to search collections, each with different performance characteristics depending on the data structure.

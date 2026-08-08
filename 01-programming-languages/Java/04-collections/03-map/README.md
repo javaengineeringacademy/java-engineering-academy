@@ -1,5 +1,10 @@
 # Map Interface
 
+## Scope
+
+This folder focuses on the Map interface.
+Examples and exercises compare and combine all Map implementations (HashMap, TreeMap, LinkedHashMap, Hashtable, WeakHashMap, ConcurrentHashMap).
+
 ## 1. What Is It
 
 The `Map` interface maps keys to values. It cannot contain duplicate keys and each key maps to at most one value. Map is NOT part of the Collection hierarchy.

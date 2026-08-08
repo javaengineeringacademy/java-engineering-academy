@@ -1,5 +1,10 @@
 # Collections Examples - Mixed Topics
 
+## Scope
+
+This folder provides mixed example code covering all collection types.
+Examples combine List, Set, Map, Queue, iteration, sorting, searching, and stream operations in integrated scenarios.
+
 ## Examples Overview
 - **ListExamples**: ArrayList, LinkedList, CopyOnWriteArrayList, thread-safe lists
 - **SetExamples**: HashSet, LinkedHashSet, TreeSet, EnumSet operations

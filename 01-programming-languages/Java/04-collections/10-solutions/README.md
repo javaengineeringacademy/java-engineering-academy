@@ -1,5 +1,10 @@
 # Collections Solutions
 
+## Scope
+
+This folder provides solutions to the mixed practice problems in 09-practice.
+Solutions cover all collection types with integrated scenarios.
+
 ## Solutions Index
 - ListSolutions.java - Exercises 1-5
 - SetSolutions.java - Exercises 6-10

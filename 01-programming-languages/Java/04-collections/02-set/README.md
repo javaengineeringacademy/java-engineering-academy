@@ -1,5 +1,10 @@
 # Set Interface
 
+## Scope
+
+This folder focuses on the Set interface.
+Examples and exercises compare and combine all Set implementations (HashSet, LinkedHashSet, TreeSet, EnumSet).
+
 ## 1. What Is It
 
 The `Set` interface is a collection that contains no duplicate elements. It models the mathematical set abstraction and provides operations for membership testing.

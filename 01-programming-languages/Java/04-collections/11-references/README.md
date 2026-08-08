@@ -1,5 +1,9 @@
 # Collections References
 
+## Scope
+
+This folder provides external references and further reading for the Java Collections Framework.
+
 ## Official Documentation
 - [Oracle Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
 - [Oracle Stream Tutorial](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html)

@@ -1,5 +1,10 @@
 # LinkedHashSet
 
+## Scope
+
+This folder focuses exclusively on LinkedHashSet.
+Examples, exercises, and quizzes in this folder cover only LinkedHashSet concepts.
+
 ## 1. Why It Exists
 
 LinkedHashSet was introduced in Java 1.4 to provide a Set implementation that maintains insertion order. HashSet loses ordering, which is problematic when you need both unique elements and predictable iteration order.

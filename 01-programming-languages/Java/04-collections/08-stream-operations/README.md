@@ -1,5 +1,10 @@
 # Stream Operations - Complete Guide
 
+## Scope
+
+This folder covers all Stream API operations: filtering, transforming, reducing, collecting, sorting, combining, and parallel processing.
+Examples and exercises integrate stream operations with collection types in real-world scenarios.
+
 ## Table of Contents
 1. [What Are Stream Operations](#what-are-stream-operations)
 2. [Why Use Stream Operations](#why-use-stream-operations)

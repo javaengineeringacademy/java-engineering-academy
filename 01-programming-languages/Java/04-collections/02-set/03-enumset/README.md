@@ -1,5 +1,10 @@
 # EnumSet
 
+## Scope
+
+This folder focuses exclusively on EnumSet.
+Examples, exercises, and quizzes in this folder cover only EnumSet concepts.
+
 ## 1. Why It Exists
 
 EnumSet was introduced in Java 5 to provide a high-performance Set implementation specifically for enum types. It uses a bit vector internally, making it extremely fast and memory-efficient compared to HashSet for enum constants.

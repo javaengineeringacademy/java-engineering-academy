@@ -1,5 +1,10 @@
 # TreeMap
 
+## Scope
+
+This folder focuses exclusively on TreeMap.
+Examples, exercises, and quizzes in this folder cover only TreeMap concepts.
+
 ## 1. Why It Exists
 
 TreeMap was introduced in Java 1.2 to provide a Map implementation that maintains keys in sorted order. HashMap does not maintain ordering, which is problematic when you need both key-value mapping and sorted key iteration.

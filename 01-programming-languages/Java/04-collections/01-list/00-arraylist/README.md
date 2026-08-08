@@ -1,5 +1,10 @@
 # ArrayList
 
+## Scope
+
+This folder focuses exclusively on ArrayList.
+Examples, exercises, and quizzes in this folder cover only ArrayList concepts.
+
 ## 1. Why It Exists
 
 Before ArrayList, developers had to manually manage arrays: create arrays of estimated size, track current size, create new arrays and copy elements when full, and handle null values for unused slots. ArrayList solves all these problems with automatic resizing and a simplified API.

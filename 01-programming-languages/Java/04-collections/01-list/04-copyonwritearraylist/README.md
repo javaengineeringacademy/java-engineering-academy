@@ -1,5 +1,10 @@
 # CopyOnWriteArrayList
 
+## Scope
+
+This folder focuses exclusively on CopyOnWriteArrayList.
+Examples, exercises, and quizzes in this folder cover only CopyOnWriteArrayList concepts.
+
 ## 1. Why It Exists
 
 CopyOnWriteArrayList was introduced in Java 5 to solve the ConcurrentModificationException problem. When iterating over a regular ArrayList while another thread modifies it, the iterator throws ConcurrentModificationException. CopyOnWriteArrayList creates a new copy of the underlying array for each write operation, allowing safe iteration without synchronization.

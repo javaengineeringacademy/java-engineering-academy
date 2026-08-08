@@ -1,5 +1,10 @@
 # BlockingQueue
 
+## Scope
+
+This folder focuses exclusively on BlockingQueue.
+Examples, exercises, and quizzes in this folder cover only BlockingQueue concepts.
+
 ## 1. Why It Exists
 
 BlockingQueue was introduced in Java 5 to solve the producer-consumer problem. It provides thread-safe queue operations that block when the queue is full (on put) or empty (on take), eliminating the need for manual wait/notify synchronization.

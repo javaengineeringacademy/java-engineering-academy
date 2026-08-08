@@ -1,5 +1,10 @@
 # Stack
 
+## Scope
+
+This folder focuses exclusively on Stack.
+Examples, exercises, and quizzes in this folder cover only Stack concepts.
+
 ## 1. Why It Exists
 
 Stack was introduced in Java 1.0 as a LIFO (Last-In-First-Out) data structure. It extends Vector, inheriting all its methods plus push/pop/peek operations. In Java 6, Deque was introduced as a better alternative.

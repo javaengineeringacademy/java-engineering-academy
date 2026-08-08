@@ -1,5 +1,10 @@
 # Hashtable
 
+## Scope
+
+This folder focuses exclusively on Hashtable.
+Examples, exercises, and quizzes in this folder cover only Hashtable concepts.
+
 ## 1. Why It Exists
 
 Hashtable was introduced in Java 1.0 as a synchronized hash table implementation. It was the original key-value store before HashMap. In Java 1.2, HashMap was introduced as a faster, non-synchronized alternative.

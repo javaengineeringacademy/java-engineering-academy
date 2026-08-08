@@ -1,5 +1,10 @@
 # Deque
 
+## Scope
+
+This folder focuses exclusively on Deque (ArrayDeque).
+Examples, exercises, and quizzes in this folder cover only Deque concepts.
+
 ## 1. Why It Exists
 
 Deque (double-ended queue) was introduced in Java 6 to provide a unified interface for both stack (LIFO) and queue (FIFO) operations. Before Deque, developers had to use Stack (legacy) for LIFO and Queue for FIFO, with no single data structure supporting both.

@@ -1,5 +1,32 @@
 # Java Collections Framework
 
+## Scope
+
+This folder covers the complete Java Collections Framework (JCF).
+Examples, exercises, and quizzes integrate multiple collection types in real-world scenarios.
+
+This becomes very intuitive:
+
+```
+Collections
+    ↓
+Framework Practice
+
+Collection
+    ↓
+Collection Interface Practice
+
+List
+    ↓
+List Practice
+
+ArrayList
+    ↓
+ArrayList Practice
+```
+
+The learner never wonders "Why are there exercises here?" because every level has a different learning objective.
+
 ## 1. Introduction
 
 The Java Collections Framework (JCF) is a unified architecture for representing and manipulating groups of objects. Introduced in Java 1.2, it provides a coherent set of interfaces, implementations, and algorithms that replace the legacy `Vector`, `Hashtable`, and manual array management with a modern, high-performance system.
@@ -116,7 +143,7 @@ Phase 2: Intermediate
 
 Phase 3: Advanced
 ├── 08-stream-operations/ Filter, Map, Reduce, Collect
-├── 09-exercises/         Practice problems
+├── 09-practice/         Practice problems
 ├── 10-solutions/         Solution code
 ├── 11-references/        External docs
 ├── 12-quiz.md            50 questions

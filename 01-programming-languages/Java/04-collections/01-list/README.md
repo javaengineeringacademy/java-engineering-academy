@@ -1,5 +1,10 @@
 # List Interface
 
+## Scope
+
+This folder focuses on the List interface.
+Examples and exercises compare and combine all List implementations (ArrayList, LinkedList, Vector, Stack, CopyOnWriteArrayList).
+
 ## 1. What Is It
 
 The `List` interface is an ordered collection (sequence) that allows duplicate elements. It provides positional access, search, iteration, and range-view operations.

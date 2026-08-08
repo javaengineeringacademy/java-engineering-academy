@@ -1,5 +1,10 @@
 # HashMap
 
+## Scope
+
+This folder focuses exclusively on HashMap.
+Examples, exercises, and quizzes in this folder cover only HashMap concepts.
+
 ## 1. Why It Exists
 
 HashMap was introduced in Java 1.2 to provide a hash table implementation of the Map interface. It replaced the legacy Hashtable, offering better performance by not synchronizing every method and allowing null keys/values.

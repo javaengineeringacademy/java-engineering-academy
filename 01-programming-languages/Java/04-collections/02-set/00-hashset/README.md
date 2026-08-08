@@ -1,5 +1,10 @@
 # HashSet
 
+## Scope
+
+This folder focuses exclusively on HashSet.
+Examples, exercises, and quizzes in this folder cover only HashSet concepts.
+
 ## 1. Why It Exists
 
 Before HashSet, developers had to use Vector or Hashtable to store unique elements, or implement their own hash-based set. HashSet provides a standard, fast implementation for storing unique elements with O(1) add/remove/contains operations.

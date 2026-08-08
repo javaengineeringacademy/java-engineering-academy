@@ -1,5 +1,10 @@
 # ConcurrentHashMap
 
+## Scope
+
+This folder focuses exclusively on ConcurrentHashMap.
+Examples, exercises, and quizzes in this folder cover only ConcurrentHashMap concepts.
+
 ## 1. Why It Exists
 
 ConcurrentHashMap was introduced in Java 5 to solve the performance problem of Hashtable's coarse-grained locking. It provides a thread-safe hash table with fine-grained locking, allowing concurrent reads and writes without blocking the entire map.
