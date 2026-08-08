@@ -409,3 +409,133 @@ public class StudentManagement {
 
 **Part 1** of 3 | Part 2 | Part 3
 
+## 13. Production Incidents
+
+### Incident 1: HashMap Key Collision DoS
+**Problem:** Web endpoint slows from 10ms to 5 seconds under attack.
+**Cause:** Attacker sends requests with keys that hash to same bucket.
+**Impact:** DoS condition, service degraded.
+**Detection:** Profiling shows 99% time in hash lookup.
+**Solution:** Use ConcurrentHashMap with bounded bucket chain length.
+**Prevention:** Rate limiting, randomized hash functions (SipHash).
+
+### Incident 2: ArrayList Concurrent Modification
+**Problem:** NullPointerException in production, impossible to reproduce.
+**Cause:** ArrayList shared between threads without synchronization.
+**Impact:** Random crashes, data corruption.
+**Detection:** Core dump shows AIOOBE in ArrayList.get().
+**Solution:** Use CopyOnWriteArrayList or Collections.synchronizedList().
+**Prevention:** Use concurrent collections for shared data.
+
+### Incident 3: Stack Overflow in Recursive Iteration
+**Problem:** StackOverflowError on large LinkedLists.
+**Cause:** Recursive traversal allocates stack frame per node.
+**Impact:** Process crashes at ~10K nodes.
+**Detection:** Core dump shows 10K+ recursive frames.
+**Solution:** Convert to iterative with while loop.
+**Prevention:** Prefer iterative for unbounded recursion.
+
+## 14. Engineering Decision Framework
+
+| Factor | Use This | Consider Alternatives |
+|--------|----------|----------------------|
+| Random access, fast get() | ArrayList | LinkedList (slower) |
+| Frequent insert/delete at middle | LinkedList | ArrayList (shifting cost) |
+| Thread-safe list | CopyOnWriteArrayList | Collections.synchronizedList() |
+| Unique elements, fast lookup | HashSet | TreeSet (if sorted needed) |
+| Sorted unique elements | TreeSet | HashSet (if order doesn't matter) |
+| Key-value, fast lookup | HashMap | TreeMap (if sorted keys needed) |
+| Sorted keys | TreeMap | LinkedHashMap (if insertion order) |
+| Thread-safe map | ConcurrentHashMap | Collections.synchronizedMap() |
+| FIFO processing | ArrayDeque | LinkedList (more memory) |
+| Priority processing | PriorityQueue | TreeSet (if unique needed) |
+
+## 15. Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| ConcurrentModificationException | Thread dump + stack trace | Find which thread modifying, use concurrent collection |
+| NullPointerException in map.get() | Debug logging | Check if key is null, use getOrDefault() |
+| Slow ArrayList.remove(0) | Profiling (JFR, VisualVM) | Switch to LinkedList or use Iterator.remove() |
+| Memory leak in large collections | Heap dump (jmap, MAT) | Check for unused references, use WeakReference |
+| HashMap not working as expected | Override hashCode/equals | Ensure proper implementation of both |
+
+## 16. Code Review Checklist
+
+- [ ] Choosing right collection type for use case
+- [ ] Initial capacity set for known-size collections
+- [ ] Thread safety considered for shared collections
+- [ ] hashCode/equals properly implemented for Map keys/Set elements
+- [ ] Iterator used for safe removal during traversal
+- [ ] Generics used for type safety (no raw types)
+- [ ] Collections unmodifiable when read-only needed
+
+## 17. Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Hash collision DoS | Service degradation | Use randomized hash functions, rate limiting |
+| Deserialization attack | Remote code execution | Use Collections.unmodifiable*, avoid ObjectInputStream |
+| Null key injection | NullPointerException | Validate inputs, use computeIfAbsent |
+| Unbounded collection growth | OutOfMemoryError | Set max size, use bounded collections |
+
+## 18. Evolution & Modernization
+
+| Era | Change | Migration Path |
+|-----|--------|----------------|
+| Java 1.2 | Collections Framework introduced | Replace Vector/Hashtable with ArrayList/HashMap |
+| Java 5 | Generics added | Add type parameters to all collections |
+| Java 8 | Stream API, lambda support | Use stream() for complex operations |
+| Java 9 | List.of(), Map.of(), Set.of() | Use factory methods for immutable collections |
+| Java 10 | CopyOnWriteArrayList improvements | Use for read-heavy concurrent scenarios |
+| Java 16 | Record types | Use records as Map keys (auto equals/hashCode) |
+| Java 21 | SequencedCollection interface | Use getFirst()/getLast() for Deques |
+
+## 19. Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Collections Framework | 1.2 | Stable |
+| Generics | 5.0 | Stable |
+| Enums in collections | 5.0 | Stable |
+| ConcurrentHashMap | 5.0 | Stable |
+| NavigableMap/NavigableSet | 6.0 | Stable |
+| Deque interface | 6.0 | Stable |
+| Stream API | 8.0 | Stable |
+| List.of()/Map.of()/Set.of() | 9.0 | Stable |
+| CopyOnWriteArrayList improvements | 10 | Stable |
+| SequencedCollection | 21 | Stable |
+
+## 20. One-Minute Revision
+
+| Concept | Description | Key Point |
+|---------|-------------|-----------|
+| List | Ordered, duplicates allowed | ArrayList for random access |
+| Set | No duplicates | HashSet for O(1) lookup |
+| Map | Key-value pairs | HashMap for fast lookup |
+| Queue | FIFO processing | ArrayDeque over LinkedList |
+| Deque | Double-ended queue | Use as stack AND queue |
+| Iterator | Safe traversal | Use for removal during iteration |
+| Comparable | Natural ordering | Implement compareTo() |
+| Comparator | Custom ordering | Use for multiple sort keys |
+| Collections utility | Sort, search, sync | Static methods for operations |
+| Generics | Type safety | Compile-time checking |
+
+## 21. Interview Questions
+
+1. **ArrayList vs LinkedList?** — ArrayList: O(1) get, O(n) insert. LinkedList: O(n) get, O(1) insert. Use ArrayList for random access, LinkedList for frequent insertion.
+
+2. **HashMap internals?** — Array of buckets, each bucket is linked list (tree for 8+ entries). Key.hashCode() determines bucket. Load factor triggers resize (1.5x).
+
+3. **fail-fast vs fail-safe?** — fail-fast: throws ConcurrentModificationException (ArrayList, HashMap). fail-safe: no exception (CopyOnWriteArrayList, ConcurrentHashMap).
+
+4. **When to use TreeMap vs HashMap?** — TreeMap: sorted keys, O(log n). HashMap: unordered, O(1). Use TreeMap when order matters.
+
+5. **How does HashSet work internally?** — Uses HashMap with dummy value. add() calls HashMap.put() with element as key and PRESENT as value.
+
+## 22. References
+
+- [Oracle Collections Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
+- [Effective Java - Chapter on Collections](https://www.oreilly.com/library/view/effective-java/9780134686097/)
+- [Java Collections Internals](https://java-design-patterns.com/blog/java-collections-internals/)
+
