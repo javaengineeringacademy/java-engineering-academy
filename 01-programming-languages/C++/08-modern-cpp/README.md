@@ -1,12 +1,12 @@
-# Module 08: Modern C++
+# Modern C++ — C++
 
-> **WHY this matters**: Modern C++ (C++11/14/17/20) is not just syntax sugar — it fundamentally changes how you express intent, manage resources, and write safe, performant code. Mastering these features means fewer bugs, clearer code, and the ability to use the full power of the language.
+## Why It Matters
 
-## The Narrative: From C++03 to Modern C++
+Modern C++ (C++11/14/17/20) is not just syntax sugar — it fundamentally changes how you express intent, manage resources, and write safe, performant code. When you master these features, you get fewer bugs, clearer code, and the ability to use the full power of the language instead of writing "C++03-style" code with the parking brake on.
 
-Before C++11, the language felt like a superset of C with classes. Copying was expensive, lambdas didn't exist, `auto` meant "static storage duration," and writing exception-safe code required manual discipline. The 2011 standard changed everything. Move semantics eliminated unnecessary copies. Lambdas brought functional programming into C++. Smart pointers made manual memory management the exception, not the rule.
+## What It Is
 
-Today, writing "C++03-style" C++17 code is like driving a car with the parking brake on. The features are there. Use them.
+Modern C++ encompasses features from C++11 onwards, including auto type inference, lambdas, move semantics, smart pointers, constexpr, optional, variant, string_view, and concepts that transform how you write C++ code.
 
 ## Engineering Decision Framework
 

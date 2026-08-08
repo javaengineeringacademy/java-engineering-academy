@@ -1,14 +1,12 @@
-# C++ Fundamentals
+# C++ Fundamentals — C++
 
-## The Problem C++ Fundamentals Solve
+## Why It Matters
 
-Every complex C++ system — from a game engine to a database to a trading platform — is built from the same primitives: variables, control structures, functions, and pointers. If these foundations are weak, the entire system crumbles. A senior engineer at Google once said: "90% of production bugs in C++ trace back to fundamentals: uninitialized variables, dangling pointers, or incorrect function signatures."
+Every complex C++ system — from a game engine to a database to a trading platform — is built from the same primitives: variables, control structures, functions, and pointers. When these foundations are weak, the entire system crumbles, and 90% of production bugs trace back to uninitialized variables, dangling pointers, or incorrect function signatures.
 
-**Production reality**: A financial system lost $2M because someone used `=` instead of `==` in a condition. A game engine crashed on specific hardware because a char was assumed to be unsigned. These are fundamental-level mistakes with million-dollar consequences.
+## What It Is
 
-## What Are C++ Fundamentals?
-
-Fundamentals are the irreducible building blocks of every C++ program. They include variables and data types, control structures, functions, pointers, references, arrays, strings, and basic I/O. Mastering them means understanding not just *how* to use them, but *why* they exist and *when* to choose one over another.
+Fundamentals are the irreducible building blocks of every C++ program, including variables, data types, control structures, functions, pointers, references, arrays, strings, and basic I/O.
 
 ## Architecture: How Fundamentals Fit Together
 

@@ -1,12 +1,12 @@
-# Module 10: Testing
+# Testing — C++
 
-> **WHY this matters**: Testing is not a chore — it's an investment. Every hour spent writing tests saves multiple hours of debugging production incidents. Tests give you confidence to refactor, deploy, and sleep at night.
+## Why It Matters
 
-## The Narrative: Why Testing Is Non-Negotiable
+Testing is not a chore — it's an investment. Every hour spent writing tests saves multiple hours of debugging production incidents. When you deploy a release candidate on Friday evening and customers report broken login Monday morning, a single test case would have caught the one-line change in seconds instead of gambling with every deployment.
 
-Picture this: You deploy a release candidate on Friday evening. Monday morning, customers report that login is broken. The cause? A one-line change in the authentication module — someone removed a `const` qualifier that happened to change overload resolution. A single test case would have caught this in seconds.
+## What It Is
 
-Without tests, every deployment is a gamble. With tests, every deployment is a verification.
+Testing in C++ involves writing automated tests to verify code behavior, using frameworks like Google Test and Catch2, with approaches including unit testing, integration testing, mocking, and test-driven development.
 
 ## Engineering Decision Framework
 
@@ -193,7 +193,7 @@ TEST_F(UserServiceTest, GetUserHandlesDbFailure) {
 }
 ```
 
-### Testing Edge Cases — Comprehensive Examples
+### Testing Edge Cases — Detailed Examples
 
 ```cpp
 #include <gtest/gtest.h>
@@ -211,7 +211,7 @@ std::optional<int> safe_parse_int(const std::string& s) {
     }
 }
 
-// Comprehensive edge case tests
+// Detailed edge case tests
 class SafeParseIntTest : public ::testing::Test {};
 
 TEST_F(SafeParseIntTest, ValidPositive) {

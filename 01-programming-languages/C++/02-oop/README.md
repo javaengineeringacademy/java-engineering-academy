@@ -1,14 +1,12 @@
-# Object-Oriented Programming (OOP) — C++ Language
+# Object-Oriented Programming (OOP) — C++
 
-## The Problem OOP Solves
+## Why It Matters
 
-Every complex system — a game engine managing thousands of entities, a database handling concurrent queries, a trading platform processing millions of orders — needs organization. Without structure, code becomes a tangled web of functions and global state, impossible to maintain, test, or extend. Object-oriented programming provides the architectural grammar to model real-world entities, encapsulate complexity, and build systems that evolve without collapsing.
+Every complex system — a game engine managing thousands of entities, a database handling concurrent queries, a trading platform processing millions of orders — needs organization. When code lacks structure, it becomes a tangled web of functions and global state that is impossible to maintain, test, or extend. OOP provides the architectural grammar to model real-world entities and build systems that evolve without collapsing.
 
-**Production reality**: A game studio shipped a title where all enemies used the same AI because object slicing silently dropped polymorphic behavior. A financial system leaked GPU resources for months because a base class lacked a virtual destructor. These are not theoretical problems — they are OOP failures with real consequences.
+## What It Is
 
-## What Is OOP in C++?
-
-OOP in C++ is a paradigm that organizes code around **objects** — instances of classes that bundle data (attributes) and behavior (methods). C++ supports four pillars: **encapsulation** (hiding implementation details), **inheritance** (reusing and specializing behavior), **polymorphism** (同一 interface, different implementations), and **abstraction** (exposing only essential features).
+OOP in C++ organizes code around objects — instances of classes that bundle data and behavior. C++ supports encapsulation, inheritance, polymorphism, and abstraction to model complex systems.
 
 ## Architecture: How OOP Fits Together
 

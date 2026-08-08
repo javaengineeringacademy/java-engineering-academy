@@ -1,14 +1,12 @@
-# Module 14: Best Practices
+# Best Practices — C++
 
-> **WHY this matters**: Best practices are not arbitrary rules — they're hard-won lessons from millions of lines of production code. Following them prevents entire categories of bugs, makes code review faster, and ensures your team ships reliable software. They're the collective wisdom of the C++ community distilled into actionable guidelines.
+## Why It Matters
 
-## The Narrative: Why Best Practices Exist
+Best practices are not arbitrary rules — they're hard-won lessons from millions of lines of production code. When you follow them, you prevent entire categories of bugs, make code review faster, and ensure your team ships reliable software instead of writing messy, inconsistent code that's hard to maintain.
 
-Every codebase tells a story. Clean, consistent code reads like a well-written book — you can follow the logic, understand the intent, and modify it confidently. Messy, inconsistent code reads like random words — you spend more time figuring out what it does than actually changing it.
+## What It Is
 
-Best practices are the grammar rules of C++. They don't restrict creativity — they channel it. When everyone follows the same conventions, code reviews focus on logic instead of style. When error handling is consistent, bugs are caught early. When memory management follows RAII, leaks are impossible.
-
-The goal is not to write clever code. The goal is to write code that is clear, correct, and maintainable by anyone on your team — including future-you.
+Best practices in C++ encompass const correctness, RAII, smart pointers, error handling patterns, naming conventions, and code organization principles that make code clear, correct, and maintainable by anyone on your team.
 
 ## Engineering Decision Framework
 

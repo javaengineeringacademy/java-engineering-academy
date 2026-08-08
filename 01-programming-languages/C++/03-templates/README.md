@@ -1,14 +1,12 @@
-# Templates — C++ Language
+# Templates — C++
 
-## The Problem Templates Solve
+## Why It Matters
 
-Every language faces the same tension: write code once for many types, or write specialized code for each type. Without templates, you either duplicate logic for every type (error-prone, unmaintainable) or use `void*` and macros (type-unsafe, un-debuggable). C++ templates solve this by generating type-safe, zero-overhead generic code at compile time.
+Every language faces the same tension: write code once for many types, or write specialized code for each type. When you duplicate logic for every type, you get error-prone, unmaintainable code; when you use `void*` and macros, you lose type safety. C++ templates solve this by generating type-safe, zero-overhead generic code at compile time.
 
-**Production reality**: A financial library needed pricing models for `float`, `double`, and 12 custom fixed-point types. Without templates, that's 14 copies of 2000-line algorithms. With templates, one implementation handles all types — and the compiler generates specialized machine code for each, achieving identical performance to hand-written type-specific code.
+## What It Is
 
-## What Are Templates?
-
-Templates are C++'s mechanism for **generic programming** — writing code that works with any type while preserving full type safety and zero runtime overhead. They are evaluated at compile time, meaning the compiler generates specialized code for each type you use.
+Templates are C++'s mechanism for generic programming — writing code that works with any type while preserving full type safety and zero runtime overhead. The compiler generates specialized code for each type you use.
 
 ## Architecture: How Templates Fit Together
 

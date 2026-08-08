@@ -1,14 +1,12 @@
-# Concurrency — C++ Language
+# Concurrency — C++
 
-## The Problem Concurrency Solves
+## Why It Matters
 
-Modern CPUs have multiple cores. Sequential code leaves most of them idle. Concurrency enables programs to do multiple things simultaneously — processing different requests, updating UI while computing, or parallelizing expensive algorithms across cores. Without concurrency, a server handles one request at a time; with it, it handles thousands.
+Modern CPUs have multiple cores, and sequential code leaves most of them idle. When you need to process thousands of requests simultaneously, update UI while computing, or parallelize expensive algorithms across cores, concurrency transforms a server from handling one request at a time to handling thousands. But concurrency is powerful but dangerous — data races can cause millions in incorrect calculations.
 
-**Production reality**: A trading engine processed 100 orders/second sequentially. After adding concurrency, it processed 8,000 orders/second across 8 cores. But a data race in the shared order book caused $2M in incorrect P&L calculations. Concurrency is powerful but dangerous.
+## What It Is
 
-## What Is Concurrency in C++?
-
-C++ provides threads, mutexes, condition variables, atomics, and async/futures for concurrency. These primitives let you execute code simultaneously while coordinating access to shared data.
+C++ provides threads, mutexes, condition variables, atomics, and async/futures for concurrency, letting you execute code simultaneously while coordinating access to shared data.
 
 ## Architecture: How Concurrency Fits Together
 

@@ -1,14 +1,12 @@
-# Module 09: Design Patterns
+# Design Patterns — C++
 
-> **WHY this matters**: Design patterns are not about writing clever code — they're about communicating solutions. When you say "we should use the Strategy pattern here," every developer on your team immediately understands the intent. Patterns are a shared vocabulary for solving recurring design problems.
+## Why It Matters
 
-## The Narrative: Why Patterns Exist
+Design patterns are not about writing clever code — they're about communicating solutions. When you say "we should use the Strategy pattern here," every developer on your team immediately understands the intent. Patterns are a shared vocabulary for solving recurring design problems like processing payments with multiple methods without writing giant if/else chains.
 
-Imagine you're building an e-commerce system. You need to process payments — credit cards, PayPal, crypto. You could write a giant `if/else` chain, but what happens when you add Apple Pay? You'd have to hunt through the codebase, modify conditionals, and test everything again.
+## What It Is
 
-The Strategy pattern solves this: define a common interface, implement each payment method as a separate class, and swap them at runtime. Now adding Apple Pay means adding a new class — not modifying existing code.
-
-This is the Open/Closed Principle in action, and patterns give you the vocabulary to apply it consistently.
+Design patterns are reusable solutions to common software design problems, providing a shared vocabulary and proven approaches for structuring code, including creational, structural, and behavioral patterns.
 
 ## Engineering Decision Framework
 

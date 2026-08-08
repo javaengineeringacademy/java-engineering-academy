@@ -1,14 +1,12 @@
-# Standard Template Library (STL) — C++ Language
+# Standard Template Library (STL) — C++
 
-## The Problem the STL Solves
+## Why It Matters
 
-Every C++ program needs data structures and algorithms. Without the STL, developers reinvent linked lists, hash maps, and sorting routines — each with subtle bugs, inconsistent APIs, and wasted time. The STL provides production-tested, type-safe, zero-overhead containers and algorithms that have been optimized across 40+ years of real-world use.
+Every C++ program needs data structures and algorithms. When developers reinvent linked lists, hash maps, and sorting routines, they introduce subtle bugs, inconsistent APIs, and wasted time. The STL provides production-tested, type-safe, zero-overhead containers and algorithms optimized across 40+ years of real-world use.
 
-**Production reality**: A message broker implemented a custom hash map that performed 3x worse than `std::unordered_map` under concurrent load. A trading system used `std::list` for an order book, causing 10x more cache misses than `std::vector` would have. Choosing the right STL container and algorithm is not academic — it directly impacts production performance.
+## What It Is
 
-## What Is the STL?
-
-The STL is C++'s standard library of generic containers, iterators, algorithms, and function objects. It provides type-safe, efficient, and reusable implementations of the most common data structures and operations.
+The STL is C++'s standard library of generic containers, iterators, algorithms, and function objects, providing type-safe, efficient, and reusable implementations of common data structures and operations.
 
 ## Architecture: How the STL Fits Together
 

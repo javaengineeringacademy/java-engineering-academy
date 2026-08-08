@@ -1,14 +1,12 @@
-# Module 11: Performance
+# Performance — C++
 
-> **WHY this matters**: Performance is not about making code fast — it's about making code efficient. Understanding how hardware actually executes your code transforms you from someone who guesses at optimizations into someone who measures, verifies, and delivers real-world speedups. Every nanosecond you save at scale compounds into millions of dollars and happier users.
+## Why It Matters
 
-## The Narrative: From Slow to Scientific
+Performance is not about making code fast — it's about making code efficient. When you understand how hardware actually executes your code, you transform from someone who guesses at optimizations into someone who measures, verifies, and delivers real-world speedups. Every nanosecond you save at scale compounds into millions of dollars and happier users.
 
-Most developers think performance optimization means "add `-O3` and hope." But the reality is far more nuanced. Modern CPUs are marvels of engineering — speculative execution, branch prediction, multi-level caches, SIMD units — and your code either works with these features or fights against them.
+## What It Is
 
-A cache miss costs ~100ns. A main memory access costs ~100ns. A disk read costs ~10ms. These numbers aren't academic — they determine whether your game runs at 60 FPS or 8 FPS, whether your API serves 10K or 100K requests per second, whether your simulation finishes in minutes or hours.
-
-The key insight: **performance is a science, not an art**. Profile first. Measure second. Optimize third. Never guess.
+Performance optimization in C++ involves profiling, cache-friendly data layouts, SIMD vectorization, branchless programming, memory pools, and lock-free data structures to make code work with hardware features instead of against them.
 
 ## Engineering Decision Framework
 

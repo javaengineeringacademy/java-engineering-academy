@@ -1,14 +1,12 @@
-# Module 15: Senior Level C++
+# Senior Level C++ — C++
 
-> **WHY this matters**: Senior-level C++ is not about knowing more syntax — it's about making better decisions. Architecture choices, performance trade-offs, team processes, and technical strategy determine whether a project succeeds or fails. This module bridges the gap between writing code and building systems that scale, teams that deliver, and architectures that endure.
+## Why It Matters
 
-## The Narrative: From Coder to Architect
+Senior-level C++ is not about knowing more syntax — it's about making better decisions. When you consider architecture choices, performance trade-offs, team processes, and technical strategy, you determine whether a project succeeds or fails. The best code is the code you don't write — every line is a liability that must be maintained, tested, and eventually removed.
 
-The transition from mid-level to senior developer is not about writing faster code or knowing more APIs. It's about a fundamental shift in perspective: from "how do I implement this?" to "should we build this at all?" and "what will this look like in 3 years?"
+## What It Is
 
-Senior developers think in systems. They consider operational cost, team velocity, failure modes, and business impact. They write code that other developers can understand and modify. They make decisions that are reversible when possible and well-documented when not.
-
-The hardest lesson: **the best code is the code you don't write**. Every line of code is a liability — it must be maintained, tested, and eventually removed. Senior developers optimize for simplicity, not cleverness.
+Senior-level C++ involves system design, architecture patterns like DDD and hexagonal architecture, technical debt management, and leadership in code quality and team processes that bridge the gap between writing code and building systems that scale.
 
 ## Engineering Decision Framework
 

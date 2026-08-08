@@ -1,14 +1,12 @@
-# Memory Management — C++ Language
+# Memory Management — C++
 
-## The Problem Memory Management Solves
+## Why It Matters
 
-C++ gives you direct control over memory — the source of both its power and its danger. Without understanding memory management, programs leak resources, crash with segmentation faults, and exhibit undefined behavior that manifests differently on every platform. Memory bugs are the hardest bugs to find and the most expensive to fix.
+C++ gives you direct control over memory — the source of both its power and its danger. When you don't understand memory management, programs leak resources, crash with segmentation faults, and exhibit undefined behavior that manifests differently on every platform. Memory bugs are the hardest bugs to find and the most expensive to fix.
 
-**Production reality**: A server process leaked 2GB of memory over 72 hours due to a missing `delete` in an error-handling path. A game engine crashed on specific GPU drivers because a `delete` was called on a `void*`, skipping derived destructors. These are memory management failures with real consequences.
+## What It Is
 
-## What Is Memory Management in C++?
-
-Memory management in C++ covers allocating, using, and deallocating memory. It includes stack vs heap allocation, the RAII principle, manual memory management with `new`/`delete`, and understanding storage durations and lifetimes.
+Memory management in C++ covers allocating, using, and deallocating memory, including stack vs heap allocation, the RAII principle, manual memory management with `new`/`delete`, and understanding storage durations and lifetimes.
 
 ## Architecture: How Memory Management Fits Together
 

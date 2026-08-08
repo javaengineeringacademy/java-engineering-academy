@@ -1,14 +1,12 @@
-# Knowledge Atoms — C++ Language
+# Knowledge Atoms — C++
 
-## The Problem C++ Knowledge Atoms Solve
+## Why It Matters
 
-Before writing a single line of C++, you must understand how the language thinks. C++ is not just syntax — it's a compilation model, a memory model, an object model, and a metaprogramming system all working together. Without these foundational atoms, every subsequent concept will be built on sand.
+Before writing a single line of C++, you must understand how the language thinks. When you're building performance-critical systems, you need to know why the compiler generates certain code because violating the object model causes mysterious crashes that take months to debug. Engineers who internalize these atoms write code that works by design, not by accident.
 
-**Real-world consequence**: A team at a major game studio spent 3 months debugging a "mysterious crash" that turned out to be undefined behavior from violating the object model. Another team shipped a production binary that was 10x larger than expected because they didn't understand template instantiation. These problems vanish when you internalize the knowledge atoms.
+## What It Is
 
-## What Are Knowledge Atoms?
-
-Knowledge atoms are the irreducible concepts that underpin every C++ program. They are not features you call — they are rules the compiler follows. Understanding them is the difference between writing C++ code that works by accident and code that works by design.
+Knowledge atoms are the irreducible concepts that underpin every C++ program — the compilation model, type system, memory model, object model, and template metaprogramming. They are not features you call but rules the compiler follows.
 
 ### The Five Atoms
 

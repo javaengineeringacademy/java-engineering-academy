@@ -1,14 +1,12 @@
-# Smart Pointers — C++ Language
+# Smart Pointers — C++
 
-## The Problem Smart Pointers Solve
+## Why It Matters
 
-Manual memory management with raw `new`/`delete` is error-prone: forgetting to delete causes leaks, deleting too early causes use-after-free, and deleting twice causes crashes. Smart pointers automate memory management using RAII, providing automatic cleanup when the pointer goes out of scope — eliminating entire categories of memory bugs.
+Manual memory management with raw `new`/`delete` is error-prone: forgetting to delete causes leaks, deleting too early causes use-after-free, and deleting twice causes crashes. When you automate memory management using RAII, you eliminate entire categories of memory bugs with automatic cleanup when pointers go out of scope.
 
-**Production reality**: A web framework leaked memory on every request because a raw pointer was not freed in an error path. Switching to `std::unique_ptr` fixed the leak entirely. A tree-structured cache used `std::shared_ptr` for both parent-to-child and child-to-parent references, creating circular references that leaked the entire tree.
+## What It Is
 
-## What Are Smart Pointers?
-
-Smart pointers are RAII wrappers around raw pointers that automatically manage the lifetime of the pointed-to object. C++ provides three: `unique_ptr` (exclusive ownership), `shared_ptr` (shared ownership with reference counting), and `weak_ptr` (non-owning observer).
+Smart pointers are RAII wrappers around raw pointers that automatically manage object lifetime. C++ provides `unique_ptr` for exclusive ownership, `shared_ptr` for shared ownership with reference counting, and `weak_ptr` for non-owning observation.
 
 ## Architecture: How Smart Pointers Fit Together
 

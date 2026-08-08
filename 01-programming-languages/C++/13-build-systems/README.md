@@ -1,14 +1,12 @@
-# Module 13: Build Systems
+# Build Systems — C++
 
-> **WHY this matters**: A build system is the foundation of every software project. It controls how your code is compiled, linked, tested, and packaged. A well-configured build system enables cross-platform development, dependency management, CI/CD integration, and reproducible builds. A broken build system means wasted hours debugging compilation issues instead of writing code.
+## Why It Matters
 
-## The Narrative: Why Build Systems Matter
+A build system is the foundation of every software project. When it's well-configured, it enables cross-platform development, dependency management, CI/CD integration, and reproducible builds. A broken build system means wasted hours debugging compilation issues instead of writing code, especially when "it works on my machine" but fails on CI.
 
-Every C++ developer has experienced this: "It works on my machine." The code compiles and runs perfectly locally but fails on CI, on a teammate's machine, or in production. The root cause is almost always the build environment — different compiler versions, missing dependencies, platform-specific paths, or inconsistent flags.
+## What It Is
 
-Build systems solve this by codifying the build process into a declarative configuration. Instead of manually running `g++ -std=c++17 -Wall -o main main.cpp -lssl -lcrypto`, you write a `CMakeLists.txt` that specifies what to build, with what flags, and against what dependencies. The build system handles the rest.
-
-The evolution from Makefiles to CMake to modern package managers (vcpkg, Conan) reflects the growing complexity of C++ projects. Today's C++ codebases depend on dozens of third-party libraries, target multiple platforms, and integrate with CI/CD pipelines. The build system is the glue that makes this possible.
+Build systems in C++ include CMake, Make, and package managers like vcpkg and Conan, providing declarative configurations for compiling, linking, testing, and distributing code across multiple platforms.
 
 ## Engineering Decision Framework
 

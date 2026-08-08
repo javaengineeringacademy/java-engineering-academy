@@ -1,14 +1,12 @@
-# Module 12: Networking
+# Networking — C++
 
-> **WHY this matters**: Networking is the backbone of modern software. Every mobile app, web service, game, and distributed system relies on network communication. Understanding sockets, protocols, and async I/O transforms you from someone who copies HTTP snippets into someone who can build reliable, high-performance networked systems that handle millions of connections.
+## Why It Matters
 
-## The Narrative: From Sockets to Systems
+Networking is the backbone of modern software. Every mobile app, web service, game, and distributed system relies on network communication. When you understand sockets, protocols, and async I/O, you can build reliable, high-performance networked systems that handle millions of connections instead of copying HTTP snippets.
 
-At its core, networking is about one machine talking to another. But the complexity explodes quickly: connections drop, packets arrive out of order, servers overload, and latency spikes. The difference between a toy project and production networking code is how you handle failure.
+## What It Is
 
-C++ gives you unparalleled control over networking — from raw BSD sockets to high-level libraries like Boost.Asio. You can build everything from a simple HTTP client to a game server handling 100K concurrent connections. But with great power comes great responsibility: buffer overflows, use-after-free on async callbacks, and thread-safety bugs are all common networking pitfalls.
-
-The key insight: **networking is inherently asynchronous and unreliable**. Your code must handle partial reads, connection resets, and timeouts gracefully. Every network call can fail — plan for it.
+C++ networking covers socket programming, TCP/UDP protocols, async I/O with epoll/kqueue, and libraries like Boost.Asio for building networked applications that handle partial reads, connection resets, and timeouts gracefully.
 
 ## Engineering Decision Framework
 
