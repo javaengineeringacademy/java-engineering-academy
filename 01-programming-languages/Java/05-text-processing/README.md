@@ -371,6 +371,74 @@ public class RegexExample {
 
 - [Fundamentals](../01-fundamentals/README.md)
 
+## Production Incidents
+
+### Incident 1: String Concatenation in Loop Causing Performance Degradation
+
+**Problem:** A report generation service took 30 minutes to generate a 10,000-line CSV file, exceeding the 5-minute SLA.
+**Cause:** Used `String +=` in a loop to build CSV rows, creating millions of intermediate String objects.
+**Impact:** Reports timed out; users couldn't access critical business data; manual workarounds required.
+**Detection:** Performance profiling showed 95% of time spent in String concatenation; heap showed millions of String objects.
+**Solution:** Replaced `String +=` with `StringBuilder`, reducing generation time to 30 seconds.
+**Prevention:** Use `StringBuilder` for string concatenation in loops; profile string operations in hot paths.
+
+### Incident 2: Encoding Mismatch Corrupting User Data
+
+**Problem:** A user profile system displayed garbled characters for international names (e.g., "Müller" showed as "MÃ¼ller").
+**Cause:** Database stored UTF-8 encoded strings, but application read files using platform default encoding (ISO-8859-1).
+**Impact:** 20% of user profiles had corrupted names; customer complaints; data correction effort required.
+**Detection:** User reports of garbled characters; investigation revealed encoding mismatch in file reading code.
+**Solution:** Specified `StandardCharsets.UTF_8` explicitly in all file reading/writing operations.
+**Prevention:** Always specify charset explicitly; use `StandardCharsets` constants; add encoding validation tests.
+
+### Incident 3: Regex Pattern Compilation Causing Memory Leak
+
+**Problem:** A log analysis service consumed 8GB of memory and crashed after processing 1 million log entries.
+**Cause:** Compiled `Pattern` object inside a loop; each iteration created a new `Pattern` instance that wasn't garbage collected.
+**Impact:** Service crashed every 4 hours; required restart; affected log monitoring for entire cluster.
+**Detection:** Heap dumps showed millions of `Pattern` objects; GC logs showed constant full GC cycles.
+**Solution:** Moved `Pattern.compile()` outside the loop; reused compiled pattern for all log entries.
+**Prevention:** Compile regex patterns once and reuse; cache patterns in static fields; profile regex operations.
+
+## Production Checklist
+
+- [ ] Use `StringBuilder` for string concatenation in loops
+- [ ] Reuse compiled `Pattern` objects for regex
+- [ ] Use `String.equals()` for comparison, never `==`
+- [ ] Use text blocks (`"""`) for multi-line strings (Java 15+)
+- [ ] Use `String.isBlank()` (Java 11+) instead of `trim().isEmpty()`
+- [ ] Specify charset explicitly when reading/writing files
+- [ ] Don't create `new String("literal")` — use literals directly
+- [ ] Don't use `String.intern()` without understanding memory implications
+- [ ] Don't use `StringBuffer` unless thread safety is required
+- [ ] Validate input strings before processing
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses String concatenation; doesn't think about encoding; uses `==` for comparison |
+| Intermediate | Uses StringBuilder appropriately; specifies charset; understands immutability |
+| Advanced | Optimizes regex performance; handles internationalization; designs text processing APIs |
+| Expert | Builds parsers; optimizes for memory and performance; teaches text processing patterns |
+
+## Common Myths
+
+1. **Myth**: String concatenation with `+` is always fast
+   **Truth**: The compiler optimizes simple concatenation, but loops create O(n²) complexity. Use `StringBuilder` in loops.
+
+2. **Myth**: `String.intern()` always saves memory
+   **Truth**: `String.intern()` can cause memory leaks if many unique strings are interned; it also has O(n) lookup cost.
+
+3. **Myth**: `StringBuffer` is always safer than `StringBuilder`
+   **Truth**: `StringBuffer` synchronization adds overhead; use `StringBuilder` in single-threaded code for better performance.
+
+4. **Myth**: Regular expressions are always the best solution for text parsing
+   **Truth**: Regex can be slow for simple operations; `String.split()`, `substring()`, and `indexOf()` are often faster.
+
+5. **Myth**: Unicode is just about characters
+   **Truth**: Unicode includes characters, code points, combining marks, and emoji; `char` is only 16 bits and can't represent all Unicode.
+
 ## Related Topics
 
 - [Generics](../06-generics/README.md)

@@ -509,6 +509,74 @@ Multithreading enables concurrent execution. Use synchronization and concurrency
 
 - [OOP](../02-oop/README.md)
 
+## Production Incidents
+
+### Incident 1: Deadlock in Payment Processing System
+
+**Problem:** A payment processing system hung indefinitely under high load, requiring manual restart.
+**Cause:** Two threads acquired locks in opposite order: Thread A locked Account then Payment, Thread B locked Payment then Account.
+**Impact:** 100% of payment processing stopped; $500K in pending transactions; 4-hour downtime.
+**Detection:** Thread dump showed deadlock between two threads; jstack confirmed circular wait.
+**Solution:** Established lock ordering protocol; always acquire Account lock before Payment lock; added deadlock detection.
+**Prevention:** Document lock ordering; use `tryLock()` with timeout; add deadlock detection monitoring.
+
+### Incident 2: Race Condition in Cache Update
+
+**Problem:** A distributed cache showed stale data for 10% of requests despite cache invalidation.
+**Cause:** Cache update used check-then-act pattern without synchronization; two threads updated simultaneously.
+**Impact:** Users saw outdated product prices; 5% of orders used incorrect pricing; customer complaints.
+**Detection:** Cache inconsistency reports; investigation revealed race condition in update logic.
+**Solution:** Used `ConcurrentHashMap.compute()` for atomic check-and-update; added distributed locks for cross-node consistency.
+**Prevention:** Use atomic operations for check-then-act; document thread-safety requirements; add concurrency tests.
+
+### Incident 3: Thread Pool Exhaustion Causing Cascading Failure
+
+**Problem:** A microservice became unresponsive under load, causing cascading failures across dependent services.
+**Cause:** Fixed thread pool (10 threads) exhausted waiting on downstream service; new requests queued indefinitely.
+**Impact:** 3 services failed; 50% of API traffic dropped; 30-minute recovery time.
+**Detection:** Thread count at maximum; queue depth increasing; downstream service timeout logs.
+**Solution:** Added circuit breaker to fail fast; increased thread pool size; added queue limits with rejection policies.
+**Prevention:** Size thread pools based on workload; implement circuit breakers; monitor thread pool metrics.
+
+## Production Checklist
+
+- [ ] Use thread pools instead of creating threads manually
+- [ ] Minimize lock scope — hold locks for shortest time possible
+- [ ] Use concurrent collections for shared state
+- [ ] Prefer atomic variables over synchronized blocks for simple operations
+- [ ] Handle interrupts properly — don't swallow `InterruptedException`
+- [ ] Use `volatile` for flags accessed across threads
+- [ ] Document thread-safety guarantees for each class
+- [ ] Add timeout to lock acquisition to prevent deadlocks
+- [ ] Monitor thread pool metrics (queue depth, active threads)
+- [ ] Test concurrent code with stress tests
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Creates threads manually; uses `synchronized` everywhere; doesn't understand thread states |
+| Intermediate | Uses thread pools; understands synchronization; uses `volatile` and atomics |
+| Advanced | Designs thread-safe classes; implements custom concurrent utilities; debugs concurrency issues |
+| Expert | Builds concurrent systems; contributes to concurrent libraries; teaches concurrency patterns |
+
+## Common Myths
+
+1. **Myth**: `synchronized` is always the best choice for thread safety
+   **Truth**: `synchronized` can cause contention; prefer `volatile`, atomics, or concurrent collections for better performance.
+
+2. **Myth**: Creating more threads always improves performance
+   **Truth**: Thread creation is expensive; context switching adds overhead. Use thread pools and size them appropriately.
+
+3. **Myth**: `volatile` is sufficient for atomic operations
+   **Truth**: `volatile` ensures visibility but not atomicity; use `Atomic` classes or `synchronized` for compound operations.
+
+4. **Myth**: Virtual threads eliminate all concurrency issues
+   **Truth**: Virtual threads improve I/O-bound concurrency but still have race conditions, deadlocks, and other concurrency bugs.
+
+5. **Myth**: ThreadLocal is always safe for per-thread data
+   **Truth**: `ThreadLocal` can cause memory leaks in thread pools; values are not cleaned up when threads are reused.
+
 ## Related Topics
 
 - [JVM Internals](../10-jvm-internals/README.md)

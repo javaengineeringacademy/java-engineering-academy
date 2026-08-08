@@ -342,6 +342,74 @@ public class TypeSafeContainer {
 
 - [OOP](../02-oop/README.md)
 
+## Production Incidents
+
+### Incident 1: ClassCastException from Raw Type Usage
+
+**Problem:** A data migration tool crashed with `ClassCastException` when processing records from legacy database.
+**Cause:** Raw `ArrayList` was used instead of `ArrayList<Record>`; casting `Object` to `Record` failed at runtime.
+**Impact:** Migration failed for 50,000 records; required manual intervention; delayed project by 2 days.
+**Detection:** `ClassCastException` in stack trace; legacy code used raw types.
+**Solution:** Added generic type parameter `ArrayList<Record>` and removed explicit casting.
+**Prevention:** Never use raw types; enable compiler warnings for raw type usage; add type safety checks in code review.
+
+### Incident 2: Unchecked Cast Warning Causing Runtime Error
+
+**Problem:** A generic utility method threw `ClassCastException` intermittently when processing different data types.
+**Cause:** Unchecked cast from `Object` to generic type `T` without proper type checking; compiler warning was suppressed.
+**Impact:** Application crashed for specific input combinations; 10% of requests affected; customer complaints.
+**Detection:** `ClassCastException` with no obvious cause; investigation revealed suppressed unchecked cast warning.
+**Solution:** Added runtime type checking using `Class.cast()`; removed `@SuppressWarnings("unchecked")`.
+**Prevention:** Never suppress unchecked cast warnings without understanding implications; use `TypeToken` pattern for runtime type information.
+
+### Incident 3: Wildcard Capture Issue in API Design
+
+**Problem:** A generic API method couldn't accept `List<Integer>` when `List<? extends Number>` was expected due to variance issues.
+**Cause:** Developer misunderstood wildcard capture; tried to assign `List<Integer>` to `List<Number>` directly.
+**Impact:** API design flawed; workaround required type casting; 20% of users couldn't use the API correctly.
+**Detection:** Compilation errors reported by API users; design review revealed variance issue.
+**Solution:** Used wildcard capture helper method to properly handle type inference.
+**Prevention:** Understand PECS principle (Producer Extends, Consumer Super); test generic APIs with various type arguments.
+
+## Production Checklist
+
+- [ ] Never use raw types — always parameterize generic types
+- [ ] Don't create `new T()` or `new T[]` — type erasure prevents this
+- [ ] Use bounded types (`<T extends Comparable<T>>`) to constrain generic types
+- [ ] Prefer `List<? extends T>` for read-only access (Producer Extends)
+- [ ] Prefer `List<? super T>` for write access (Consumer Super)
+- [ ] Don't use `List<Object>` when you mean `List<?>` or `List<String>`
+- [ ] Don't ignore unchecked cast warnings — suppress only when justified
+- [ ] Don't use wildcards in return types — use concrete generic types
+- [ ] Use type tokens for runtime type information when needed
+- [ ] Test generic code with multiple type arguments
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses basic generics; doesn't understand type erasure; creates raw types accidentally |
+| Intermediate | Uses bounded types; understands type erasure; applies PECS principle |
+| Advanced | Designs type-safe APIs; uses wildcard capture; implements generic utilities |
+| Expert | Creates advanced generic patterns; understands compiler internals; teaches generics |
+
+## Common Myths
+
+1. **Myth**: Generics provide runtime type safety
+   **Truth**: Generics are erased at compile time (type erasure); runtime type information is lost. Generics catch errors at compile time only.
+
+2. **Myth**: `List<Integer>` is a subtype of `List<Number>`
+   **Truth**: Java generics are invariant; `List<Integer>` is NOT a subtype of `List<Number>`. Use wildcards for variance.
+
+3. **Myth**: You can create `new T()` with generics
+   **Truth**: Type erasure means `T` becomes `Object` at runtime; you cannot instantiate generic types directly. Pass `Class<T>` and use reflection.
+
+4. **Myth**: Wildcards make code more complex without benefit
+   **Truth**: Wildcards enable flexible APIs that work with different type arguments while maintaining type safety.
+
+5. **Myth**: Generic methods are always better than non-generic methods
+   **Truth**: Non-generic methods are simpler and more readable when type flexibility isn't needed. Use generics only when necessary.
+
 ## Related Topics
 
 - [Functional Programming](../07-functional-programming/README.md)

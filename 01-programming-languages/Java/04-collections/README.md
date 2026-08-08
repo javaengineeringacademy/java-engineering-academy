@@ -409,6 +409,74 @@ System.out.println(aWords); // [apple, avocado]
 - [OOP](../02-oop/README.md)
 - [Equals & HashCode](../00-knowledge-atoms/equals-hashcode/README.md)
 
+## Production Incidents
+
+### Incident 1: ConcurrentModificationException in Production
+
+**Problem:** A web application crashed intermittently with `ConcurrentModificationException` during user session management.
+**Cause:** One thread iterated over `ArrayList` while another thread modified it; no synchronization was used.
+**Impact:** 5% of user sessions lost; users logged out unexpectedly; 20+ support tickets daily.
+**Detection:** Exception logs showed the error; stack trace pointed to session iteration code.
+**Solution:** Replaced `ArrayList` with `CopyOnWriteArrayList` for read-heavy scenario; added synchronization for writes.
+**Prevention:** Use concurrent collections for shared state; document thread-safety requirements; add concurrency tests.
+
+### Incident 2: HashMap Performance Degradation Under Load
+
+**Problem:** A cache using `HashMap` showed O(n) lookup times instead of O(1) under high load, causing response time spikes.
+**Cause:** Malicious or poorly-implemented `hashCode()` created many collisions, degrading to linked list traversal.
+**Impact:** API response times increased from 10ms to 2 seconds; SLA violations; customer churn.
+**Detection:** Performance monitoring showed response time degradation; profiling revealed hash collision hotspot.
+**Solution:** Replaced `HashMap` with `ConcurrentHashMap` and fixed `hashCode()` implementation to distribute evenly.
+**Prevention:** Validate `hashCode()` distribution; use `ConcurrentHashMap` for concurrent access; monitor hash collision rates.
+
+### Incident 3: Memory Leak from Static Collection
+
+**Problem:** A logging system accumulated entries in a static `ArrayList` and never released memory, causing OutOfMemoryError.
+**Cause:** Static collection grew unbounded; entries were added but never removed; class never unloaded.
+**Impact:** Application crashed every 24 hours; required daily restarts; affected 100+ users.
+**Detection:** Heap dumps showed static `ArrayList` with millions of entries; old generation full.
+**Solution:** Implemented bounded queue with eviction policy; used `WeakReference` for cache entries.
+**Prevention:** Avoid static collections for dynamic data; implement eviction policies; monitor collection sizes.
+
+## Production Checklist
+
+- [ ] Use interface types for declarations (`List<String>` not `ArrayList<String>`)
+- [ ] Use `ConcurrentHashMap` for concurrent access, not `Collections.synchronizedMap()`
+- [ ] Use `List.of()`, `Set.of()`, `Map.of()` for immutable collections (Java 9+)
+- [ ] Pre-size collections when capacity is known
+- [ ] Use `entrySet()` when you need both key and value from a Map
+- [ ] Don't modify a collection during for-each iteration
+- [ ] Don't use `Vector` or `Hashtable` — use modern equivalents
+- [ ] Implement `hashCode()` and `equals()` consistently for Map keys
+- [ ] Use `isEmpty()` instead of `size() == 0`
+- [ ] Avoid unnecessary intermediate collections in stream pipelines
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses ArrayList and HashMap; doesn't think about performance; uses raw types |
+| Intermediate | Chooses appropriate collections; uses generics; understands time complexity |
+| Advanced | Uses concurrent collections; optimizes memory; implements custom collections |
+| Expert | Designs collection strategies; benchmarks alternatives; teaches collection internals |
+
+## Common Myths
+
+1. **Myth**: LinkedList is faster than ArrayList
+   **Truth**: ArrayList is faster for most operations due to cache locality. LinkedList is only faster for frequent insertions/deletions at the beginning.
+
+2. **Myth**: HashMap is always thread-safe
+   **Truth**: HashMap is not thread-safe. Concurrent access causes `ConcurrentModificationException` or data corruption. Use `ConcurrentHashMap`.
+
+3. **Myth**: Synchronized collections are always safe
+   **Truth**: `Collections.synchronizedMap()` synchronizes individual operations, not compound operations. Use explicit synchronization for multi-step operations.
+
+4. **Myth**: Size() == 0 is equivalent to isEmpty()
+   **Truth**: `isEmpty()` is clearer and may be optimized differently. Some collections override `isEmpty()` for better performance.
+
+5. **Myth**: All collections allow null values
+   **Truth**: `HashMap` allows one null key; `ConcurrentHashMap`不允许 null keys/values; `TreeSet`不允许 null elements.
+
 ## Related Topics
 
 - [Generics](../06-generics/README.md)

@@ -426,6 +426,74 @@ Understanding JVM internals is essential for performance tuning and troubleshoot
 - [Multithreading](../09-multithreading/README.md)
 - [Java Memory Model](../00-knowledge-atoms/java-memory-model/README.md)
 
+## Production Incidents
+
+### Incident 1: OutOfMemoryError from Metaspace Leak
+
+**Problem:** A Spring Boot application crashed with `OutOfMemoryError: Metaspace` after running for 7 days.
+**Cause:** Dynamic class generation (CGLIB proxies) created new classes without unloading; class loader leak prevented GC.
+**Impact:** Application crashed weekly; required restart; affected 1,000+ users.
+**Detection:** `OutOfMemoryError: Metaspace` in logs; heap dumps showed thousands of proxy classes.
+**Solution:** Configured `-XX:MaxMetaspaceSize=256m`; fixed class loader leak; added class loading metrics.
+**Prevention:** Monitor Metaspace usage; configure limits; avoid dynamic class generation without proper cleanup.
+
+### Incident 2: Long GC Pauses Causing Timeout
+
+**Problem:** A trading application experienced 5-10 second GC pauses, causing order processing timeouts.
+**Cause:** Default Parallel GC on 64GB heap; full GC collected entire heap causing long stop-the-world pauses.
+**Impact:** 20% of orders timed out; $1M in missed trading opportunities; SLA violations.
+**Detection:** GC logs showed 5-10 second pauses; JFR recordings showed GC overhead.
+**Solution:** Switched to ZGC with `-XX:+UseZGC -Xmx64g -Xms64g`; reduced max pause to <10ms.
+**Prevention:** Choose GC based on latency requirements; tune heap size; monitor GC metrics.
+
+### Incident 3: StackOverflowError from Deep Recursion
+
+**Problem:** A recursive algorithm for tree traversal crashed with `StackOverflowError` on large datasets.
+**Cause:** Unbounded recursion on deep trees; each recursive call added a stack frame.
+**Impact:** Processing failed for trees deeper than 10,000 nodes; 30% of production data affected.
+**Detection:** `StackOverflowError` in logs; stack trace showed deep recursion.
+**Solution:** Converted to iterative algorithm using explicit stack; added depth limits for safety.
+**Prevention:** Use iterative algorithms for large datasets; add recursion depth limits; monitor stack usage.
+
+## Production Checklist
+
+- [ ] Configure appropriate GC algorithm for latency requirements
+- [ ] Set heap limits (-Xms, -Xmx) based on available memory
+- [ ] Enable GC logging for production monitoring
+- [ ] Configure `-XX:+HeapDumpOnOutOfMemoryError` for debugging
+- [ ] Monitor Metaspace usage for dynamic class generation
+- [ ] Use JFR for low-overhead production profiling
+- [ ] Set thread stack size appropriately for recursion depth
+- [ ] Test with production-like data volumes
+- [ ] Monitor JIT compilation metrics
+- [ ] Document JVM configuration and rationale
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses default JVM settings; doesn't think about GC; confused by heap dumps |
+| Intermediate | Tunes basic JVM flags; understands GC basics; reads heap dumps |
+| Advanced | Chooses GC algorithm for workload; profiles production with JFR; optimizes memory |
+| Expert | Architects JVM configurations; contributes to JVM projects; teaches JVM internals |
+
+## Common Myths
+
+1. **Myth**: Larger heap is always better
+   **Truth**: Larger heap increases GC pause times; choose heap size based on application needs and GC algorithm.
+
+2. **Myth**: GC tuning is unnecessary with modern JVMs
+   **Truth**: Default settings are conservative; tuning can improve performance 2-5x for specific workloads.
+
+3. **Myth**: JIT compilation makes all code fast
+   **Truth**: JIT optimizes hot paths; cold code remains interpreted; profile-guided optimization helps.
+
+4. **Myth**: Metaspace doesn't need monitoring
+   **Truth**: Metaspace can leak with dynamic class generation; monitor and set limits to prevent OOM.
+
+5. **Myth**: Virtual threads eliminate all threading issues
+   **Truth**: Virtual threads improve I/O concurrency but still have synchronization and shared state issues.
+
 ## Related Topics
 
 - [Design Patterns](../11-design-patterns/README.md)

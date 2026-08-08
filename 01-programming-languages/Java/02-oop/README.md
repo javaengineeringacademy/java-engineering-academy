@@ -564,6 +564,74 @@ OOP is fundamental to Java development. Master the four pillars and apply design
 - [Fundamentals](../01-fundamentals/README.md)
 - [Pass by Value](../00-knowledge-atoms/pass-by-value/README.md)
 
+## Production Incidents
+
+### Incident 1: God Class Causing Maintenance Nightmare
+
+**Problem:** A 5,000-line `OrderProcessor` class handled validation, payment, inventory, notifications, and reporting, making changes risky and slow.
+**Cause:** Violation of Single Responsibility Principle; class accumulated responsibilities over 3 years.
+**Impact:** Simple feature changes took 2-3 weeks; bug fixes introduced new bugs 40% of the time.
+**Detection:** Developer productivity metrics showed declining velocity; code complexity metrics flagged the class.
+**Solution:** Refactored into `OrderValidator`, `PaymentProcessor`, `InventoryManager`, `NotificationService`, and `ReportGenerator` using Strategy pattern.
+**Prevention:** Enforce SRP through code reviews; use architectural fitness functions; set complexity thresholds in CI.
+
+### Incident 2: Deep Inheritance Hierarchy Breaking Changes
+
+**Problem:** Adding a new method to a base class in a 7-level inheritance hierarchy broke 50+ subclasses across 3 teams.
+**Cause:** Tight coupling through deep inheritance; subclasses depended on base class implementation details.
+**Impact:** Release delayed by 1 week; 3 teams had to coordinate fixes simultaneously.
+**Detection:** Compilation errors across multiple modules after base class change.
+**Solution:** Refactored to composition over inheritance; introduced interfaces for shared behavior.
+**Prevention:** Favor composition over inheritance; keep hierarchies shallow (max 2-3 levels); use interfaces for contracts.
+
+### Incident 3: Mutable Shared State Causing Race Condition
+
+**Problem:** An e-commerce system showed incorrect inventory counts under high concurrency, overselling products.
+**Cause:** Multiple threads modified shared `Inventory` object without synchronization; `HashMap` wasn't thread-safe.
+**Impact:** 500+ oversold orders; customer complaints; manual inventory reconciliation required.
+**Detection:** Customer complaints about unavailable items; inventory audit revealed discrepancies.
+**Solution:** Used `ConcurrentHashMap` and atomic operations; added synchronization for critical sections.
+**Prevention:** Use concurrent collections for shared state; document thread-safety guarantees; add concurrency tests.
+
+## Production Checklist
+
+- [ ] Follow Single Responsibility Principle — one class, one purpose
+- [ ] Favor composition over inheritance for code reuse
+- [ ] Program to interfaces, not concrete implementations
+- [ ] Keep inheritance hierarchies shallow (max 2-3 levels)
+- [ ] Use appropriate access modifiers (private by default)
+- [ ] Make classes immutable when possible
+- [ ] Avoid circular dependencies between classes
+- [ ] Document thread-safety guarantees for each class
+- [ ] Use dependency injection instead of creating dependencies internally
+- [ ] Write unit tests for each class in isolation
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Creates classes with main methods; uses inheritance for code sharing; doesn't think about design |
+| Intermediate | Applies encapsulation; uses interfaces; understands polymorphism; writes basic unit tests |
+| Advanced | Follows SOLID principles; uses design patterns appropriately; designs for testability |
+| Expert | Architects systems; makes trade-off decisions; mentors teams on design principles |
+
+## Common Myths
+
+1. **Myth**: Inheritance is the best way to reuse code
+   **Truth**: Composition is more flexible, easier to test, and avoids tight coupling. Use inheritance only for true IS-A relationships.
+
+2. **Myth**: All classes need getters and setters
+   **Truth**: Exposing internal state breaks encapsulation. Only expose what's necessary; prefer immutable objects.
+
+3. **Myth**: Abstract classes are always better than interfaces
+   **Truth**: Interfaces provide more flexibility (multiple inheritance, no state). Use abstract classes only when sharing implementation.
+
+4. **Myth**: Polymorphism always improves design
+   **Truth**: Overuse of polymorphism creates complex hierarchies that are hard to understand. Simple code is better when appropriate.
+
+5. **Myth**: Design patterns are always necessary
+   **Truth**: Over-engineering adds unnecessary complexity. Use patterns only when they solve a real problem.
+
 ## Related Topics
 
 - [Equals & HashCode](../00-knowledge-atoms/equals-hashcode/README.md)

@@ -494,6 +494,74 @@ Effective debugging is essential for software quality. Master IDE tools, logging
 
 - [OOP](../02-oop/README.md)
 
+## Production Incidents
+
+### Incident 1: Flaky Tests Masking Real Bugs
+
+**Problem:** 40% of integration tests failed non-deterministically; developers ignored test failures assuming flakiness.
+**Cause:** Tests depended on external services, shared database state, and timing; no isolation between tests.
+**Impact:** Real bugs slipped through; 3 production incidents in 1 month; customer trust eroded.
+**Detection:** Test failure rate increased; investigation revealed flaky tests hiding real failures.
+**Solution:** Isolated tests with Testcontainers; removed external dependencies; added test data cleanup.
+**Prevention:** Write deterministic tests; use mocks for external dependencies; implement test isolation.
+
+### Incident 2: Missing Tests for Edge Cases
+
+**Problem:** A payment system failed for negative amounts; no test existed for negative input validation.
+**Cause:** Tests only covered happy path; edge cases and error conditions not tested.
+**Impact:** $10,000 in erroneous refunds; customer complaints; manual correction required.
+**Detection:** Production error logs showed unhandled negative amounts; investigation revealed missing tests.
+**Solution:** Added tests for edge cases (negative, zero, null, overflow); implemented input validation.
+**Prevention:** Test edge cases explicitly; use property-based testing; implement input validation early.
+
+### Incident 3: Slow Test Suite Causing Delayed Releases
+
+**Problem:** Test suite took 45 minutes to run; developers skipped tests before releases to save time.
+**Cause:** Tests not optimized; redundant test data setup; sequential execution of independent tests.
+**Impact:** Releases delayed by 2-3 hours; developers skipped tests; 2 production bugs introduced.
+**Detection:** Test execution time increased; developers complained about slow feedback.
+**Solution:** Parallelized tests; optimized test data setup; removed redundant tests; reduced suite to 10 minutes.
+**Prevention:** Monitor test execution time; optimize slow tests; parallelize independent tests.
+
+## Production Checklist
+
+- [ ] Write tests for happy path, edge cases, and error conditions
+- [ ] Isolate tests from external dependencies
+- [ ] Use mocks for external services
+- [ ] Clean up test data after each test
+- [ ] Run tests in parallel when possible
+- [ ] Monitor test execution time
+- [ ] Test exception paths thoroughly
+- [ ] Use descriptive test names
+- [ ] Test with production-like data volumes
+- [ ] Maintain test code quality like production code
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Writes basic unit tests; only tests happy path; doesn't think about edge cases |
+| Intermediate | Tests edge cases; uses mocks; writes integration tests; maintains test coverage |
+| Advanced | Implements test金字塔; uses Testcontainers; optimizes test performance |
+| Expert | Designs test strategies; contributes to testing frameworks; teaches testing patterns |
+
+## Common Myths
+
+1. **Myth**: 100% code coverage ensures no bugs
+   **Truth**: Coverage measures code execution, not quality. 100% coverage with poor assertions catches nothing.
+
+2. **Myth**: Unit tests are always better than integration tests
+   **Truth**: Unit tests verify logic; integration tests verify interactions. Both are necessary for quality.
+
+3. **Myth**: Testing is the QA team's responsibility
+   **Truth**: Developers write and maintain tests; testing is part of development, not a separate activity.
+
+4. **Myth**: Manual testing is obsolete
+   **Truth**: Manual testing is essential for usability, exploratory testing, and edge cases automation can't cover.
+
+5. **Myth**: More tests always mean better quality
+   **Truth**: Redundant tests add maintenance burden without value. Quality comes from well-designed, maintainable tests.
+
 ## Related Topics
 
 - [Reflection & Annotations](../13-reflection-annotations/README.md)

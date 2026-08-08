@@ -230,6 +230,74 @@ public class ControlFlow {
 
 No prerequisites — this is the starting point.
 
+## Production Incidents
+
+### Incident 1: String Comparison Bug in Authentication System
+
+**Problem:** A login system failed to authenticate valid users intermittently, returning "invalid credentials" for correct passwords.
+**Cause:** Developers used `==` instead of `.equals()` for password comparison, comparing object references instead of string content.
+**Impact:** 15% of login attempts failed randomly, causing customer frustration and support tickets.
+**Detection:** Users reported intermittent login failures; code review revealed the `==` comparison.
+**Solution:** Replaced `password == storedPassword` with `password.equals(storedPassword)`.
+**Prevention:** Use static analysis tools to flag `==` comparisons on String objects; enforce code review guidelines.
+
+### Incident 2: ArrayIndexOutOfBoundsException in Data Processing
+
+**Problem:** A data processing pipeline crashed daily with `ArrayIndexOutOfBoundsException` during peak hours.
+**Cause:** Off-by-one error in loop boundary: `for (int i = 0; i <= array.length; i++)` instead of `< array.length`.
+**Impact:** Data processing delayed by 2-3 hours daily, affecting reporting deadlines.
+**Detection:** Exception logs showed the error occurring at the same line consistently.
+**Solution:** Changed `<=` to `<` in the loop condition.
+**Prevention:** Use enhanced for-each loops when index isn't needed; add boundary checks in code review.
+
+### Incident 3: NullPointerException in Configuration Loading
+
+**Problem:** Application startup failed with `NullPointerException` when loading configuration from properties files.
+**Cause:** Configuration value was null when property key was missing, and code didn't check for null before calling methods.
+**Impact:** Application couldn't start, causing 30-minute downtime during deployments.
+**Detection:** Stack trace showed NPE in configuration loader class.
+**Solution:** Added null checks and used `Optional` for configuration values with sensible defaults.
+**Prevention:** Use `Optional` for potentially missing values; validate configuration at startup.
+
+## Production Checklist
+
+- [ ] Use `.equals()` for String comparison, never `==`
+- [ ] Use enhanced for-each loops when index isn't needed
+- [ ] Check for null before calling methods on references
+- [ ] Use `StringBuilder` for string concatenation in loops
+- [ ] Declare variables close to first use
+- [ ] Use meaningful variable and method names
+- [ ] Prefer `final` for constants and parameters
+- [ ] Avoid magic numbers — use named constants
+- [ ] Don't use `System.out.println` for production logging
+- [ ] Write methods that do one thing well
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Writes basic syntax; uses `==` for strings; doesn't think about null safety |
+| Intermediate | Uses `.equals()` correctly; understands null pointer risks; writes clean methods |
+| Advanced | Applies immutability; uses Optional effectively; writes defensive code |
+| Expert | Designs APIs that prevent misuse; mentors others on fundamentals; optimizes for correctness |
+
+## Common Myths
+
+1. **Myth**: `==` is fine for comparing Strings
+   **Truth**: `==` compares object references, not content. Two String objects with identical text have different references. Always use `.equals()`.
+
+2. **Myth**: Primitive types are always better than wrapper classes
+   **Truth**: Wrapper classes are needed for generics, collections, and null values. Autoboxing is appropriate in many contexts.
+
+3. **Myth**: `System.out.println` is acceptable for debugging
+   **Truth**: Production code should use logging frameworks (SLF4J) with proper levels, rotation, and structured output.
+
+4. **Myth**: Longer variable names are always better
+   **Truth**: Variable names should be meaningful but concise. `i` is perfectly appropriate for loop indices.
+
+5. **Myth**: Comments explain code better than good naming
+   **Truth**: Well-named variables and methods reduce the need for comments. Comments should explain why, not what.
+
 ## Related Topics
 
 - [Pass by Value](../00-knowledge-atoms/pass-by-value/README.md)

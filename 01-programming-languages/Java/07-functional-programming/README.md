@@ -468,6 +468,74 @@ public class StreamEnterpriseExample {
 - [Generics](../06-generics/README.md)
 - [Collections](../04-collections/README.md)
 
+## Production Incidents
+
+### Incident 1: Parallel Stream Causing Thread Contention
+
+**Problem:** A data processing pipeline using parallel streams showed degraded performance under high concurrency, with response times increasing 10x.
+**Cause:** Parallel streams used the common `ForkJoinPool`; heavy computation starved other parallel operations in the application.
+**Impact:** API response times degraded from 100ms to 1 second; SLA violations; customer complaints.
+**Detection:** Thread dumps showed all threads blocked in `ForkJoinPool`; profiling revealed parallel stream usage.
+**Solution:** Replaced parallel streams with sequential streams; used custom `ForkJoinPool` for parallel operations when needed.
+**Prevention:** Avoid parallel streams for I/O-bound work; use custom thread pools; benchmark before using parallel streams.
+
+### Incident 2: Lazy Evaluation Causing Unexpected Behavior
+
+**Problem:** A stream pipeline with `peek()` for logging didn't log anything; operations appeared to not execute.
+**Cause:** Developer misunderstood lazy evaluation; `peek()` is only called when terminal operation is invoked.
+**Impact:** Debugging impossible; no logs produced; development time wasted investigating "missing" logs.
+**Detection:** No log output despite `peek()` calls; investigation revealed lazy evaluation behavior.
+**Solution:** Moved logging to terminal operation or used `forEach()` for side effects.
+**Prevention:** Understand lazy evaluation; use `peek()` only for debugging; test stream pipelines thoroughly.
+
+### Incident 3: Side Effects in Parallel Streams Causing Race Conditions
+
+**Problem:** A financial calculation using parallel streams produced inconsistent results; totals varied between runs.
+**Cause:** Parallel stream modified shared `BigDecimal` accumulator without synchronization; race condition corrupted data.
+**Impact:** Financial reports showed incorrect totals; manual correction required; audit findings.
+**Detection:** Different results on each run; unit tests revealed non-deterministic behavior.
+**Solution:** Used `reduce()` with immutable accumulator; avoided shared mutable state in parallel streams.
+**Prevention:** Never modify shared state in parallel streams; use immutable objects; prefer pure functions.
+
+## Production Checklist
+
+- [ ] Understand lazy evaluation — intermediate operations are deferred
+- [ ] Avoid side effects in parallel streams
+- [ ] Use primitive streams (IntStream, LongStream) for performance
+- [ ] Prefer method references over lambdas for readability
+- [ ] Use Collectors for complex aggregations
+- [ ] Use custom ForkJoinPool for parallel operations
+- [ ] Don't use parallel streams for small datasets
+- [ ] Don't create unnecessary intermediate operations
+- [ ] Don't forget terminal operation — streams are lazy
+- [ ] Test stream pipelines with various input sizes
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses basic stream operations; doesn't understand laziness; uses parallel streams everywhere |
+| Intermediate | Uses method references; understands lazy evaluation; chooses appropriate collectors |
+| Advanced | Writes custom collectors; uses parallel streams appropriately; optimizes stream pipelines |
+| Expert | Designs functional APIs; teaches stream internals; contributes to stream libraries |
+
+## Common Myths
+
+1. **Myth**: Parallel streams are always faster
+   **Truth**: Parallel streams add overhead; they're only faster for large, CPU-bound datasets. Small datasets or I/O-bound work is slower with parallel streams.
+
+2. **Myth**: Streams are always better than loops
+   **Truth**: Simple loops are often more readable and performant for basic operations. Use streams for complex data transformations.
+
+3. **Myth**: Lambda expressions are always efficient
+   **Truth:** Lambda captures can cause boxing/unboxing overhead; non-capturing lambdas are optimized to static methods.
+
+4. **Myth**: `peek()` is useful for production logging
+   **Truth**: `peek()` is for debugging only; it violates stream contract purity and may be optimized away.
+
+5. **Myth**: Functional programming eliminates all bugs
+   **Truth**: Functional style reduces side effects but doesn't eliminate logic errors; bugs can still occur in pure functions.
+
 ## Related Topics
 
 - [I/O and NIO](../08-io-nio/README.md)

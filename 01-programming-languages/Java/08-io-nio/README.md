@@ -365,6 +365,74 @@ Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern
 
 - [Fundamentals](../01-fundamentals/README.md)
 
+## Production Incidents
+
+### Incident 1: Resource Leak from Unclosed Streams
+
+**Problem:** A file processing application ran out of file descriptors after processing 5,000 files, crashing the JVM.
+**Cause:** `FileInputStream` wasn't closed in finally block; exceptions during processing left streams open.
+**Impact:** Application crashed every 4 hours; required manual restart; 2-hour recovery time.
+**Detection:** `java.io.IOException: Too many open files` in logs; JVM crash dumps.
+**Solution:** Refactored to use try-with-resources for automatic resource management.
+**Prevention:** Always use try-with-resources for AutoCloseable resources; configure file descriptor limits in monitoring.
+
+### Incident 2: Encoding Mismatch in File Processing
+
+**Problem:** A CSV import tool failed to parse international characters correctly, corrupting user data.
+**Cause:** Used `FileReader` without specifying encoding; platform default (ISO-8859-1) used instead of UTF-8.
+**Impact:** 30% of imported records had corrupted characters; data cleanup required; 2-day delay.
+**Detection:** User reports of garbled characters; investigation revealed encoding mismatch.
+**Solution:** Used `Files.newBufferedReader(path, StandardCharsets.UTF_8)` for explicit encoding.
+**Prevention:** Always specify charset explicitly; use `StandardCharsets` constants; add encoding validation tests.
+
+### Incident 3: Memory-Mapped File Not Released
+
+**Problem:** A large file processing service couldn't delete processed files because they were still memory-mapped.
+**Cause:** `MappedByteBuffer` held reference to file; JVM hadn't unmapped buffer after processing.
+**Impact:** Disk space filled up; couldn't delete old files; manual intervention required.
+**Detection:** `java.io.IOException: The process cannot access the file because it is being used by another process`
+**Solution:** Used `FileChannel` with explicit closing; invoked `Cleaner` via reflection for immediate cleanup.
+**Prevention:** Avoid memory-mapped files for temporary data; use `FileChannel` with explicit close; monitor disk usage.
+
+## Production Checklist
+
+- [ ] Always use try-with-resources for AutoCloseable resources
+- [ ] Specify charset explicitly when reading/writing text files
+- [ ] Use NIO.2 (`Path`, `Files`) for modern file operations
+- [ ] Buffer large file operations for performance
+- [ ] Handle `IOException` properly with meaningful messages
+- [ ] Don't use `File` class — prefer `Path` and `Files`
+- [ ] Don't ignore exceptions during file operations
+- [ ] Don't memory-map temporary files
+- [ ] Test file operations with different file sizes
+- [ ] Monitor file descriptor usage in production
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses `File` class; doesn't close resources; ignores exceptions |
+| Intermediate | Uses try-with-resources; handles exceptions; uses NIO.2 APIs |
+| Advanced | Uses memory-mapped files; implements async I/O; optimizes performance |
+| Expert | Designs file processing systems; teaches I/O patterns; contributes to I/O libraries |
+
+## Common Myths
+
+1. **Myth**: NIO is always faster than traditional I/O
+   **Truth**: NIO adds overhead for small files; traditional I/O is often faster for simple operations. Use NIO for large files or non-blocking I/O.
+
+2. **Myth**: `File` class is deprecated
+   **Truth**: `File` is not deprecated but is less capable than `Path` and `Files`. Prefer NIO.2 for new code.
+
+3. **Myth**: `BufferedReader` is always necessary
+   **Truth**: `Files.readString()` and `Files.readAllLines()` handle buffering internally; explicit buffering is only needed for large files.
+
+4. **Myth**: Memory-mapped files are always faster
+   **Truth**: Memory mapping adds overhead for small files; it's only beneficial for random access on large files.
+
+5. **Myth**: Character encoding doesn't matter for English text
+   **Truth**: Even English text can have encoding issues; always specify charset explicitly to avoid platform-dependent behavior.
+
 ## Related Topics
 
 - [Multithreading](../09-multithreading/README.md)

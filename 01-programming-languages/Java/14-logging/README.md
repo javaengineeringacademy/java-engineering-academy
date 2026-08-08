@@ -187,6 +187,35 @@ Logging exists because:
 
 Without proper logging, production debugging becomes guesswork, and system behavior becomes opaque.
 
+## Production Incidents
+
+### Incident 1: Sensitive Data Logged in Production
+
+**Problem:** A payment system logged full credit card numbers in debug logs, violating PCI DSS compliance.
+**Cause:** Developer used `logger.debug("Processing card: {}", cardNumber)` without masking sensitive data.
+**Impact:** Compliance violation; $50,000 fine; mandatory security audit; customer trust damaged.
+**Detection:** Security audit revealed card numbers in log files; investigation showed logging without masking.
+**Solution:** Added log sanitization to mask sensitive fields; implemented log redaction filter; trained developers on sensitive data handling.
+**Prevention:** Never log sensitive data; implement log redaction; add security checks to code review.
+
+### Incident 2: Log File Filling Disk Space
+
+**Problem:** A high-throughput application generated 100GB of logs per day, filling disk space and crashing the server.
+**Cause:** DEBUG level enabled in production; no log rotation configured; verbose logging in hot paths.
+**Impact:** Server crashed every 12 hours; required manual cleanup; affected 500+ users.
+**Detection:** Disk space alerts; server crashes due to full disk; investigation revealed log growth.
+**Solution:** Changed log level to INFO; configured log rotation with size and time limits; reduced verbose logging.
+**Prevention:** Configure appropriate log levels; implement log rotation; monitor disk usage.
+
+### Incident 3: String Concatenation in Log Statements Causing Performance Issues
+
+**Problem:** A logging statement with string concatenation was always evaluated even when debug was disabled, adding 20% overhead.
+**Cause:** Used `logger.debug("User: " + user.toString())` instead of parameterized logging; string built regardless of log level.
+**Impact:** API response times degraded; CPU usage increased; performance SLA violations.
+**Detection:** Performance profiling showed string concatenation overhead; JFR recordings revealed logging overhead.
+**Solution:** Changed to parameterized logging `logger.debug("User: {}", user)`; added `isDebugEnabled()` guard for expensive operations.
+**Prevention:** Always use parameterized logging; guard expensive operations with level checks; profile logging overhead.
+
 ## Production Checklist
 
 ### ✅ Before using logging in production:

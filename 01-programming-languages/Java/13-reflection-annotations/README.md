@@ -154,6 +154,35 @@ Without reflection, every framework would require compile-time code generation o
 3. Performance overhead of reflection
 4. Not considering security implications
 
+## Production Incidents
+
+### Incident 1: Reflection Breaking with Java Module System
+
+**Problem:** A framework using reflection failed to access private fields after upgrading to Java 17 with module system enabled.
+**Cause:** Module system restricted reflective access to non-exported packages; framework relied on `setAccessible(true)`.
+**Impact:** Framework upgrade blocked; 50+ projects affected; 2-week delay.
+**Detection:** `InaccessibleObjectException` in logs; module system restrictions prevented access.
+**Solution:** Added `--add-opens` flags to module configuration; refactored to use public APIs where possible.
+**Prevention:** Test with module system early; avoid reflective access to non-exported packages; use public APIs.
+
+### Incident 2: Annotation Processing Causing Slow Compilation
+
+**Problem:** A project using Lombok and custom annotation processors took 10 minutes to compile; developers complained about slow builds.
+**Cause:** Annotation processors ran on every compilation; no incremental processing; complex annotations required multiple passes.
+**Impact:** Developer productivity decreased 30%; build times exceeded acceptable limits.
+**Detection:** Build logs showed annotation processing time; profiling revealed multiple annotation processing rounds.
+**Solution:** Optimized annotation processors; enabled incremental processing; moved some annotations to compile-time only.
+**Prevention:** Optimize annotation processors; use compile-time processing when possible; monitor build performance.
+
+### Incident 3: Dynamic Proxy Performance Overhead
+
+**Problem:** A logging proxy on every service method call added 50% overhead to API response times.
+**Cause:** Dynamic proxy intercepted all method calls including getters/setters; no filtering of methods to proxy.
+**Impact:** API response times degraded from 100ms to 150ms; SLA violations; customer complaints.
+**Detection:** Performance profiling showed proxy overhead; JFR recordings showed proxy invocation time.
+**Solution:** Filtered proxy to only intercept business methods; excluded getters/setters; optimized proxy handler.
+**Prevention:** Profile proxy overhead; filter methods to proxy; use compile-time proxies when possible.
+
 ## Production Checklist
 
 ### Before using reflection in production:

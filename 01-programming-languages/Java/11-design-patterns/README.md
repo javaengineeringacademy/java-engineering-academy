@@ -640,6 +640,74 @@ Without patterns, every team would solve the same problems differently, making c
 
 - [OOP](../02-oop/README.md)
 
+## Production Incidents
+
+### Incident 1: Singleton Causing Testing Difficulties
+
+**Problem:** A unit test suite failed intermittently because `DatabaseConnection` singleton retained state between tests.
+**Cause:** Singleton held database connection; tests didn't reset state; previous test's data affected next test.
+**Impact:** 30% of tests failed non-deterministically; CI pipeline unreliable; development velocity decreased.
+**Detection:** Flaky tests in CI; investigation revealed singleton state leakage.
+**Solution:** Refactored to use dependency injection; singleton replaced with scoped instances per test.
+**Prevention:** Avoid singleton for stateful objects; use dependency injection; reset state in test setup.
+
+### Incident 2: Observer Pattern Memory Leak
+
+**Problem:** A notification system leaked memory because event listeners were never unregistered.
+**Cause:** `EventBus` held strong references to listeners; listeners were never removed after component destruction.
+**Impact:** Memory usage grew 10% per hour; application crashed after 10 hours; required restart.
+**Detection:** Heap dumps showed thousands of listener instances; memory profiler revealed leak.
+**Solution:** Used `WeakReference` for listeners; added explicit `unregister()` method; implemented cleanup on component destroy.
+**Prevention:** Use weak references for callbacks; implement `Closeable` for cleanup; document listener lifecycle.
+
+### Incident 3: Factory Pattern Creating Too Many Objects
+
+**Problem:** A factory pattern created thousands of objects per request, causing GC pressure and slow response times.
+**Cause:** Factory created new objects for each request instead of reusing; no object pooling implemented.
+**Impact:** Response times increased 5x; GC overhead 40%; SLA violations.
+**Detection:** Performance profiling showed object creation overhead; GC logs showed frequent collections.
+**Solution:** Implemented object pool pattern; cached frequently used objects; reduced object creation.
+**Prevention:** Profile object creation in hot paths; use object pooling for expensive objects; implement caching.
+
+## Production Checklist
+
+- [ ] Use dependency injection instead of singleton for testability
+- [ ] Document thread-safety guarantees for each pattern
+- [ ] Avoid over-engineering — use simple code when patterns aren't needed
+- [ ] Implement proper cleanup for patterns with callbacks/listeners
+- [ ] Test patterns with multiple implementations
+- [ ] Monitor performance impact of pattern overhead
+- [ ] Use appropriate pattern for the problem — don't force patterns
+- [ ] Document pattern usage and rationale in code
+- [ ] Consider evolution — patterns should accommodate changing requirements
+- [ ] Review patterns in code reviews for anti-patterns
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Knows basic patterns; uses Singleton everywhere; doesn't understand trade-offs |
+| Intermediate | Applies appropriate patterns; understands when NOT to use patterns; uses composition |
+| Advanced | Combines patterns effectively; designs flexible architectures; teaches patterns |
+| Expert | Creates new patterns; contributes to pattern literature; architects complex systems |
+
+## Common Myths
+
+1. **Myth**: Design patterns are always necessary
+   **Truth**: Over-engineering adds unnecessary complexity. Use patterns only when they solve a real problem.
+
+2. **Myth**: Singleton is the best pattern for shared resources
+   **Truth**: Singleton causes testing difficulties and tight coupling. Prefer dependency injection for shared resources.
+
+3. **Myth**: More patterns mean better design
+   **Truth**: Pattern soup makes code harder to understand. Simple code is better when appropriate.
+
+4. **Myth**: Patterns are language-agnostic
+   **Truth**: Some patterns are less relevant in Java due to language features (e.g., Strategy with lambdas).
+
+5. **Myth**: Once applied, patterns should never change
+   **Truth**: Design evolves; patterns should be refactored as requirements change.
+
 ## Related Topics
 
 - [Senior](../15-senior/README.md)

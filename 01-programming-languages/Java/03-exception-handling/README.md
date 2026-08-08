@@ -340,6 +340,74 @@ After completing this module, you should be able to:
 
 - [OOP](../02-oop/README.md)
 
+## Production Incidents
+
+### Incident 1: Swallowed Exception Causing Silent Data Loss
+
+**Problem:** A payment processing system failed to process transactions but showed success to users, causing financial discrepancies.
+**Cause:** `catch (Exception e) {}` block silently swallowed `PaymentGatewayException`, preventing error propagation.
+**Impact:** $50,000 in unprocessed payments over 3 days; customer complaints about missing transactions.
+**Detection:** Financial reconciliation showed discrepancies between processed and recorded payments.
+**Solution:** Removed empty catch block; added proper logging and rethrow with context.
+**Prevention:** Never use empty catch blocks; configure IDE warnings for empty catch; code review checklist.
+
+### Incident 2: Resource Leak from Missing Finally Block
+
+**Problem:** A file processing application ran out of file descriptors after processing 10,000 files, crashing the JVM.
+**Cause:** `FileInputStream` wasn't closed in finally block; exceptions during processing left streams open.
+**Impact:** Application crashed every 4 hours; required manual restart; 2-hour recovery time.
+**Detection:** `java.io.IOException: Too many open files` in logs; JVM crash dumps.
+**Solution:** Refactored to use try-with-resources for automatic resource management.
+**Prevention:** Always use try-with-resources for AutoCloseable resources; configure file descriptor limits in monitoring.
+
+### Incident 3: Exception in Finally Block Masking Original Error
+
+**Problem:** A database connection pool threw `SQLException` in finally block when closing connections, masking the original `NullPointerException` from business logic.
+**Cause:** Finally block attempted to close already-null connection without null check.
+**Impact:** Debugging took 4 hours instead of 10 minutes; original error was hidden.
+**Detection:** Stack trace showed `SQLException` instead of expected `NullPointerException`.
+**Solution:** Added null check in finally block; wrapped finally logic in try-catch.
+**Prevention:** Keep finally blocks simple; avoid complex logic in finally; log original exception before finally.
+
+## Production Checklist
+
+- [ ] Catch specific exceptions, not generic Exception
+- [ ] Never use empty catch blocks
+- [ ] Use try-with-resources for AutoCloseable resources
+- [ ] Preserve exception causes when wrapping
+- [ ] Log exceptions with context (method, parameters, state)
+- [ ] Document exceptions in Javadoc
+- [ ] Use appropriate exception types (checked vs unchecked)
+- [ ] Validate inputs early to avoid exceptions
+- [ ] Don't use exceptions for normal control flow
+- [ ] Test exception paths thoroughly
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses try-catch; catches generic Exception; doesn't use finally properly |
+| Intermediate | Catches specific exceptions; uses try-with-resources; preserves causes |
+| Advanced | Designs custom exceptions; implements retry/circuit breaker patterns; handles concurrency |
+| Expert | Builds fault-tolerant systems; designs exception hierarchies; mentors teams on error handling |
+
+## Common Myths
+
+1. **Myth**: Checked exceptions are always better
+   **Truth**: Checked exceptions add complexity and can lead to swallowed exceptions. Unchecked exceptions are appropriate for programming errors.
+
+2. **Myth**: Catching Exception is acceptable for simplicity
+   **Truth**: Catching generic Exception hides specific errors and makes debugging harder. Always catch the most specific exception possible.
+
+3. **Myth**: Finally blocks always execute
+   **Truth**: Finally doesn't execute if JVM crashes, System.exit() is called, or thread is killed. Don't rely on finally for critical cleanup.
+
+4. **Myth**: Exceptions are expensive and should be avoided
+   **Truth**: Exception creation is expensive only when thrown. Normal flow without exceptions has zero overhead.
+
+5. **Myth**: PrintStackTrace is acceptable for debugging
+   **Truth**: PrintStackTrace goes to stderr, not logging. Use logger.error() with exception parameter for proper logging.
+
 ## Related Topics
 
 - [Testing](../12-testing/README.md)
