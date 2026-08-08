@@ -188,6 +188,10 @@ EnumSet object (on heap):
 - Null elements needed (use HashSet)
 - Very large enums (> 64 constants) with memory concerns
 
+### When NOT to Use EnumSet
+- **Non-enum types**: Use HashSet
+- **Too many enums** (>128): Memory grows with JumboEnumSet
+
 ### Alternatives
 
 | Alternative | When to Use |

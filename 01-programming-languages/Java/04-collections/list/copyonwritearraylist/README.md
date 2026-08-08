@@ -201,6 +201,11 @@ add("D")       : [A, B, C, D] →  New array (kept)
 - Real-time updates are required
 - Large lists with frequent modifications
 
+### When NOT to Use CopyOnWriteArrayList
+- **Frequent writes**: Each write copies entire array. Use ArrayList + sync
+- **Large lists**: Memory overhead from full copies
+- **Real-time reads**: Iterator sees old snapshot, not live changes
+
 ### Alternatives
 
 | Alternative | When to Use |

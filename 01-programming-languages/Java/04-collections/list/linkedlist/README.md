@@ -245,6 +245,12 @@ LinkedList object (on heap):
 - Cache performance matters
 - Iteration speed is critical
 
+### When NOT to Use LinkedList
+- **Random access**: ArrayList is faster for get(i)
+- **Iteration**: ArrayList cache-friendly, LinkedList scattered nodes
+- **Memory**: Each node has prev+next pointers overhead
+- **Need Deque**: Use ArrayDeque (faster than LinkedList)
+
 ### Alternatives
 
 | Alternative | When to Use |

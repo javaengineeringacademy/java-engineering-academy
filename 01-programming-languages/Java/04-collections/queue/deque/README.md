@@ -221,6 +221,11 @@ LinkedList object (on heap):
 - Sorted elements needed (use TreeSet)
 - Thread safety needed (use ConcurrentLinkedDeque)
 
+### When NOT to Use ArrayDeque
+- **Priority ordering**: Use PriorityQueue
+- **Null elements**: ArrayDeque rejects nulls
+- **Thread safety**: Use LinkedBlockingDeque
+
 ### Alternatives
 
 | Alternative | When to Use |

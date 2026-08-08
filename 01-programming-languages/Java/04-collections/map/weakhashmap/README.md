@@ -174,6 +174,11 @@ Entry object: ~40 bytes
 - Predictable behavior required (use HashMap)
 - Values are large (memory overhead)
 
+### When NOT to Use WeakHashMap
+- **Need persistence**: WeakHashMap entries may disappear
+- **Large data**: Reference overhead per entry
+- **No cleanup needed**: Use HashMap (simpler)
+
 ### Alternatives
 
 | Alternative | When to Use |

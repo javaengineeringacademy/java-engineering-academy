@@ -203,6 +203,11 @@ LinkedBlockingQueue object:
 - Priority processing (use PriorityBlockingQueue)
 - Delay scheduling (use DelayQueue)
 
+### When NOT to Use Blocking Queue
+- **Single-threaded**: Use ArrayDeque (no blocking overhead)
+- **Unbounded queue**: LinkedBlockingQueue can exhaust memory
+- **Priority ordering**: Use PriorityBlockingQueue
+
 ### Alternatives
 
 | Alternative | When to Use |

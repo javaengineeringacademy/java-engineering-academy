@@ -126,6 +126,11 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 - Memory is constrained (use HashSet)
 - Insertion order needed (use LinkedHashSet)
 
+### When NOT to Use TreeSet
+- **O(1) needed**: TreeSet is O(log n). Use HashSet
+- **Memory**: TreeNode overhead. Use HashSet
+- **Null elements**: TreeSet doesn't allow null (in most implementations)
+
 ## 11. Debugging Tips
 
 | Problem | Tool/Technique | How |

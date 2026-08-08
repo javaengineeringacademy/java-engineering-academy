@@ -155,6 +155,12 @@ ArrayList object (on heap):
 - Queue/deque operations needed (use ArrayDeque)
 - Thread-safe access needed (use CopyOnWriteArrayList)
 
+### When NOT to Use ArrayList
+- **Frequent insertions/deletions in middle**: LinkedList or CopyOnWriteArrayList for thread safety
+- **Need thread safety**: CopyOnWriteArrayList or Collections.synchronizedList()
+- **Fixed size**: Use Arrays.asList() (but list is fixed-size, not resizable)
+- **Memory sensitive**: Each ArrayList has backing array overhead. Use IntList for primitives
+
 ### Alternatives
 
 | Alternative | When to Use |

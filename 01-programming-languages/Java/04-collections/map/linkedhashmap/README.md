@@ -202,6 +202,11 @@ LinkedHashMap object (on heap):
 - Memory is constrained (use HashMap)
 - Thread safety needed (use ConcurrentHashMap)
 
+### When NOT to Use LinkedHashMap
+- **No order needed**: Use HashMap (simpler, less memory)
+- **Sorted order**: Use TreeMap
+- **Memory**: Extra linked list pointers
+
 ### Alternatives
 
 | Alternative | When to Use |

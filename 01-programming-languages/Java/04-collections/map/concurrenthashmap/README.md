@@ -241,6 +241,11 @@ Node object: ~32 bytes
 - Sorted keys needed (use ConcurrentSkipListMap)
 - Strong consistency needed (use Collections.synchronizedMap() with external sync)
 
+### When NOT to Use ConcurrentHashMap
+- **Single-threaded**: Use HashMap (no concurrency overhead)
+- **Need nulls**: ConcurrentHashMap rejects nulls
+- **Sorted keys**: Use ConcurrentSkipListMap
+
 ### Alternatives
 
 | Alternative | When to Use |

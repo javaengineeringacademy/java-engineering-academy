@@ -267,6 +267,12 @@ Node object: ~32 bytes
 - Thread safety needed (use ConcurrentHashMap)
 - Null not allowed (use Hashtable or ConcurrentHashMap)
 
+### When NOT to Use HashMap
+- **Sorted keys**: Use TreeMap
+- **Thread safety**: Use ConcurrentHashMap
+- **Insertion order**: Use LinkedHashMap
+- **Null keys**: HashMap allows one null, but avoid in concurrent code
+
 ### Alternatives
 
 | Alternative | When to Use |

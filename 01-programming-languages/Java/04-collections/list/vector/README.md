@@ -174,6 +174,11 @@ Vector object (on heap):
 - Performance matters (synchronized overhead)
 - Concurrent access needed (use CopyOnWriteArrayList or synchronizedList)
 
+### When NOT to Use Vector
+- **New code**: Use ArrayList with explicit synchronization
+- **High contention**: Use ConcurrentHashMap.newKeySet() or Collections.synchronizedList()
+- **Performance**: Vector grows 2x (wasteful), ArrayList 1.5x
+
 ### Alternatives
 
 | Alternative | When to Use |

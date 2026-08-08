@@ -216,6 +216,11 @@ Per entry: ~56 bytes
 - Insertion order needed (use LinkedHashMap)
 - Thread safety needed (use ConcurrentSkipListMap)
 
+### When NOT to Use TreeMap
+- **O(1) needed**: TreeMap is O(log n). Use HashMap
+- **Memory**: TreeNode overhead. Use HashMap
+- **Null keys**: TreeMap doesn't allow null keys
+
 ### Alternatives
 
 | Alternative | When to Use |

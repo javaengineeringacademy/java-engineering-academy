@@ -228,6 +228,12 @@ Node object: ~32 bytes
 - Memory is constrained (use ArrayList if duplicates allowed)
 - Thread safety needed (use ConcurrentSkipListSet)
 
+### When NOT to Use HashSet
+- **Sorted elements**: Use TreeSet
+- **Insertion order**: Use LinkedHashSet
+- **Thread safety**: Use Collections.synchronizedSet() or ConcurrentHashMap.newKeySet()
+- **Need get**: HashSet doesn't support get(). Use HashMap
+
 ### Alternatives
 
 | Alternative | When to Use |

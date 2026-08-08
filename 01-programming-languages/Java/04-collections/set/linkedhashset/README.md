@@ -192,6 +192,11 @@ Entry object: ~48 bytes
 - Memory is constrained (use HashSet)
 - Thread safety needed (use ConcurrentSkipListSet)
 
+### When NOT to Use LinkedHashSet
+- **Memory**: Extra linked list overhead
+- **No order needed**: Use HashSet (simpler)
+- **Sorted order**: Use TreeSet
+
 ### Alternatives
 
 | Alternative | When to Use |

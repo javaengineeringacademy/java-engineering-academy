@@ -177,6 +177,11 @@ Stack object (on heap):
 - Performance matters (synchronized overhead)
 - Concurrent access needed (use ConcurrentHashMap or synchronized collection)
 
+### When NOT to Use Stack
+- **New code**: Use ArrayDeque (no synchronization overhead)
+- **LIFO queue**: Use ArrayDeque.push() and pop()
+- **Thread safety**: Use explicit synchronization with ArrayList
+
 ### Alternatives
 
 | Alternative | When to Use |

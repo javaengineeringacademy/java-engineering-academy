@@ -208,6 +208,11 @@ PriorityQueue object (on heap):
 - Thread safety needed (use PriorityBlockingQueue)
 - Contains operation is frequent (use HashSet)
 
+### When NOT to Use PriorityQueue
+- **FIFO**: Use ArrayDeque (faster)
+- **Thread safety**: Use PriorityBlockingQueue
+- **Unordered**: Use ArrayDeque (no heap maintenance)
+
 ### Alternatives
 
 | Alternative | When to Use |

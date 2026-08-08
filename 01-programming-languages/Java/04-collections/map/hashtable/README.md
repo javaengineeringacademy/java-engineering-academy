@@ -186,6 +186,11 @@ Entry object: ~32 bytes
 - Concurrent access needed (use ConcurrentHashMap)
 - Null keys/values needed (use HashMap)
 
+### When NOT to Use Hashtable
+- **New code**: Use ConcurrentHashMap
+- **Null keys/values**: Hashtable rejects all nulls
+- **Performance**: Synchronized = slower. Use ConcurrentHashMap
+
 ### Alternatives
 
 | Alternative | When to Use |
