@@ -358,3 +358,73 @@ void parallel_increment() {
 - **Build Systems** → [Module 13: Build Systems](../13-build-systems/) — Compiler flags, LTO, PGO setup
 - **Best Practices** → [Module 14: Best Practices](../14-best-practices/) — Performance as a best practice
 - **Senior Level** → [Module 15: Senior](../15-senior/) — Performance architecture decisions
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Cache miss causing unexpected slowdown | `perf stat` (L1-dcache-load-misses) | Run `perf stat -e L1-dcache-load-misses ./program`; identify hot loops with high miss rates |
+| False sharing between threads | `perf c2c` analysis | Run `perf c2c record ./program`; identify cache lines with high "Cycles Lost" on adjacent atomics |
+| Memory fragmentation causing OOM | `jemalloc` heap profiler + `/proc/meminfo` | Profile with jemalloc; compare `VmallocUsed` vs `MemUsed` to detect fragmentation |
+| SIMD auto-vectorization not triggering | Compiler report `-fopt-info-vec` | Compile with `-fopt-info-vec`; check if loops are vectorized; add `#pragma GCC ivdep` |
+| Branch misprediction in tight loop | `perf stat` (branch-misses) | Profile branch miss rate; convert unpredictable branches to branchless bit manipulation |
+
+## Code Review Checklist
+
+- [ ] Profiling done before any optimization (never guess)
+- [ ] `-O2` or `-O3` compiler optimizations enabled for release builds
+- [ ] `reserve()` called for vectors when size is known
+- [ ] Hot data aligned to cache lines (`alignas(64)`)
+- [ ] Atomic variables padded to prevent false sharing
+- [ ] Custom allocators used for high-frequency allocation patterns
+- [ ] `std::endl` replaced with `'\n'` to prevent unnecessary flushes
+- [ ] LTO (Link-Time Optimization) enabled for release builds
+
+## Architecture Considerations
+
+Performance optimization requires understanding the hardware architecture. CPU caches (L1/L2/L3) dominate performance — data layout determines cache hit rates. Memory allocation patterns affect fragmentation and throughput. Branch prediction determines pipeline efficiency. SIMD enables processing multiple data points per instruction. Lock-free data structures avoid mutex overhead. Architecture decisions must balance performance with maintainability.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Structure of Arrays (SoA) | Processing one field across many elements | Cache-friendly for hot fields vs. scattered object access |
+| Arena allocator | Frame-based or request-based bulk allocation | O(1) allocation vs. no individual object freeing |
+| Branchless programming | Tight loops with unpredictable branches | Eliminates misprediction vs. reduced readability |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Performance optimization bypassing security checks | Vulnerabilities introduced for speed | Never optimize away bounds checks, input validation, or authentication |
+| Lock-free data structures introducing ABA problem | Memory corruption, data races | Use hazard pointers or epoch-based reclamation for complex lock-free structures |
+| Custom allocator memory leak | Resource exhaustion, DoS | Monitor allocator usage; add leak detection in long-running processes |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `std::atomic` for lock-free operations | Replace manual volatile + memory barriers with `std::atomic` |
+| C++17 | `std::hardware_destructive_interference_size` for cache line alignment | Use `alignas(std::hardware_destructive_interference_size)` for shared atomics |
+| C++20 | `std::jthread` for automatic thread cleanup | Replace `std::thread` with `std::jthread` for RAII thread management |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::atomic` with memory ordering | C++11 | Widely supported |
+| `alignas` for cache line alignment | C++11 | Widely supported |
+| `std::hardware_destructive_interference_size` | C++17 | Supported in GCC 7+, Clang 5+, MSVC 19.11+ |
+| `std::jthread` / `std::stop_token` | C++20 | Supported in GCC 10+, Clang 14+, MSVC 19.28+ |
+
+## Interview Questions
+
+1. **What is cache-friendly data layout and why does it matter?**: Cache-friendly layout keeps frequently accessed data contiguous in memory (SoA, `alignas(64)`). CPUs fetch data in cache lines (64 bytes); if hot data is scattered, every access causes a cache miss (~100 cycles vs ~1 cycle for L1 hit). This can make 10x difference in throughput.
+2. **Explain false sharing and how to fix it**: False sharing occurs when threads write to different variables on the same cache line, causing the line to invalidate and reload on every write. Fix with `alignas(64)` padding to ensure each thread's data occupies its own cache line.
+3. **When should you use a memory pool allocator?**: Use pools when you allocate/deallocate many objects of the same size frequently (e.g., packet processing, game entities). Pools eliminate fragmentation, reduce allocator overhead, and enable bulk deallocation.
+4. **What is branchless programming and when is it useful?**: Branchless programming replaces conditional branches with arithmetic/bit operations (e.g., `mask = x >> 31`). Useful in tight loops with unpredictable branches where branch misprediction causes pipeline stalls (~15 cycles each).
+5. **How do you profile C++ performance effectively?**: Use `perf stat` for hardware counters (cache misses, branch misses), `perf record` + `perf report` for hotspot identification, Google Benchmark for microbenchmarks, and Valgrind Callgrind for call-graph profiling. Always measure before and after optimization.
+
+## References
+- [Computer Systems: A Programmer's Perspective — Bryant & O'Hallaron](https://www.amazon.com/Computer-Systems-Programmers-Perspective-2nd/dp=013409266X)
+- [CppCon Talk: Optimizing C++ — Benchmarking](https://youtube.com/cppcon)
+- [Agner Fog — Optimization Manuals](https://www.agner.org/optimize/)
+- [Google Benchmark Library](https://github.com/google/benchmark)

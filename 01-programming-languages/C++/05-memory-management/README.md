@@ -339,3 +339,73 @@ p->~int();                       // Must manually call destructor
 - [Knowledge Atoms](../00-knowledge-atoms/) — Memory model foundations
 - [Performance](../11-performance/) — Memory optimization techniques
 - [Best Practices](../14-best-practices/) — Memory management guidelines
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Memory leak in error path | Valgrind `--leak-check=full` + ASan | Run `valgrind --leak-check=full --show-leak-kinds=all ./program`; enable `-fsanitize=address,leak` in CI |
+| Use-after-free or dangling pointer | AddressSanitizer (`-fsanitize=address`) | ASan instruments every memory access; reports use-after-free with exact allocation/deallocation stack traces |
+| Double free causing crash or corruption | ASan + `-fsanitize=undefined` | ASan detects double-free; UBSan catches related undefined behavior |
+| Stack overflow from large local arrays | Reduce stack usage + `ulimit -s` | Move large arrays to heap (`std::vector`); check stack size with `ulimit -s` in terminal |
+| Placement new destructor mismatch | Manual destructor call audit | Track every `placement new` with a corresponding `ptr->~T()` call in the same scope |
+
+## Code Review Checklist
+
+- [ ] Stack allocation preferred for small, short-lived objects
+- [ ] RAII used for all resource management (files, locks, memory)
+- [ ] `new`/`delete` never used directly in application code (use smart pointers)
+- [ ] `delete[]` matched with `new[]` and `delete` with `new`
+- [ ] No `delete void*` (skips derived destructor, causes resource leak)
+- [ ] All variables initialized at declaration
+- [ ] Memory pools used for high-frequency small allocations
+
+## Architecture Considerations
+
+Memory management is the most performance-critical architectural decision in C++. Stack allocation is ~100x faster than heap but limited in size and lifetime. Heap allocation is flexible but introduces fragmentation risk and allocation overhead. RAII ties resource lifetime to object scope, making cleanup automatic and exception-safe. Custom allocators (arena, pool, slab) optimize allocation patterns for specific workloads.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| RAII for all resources | Automatic cleanup, exception safety | Requires understanding move semantics; prevents copying of RAII objects |
+| Arena allocator for frame-based allocation | Game engines, request processing | Bulk allocation/deallocation vs. no individual object freeing |
+| Pool allocator for fixed-size objects | Frequent allocation/deallocation of same size | Eliminates fragmentation vs. wasted memory for varying sizes |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Heap buffer overflow from unchecked `new[]` access | Remote code execution, memory corruption | Use `std::vector` with bounds checking; enable ASan in CI |
+| Use-after-free exploitable for code execution | Critical vulnerability (CVE-class) | Use `std::unique_ptr`; never use raw `new`/`delete` in application code |
+| Memory leak exhausting system resources (DoS) | Service crash, denial of service | Use RAII for all allocations; monitor memory in long-running processes |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `std::unique_ptr`, `std::shared_ptr`, move semantics | Replace `new`/`delete` with `std::make_unique` and `std::make_shared` |
+| C++17 | `std::pmr::memory_resource`, `std::byte` | Use polymorphic allocators for pool-based allocation; use `std::byte` for raw memory |
+| C++20 | `std::span` for non-owning memory views | Use `std::span` instead of raw pointer + size pairs |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::unique_ptr` / `std::shared_ptr` | C++11 | Widely supported |
+| `std::make_unique` / `std::make_shared` | C++14 / C++11 | Widely supported |
+| `std::pmr::memory_resource` | C++17 | Widely supported |
+| `std::span` | C++20 | Supported in GCC 10+, Clang 11+, MSVC 19.29+ |
+
+## Interview Questions
+
+1. **When should you use stack vs heap allocation?**: Use stack for small (< 1MB), short-lived objects — it's ~100x faster. Use heap for large objects, objects that outlive their creating scope, polymorphic objects via base pointers, or when shared ownership is needed.
+2. **Explain RAII and why it's the most important C++ pattern**: RAII (Resource Acquisition Is Initialization) ties resource lifetime to object scope — resources are acquired in the constructor and released in the destructor. It prevents leaks, ensures exception safety, and makes code deterministic.
+3. **Why is `delete void*` dangerous?**: `delete void*` skips the derived class destructor, causing derived-class resources (file handles, memory, network connections) to leak. Never delete through a `void*` pointer.
+4. **What is placement new and when is it used?**: Placement new constructs an object at a pre-allocated memory address: `new (buffer) T(args)`. It's used in custom allocators, memory pools, and when you need precise control over where objects live in memory.
+5. **How do you detect memory leaks in C++?**: Use Valgrind (`--leak-check=full`), AddressSanitizer (`-fsanitize=address,leak`), or LeakSanitizer. All track allocations and report unmatched frees at program exit.
+
+## References
+
+- [Effective Modern C++ — Scott Meyers (Items 16-22)](https://www.amazon.com/Effective-Modern-CUDA-Improve-Specific/dp/1491903996)
+- [CppReference — Memory Management](https://en.cppreference.com/w/cpp/memory)
+- [Valgrind Documentation](https://valgrind.org/docs/manual/quick-start.html)
+- [AddressSanitizer — Google](https://github.com/google/sanitizers/wiki/AddressSanitizer)

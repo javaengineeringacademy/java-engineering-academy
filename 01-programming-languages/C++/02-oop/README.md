@@ -523,3 +523,73 @@ try {
 - [Design Patterns](../09-design-patterns/) — OOP patterns in production systems
 - [Memory Management](../05-memory-management/) — Object lifetime and RAII
 - [Best Practices](../14-best-practices/) — Clean OOP design principles
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Object slicing silently losing derived behavior | `typeid(*ptr).name()` + unit tests | Insert debug assertions after container insertion; use `std::vector<std::unique_ptr<Base>>` to prevent slicing |
+| Missing virtual destructor causing resource leak | AddressSanitizer + leak report | ASan reports leaked objects; check if base class has virtual destructor when deleting via base pointer |
+| Infinite loop from incorrect virtual dispatch | GDB backtrace + vtable inspection | Set breakpoint in derived override; use `info vtbl obj` in GDB to inspect vtable layout |
+| Slicing in exception handling (`catch` by value) | Code review + clang-tidy | Enable `bugprone-slicing` check; always catch exceptions by `const&` |
+| Diamond problem with multiple inheritance | Static assertion + virtual inheritance | Use `static_assert(std::is_base_of_v<Base, Derived>)` to verify hierarchy; apply `virtual` inheritance |
+
+## Code Review Checklist
+
+- [ ] Virtual destructor (`virtual ~Base() = default;`) in any class with virtual methods
+- [ ] `override` keyword on all derived virtual functions
+- [ ] `final` applied to classes/methods that should not be overridden
+- [ ] No polymorphic objects stored by value in containers
+- [ ] Single-argument constructors marked `explicit`
+- [ ] Exceptions caught by `const&`, never by value
+- [ ] Rule of Five applied when managing raw resources
+
+## Architecture Considerations
+
+OOP provides the architectural grammar for modeling real-world entities and building extensible systems. Encapsulation prevents invalid states by hiding implementation details behind controlled interfaces. Inheritance establishes behavioral contracts (IS-A) for polymorphic dispatch. Polymorphism enables the Open/Closed Principle — new types without modifying existing code. Composition over inheritance reduces coupling and simplifies testing.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Abstract Factory for plugin architectures | Runtime selection of concrete implementations | Loose coupling vs. indirection overhead and harder debugging |
+| CRTP for static polymorphism | Zero-overhead dispatch in performance-critical paths | Compile-time flexibility vs. reduced readability and debugging difficulty |
+| Composition over inheritance | "Has-a" relationships, code reuse | Clearer ownership vs. more objects and delegation boilerplate |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Vtable pointer manipulation (CET attacks) | Control-flow hijacking, remote code execution | Use Control-Flow Enforcement Technology (CET); avoid exposing polymorphic interfaces to untrusted input |
+| Object slicing exposing derived-class-only data | Information leakage through unintended slicing | Use `std::unique_ptr`/`std::shared_ptr` for polymorphic containers; add `static_assert` guards |
+| Dangling reference from stored base-class pointer | Use-after-free, crashes | Use smart pointers; validate pointer lifetime in RAII wrappers |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `override`, `final`, `= default`, `= delete` | Add `override` to all derived virtual functions; use `= default` for trivial special members |
+| C++17 | `std::variant` for type-safe unions | Replace raw `union` + type tag with `std::variant` for discriminated unions |
+| C++20 | Concepts for interface constraints | Replace virtual-only interfaces with concepts where compile-time polymorphism suffices |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `override` and `final` | C++11 | Widely supported |
+| `= default` and `= delete` | C++11 | Widely supported |
+| `std::variant` | C++17 | Widely supported |
+| Concepts for compile-time polymorphism | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **What is the difference between inheritance and composition?**: Inheritance models IS-A (Dog is an Animal) and enables polymorphism. Composition models HAS-A (Car has an Engine) and provides flexible, decoupled design. Prefer composition when the relationship isn't a true behavioral contract.
+2. **Why must base classes with virtual methods have virtual destructors?**: When deleting a derived object through a base pointer, without a virtual destructor only the base destructor runs — derived resources leak. A virtual destructor ensures the correct destructor chain executes.
+3. **Explain object slicing and why it's dangerous**: Object slicing occurs when a derived object is assigned to a base class by value — the derived-specific members and virtual overrides are silently lost. It's dangerous because the code appears to work but behaves incorrectly.
+4. **What is the diamond problem and how does C++ solve it?**: When D inherits from B and C, both of which inherit from A, D gets two copies of A's members. C++ solves this with virtual inheritance (`class B : virtual public A`), ensuring only one copy of the shared base exists.
+5. **When should you use CRTP over virtual functions?**: Use CRTP when the derived class is known at compile time and you need zero-overhead dispatch. Use virtual functions when you need runtime polymorphism (storing heterogeneous types in containers, plugin architectures).
+
+## References
+
+- [C++ Core Guidelines — Class Design](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-ctor)
+- [CppReference — Virtual Functions](https://en.cppreference.com/w/cpp/language/virtual)
+- [Design Patterns: Elements of Reusable Object-Oriented Software (GoF)](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612)
+- [SOLID Principles in C++](https://www.oreilly.com/library/view/clean-code/9780136083238/)

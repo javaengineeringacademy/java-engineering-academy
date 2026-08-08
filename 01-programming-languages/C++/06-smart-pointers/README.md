@@ -274,3 +274,73 @@ assert(w.use_count() == 2);
 - [Concurrency](../07-concurrency/) — Thread safety of smart pointers
 - [Best Practices](../14-best-practices/) — Smart pointer guidelines
 - [Modern C++](../08-modern-cpp/) — Smart pointer improvements in C++14/17/20
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Circular reference causing `shared_ptr` memory leak | `shared_ptr::use_count()` + Valgrind | Log `use_count()` at suspicious points; use Valgrind to confirm leaked control blocks |
+| Double free from multiple `shared_ptr` from same raw pointer | `std::make_shared` audit + ASan | Never create two `shared_ptr` from the same raw pointer; use `make_shared` exclusively |
+| Thread-unsafe `shared_ptr` copy under concurrency | ThreadSanitizer (`-fsanitize=thread`) | Enable TSan; use `std::atomic<shared_ptr<T>>` (C++20) or wrap copies behind a mutex |
+| `unique_ptr` custom deleter not being called | Debug build + destructor logging | Add logging in custom deleter; verify deleter is called in debug mode with breakpoints |
+| `weak_ptr::lock()` returning nullptr unexpectedly | Expiration logging + ownership audit | Log when `lock()` returns nullptr; trace all `reset()` calls on the owning `shared_ptr` |
+
+## Code Review Checklist
+
+- [ ] `std::unique_ptr` used as the default smart pointer
+- [ ] `std::make_unique` and `std::make_shared` used (exception safety)
+- [ ] `std::weak_ptr` used to break circular references
+- [ ] No multiple `shared_ptr` created from the same raw pointer
+- [ ] Custom deleters provided for non-memory resources (FILE*, sockets)
+- [ ] `enable_shared_from_this` used when objects need to return `shared_ptr` to `this`
+- [ ] `unique_ptr` used for factory functions (caller decides ownership)
+
+## Architecture Considerations
+
+Smart pointers are the RAII foundation of C++ memory management. `unique_ptr` provides zero-overhead exclusive ownership — identical to raw pointers in performance. `shared_ptr` adds reference counting for shared ownership with atomic thread safety on the control block. `weak_ptr` enables observer patterns and breaks circular references. Smart pointers define ownership semantics at the architectural level, making resource management explicit and testable.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `unique_ptr` with custom deleter | Managing C resources (FILE*, CURL*, sockets) | Automatic cleanup vs. slight verbosity of deleter specification |
+| `shared_ptr` + `weak_ptr` for cache | Observing cached objects without preventing destruction | Non-owning observation vs. control block overhead |
+| `enable_shared_from_this` | Objects returning `shared_ptr` to themselves | Safe shared ownership vs. requires careful construction via `make_shared` |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| `shared_ptr` dangling reference from `get()` and raw pointer storage | Use-after-free if `shared_ptr` destroyed | Keep the `shared_ptr` alive; never store raw pointer obtained from `.get()` |
+| Double free from duplicate control blocks | Memory corruption, exploitable crash | Always use `make_shared` or assign from existing `shared_ptr`; never create two from same raw pointer |
+| Thread-unsafe `shared_ptr` copy causing data race | Undefined behavior, intermittent crashes | Use `std::atomic<shared_ptr<T>>` (C++20) or mutex-protected copies |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `unique_ptr`, `shared_ptr`, `weak_ptr` | Replace raw `new`/`delete` with `make_unique` and `make_shared` |
+| C++14 | `std::make_unique` | Use `make_unique` instead of `unique_ptr(new T)` for exception safety |
+| C++20 | `std::atomic<shared_ptr<T>>` | Use `std::atomic<shared_ptr>` for thread-safe shared ownership without external mutex |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::unique_ptr` / `std::shared_ptr` / `std::weak_ptr` | C++11 | Widely supported |
+| `std::make_unique` | C++14 | Widely supported |
+| `std::enable_shared_from_this` | C++11 | Widely supported |
+| `std::atomic<shared_ptr<T>>` | C++20 | Supported in GCC 11+, Clang 14+, MSVC 19.28+ |
+
+## Interview Questions
+
+1. **When should you use `unique_ptr` vs `shared_ptr`?**: Use `unique_ptr` as the default — it's zero-overhead and expresses exclusive ownership. Use `shared_ptr` only when multiple owners genuinely need to share the same resource. Most designs should prefer `unique_ptr`.
+2. **How does `weak_ptr` prevent circular references?**: `weak_ptr` observes an object without incrementing the reference count. When parent and child hold `shared_ptr` to each other, reference counts never reach zero. Breaking one direction with `weak_ptr` allows destruction.
+3. **Why is `make_shared` preferred over `new`?**: `make_shared` performs a single allocation (object + control block together), is exception-safe (no leak if second allocation throws), and is faster due to reduced allocator calls.
+4. **What is `enable_shared_from_this` and when is it needed?**: It allows an object managed by `shared_ptr` to safely return a `shared_ptr` to itself (`shared_from_this()`). It's needed when an object needs to pass itself to async callbacks or APIs that require `shared_ptr` ownership.
+5. **Are smart pointers thread-safe?**: `unique_ptr` is not thread-safe (like raw pointers). `shared_ptr` has an atomic reference count, so copying/releasing is thread-safe, but the managed object is not — you need a mutex for the object itself. C++20 adds `std::atomic<shared_ptr>` for atomic shared pointer operations.
+
+## References
+
+- [Effective Modern C++ — Scott Meyers (Items 18-22)](https://www.amazon.com/Effective-Modern-CUDA-Improve-Specific/dp/1491903996)
+- [CppReference — Smart Pointers](https://en.cppreference.com/w/cpp/memory/shared_ptr)
+- [C++ Core Guidelines — Smart Pointers](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-resource)
+- [CppCon Talk: Smart Pointers in Practice](https://youtube.com/cppcon)

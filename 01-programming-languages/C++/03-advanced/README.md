@@ -427,3 +427,73 @@ using TestDB = Database<MemoryStorage, NullLogger>;
 - [Modern C++](../08-modern-cpp/) — Concepts, constexpr if, fold expressions
 - [Performance](../11-performance/) — When advanced techniques justify their complexity
 - [Design Patterns](../09-design-patterns/) — Type erasure enables Strategy pattern without inheritance
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| CRTP producing unreadable 500-line error messages | C++20 concepts + `static_assert` | Add `static_assert(std::is_base_of_v<CRTPBase, Derived>)` in base; constrain with `requires` clauses |
+| Type erasure heap allocation overhead | Profiler + small buffer optimization | Profile with `perf`; implement SBO to store small objects inline in a fixed-size buffer |
+| Perfect forwarding incorrectly using `std::move` | Compiler warning `-Wpessimizing-move` | Enable warning; ensure `std::forward` is used on forwarding references, never `std::move` |
+| Constexpr function failing at runtime with dynamic input | Split constexpr and runtime paths | Use `if constexpr` to branch; constexpr paths must have compile-time-known arguments |
+| Policy-based design causing code bloat | `bloaty` binary analysis | Use `bloaty` to identify which policy instantiations consume the most space; factor shared logic |
+
+## Code Review Checklist
+
+- [ ] CRTP Derived requirements documented with `static_assert` or concepts
+- [ ] `std::forward` (not `std::move`) used on forwarding reference parameters
+- [ ] Type erasure wrappers include small buffer optimization for objects < 64 bytes
+- [ ] Constexpr functions support both compile-time and runtime invocation
+- [ ] Policy classes are kept small and focused on a single responsibility
+- [ ] Template recursion depth limited to avoid compiler resource exhaustion
+- [ ] Advanced techniques justified by profiling — not applied speculatively
+
+## Architecture Considerations
+
+Advanced C++ techniques enable zero-cost abstractions that bridge generic programming with runtime flexibility. CRTP eliminates vtable overhead for performance-critical dispatch. Type erasure hides concrete types behind uniform interfaces without inheritance hierarchies. Perfect forwarding enables generic factories that preserve value categories. Policy-based design selects behavior at compile time, creating highly customizable yet efficient components.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| CRTP for mixin functionality | Adding comparison, serialization, or logging to types | Zero overhead vs. reduced debugging clarity and tighter coupling |
+| Type erasure (e.g., `std::function`) | Storing heterogeneous callables in a container | Uniform interface vs. heap allocation overhead without SBO |
+| Policy-based design | Compile-time strategy selection (storage, logging) | Extreme flexibility vs. combinatorial template explosion |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| CRTP static_cast to wrong derived type | Undefined behavior, memory corruption | Use `static_assert` to validate Derived satisfies CRTP requirements |
+| Type erasure dangling reference in small buffer | Use-after-free when SBO object outlives buffer | Ensure SBO buffer is properly aligned and destructor called on replacement |
+| Perfect forwarding of sensitive data by value | Unintended copies of credentials/keys | Audit forwarding chains; use `std::string_view` for non-owning sensitive reads |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++14 | Generic lambdas for simpler type erasure | Replace `std::function` with generic lambdas where possible |
+| C++17 | `if constexpr` for compile-time branching | Replace SFINAE with `if constexpr` in constexpr functions and CRTP helpers |
+| C++20 | Concepts for constraining CRTP and policy templates | Replace `static_assert` with `requires` clauses for clearer error messages |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::forward` (perfect forwarding) | C++11 | Widely supported |
+| `if constexpr` | C++17 | Widely supported |
+| Fold expressions | C++17 | Widely supported |
+| Concepts (`requires` clauses) | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **Explain CRTP and when to use it**: CRTP (Curiously Recurring Template Pattern) passes the derived class as a template parameter to the base. The base uses `static_cast<Derived*>(this)` to call derived implementations. Use it for zero-overhead static polymorphism when the derived type is known at compile time.
+2. **What is type erasure and why is it useful?**: Type erasure hides a concrete type behind a uniform interface — like `std::function` storing any callable. It enables heterogeneous containers without inheritance, combining the flexibility of runtime polymorphism with the efficiency of templates.
+3. **How does perfect forwarding work?**: Perfect forwarding uses universal references (`T&&`) and `std::forward<T>()` to pass arguments to another function preserving their value category (lvalue/rvalue) and const-qualification. It's essential for generic factories and wrappers.
+4. **When should you prefer `if constexpr` over SFINAE?**: Use `if constexpr` when the branching is based on type traits and both branches are valid code (just different implementations). SFINAE is needed when one branch should not participate in overload resolution at all.
+5. **What is policy-based design and what are its trade-offs?**: Policy-based design passes behavior as template parameters (e.g., `Database<StoragePolicy, LoggerPolicy>`). Trade-offs: extreme compile-time flexibility vs. combinatorial template instantiation that can bloat binaries and hurt compile times.
+
+## References
+
+- [Modern C++ Design — Andrei Alexandrescu (Policy-Based Design)](https://www.amazon.com/Modern-Design-Generative-Programming-Patterns/dp/0201704315)
+- [CppReference — Type Erasure Patterns](https://en.cppreference.com/w/cpp)
+- [ARTSI — Advanced C++ Techniques](https://isocpp.org/wiki/faq)
+- [CppCon Talks on CRTP and Type Erasure](https://youtube.com/cppcon)

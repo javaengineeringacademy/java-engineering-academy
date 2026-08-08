@@ -480,3 +480,73 @@ using Second = typename NthType<1, MyTypes>::type;  // double
 - [Modern C++](../08-modern-cpp/) — Concepts, constexpr if, fold expressions
 - [Performance](../11-performance/) — Template overhead and optimization
 - [Design Patterns](../09-design-patterns/) — Policy-based design with templates
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Template error messages spanning 200+ lines | C++20 concepts + `static_assert` | Replace SFINAE with `requires` clauses; use `static_assert` at template entry for clear constraint violations |
+| Template bloat increasing binary size | `bloaty` + `extern template` | Use `extern template` to control instantiation across TUs; factor type-independent logic into non-template base classes |
+| SFINAE constraint failing silently or with wrong error | Clang `-fdiagnostics-show-template-tree` | Enable template tree diagnostics; replace `enable_if` with `requires` clause for readable errors |
+| Implicit template argument deduction giving unexpected type | Explicit template arguments at call site | Use `func<Type>(args)` when deduction is ambiguous; add `decltype` trailing return types |
+| Deep template recursion causing compiler ICE | Reduce recursion depth + iterative approach | Limit recursion to ~100 levels; convert recursive templates to `constexpr` loops where possible |
+
+## Code Review Checklist
+
+- [ ] All template implementations in header files (not `.cpp`)
+- [ ] C++20 concepts used instead of SFINAE where possible
+- [ ] `extern template` used for heavy instantiations to reduce compile time
+- [ ] Function overloading preferred over template specialization
+- [ ] `constexpr if` used instead of SFINAE for conditional logic in templates
+- [ ] Template recursion depth reasonable (< 100 levels)
+- [ ] `static_assert` provides clear compile-time error messages
+
+## Architecture Considerations
+
+Templates are the foundation of generic programming in C++ — they power the entire STL, smart pointers, and modern libraries. The compiler generates specialized code for each type, producing zero-overhead abstractions. Template metaprogramming enables compile-time computation that shifts work from runtime to compile time. Concepts (C++20) make template constraints self-documenting and errors readable.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `extern template` | Control template instantiation across TUs | Faster linking vs. explicit instantiation management overhead |
+| Variadic templates + fold expressions | Accepting any number of arguments of any type | Maximum flexibility vs. complex error messages and compile-time cost |
+| Template specialization for optimization | Type-specific performance tweaks | Micro-optimization vs. code maintenance burden |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Template instantiation code injection via macro-like patterns | Unexpected code generation, type confusion | Never use macros where templates suffice; constrain with `static_assert` |
+| Implicit conversions in template arguments | Wrong type deduction, subtle bugs | Use explicit template arguments; add constraints with concepts |
+| Deep template recursion consuming compiler resources | Denial-of-service in build systems, CI timeouts | Limit recursion depth; use `constexpr` functions instead of recursive templates |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++14 | Generic lambdas, variable templates | Replace `std::function` with generic lambdas; use `constexpr` variable templates for constants |
+| C++17 | `if constexpr`, CTAD, fold expressions | Replace SFINAE with `if constexpr`; use CTAD to omit template arguments |
+| C++20 | Concepts, constrained auto, ranges | Replace SFINAE with `requires` clauses; use constrained auto for clearer deduction |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| Function and class templates | C++98 | Universal |
+| `constexpr` templates | C++11 | Widely supported |
+| `if constexpr` | C++17 | Widely supported |
+| Concepts (`requires` clauses) | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **What is SFINAE and why is it being replaced?**: SFINAE (Substitution Failure Is Not An Error) causes template overload resolution to silently skip a candidate when substitution fails. It's being replaced by C++20 concepts because concepts produce clear error messages stating which constraint was violated.
+2. **Explain `extern template` and when to use it**: `extern template` tells the compiler not to instantiate a template in the current TU — instantiation happens in exactly one `.cpp` file. Use it for heavy templates to reduce compile time and avoid duplicate instantiation across TUs.
+3. **What is the difference between template specialization and overloading?**: Specialization provides a completely different implementation for a specific type. Overloading adds a new function with different parameters. Prefer overloading over specialization because overload resolution is more predictable.
+4. **How do fold expressions work in C++17?**: Fold expressions apply a binary operator over a parameter pack: `(args + ...)` expands to `arg1 + arg2 + ... + argN`. They replace recursive template expansion for variadic templates.
+5. **What problems do C++20 concepts solve?**: Concepts make template constraints self-documenting, produce clear error messages when constraints are violated, enable constrained auto, and replace the cryptic SFINAE pattern with readable `requires` clauses.
+
+## References
+
+- [C++ Templates: The Complete Guide — Vandevoorde, Josuttis, Gregor](https://www.amazon.com/C-Templates-Complete-Guide-2nd/dp/0321714127)
+- [CppReference — Templates](https://en.cppreference.com/w/cpp/language/templates)
+- [C++20 Concepts Proposal (P0892R2)](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0892r2.html)
+- [Compiler Explorer — Template Instantiation](https://godbolt.org/)

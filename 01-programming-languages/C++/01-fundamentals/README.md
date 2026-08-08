@@ -533,3 +533,73 @@ std::string_view sv = s2;          // No copy, just a view
 - [Memory Management](../05-memory-management/) — Deep dive into stack vs heap
 - [Modern C++](../08-modern-cpp/) — Modern alternatives to C-style fundamentals
 - [Best Practices](../14-best-practices/) — Guidelines for clean fundamental code
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Uninitialized variable causing intermittent NaN/crash | Valgrind memcheck + `-Wuninitialized` | Compile with `-Wuninitialized -Werror`; run `valgrind --tool=memcheck ./program` to find uninitialized reads |
+| Implicit conversion overflow (e.g., `uint16_t` for large values) | Compiler warnings + static assertions | Enable `-Wconversion`; use `static_assert(sizeof(T) >= required_bytes)` to catch overflow-prone types |
+| Dangling pointer from returning address of local variable | AddressSanitizer (`-fsanitize=address`) | ASan catches stack-use-after-return with precise allocation/deallocation traces |
+| Array out-of-bounds access | `-fsanitize=bounds` or `std::array::at()` | Use bounds-checked `.at()` during development; enable UBSan in CI |
+| Missing `break` in switch statement causing fallthrough | Compiler warning `-Wimplicit-fallthrough` | Enable the warning; use `[[fallthrough]]` attribute explicitly when intentional |
+
+## Code Review Checklist
+
+- [ ] All variables initialized at declaration (no uninitialized reads)
+- [ ] Fixed-width types (`int32_t`, `uint64_t`) used when size matters
+- [ ] `nullptr` used instead of `NULL` or `0`
+- [ ] References preferred over pointers where null is not needed
+- [ ] `std::array` and `std::string` used instead of C-style equivalents
+- [ ] `const`/`constexpr` applied to all constants and read-only parameters
+- [ ] Range-based for loops used where index is not needed
+
+## Architecture Considerations
+
+Fundamentals are the atomic units of every C++ system. Variables and types define data contracts between components. Control structures determine execution flow and error-handling paths. Functions encapsulate reusable logic and define API boundaries. Pointers and references govern memory relationships between components. Getting these right prevents entire categories of production bugs that are expensive to debug in complex systems.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| RAII for local resources | Automatic cleanup of files, locks, memory | Exception-safe but requires understanding move semantics |
+| `std::string_view` for read-only parameters | Avoiding unnecessary string copies | Non-owning — caller must ensure underlying string outlives the view |
+| Guard clauses over nested `if` | Improving readability of validation logic | Flatter code but may obscure business-rule grouping |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from C-style arrays | Remote code execution, stack corruption | Use `std::array`, `.at()`, and `std::string` instead of raw arrays and `char*` |
+| Integer overflow in payment/financial calculations | Incorrect amounts, financial loss | Use `int64_t` for monetary values; add runtime overflow checks with `if` guards |
+| Use-after-free from dangling pointers | Exploitable memory corruption, crashes | Use `std::unique_ptr` and ensure pointer lifetime exceeds usage scope |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `nullptr`, `auto`, range-based for, `std::array` | Replace `NULL` with `nullptr`; replace C arrays with `std::array` |
+| C++17 | `std::string_view`, structured bindings, `if` with initializer | Use `string_view` for read-only string params; use structured bindings for map iteration |
+| C++20 | `char8_t` for UTF-8 | Replace `char` for UTF-8 data with `char8_t` for type safety |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `nullptr` | C++11 | Widely supported |
+| `auto` type inference | C++11 | Widely supported |
+| `std::string_view` | C++17 | Widely supported |
+| `char8_t` | C++20 | Supported in GCC 10+, Clang 10+, MSVC 19.24+ |
+
+## Interview Questions
+
+1. **What is the difference between pass-by-value and pass-by-reference?**: Pass-by-value copies the argument (modifications don't affect the original). Pass-by-reference creates an alias — modifications affect the original. Pass by `const&` for read-only large objects; pass by value for small, cheap-to-copy types.
+2. **When should you use `nullptr` instead of `NULL`?**: Always. `nullptr` is type-safe (`std::nullptr_t`) and doesn't ambiguity with integer overloads. `NULL` is a macro that may expand to `0`, causing incorrect overload resolution.
+3. **Explain the Rule of Zero, Three, and Five**: Rule of Zero — if your class manages no resources, don't declare any special member functions. Rule of Three — if you define one of destructor/copy-ctor/copy-assign, define all three. Rule of Five — add move-ctor and move-assignment to Rule of Three for efficient resource transfer.
+4. **Why prefer `std::array` over C-style arrays?**: `std::array` knows its size (`.size()`), is compatible with STL algorithms, supports bounds-checked access via `.at()`, and has zero overhead — it compiles to identical machine code as C arrays.
+5. **What is `constexpr` and when should you use it?**: `constexpr` marks values and functions that can be evaluated at compile time. Use it for constants, lookup tables, and functions whose inputs are known at compile time — it eliminates runtime cost entirely.
+
+## References
+
+- [C++ Core Guidelines — Declarations](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-name)
+- [CppReference — Fundamental Types](https://en.cppreference.com/w/cpp/language/types)
+- [Compiler Explorer — Inspect generated code](https://godbolt.org/)
+- [Valgrind Quick Start](https://valgrind.org/docs/manual/quick-start.html)

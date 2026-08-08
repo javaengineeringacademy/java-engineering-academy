@@ -518,3 +518,74 @@ int main() {
 - **Concurrency** → [Module 07: Concurrency](../07-concurrency/) — `std::future`, `std::async`, `std::jthread`
 - **Design Patterns** → [Module 09: Patterns](../09-design-patterns/) — Strategy, Observer with lambdas
 - **Best Practices** → [Module 14: Best Practices](../14-best-practices/) — Modern C++ style guide
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Lambda capturing variable by reference causing dangling | AddressSanitizer + lifetime analysis | Use `[=]` or `[name]` instead of `[&name]` for captured variables that outlive the lambda scope |
+| `std::optional::value()` called without checking `has_value()` | Code review + lint rule | Ban `.value()` calls; use `*opt` (unchecked) or `.value_or(default)` (safe) instead |
+| `std::move` on const object producing no move | Compiler warning `-Wpessimizing-move` | Enable warning; never `std::move` on `const` objects — it binds to `const&` instead |
+| Concept constraint error producing confusing output | C++20 concepts + clear `requires` clauses | Define concepts with descriptive names; use `requires` clauses that match the intended constraint |
+| `std::variant` `std::get` throwing `std::bad_variant_access` | Use `std::holds_alternative` check first | Always check `std::holds_alternative<T>(v)` before `std::get<T>(v)`, or use `std::visit` |
+
+## Code Review Checklist
+
+- [ ] `auto` used when type is obvious from context
+- [ ] Range-based for loops used for container iteration
+- [ ] `nullptr` used instead of `NULL` or `0`
+- [ ] Move semantics applied for non-copyable/large objects
+- [ ] `constexpr` used for compile-time computable values
+- [ ] `std::optional` used instead of sentinel values
+- [ ] `std::string_view` used for read-only string parameters
+- [ ] C++20 concepts used to constrain templates
+
+## Architecture Considerations
+
+Modern C++ fundamentally changes how you express intent. Lambdas enable inline callbacks without functor classes. Move semantics eliminate unnecessary copies of large objects. `constexpr` shifts computation from runtime to compile time. `std::optional` and `std::variant` make type-safe designs explicit. Concepts make template constraints self-documenting. Together, these features reduce boilerplate, prevent entire categories of bugs, and make code more maintainable.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Lambda + `std::function` for callbacks | Event handlers, signal-slot systems | Type-erased flexibility vs. heap allocation overhead |
+| `std::optional` for nullable values | Function return values that may be absent | Explicit absence vs. pointer-based alternatives |
+| `std::variant` + `std::visit` for discriminated unions | Type-safe polymorphic values | Safety vs. `std::visit` verbosity |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Lambda capturing local by reference dispatched to thread pool | Use-after-free, exploitable crash | Capture by value for thread-dispatched lambdas; enable ASan in CI |
+| `std::variant` type confusion via unchecked `std::get` | Undefined behavior, crash | Always check `std::holds_alternative` before `std::get` |
+| `std::string_view` dangling after source string destroyed | Use-after-free, information leakage | Ensure source string outlives `string_view`; prefer `std::string` for owned data |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `auto`, lambdas, move semantics, `nullptr`, `constexpr` | Replace manual iterator declarations with `auto`; use lambdas for callbacks |
+| C++17 | `std::optional`, `std::variant`, `std::string_view`, structured bindings | Replace sentinel values with `std::optional`; replace `union` with `std::variant` |
+| C++20 | Concepts, ranges, coroutines, `std::format` | Replace SFINAE with concepts; use ranges for lazy pipelines |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `auto` / lambdas / `std::move` | C++11 | Widely supported |
+| `std::optional` / `std::variant` / `std::string_view` | C++17 | Widely supported |
+| `if constexpr` / structured bindings | C++17 | Widely supported |
+| Concepts / ranges / coroutines | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **When should you use `auto` and when should you avoid it?**: Use `auto` when the type is obvious from context (`auto it = vec.begin()`). Avoid it when the type is not obvious (`auto result = compute_value()`) or when a specific type is needed for API contracts.
+2. **Explain move semantics and when `std::move` is needed**: Move semantics transfer ownership of resources (heap memory, file handles) from one object to another instead of copying. `std::move` is a cast that enables move overloads — use it when transferring ownership of large or non-copyable objects.
+3. **What is `std::optional` and when should you use it?**: `std::optional<T>` represents a value that may or may not exist. Use it instead of sentinel values (`-1`, `""`, `nullptr`) or `bool + T` pairs for function return values that may legitimately be absent.
+4. **How do C++20 concepts improve on SFINAE?**: Concepts produce clear error messages stating which constraint was violated, are self-documenting, enable constrained auto, and replace the cryptic `std::enable_if` pattern. They make template code readable and maintainable.
+5. **What is the difference between `std::move` and copy elision (NRVO)?**: `std::move` casts an lvalue to an rvalue reference to enable move construction. NRVO (Named Return Value Optimization) eliminates the copy/move entirely by constructing the return value directly in the caller's stack frame. C++17 mandates copy elision for prvalues (guaranteed copy elision).
+
+## References
+
+- [Effective Modern C++ — Scott Meyers](https://www.amazon.com/Effective-Modern-CUDA-Improve-Specific/dp/1491903996)
+- [CppReference — C++11/17/20 Features](https://en.cppreference.com/w/cpp/17)
+- [C++ Core Guidelines — Modern C++](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-.invokeLater)
+- [CppCon Talk: C++17 Features](https://youtube.com/cppcon)

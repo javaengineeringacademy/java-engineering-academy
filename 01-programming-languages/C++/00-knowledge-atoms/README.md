@@ -480,3 +480,73 @@ auto process(T value) {
 - [Templates](../03-templates/) — Deep dive into template metaprogramming
 - [Memory Management](../05-memory-management/) — Master the memory model
 - [Performance](../11-performance/) — Use knowledge atoms for optimization
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| ODR violations across translation units | Linker error messages + `-Werror` | Compile with `-Wall -Wextra -Wpedantic` and examine "multiple definition" errors to find header-defined variables |
+| Dangling pointer from wrong storage duration | AddressSanitizer (`-fsanitize=address`) | Run binary under ASan; it reports use-after-free and stack-buffer-overflows with allocation traces |
+| Virtual dispatch overhead in hot paths | `perf record` + `perf report` | Profile with `perf record -g ./program` then check for `vtable` and indirect call entries in the hot path |
+| Template instantiation bloat increasing binary size | `bloaty` or `nm --size-sort` | Run `bloaty binary` to identify which template instantiations consume the most binary space |
+| Undefined behavior from strict aliasing violations | `-fno-strict-aliasing` + Valgrind | Compile with `-fno-strict-aliasing` to test; use Valgrind to detect invalid memory access patterns |
+
+## Code Review Checklist
+
+- [ ] No variables or functions defined in headers without `inline`/`extern` (ODR compliance)
+- [ ] `constexpr` used for compile-time constants instead of raw `#define`
+- [ ] `static_cast` preferred over C-style casts
+- [ ] Virtual destructors present in base classes with virtual methods
+- [ ] `alignas()` used for cache-critical data structures
+- [ ] `static_assert` validates compile-time invariants in template code
+- [ ] Compiler warnings enabled (`-Wall -Wextra -Wpedantic`) and treated as errors
+
+## Architecture Considerations
+
+Understanding knowledge atoms is foundational to every C++ architecture decision. The compilation model determines how code is organized into translation units and headers, directly impacting build times and modularity. The object model (vtable layout, empty base optimization) influences how class hierarchies are designed for cache efficiency. Template metaprogramming enables zero-cost abstractions that form the backbone of modern C++ libraries and frameworks.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Header-only libraries (ODR-safe via `inline`) | Small utility functions and templates | Faster compilation per TU vs. larger binary from duplicate code |
+| CRTP for static polymorphism | Performance-critical dispatch paths | Zero overhead vs. reduced readability and debugging difficulty |
+| `constexpr` compile-time computation | Lookup tables, hashing, type-safe constants | Zero runtime cost vs. increased compile time |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from unchecked pointer arithmetic | Remote code execution, memory corruption | Use `std::array`, bounds-checked access, and AddressSanitizer in CI |
+| Undefined behavior from `reinterpret_cast` | Exploitable memory corruption, non-portable code | Use `static_cast` or `dynamic_cast`; ban `reinterpret_cast` except for serialization |
+| Object layout assumptions across platforms | ABI breaks, security-critical misinterpretation of data | Use fixed-width types, test cross-compilation, avoid platform-specific packing |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `constexpr` functions for compile-time computation | Replace `#define` constants with `constexpr` variables and functions |
+| C++17 | `constexpr if`, `inline` variables | Replace SFINAE with `constexpr if`; use `inline constexpr` for header constants |
+| C++20 | Concepts for template constraints | Replace `static_assert` and SFINAE with `requires` clauses for clearer errors |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `constexpr` variables and functions | C++11 | Widely supported |
+| `inline` variables | C++17 | Widely supported |
+| `constexpr if` | C++17 | Widely supported |
+| Concepts (`requires` clauses) | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **What is the One-Definition Rule (ODR) and why does it matter?**: ODR states that every entity (function, variable, class, template) must have exactly one definition across the entire program. Violating ODR is undefined behavior — the compiler can do anything. It matters because header-defined variables without `inline`/`extern` cause linker errors or silent corruption.
+2. **Explain the difference between stack and heap allocation**: Stack allocation is automatic, fast (~100x faster than heap), and scoped to function lifetime. Heap allocation is manual or RAII-managed, flexible in size and lifetime, but slower due to free-list searches and potential system calls.
+3. **What is object slicing and how do you prevent it?**: Object slicing occurs when a derived class object is assigned to a base class variable by value, silently losing derived-specific data and virtual overrides. Prevent it by using pointers or smart pointers (`std::unique_ptr<Base>`) for polymorphic containers.
+4. **How does virtual dispatch work at the machine level?**: The compiler reads the vptr from the object, looks up the function pointer in the vtable (an array of function pointers), and calls through that pointer. Cost is one pointer dereference plus indirect call (~2-5 ns).
+5. **What is the purpose of `constexpr` in modern C++?**: `constexpr` enables compile-time computation, producing zero runtime cost. It replaces `#define` constants, enables template metaprogramming with values, and allows the compiler to validate invariants at compile time via `static_assert`.
+
+## References
+
+- [ISO C++ Standard](https://isocpp.org/std/the-standard)
+- [CppReference — Knowledge Atoms Topics](https://en.cppreference.com/w/)
+- [C++ Core Guidelines — B, C, and F Sections](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+- [Compiler Explorer (Godbolt)](https://godbolt.org/) — Inspect generated assembly for ODR and layout questions

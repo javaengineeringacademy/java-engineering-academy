@@ -373,3 +373,73 @@ TEST_F(SafeParseIntTest, WhitespaceOnly) {
 - **Design Patterns** → [Module 09: Design Patterns](../09-design-patterns/) — Patterns should be testable; Mock uses Adapter
 - **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — `constexpr` tests, `std::optional` in test assertions
 - **Concurrency** → [Module 07: Concurrency](../07-concurrency/) — Thread-safety tests, race condition detection
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Flaky test failing non-deterministically | `--gtest_repeat` with random ordering | Run `--gtest_repeat=100 --gtest_shuffle` to detect ordering dependencies; isolate shared state |
+| Test environment contamination between tests | `SetUp()`/`TearDown()` audit + global state review | Remove all global mutable state; each test creates its own configuration instance |
+| Mock not matching expected calls | Google Mock error messages + `testing::_` wildcards | Use `testing::_` for matchers; check exact argument types and call counts |
+| Boundary condition not tested (e.g., $1000.00) | Parameterized tests for boundary values | Use `INSTANTIATE_TEST_SUITE_P` with min-1, min, min+1, max-1, max, max+1 |
+| Integration test connecting to real database slowly | Health check + retry with exponential backoff | Wait for database readiness before running tests; increase timeout to 30s |
+
+## Code Review Checklist
+
+- [ ] Tests written for all public APIs
+- [ ] Boundary values and edge cases tested (min, max, min-1, min+1)
+- [ ] External dependencies mocked (databases, network, filesystem)
+- [ ] Tests are independent — no shared mutable state between tests
+- [ ] Regression test exists for every bug fix
+- [ ] Test names clearly describe the scenario being tested
+- [ ] Flaky tests tracked and fixed — never ignored
+
+## Architecture Considerations
+
+Testing is the architectural safety net that enables confident refactoring and deployment. Unit tests verify individual components in isolation. Integration tests verify component interactions. Mocks replace external dependencies for deterministic testing. Test-driven development (TDD) shapes architecture toward testability — small, focused, loosely coupled components. A strong test suite enables continuous deployment with confidence.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Test fixture for shared setup | Multiple tests with common state | Reduces duplication vs. hidden test dependencies |
+| Parameterized tests for boundary conditions | Data-driven testing of input/output pairs | Concise test definitions vs. harder to debug individual failures |
+| Mock objects for external dependencies | Testing without real databases/network | Deterministic tests vs. mocks may not perfectly simulate real behavior |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Tests connecting to production database | Data corruption, security breach | Use separate test databases; mock external services in unit tests |
+| Flaky tests hiding real regressions | Security vulnerabilities slipping through | Fix or delete flaky tests; never ignore CI failures |
+| Missing tests for security-critical code paths | Exploitable vulnerabilities undetected | Write tests for authentication, authorization, input validation, and boundary conditions |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `constexpr` functions enable compile-time test assertions | Use `static_assert` for compile-time validation of invariants |
+| C++17 | `std::optional` simplifies test assertions for nullable returns | Replace `bool + output` with `std::optional` in test expectations |
+| C++20 | Concepts enable clearer test fixture type requirements | Constrain test fixture template parameters with `requires` clauses |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `static_assert` for compile-time tests | C++11 | Widely supported |
+| `std::optional` for nullable test assertions | C++17 | Widely supported |
+| `constexpr` functions in test code | C++11 | Widely supported |
+| `std::ranges` for test data pipelines | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **What is the difference between unit, integration, and system tests?**: Unit tests verify individual functions/classes in isolation. Integration tests verify component interactions (e.g., service + database). System tests verify the entire application end-to-end. Unit tests are fast and numerous; integration tests are slower and fewer.
+2. **How do you write testable code?**: Follow SOLID principles — small single-responsibility functions, dependency injection for external resources, interfaces for mocking, and avoiding global state. Code that's easy to test is usually well-designed.
+3. **What is the purpose of mocking?**: Mocks replace external dependencies (databases, APIs, file systems) with controlled fakes. They enable deterministic, fast tests that don't depend on external services. Mocks verify interactions (was this method called with these arguments?).
+4. **How do you handle flaky tests?**: Never ignore them. Track flaky test rates. Fix root causes (timing issues, shared state, external dependencies). Use retries with exponential backoff for network-dependent tests. Delete tests that can't be made reliable.
+5. **What is TDD and what are its benefits?**: Test-Driven Development: write a failing test, write minimal code to pass, refactor. Benefits: tests drive design toward testability, immediate feedback, safe refactoring, living documentation of expected behavior.
+
+## References
+
+- [Google Test Primer](https://google.github.io/googletest/primer.html)
+- [Catch2 Documentation](https://github.com/catchorg/Catch2)
+- [C++ Core Guidelines — Testing](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-testing)
+- [Effective Unit Testing — Lasse Koskela](https://www.amazon.com/Effective-Unit-Testing-Koskela/dp=1937785480)

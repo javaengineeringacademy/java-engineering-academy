@@ -422,3 +422,73 @@ struct DebtItem {
 - **Best Practices** → [Module 14: Best Practices](../14-best-practices/) — SOLID principles, coding standards
 - **Concurrency** → [Module 07: Concurrency](../07-concurrency/) — Distributed systems, lock-free patterns
 - **Testing** → [Module 10: Testing](../10-testing/) — Integration testing, chaos engineering
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Architecture decision causing scaling bottleneck | DORA metrics + load testing | Measure deploy frequency, lead time, MTTR, change failure rate; load test to find architectural limits |
+| Premature abstraction wasting engineering time | YAGNI audit + code deletion | Count usage sites of abstractions; delete those used < 3 times; prefer utility functions over frameworks |
+| Technical debt compounding causing velocity drop | Debt tracker + sprint allocation | Track debt items with severity; allocate 20% of sprint capacity to debt reduction |
+| Error budget exceeded causing customer churn | SLA monitoring + feature freeze | Implement error budget policy; freeze features when budget is spent until reliability is restored |
+| Cross-service dependency causing deployment delays | Service dependency graph analysis | Map service dependencies; eliminate unnecessary coupling; use event-driven communication |
+
+## Code Review Checklist
+
+- [ ] Architecture decisions documented (ADRs) before implementation
+- [ ] System has observability (logs, metrics, traces) for all critical paths
+- [ ] Error budgets defined and monitored for SLA compliance
+- [ ] Technical debt tracked with severity and workarounds documented
+- [ ] Disaster recovery and failover plans tested
+- [ ] Runbooks exist for production operations
+- [ ] Every service has health checks and readiness probes
+
+## Architecture Considerations
+
+Senior-level architecture decisions determine whether systems succeed or fail at scale. Domain-Driven Design (DDD) aligns code with business domains, reducing cognitive load. Hexagonal architecture isolates business logic from infrastructure, enabling independent testing and technology changes. ADRs document why decisions were made, enabling future engineers to understand trade-offs. Error budgets balance feature velocity with reliability.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Modular monolith (before microservices) | Small-to-medium teams, unclear service boundaries | Simpler deployment vs. limited independent scaling |
+| Hexagonal architecture (ports & adapters) | Systems requiring technology flexibility | Testable business logic vs. more boilerplate interfaces |
+| Domain-Driven Design (DDD) | Complex business domains with rich rules | Code aligned with business vs. steeper learning curve |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Architecture decision not accounting for security boundaries | Privilege escalation, data leakage | Define security boundaries in architecture reviews; implement defense in depth |
+| Technical debt in security-critical code | Exploitable vulnerabilities accumulating | Track security debt as Critical severity; allocate immediate fix capacity |
+| Lack of disaster recovery plan | Extended outage, data loss | Test failover quarterly; maintain documented recovery procedures with RTO/RPO targets |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++17 | Structured bindings, `std::optional`, `std::variant` | Adopt modern types for clearer domain models and API design |
+| C++20 | Concepts, ranges, coroutines | Use concepts for domain constraints; use coroutines for async workflows |
+| C++23 | `std::expected`, `std::print`, `std::mdspan` | Replace error-code patterns with `std::expected`; use `mdspan` for multidimensional data |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::variant` for type-safe domain values | C++17 | Widely supported |
+| `std::optional` for nullable returns | C++17 | Widely supported |
+| Concepts for domain constraints | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+| `std::expected` (error handling) | C++23 | Supported in GCC 12+, Clang 16+, MSVC 19.33+ |
+
+## Interview Questions
+
+1. **How do you decide between monolith and microservices?**: Start with a monolith. Extract services only when you have clear service boundaries (business domains, not technical layers), the team size demands independent deployment, or scaling requirements differ per component. Microservices add complexity — don't adopt them prematurely.
+2. **What is an Architecture Decision Record (ADR)?**: ADR is a short document capturing a significant architectural decision: context, options considered, decision made, and rationale. ADRs are version-controlled alongside code, enabling future engineers to understand why decisions were made.
+3. **How do you manage technical debt?**: Track debt items with severity (Low/Medium/High/Critical) and workarounds. Allocate 15-20% of sprint capacity to debt reduction. Prioritize debt that blocks features or causes production incidents. Never ignore security debt.
+4. **What is an error budget and how does it work?**: An error budget is the allowed downtime derived from SLA (e.g., 99.99% = 52 min/year). When the budget is spent, features freeze until reliability is restored. It balances feature velocity with reliability.
+5. **How do you approach system design for a new product?**: Start simple (monolith, SQL database, basic monitoring). Define SLAs before building features. Use DDD to align code with business domains. Add complexity (caching, message queues, microservices) only when measurement shows a need. Document decisions with ADRs.
+
+## References
+
+- [Building Microservices — Sam Newman](https://www.amazon.com/Building-Microservices-Designing-Fine-Grained-Systems/dp/1492034029)
+- [Domain-Driven Design — Eric Evans](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215)
+- [Architecture Decision Records — Michael Nygard](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
+- [The Phoenix Project — Gene Kim](https://www.amazon.com/Phoenix-Project-DevOps-Helping-Business/dp/0991537522)

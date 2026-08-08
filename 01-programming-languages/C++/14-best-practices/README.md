@@ -453,3 +453,73 @@ public:
 - **Design Patterns** → [Module 09: Design Patterns](../09-design-patterns/) — SOLID principles guide pattern selection
 - **Testing** → [Module 10: Testing](../10-testing/) — Testability as a best practice
 - **Build Systems** → [Module 13: Build Systems](../13-build-systems/) — Compiler warnings, static analysis in CI
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Missing `const` causing accidental modification | `-Werror` + clang-tidy `readability-make-member-function-const` | Enable the clang-tidy check; add `const` to all non-modifying member functions |
+| Memory leak from missing destructor (Rule of Five violation) | Valgrind + clang-tidy `cppcoreguidelines-special-member-functions` | Run Valgrind; enable the clang-tidy check to detect missing special members |
+| Function doing too many things (cyclomatic complexity > 10) | `lizard` or `cccc` complexity tools | Run `lizard --ncs file.cpp`; extract functions when complexity exceeds 10 |
+| Naming inconsistency across codebase | clang-tidy readability checks | Enable `readability-naming-conventions`; enforce consistent naming in code review |
+| Deep inheritance causing fragile base class | Code review + composition refactor | Replace inheritance with composition; limit hierarchy to 2-3 levels |
+
+## Code Review Checklist
+
+- [ ] Everything marked `const` by default (remove only when modification needed)
+- [ ] RAII used for all resource management (files, locks, memory)
+- [ ] Rule of Zero or Rule of Five followed for all classes
+- [ ] Functions are small and single-responsibility (5-30 lines)
+- [ ] Smart pointers used for ownership; raw pointers for non-owning references
+- [ ] Compiler warnings enabled (`-Wall -Wextra -Wpedantic -Werror`)
+- [ ] Static analysis (clang-tidy, cppcheck) run in CI
+
+## Architecture Considerations
+
+Best practices encode hard-won lessons from millions of lines of production code. Const correctness prevents accidental modification and enables compiler optimizations. RAII eliminates resource leaks by design. Single-responsibility functions make code testable and maintainable. Composition over inheritance reduces coupling. These practices form the foundation that makes complex systems maintainable by teams over long periods.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Rule of Zero (use STL types) | Classes managing no raw resources | Zero boilerplate vs. less explicit ownership semantics |
+| Composition over inheritance | Building complex objects from simpler parts | Clearer ownership vs. more delegation code |
+| Error codes for expected failures | Recoverable errors (parse failures, validation) | No stack unwinding overhead vs. less ergonomic error propagation |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Missing `const` allowing unintended modification of security-critical data | Privilege escalation, data corruption | Audit all non-const reference parameters; enable `-Werror` |
+| Deep inheritance hierarchy enabling unintended virtual dispatch | Control-flow hijacking | Limit inheritance depth; prefer composition; use `final` |
+| Functions doing too many things hiding security checks | Bypassing authentication/authorization | Single-responsibility: separate auth, validation, and business logic |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `= default`, `= delete` for explicit special member control | Use `= default` for trivial special members; `= delete` to prevent copying |
+| C++17 | `std::optional`, `std::variant` for safer type design | Replace sentinel values with `std::optional`; replace unions with `std::variant` |
+| C++20 | Concepts for self-documenting constraints | Replace `static_assert` with `requires` clauses for template constraints |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `const` correctness | All versions | Universal |
+| `= default` / `= delete` | C++11 | Widely supported |
+| `std::optional` | C++17 | Widely supported |
+| Concepts for constraints | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **What is the Rule of Zero and when should you follow it?**: Rule of Zero — if your class manages no raw resources, don't declare any special member functions (destructor, copy/move). Use RAII types (`std::string`, `std::vector`, `std::unique_ptr`) that handle their own resources. The compiler generates correct special members automatically.
+2. **Why is const correctness important?**: `const` prevents accidental modification, documents intent, enables compiler optimizations, and makes code self-documenting. A `const` member function promises not to modify state, making code reasoning easier.
+3. **What is the single-responsibility principle?**: A function or class should have one reason to change — one job. Functions doing multiple unrelated things are hard to test, debug, and modify. Keep functions small (5-30 lines) and focused.
+4. **How does composition improve on inheritance?**: Composition models HAS-A relationships, provides flexible ownership, avoids fragile base class problems, and enables runtime behavior swapping. Inheritance should only be used for true IS-A behavioral contracts.
+5. **When should you use error codes vs exceptions?**: Use error codes for expected, recoverable failures (file not found, parse error). Use exceptions for unexpected, unrecoverable errors (out of memory, invariant violation). Exceptions propagate errors automatically; error codes require explicit checking.
+
+## References
+
+- [Effective C++ — Scott Meyers](https://www.amazon.com/Effective-Specific-Ways-Improve-Programs/dp/0321334876)
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+- [CppCoreGuidelines: Best Practices](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-iostream)
+- [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)

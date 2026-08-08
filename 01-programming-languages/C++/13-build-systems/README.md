@@ -400,3 +400,73 @@ Added a CI matrix that tests with GCC 9, GCC 11, GCC 13, Clang 12, and Clang 15.
 - **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — C++ standard selection, feature detection
 - **Networking** → [Module 12: Networking](../12-networking/) — Linking libcurl, Boost.Asio
 - **Senior Level** → [Module 15: Senior](../15-senior/) — Build system architecture decisions
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Missing header only failing on CI (different compiler version) | CMake version checks + CI matrix | Add `if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0") message(FATAL_ERROR ...)`; test with multiple compilers |
+| Debug build deployed to production | Build type validation in CI | Add CI step that checks for debug symbols: `readelf -S binary \| grep debug`; assert `RelWithDebInfo` or `Release` |
+| Dependency version conflict between packages | Package manager pinning (vcpkg/Conan) | Pin exact versions in `vcpkg.json` or `conanfile.py`; use lock files |
+| Slow build times from unnecessary recompilation | Ninja generator + `ccache` | Use `-G Ninja` for faster builds; install `ccache` and set `CMAKE_CXX_COMPILER_LAUNCHER=ccache` |
+| `install()` rules missing causing broken packaging | Manual packaging test | Run `cmake --install build --prefix /tmp/test-install`; verify all targets installed correctly |
+
+## Code Review Checklist
+
+- [ ] CMake minimum version and C++ standard explicitly set
+- [ ] All compiler warnings enabled (`-Wall -Wextra -Wpedantic -Werror`)
+- [ ] Dependencies managed via vcpkg or Conan (not system packages)
+- [ ] All dependency versions pinned in manifest files
+- [ ] Tests run in CI on every commit
+- [ ] Build type validated in CI (no Debug in production)
+- [ ] `install()` rules defined for library distribution
+
+## Architecture Considerations
+
+The build system is the foundation of every software project. It determines compilation speed, cross-platform support, dependency management, CI/CD integration, and developer productivity. Modern CMake with target-based design enables modular, reusable build configurations. Package managers (vcpkg, Conan) ensure reproducible builds across developer machines and CI. Build system architecture must balance fast incremental builds with correct dependency tracking.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| CMake target-based design | Modular, reusable build configurations | Clean dependency graph vs. steeper learning curve than legacy CMake |
+| vcpkg manifest mode | Reproducible dependency management | Pinned versions vs. slower initial setup |
+| CMake Presets | Consistent build configurations across team | Shared JSON configs vs. limited customization |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Dependency supply chain attack (malicious package) | Code execution, data theft | Pin dependency versions; use private package feeds; audit dependencies |
+| Debug symbols in production binary | Information leakage, reverse engineering | Validate build type in CI; strip debug symbols in release |
+| Missing compiler security flags | Exploitable binary (no stack protector, no PIE) | Add `-fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE` to CMake |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| CMake 3.16 | Target-based approach, `target_link_libraries` | Replace `include_directories` with `target_include_directories`; use `target_link_libraries` for dependencies |
+| CMake 3.19+ | CMake Presets for consistent configurations | Replace ad-hoc build scripts with `CMakePresets.json` |
+| C++20 modules | Replace headers with importable modules | Migrate `#include` to `import` for faster compilation and cleaner dependency management |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| CMake 3.16+ target-based approach | N/A (build tool) | Widely supported |
+| vcpkg manifest mode | N/A (package manager) | Widely supported |
+| CMake Presets (JSON) | N/A (CMake 3.19+) | Supported in CMake 3.19+ |
+| C++20 modules | C++20 | Supported in MSVC 19.28+, Clang 14+, GCC 14+ (experimental) |
+
+## Interview Questions
+
+1. **Why use CMake instead of raw Makefiles?**: CMake is cross-platform (generates Makefiles, Ninja, VS solutions), handles dependencies via `find_package`, integrates with IDEs, and provides a declarative build model. Makefiles are platform-specific and don't scale to complex projects.
+2. **What is the difference between `target_link_libraries` and `include_directories`?**: `target_link_libraries` propagates include directories, compile definitions, and dependencies transitively. `include_directories` adds global include paths (non-modern). Use `target_link_libraries` for proper dependency management.
+3. **Why pin dependency versions?**: Unpinned dependencies may change between builds, causing "works on my machine" failures. Pinning ensures reproducible builds across all developer machines and CI. Use lock files for deterministic resolution.
+4. **What is LTO (Link-Time Optimization) and when should you use it?**: LTO enables cross-module optimization during linking — the compiler can inline across TU boundaries, eliminate dead code, and optimize indirect calls. Use it for release builds; it increases link time but improves runtime performance.
+5. **How do you set up cross-compilation in CMake?**: Use a toolchain file (`-DCMAKE_TOOLCHAIN_FILE=toolchain.cmake`) that sets `CMAKE_SYSTEM_NAME`, `CMAKE_C_COMPILER`, and `CMAKE_CXX_COMPILER`. CMake uses these to generate the correct build system for the target platform.
+
+## References
+
+- [Modern CMake — Anastasia Kazakova](https://www.amazon.com/Modern-CMake-Projects-Cookbook-techniques/dp/1800208111)
+- [CMake Documentation](https://cmake.org/cmake/help/latest/)
+- [vcpkg Documentation](https://github.com/microsoft/vcpkg#documentation)
+- [Professional CMake: A Practical Guide — Craig Scott](https://www.amazon.com/Professional-CMake-Practical-Guide-Scott/dp=1974403006)

@@ -447,3 +447,73 @@ void adapter_example() {
 - **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — Lambdas replace many simple Strategy/Command patterns
 - **Smart Pointers** → [Module 06: Smart Pointers](../06-smart-pointers/) — Essential for ownership in Factory/Decorator patterns
 - **Concurrency** → [Module 07: Concurrency](../07-concurrency/) — Thread-safe Observer, Singleton patterns
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Observer memory leak from unregistered listeners | `weak_ptr` + Valgrind leak check | Use `std::weak_ptr` for observer storage; verify with `valgrind --leak-check=full` |
+| Singleton preventing unit test mocking | Interface extraction + dependency injection | Extract `ISingleton` interface; provide `setInstance()` for test fixture injection |
+| Strategy pattern causing excessive heap allocation | Small buffer optimization + `std::function` | Use SBO-capable `std::function` or store small strategies inline |
+| Factory creating objects with circular dependencies | Dependency graph visualization | Map factory registrations; break cycles with lazy initialization or `weak_ptr` |
+| Decorator chain performance overhead | Profiler hotspot analysis | Profile decorator chains; consider compile-time decoration with CRTP for hot paths |
+
+## Code Review Checklist
+
+- [ ] Patterns applied only when a clear, recurring problem exists (YAGNI)
+- [ ] Composition preferred over inheritance for behavior reuse
+- [ ] Thread safety considered for shared-state patterns (Singleton, Observer)
+- [ ] RAII used for resource management within pattern implementations
+- [ ] Pattern intent and rationale documented in code comments
+- [ ] Observer registrations have matching unregistrations (RAII cleanup)
+- [ ] Singleton has an interface for testability and mock injection
+
+## Architecture Considerations
+
+Design patterns are the shared vocabulary for recurring architectural problems. Creational patterns (Factory, Singleton) control object creation. Structural patterns (Adapter, Decorator, Facade) compose objects into larger structures. Behavioral patterns (Strategy, Observer, Command) define communication between objects. Patterns guide architectural decisions by encoding proven solutions, but they must be applied judiciously — over-engineering with patterns is worse than a simple `if/else`.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Factory Method | Decoupling object creation from usage | Loose coupling vs. indirection and debugging difficulty |
+| Strategy | Swapping algorithms at runtime | Open/Closed Principle vs. virtual dispatch overhead |
+| Observer | One-to-many event notification | Decoupled notification vs. memory leak risk from unregistered observers |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Singleton global state accessible from any thread | Race conditions, data corruption | Make Singleton thread-safe with `std::call_once` or C++11 local static |
+| Observer holding dangling pointer to destroyed subject | Use-after-free, crash | Use `std::weak_ptr` for observer storage; check `expired()` before notification |
+| Factory accepting unvalidated input strings | Object injection, unexpected behavior | Validate factory keys against a whitelist; use `std::variant` for type-safe creation |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | Lambdas replace simple Strategy/Command functors | Replace `std::function` with lambdas for short-lived strategies |
+| C++17 | `std::variant` + `std::visit` for type-safe Visitor | Replace Visitor hierarchy with `std::variant` and overloaded `std::visit` |
+| C++20 | Concepts for compile-time Strategy constraints | Replace virtual Strategy interface with concept-constrained templates |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::function` for type-erased callables | C++11 | Widely supported |
+| `std::variant` for type-safe unions | C++17 | Widely supported |
+| `std::visit` for variant dispatch | C++17 | Widely supported |
+| Concepts for compile-time polymorphism | C++20 | Supported in GCC 10+, Clang 12+, MSVC 19.22+ |
+
+## Interview Questions
+
+1. **When should you use the Strategy pattern vs a simple `if/else`?**: Use Strategy when algorithms vary at runtime and you need to swap them without changing context. Use `if/else` when there are only 2-3 fixed algorithms and the switching logic is simple.
+2. **How do you prevent memory leaks in the Observer pattern?**: Use `std::weak_ptr` for observer storage. Before notifying, check `weak_ptr::expired()`. Alternatively, use RAII registration — observers auto-unregister in their destructors.
+3. **What makes a good Singleton?**: A good Singleton has an interface for testability, is thread-safe (C++11 local static), is lazy-initialized, and is genuinely needed as a single instance (e.g., configuration, logging). Most "Singletons" should be dependency-injected instead.
+4. **How does the Adapter pattern differ from the Facade pattern?**: Adapter converts one interface to another (legacy → modern). Facade simplifies a complex subsystem behind a single, easy-to-use interface. Adapter targets interface incompatibility; Facade targets complexity reduction.
+5. **When is the Decorator pattern preferable to inheritance?**: Use Decorator when you need to add behavior dynamically at runtime without creating a combinatorial explosion of subclasses. Decorators are composable and follow the Open/Closed Principle.
+
+## References
+
+- [Design Patterns: Elements of Reusable Object-Oriented Software (GoF)](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612)
+- [Head First Design Patterns — Freeman & Robson](https://www.amazon.com/Head-First-Design-Patterns-Brain-Friendly/dp/0596007124)
+- [C++ Design Patterns — Refactoring.Guru](https://refactoring.guru/design-patterns/cpp)
+- [CppCon Talk: Design Patterns in Modern C++](https://youtube.com/cppcon)

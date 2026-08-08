@@ -263,3 +263,73 @@ std::scoped_lock lock(m1, m2);  // Both locked atomically
 - [Smart Pointers](../06-smart-pointers/) — Thread safety of shared_ptr
 - [Modern C++](../08-modern-cpp/) — std::jthread (C++20)
 - [Performance](../11-performance/) — Parallelism optimization
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Data race causing intermittent crash or wrong result | ThreadSanitizer (`-fsanitize=thread`) | Compile with `-fsanitize=thread`; TSan reports every data race with full stack traces |
+| Deadlock from ABBA lock ordering | Lock ordering documentation + `std::scoped_lock` | Establish global lock order; use `std::scoped_lock(m1, m2)` to lock atomically |
+| False sharing degrading multi-threaded performance | `perf c2c` (cache-to-cache analysis) | Run `perf c2c record ./program`; identify cache lines with high "Cycles Lost" counts |
+| `std::future` hanging because `get()` called twice | Code review + future state tracking | Call `get()` only once per future; store result immediately |
+| Thread not joining causing process hang on exit | ASan + thread leak detection | Enable `-fsanitize=thread`; ensure every `std::thread` is joined or detached |
+
+## Code Review Checklist
+
+- [ ] `std::lock_guard` or `std::scoped_lock` used for all mutex locking
+- [ ] No data races — all shared mutable state properly synchronized
+- [ ] Global lock ordering documented and enforced (prevents deadlock)
+- [ ] `std::atomic` used for simple shared counters and flags
+- [ ] Every `std::thread` joined or detached before destruction
+- [ ] Condition variables always used with a predicate (prevents spurious wakeup)
+- [ ] ThreadSanitizer enabled in CI (`-fsanitize=thread`)
+
+## Architecture Considerations
+
+Concurrency transforms systems from sequential to parallel, enabling responsive UIs, high-throughput servers, and efficient CPU utilization. However, concurrency introduces complexity: data races, deadlocks, and false sharing can cause millions in incorrect calculations. Architecture must define clear ownership boundaries, lock ordering, and synchronization strategies. Immutable data eliminates synchronization entirely — prefer immutable snapshots for read-heavy workloads.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Thread pool for task execution | High-frequency short tasks | Avoids thread creation overhead vs. fixed pool size limits parallelism |
+| Immutable snapshots for read-heavy data | Reporting, analytics on live data | No synchronization needed vs. memory overhead from copying |
+| Lock-free atomics for counters/flags | High-performance metrics, signals | No lock overhead vs. complex reasoning about memory ordering |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Race condition in authentication/authorization | Bypassing security checks, privilege escalation | Use mutex-protected critical sections; verify lock coverage in security audit |
+| Deadlock causing denial of service | Service unavailability | Use `std::scoped_lock` for multiple locks; implement lock timeouts |
+| Thread-local storage leaking sensitive data | Information disclosure across threads | Clear thread-local data on thread exit; use `thread_local` with care |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `std::thread`, `std::mutex`, `std::atomic`, `std::future` | Replace POSIX threads with C++ standard threading primitives |
+| C++17 | `std::scoped_lock`, `std::shared_mutex` | Replace manual lock ordering with `std::scoped_lock`; use `shared_mutex` for read-heavy workloads |
+| C++20 | `std::jthread`, `std::counting_semaphore`, `std::latch` | Replace `std::thread` with `std::jthread` for automatic joining; use latches/barriers for synchronization |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::thread`, `std::mutex`, `std::atomic` | C++11 | Widely supported |
+| `std::scoped_lock` | C++17 | Widely supported |
+| `std::shared_mutex` | C++17 | Widely supported |
+| `std::jthread` / `std::stop_token` | C++20 | Supported in GCC 10+, Clang 14+, MSVC 19.28+ |
+
+## Interview Questions
+
+1. **What is a data race and how do you prevent it?**: A data race occurs when two threads access the same memory location concurrently, at least one writes, and no synchronization exists. Prevent with `std::mutex`, `std::atomic`, or immutable data.
+2. **Explain the difference between `std::mutex` and `std::shared_mutex`**: `std::mutex` provides exclusive locking — one thread at a time. `std::shared_mutex` allows multiple concurrent readers (`lock_shared`) but exclusive writers (`lock`). Use it for read-heavy workloads.
+3. **What causes deadlock and how do you prevent it?**: Deadlock occurs when threads wait on each other in a circular lock dependency (ABBA pattern). Prevent with: global lock ordering, `std::scoped_lock` for atomic multi-lock acquisition, or lock timeouts.
+4. **When should you use `std::atomic` vs `std::mutex`?**: Use `std::atomic` for simple types (counters, flags, pointers) where lock-free operations are sufficient. Use `std::mutex` for complex critical sections involving multiple variables or non-trivial operations.
+5. **What is false sharing and how do you fix it?**: False sharing occurs when threads write to adjacent memory on the same cache line, causing the line to ping-pong between cores. Fix with `alignas(std::hardware_destructive_interference_size)` padding on shared variables.
+
+## References
+
+- [C++ Concurrency in Action — Anthony Williams](https://www.amazon.com/C-Concurrency-Action-Anthony-Williams/dp/1617294691)
+- [CppReference — Thread Support Library](https://en.cppreference.com/w/cpp/thread)
+- [C++ Core Guidelines — Concurrency](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-concurrency)
+- [CppCon Talk: C++ Concurrency in Action](https://youtube.com/cppcon)

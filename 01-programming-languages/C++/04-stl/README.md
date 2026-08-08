@@ -318,3 +318,73 @@ auto above = std::count_if(vec.begin(), vec.end(),
 - [Performance](../11-performance/) — Cache optimization for containers
 - [Memory Management](../05-memory-management/) — Container memory strategies
 - [Best Practices](../14-best-practices/) — Choosing the right container
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Iterator invalidation causing crash or corruption | AddressSanitizer + assertion on iterator use | Enable ASan; add debug assertions that check `it != container.end()` after every operation that may invalidate |
+| Vector reallocation breaking held pointers/references | `valgrind --tool=memcheck` + `reserve()` audit | Search for raw pointers to vector elements; ensure `reserve()` is called or use `std::deque` for stable pointers |
+| O(n) performance from wrong container choice | `perf record` + hotspot analysis | Profile with `perf`; if middle-insertions dominate, consider `std::list` or `std::deque` |
+| `std::unordered_map` worst-case O(n) from hash collision | `std::unordered_map::bucket_count()` + custom hasher | Monitor bucket count; provide a custom hash function for user-defined types |
+| Wrong algorithm used (e.g., `std::find` on unsorted range) | Code review + complexity annotations | Document time complexity in comments; prefer `std::binary_search` on sorted ranges |
+
+## Code Review Checklist
+
+- [ ] `std::vector` used as the default container
+- [ ] `reserve()` called when upper bound on size is known
+- [ ] `emplace_back` preferred over `push_back` for in-place construction
+- [ ] Range-based for loops used (avoids iterator invalidation bugs)
+- [ ] `it = container.erase(it)` used instead of separate erase + increment
+- [ ] STL algorithms preferred over manual loops (`std::sort`, `std::find`, `std::transform`)
+- [ ] `std::string_view` used for read-only string parameters
+
+## Architecture Considerations
+
+The STL is the backbone of data-oriented design in C++. Containers provide type-safe, zero-overhead data structures optimized across decades of real-world use. Algorithms express intent clearly and are often hand-optimized by standard library implementers. Iterators decouple algorithms from containers, enabling generic programming. Choosing the right container impacts cache performance, memory usage, and API ergonomics at the system level.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| `std::vector` as default container | Most sequential storage needs | Cache-friendly but iterator invalidation on insert/realloc |
+| `std::unordered_map` for O(1) lookup | Key-value caches, frequency counters | Fast average case vs. no ordering and worst-case O(n) |
+| Erase-remove idiom | Filtering elements from containers | Concise but requires understanding iterator invalidation rules |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Iterator invalidation leading to use-after-free | Crashes, memory corruption, exploitable bugs | Use `it = container.erase(it)`; enable ASan in CI |
+| Integer overflow in container size calculations | Buffer overflow, heap corruption | Use `size_t` for sizes; check `container.max_size()` before large allocations |
+| Hash collision denial-of-service on `unordered_map` | O(n) lookup degradation, performance DoS | Use randomized hash seeds; monitor bucket count and load factor |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `std::array`, `emplace_back`, initializer lists | Replace C arrays with `std::array`; use `emplace_back` for in-place construction |
+| C++17 | `std::string_view`, structured bindings, `std::optional` | Use `string_view` for read-only params; use structured bindings for map iteration |
+| C++20 | `std::span`, ranges, `std::format` | Use `std::span` for non-owning array views; use ranges for lazy pipeline algorithms |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::array` | C++11 | Widely supported |
+| `emplace_back` | C++11 | Widely supported |
+| `std::string_view` | C++17 | Widely supported |
+| `std::span` (non-owning view) | C++20 | Supported in GCC 10+, Clang 11+, MSVC 19.29+ |
+
+## Interview Questions
+
+1. **When should you use `std::vector` vs `std::deque`?**: Use `std::vector` as the default — it's cache-friendly and has O(1) random access. Use `std::deque` when you need frequent insertion/deletion at both ends or when you need stable pointers/references across push_back operations.
+2. **Explain the erase-remove idiom**: `container.erase(std::remove(begin, end, value), end)` combines `std::remove` (which shifts elements and returns new end) with `erase` (which actually resizes the container). It's the standard way to remove elements matching a condition.
+3. **Why is `std::list` rarely the right choice?**: Despite O(1) insertion/deletion, `std::list` has poor cache locality — each node is a separate heap allocation. For most workloads, `std::vector` with `std::move` is faster due to cache-friendly memory layout.
+4. **What is iterator invalidation and which containers are affected?**: Iterator invalidation occurs when an operation (insert, erase, reallocation) makes existing iterators point to invalid memory. `std::vector` invalidates all iterators on reallocation and most on middle-insert. `std::list` only invalidates iterators to the erased element.
+5. **How do you choose between `std::map` and `std::unordered_map`?**: Use `std::unordered_map` when you need O(1) average lookup and don't care about order. Use `std::map` when you need sorted order, range queries, or guaranteed O(log n) without hash collision risk.
+
+## References
+
+- [Effective STL — Scott Meyers](https://www.amazon.com/Effective-STL-Specific-Strategies-Containers/dp/0201749629)
+- [CppReference — Containers](https://en.cppreference.com/w/cpp/container)
+- [Google Abseil — Swiss Tables](https://abseil.io/about/design/swisstables)
+- [CppCon Talk: Back to Basics: C++ Containers](https://youtube.com/cppcon)

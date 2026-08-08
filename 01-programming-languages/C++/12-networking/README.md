@@ -434,3 +434,72 @@ void udp_server(int port) {
 - **Build Systems** → [Module 13: Build Systems](../13-build-systems/) — Linking libcurl, Boost.Asio
 - **Memory Management** → [Module 05: Memory](../05-memory-management/) — Buffer management, avoid leaks
 - **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — `std::optional` for results, lambdas for callbacks
+
+## Debugging Tips
+
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Buffer overflow from unchecked network input | AddressSanitizer + fuzzing (AFL/libFuzzer) | Run fuzzing on all network-facing parsers; enable ASan to catch overflows |
+| Connection leak under load (fd exhaustion) | `lsof -p <pid> \| wc -l` + RAII audit | Monitor fd count; wrap all network handles in RAII classes |
+| DNS resolution blocking event loop | `strace` + async DNS (c-ares) | Trace blocking calls on main thread; move DNS to background thread with caching |
+| Partial read/write causing protocol parsing errors | Protocol state machine + loop until complete | Implement a state machine that accumulates data until a complete message is received |
+| TLS handshake failure from expired certificate | `openssl s_client` + certificate monitoring | Check certificate expiry; implement certificate pinning with rotation plan |
+
+## Code Review Checklist
+
+- [ ] All incoming packet sizes validated before parsing
+- [ ] `snprintf`/`strncpy` used instead of `sprintf`/`strcpy` on network data
+- [ ] RAII used for all network resources (sockets, CURL handles)
+- [ ] Timeouts set for all network operations (connect, read, write)
+- [ ] Partial reads/writes handled with loops
+- [ ] TLS/SSL used for all production network communication
+- [ ] Connection pooling with size limits implemented
+- [ ] Reconnection logic uses exponential backoff
+
+## Architecture Considerations
+
+Networking determines how systems communicate — from single TCP connections to millions of concurrent sockets. The I/O model (blocking, async, epoll/kqueue) defines scalability. Protocol choice (TCP, UDP, QUIC) determines reliability vs. latency trade-offs. Serialization format (protobuf, JSON, flatbuffers) impacts performance and interoperability. Architecture must define buffer management, connection lifecycle, and error recovery strategies.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Event loop with epoll/kqueue | High-concurrency server (10K+ connections) | Efficient scaling vs. complex callback-based programming |
+| Connection pooling | Reusing TCP connections across requests | Avoids handshake overhead vs. pool size management complexity |
+| RAII network wrappers | Automatic socket/CURL cleanup | Exception-safe but requires move-only semantics |
+
+## Security Considerations | Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from malformed network input | Remote code execution, critical vulnerability | Validate all input sizes; use `snprintf`; run AFL/libFuzzer on parsers |
+| Connection leak causing fd exhaustion | Denial of service, server crash | RAII for all network handles; monitor fd count in production metrics |
+| DNS spoofing redirecting traffic | Man-in-the-middle attack, data theft | Use DNSSEC; validate certificates; implement certificate pinning |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| C++11 | `std::future` for async results | Replace callback hell with `std::async` for simple async operations |
+| C++17 | `std::optional` for nullable network results | Use `std::optional` for function returns that may fail |
+| C++20 | Coroutines for async I/O | Replace callback-based async with coroutine-based sequential-looking code |
+
+## Version Validation
+
+| Feature | C++ Version | Status |
+|---------|------------|--------|
+| `std::thread` for background I/O | C++11 | Widely supported |
+| `std::future` / `std::async` | C++11 | Widely supported |
+| `std::optional` for nullable results | C++17 | Widely supported |
+| Coroutines (C++20) for async | C++20 | Supported in MSVC 19.22+, Clang 10+ (limited), GCC 10+ (limited) |
+
+## Interview Questions
+
+1. **What is the difference between TCP and UDP?**: TCP provides reliable, ordered byte streams with flow control and congestion control (three-way handshake). UDP provides fast, connectionless datagrams with no ordering or reliability. Use TCP for HTTP, SSH, databases; UDP for real-time gaming, DNS, video streaming.
+2. **Explain the epoll/kqueue event-driven model**: `epoll` (Linux) and `kqueue` (macOS/BSD) provide I/O event notification — the kernel tells your application which sockets are ready for reading/writing. This enables handling thousands of connections with a single thread without blocking.
+3. **Why must you handle partial reads/writes in network code?**: The network may deliver data in chunks — a `read()` of 1024 bytes may only return 100 bytes. You must loop until the complete message is received. This is especially important for TCP, which is a byte stream, not a message stream.
+4. **What is connection pooling and why is it important?**: Connection pooling reuses TCP connections across multiple requests, avoiding the overhead of repeated TCP handshakes and TLS negotiations. It reduces latency and prevents file descriptor exhaustion under high load.
+5. **How do you implement reconnection with exponential backoff?**: Start with a small delay (e.g., 100ms), double it on each failure (100ms, 200ms, 400ms, ...), cap at a maximum (e.g., 30s), and add jitter to prevent thundering herd. Reset the backoff on successful connection.
+
+## References
+
+- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
+- [Boost.Asio Documentation](https://www.boost.org/doc/libs/1_82_0/doc/html/boost_asio.html)
+- [libcurl Documentation](https://curl.se/libcurl/c/)
+- [The Linux Programming Interface — Michael Kerrisk](https://www.amazon.com/Linux-Programming-Interface-System-Handbook/dp/1593272200)
