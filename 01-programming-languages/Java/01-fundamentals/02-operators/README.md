@@ -1,194 +1,261 @@
 # Operators
 
-## Why This Feature Exists
-
-Every Java program needs to perform calculations, make decisions, and manipulate data. Operators are the fundamental tools that enable these operations at the most basic level of programming.
-
-**Problem Statement:** Without operators, programs couldn't perform arithmetic, compare values, combine conditions, or assign results back to variables. Operators are the foundation of all computational logic.
-
-**Why Java Chose This Approach:** Java provides a comprehensive and consistent set of operators that balance power with safety. The language design emphasizes type safety, avoiding common pitfalls like integer overflow (with proper warnings) while providing the flexibility needed for complex applications.
-
-## What You'll Learn
-
-By the end of this module, you'll be able to:
-
-- Understand and use all Java operators (arithmetic, relational, logical, etc.)
-- Apply operator precedence correctly to avoid subtle bugs
-- Use assignment operators effectively for concise code
-- Master type promotion and casting with operators
-- Debug common operator-related issues
-- Write efficient, readable code using proper operator patterns
-
-## When to Use
-
-Use operators in every Java program:
-
-- **Operators** — everywhere, from simple calculations to complex expressions
-- **Arithmetic operations** — mathematical computations
-- **Conditional logic** — decision-making in if statements
-- **Loop control** - iteration and repetition
-- **Bit manipulation** - low-level data processing
-- **String concatenation** - building text from components
-
-## Internal Working
-
-Java operators work at multiple levels in the JVM:
-
-**Runtime Evaluation:**
-- **Bytecode Generation:** Operators are translated to JVM bytecode instructions
-- **Stack Processing:** Operands are pushed onto the operand stack
-- **Instruction Execution:** The JVM executes operations and stores results
-- **Memory Management:** Results are stored back to variables or stack frames
-
-**Type System Integration:**
-- **Primitive Types:** Direct operations on numeric and boolean types
-- **Reference Types:** Operator overloading through method calls (e.g., `+` for String concatenation)
-- **Autoboxing:** Automatic conversion between primitives and wrappers for numeric operators
-- **Operator Overloading:** Custom classes can define operators through methods
-
-**Evaluation Rules:**
-- **Operator Precedence:** Determines order of evaluation (*, / before +, -)
-- **Associativity:** Left-to-right for most operators, right-to-left for assignments
-- **Short-circuit Evaluation:** Logical operators stop evaluating when result is determined
-- **Side Effects:** Some operators modify state (assignment, ++, --)
-
-**Memory Layout:**
-- **Operands:** Stored on the operand stack
-- **Results:** Stored back to variables or temporary locations
-- **Operator Methods:** Invoked through vtables for object types
-- **String Interning:** Special handling for string concatenation
-
-## JVM Perspective
-
-The JVM implements operators through bytecode instructions:
-
-1. **Bytecode Instructions:** Each operator has a corresponding JVM opcode
-2. **Stack Machine:** Operands and results manipulated on the evaluation stack
-3. **Type Validation:** Runtime type checking for narrowing conversions
-4. **Exception Handling:** Overflow and division-by-zero exceptions
-
-**Common Bytecodes:**
-- `iadd`, `isub`, `imul`, `idiv` - Integer arithmetic
-- `fadd`, `fsub`, `fmul`, `fdiv` - Floating-point arithmetic
-- `land`, `lor`, `lxor` - Logical operations
-- `if_icmplt`, `if_icmpge` - Conditional jumps
-- `astore`, `iload` - Array and variable access
-
-**Optimization:**
-- **Constant Folding:** Compile-time evaluation of constant expressions
-- **Strength Reduction:** Replacing expensive operations with cheaper ones
-- **Dead Code Elimination:** Removing unused operations
-
-## Memory Implications
-
-**Operand Stack Usage:**
-- **Arithmetic Operators:** Temporary stack space for operands and results
-- **Method Calls:** Stack frames allocated for operator method invocations
-- **Array Operations:** Additional memory for array bounds checking
-
-**Performance Considerations:**
-- **Primitive Operations:** Extremely fast (nanoseconds)
-- **Object Operations:** Slower due to reference handling
-- **Bitwise Operations:** Fastest for flag manipulation
-- **String Operations:** Memory allocation for new string objects
-
-**Memory Leaks:**
-- **Excessive Boxing:** `Integer` objects create heap pressure
-- **String Concatenation:** Intermediate string objects
-- **Array Operations:** Large array allocations
-
-## Best Practices
-
-1. **Use the right operator:** Choose `int` for integers, `double` for decimals
-2. **Avoid overflow:** Use `long` for large values, check boundaries
-3. **Be explicit with casting:** Use explicit `(type) cast` for narrowing conversions
-4. **Prefer enhanced for-loops:** `for (int i : array)` instead of indexed loops
-5. **Minimize side effects:** Avoid multiple assignments in single expression
-6. **Use bitwise operators carefully:** For flag manipulation, not arithmetic
-
-## Common Mistakes
-
-1. **Confusing assignment and equality:**
-   ```java
-   // WRONG: Assignment in if
-   if (x = 5) { }
-   
-   // CORRECT: Comparison
-   if (x == 5) { }
-   ```
-
-2. **Integer division surprises:**
-   ```java
-   int result = 7 / 2;      // Result: 3, not 3.5
-   double result = 7.0 / 2;  // Result: 3.5
-   ```
-
-3. **Bitwise vs. logical operators:**
-   ```java
-   // WRONG: Using & instead of && for conditions
-   if (x != 0 & y > 0) { }
-   
-   // CORRECT: Use logical operators for conditions
-   if (x != 0 && y > 0) { }
-   ```
-
-4. **Operator precedence confusion:**
-   ```java
-   // Wrong: + has higher precedence than ?:
-   boolean result = a ? b : c + d;
-   // Evaluated as: a ? b : (c + d)
-   
-   // Right: Use parentheses for clarity
-   boolean result = a ? b : (c + d);
-   ```
-
-5. **String concatenation in loops:**
-   ```java
-   // INEFFICIENT: Creates many String objects
-   String text = "";
-   for (int i = 0; i < 1000; i++) {
-       text += "Item " + i;
-   }
-   
-   // EFFICIENT: Use StringBuilder
-   StringBuilder text = new StringBuilder();
-   for (int i = 0; i < 1000; i++) {
-       text.append("Item ").append(i);
-   }
-   ```
-
-## Interview Questions
-
-1. **Operator Precedence:** What happens in `a + b * c`? Explain the order of evaluation.
-
-2. **Type Casting:** What's the difference between widening and narrowing casting? Give examples.
-
-3. **Assignment Operators:** Explain the difference between `+=` and `++`. When would you use each?
-
-4. **Bitwise Operators:** When would you use `&` vs `&&`, `|` vs `||`?
-
-5. **String Concatenation:** Why is `StringBuilder` preferred over `+` for concatenation in loops?
-
-## Production Considerations
-
-1. **Performance:** Use primitive operators for speed-critical code
-2. **Memory:** Be mindful of boxing and string concatenation overhead
-3. **Thread Safety:** Shared mutable variables require synchronization
-4. **Debugging:** Complex expressions can be hard to debug
-5. **Compatibility:** Operator behavior differs between primitive and object types
-
-## References
-
-- [Oracle Java Language Specification](https://docs.oracle.com/javase/specs/jls/se17/html/)
-- [Effective Java (Joshua Bloch)](https://www.amazon.com/Effective-Java-Effortless-Programming-Standard-2nd/dp/0321356681)
-- [Java Virtual Machine Specification](https://docs.oracle.com/javase/specs/jvms/se17/html/)
-
-## Last Verified
-
-- **Java Version:** 17, 21, 24, 26
-- **Last Updated:** 2026-03-17
-- **Verification:** All examples tested with Java 21 LTS and Java 26 EA
+Operators are symbols that perform operations on values. You've already seen assignment (`=`) and addition (`+`). This topic covers all the operators you'll use daily.
 
 ---
 
-**Next:** [03-Control-Flow](./03-control-flow/)
+## Arithmetic Operators
+
+The math operators. Straightforward.
+
+```java
+int a = 10;
+int b = 3;
+
+System.out.println(a + b);   // 13  (addition)
+System.out.println(a - b);   // 7   (subtraction)
+System.out.println(a * b);   // 30  (multiplication)
+System.out.println(a / b);   // 3   (division — notice it truncates)
+System.out.println(a % b);   // 1   (modulus — remainder after division)
+```
+
+The modulus operator is more useful than it looks. Use it to check if a number is even:
+
+```java
+int number = 7;
+if (number % 2 == 0) {
+    System.out.println("Even");
+} else {
+    System.out.println("Odd");
+}
+```
+
+### Watch Out: Integer Division
+
+When you divide two integers, Java throws away the decimal part.
+
+```java
+int a = 7;
+int b = 2;
+System.out.println(a / b);   // 3, not 3.5
+
+// To get the decimal:
+double result = (double) a / b;  // 3.5
+// OR
+double result = 7.0 / 2;        // 3.5
+```
+
+---
+
+## Increment and Decrement
+
+Adding or subtracting 1 is so common that Java has shorthand operators.
+
+```java
+int count = 5;
+
+count++;    // same as count = count + 1 → now 6
+count--;    // same as count = count - 1 → now 5
+```
+
+### Prefix vs Postfix
+
+The position of `++` matters when used in an expression:
+
+```java
+int a = 5;
+int b = a++;   // b is 5, then a becomes 6 (postfix: use first, then increment)
+
+int c = 5;
+int d = ++c;   // c becomes 6 first, then d is 6 (prefix: increment first, then use)
+```
+
+In practice, most developers just use `count++` on its own line and don't mix it with assignments. The prefix/postfix distinction rarely matters in real code.
+
+---
+
+## Relational Operators
+
+These compare two values and return `true` or `false`.
+
+```java
+int x = 10;
+int y = 20;
+
+System.out.println(x == y);   // false (equal to)
+System.out.println(x != y);   // true  (not equal to)
+System.out.println(x > y);    // false (greater than)
+System.out.println(x < y);    // true  (less than)
+System.out.println(x >= 10);  // true  (greater than or equal to)
+System.out.println(x <= 5);   // false (less than or equal to)
+```
+
+### Common Mistake: = vs ==
+
+This is the #1 beginner mistake. Single `=` assigns. Double `==` compares.
+
+```java
+int a = 5;        // assignment: sets a to 5
+if (a == 5) { }   // comparison: checks if a equals 5
+```
+
+Java won't let you use `=` inside an `if` statement, so you'll catch this error at compile time. But it's worth internalizing now.
+
+---
+
+## Logical Operators
+
+Used to combine boolean expressions.
+
+```java
+boolean a = true;
+boolean b = false;
+
+System.out.println(a && b);   // false (AND — both must be true)
+System.out.println(a || b);   // true  (OR — at least one must be true)
+System.out.println(!a);       // false (NOT — flips the value)
+```
+
+### Short-Circuit Evaluation
+
+Java stops evaluating as soon as it knows the answer:
+
+```java
+// If x is 0, Java never calls dangerousMethod() because false && anything is false
+if (x != 0 && dangerousMethod() / x > 0) { }
+
+// If the first condition is true, Java never checks the second
+if (isValid || expensiveCheck()) { }
+```
+
+This is a feature, not a bug. It prevents unnecessary computation and potential errors.
+
+### Combining Conditions
+
+```java
+int age = 25;
+boolean hasTicket = true;
+
+if (age >= 18 && hasTicket) {
+    System.out.println("Welcome!");
+}
+
+if (age < 13 || age > 65) {
+    System.out.println("Discounted rate");
+}
+
+if (!(age >= 18)) {
+    System.out.println("Must be 18 or older");
+}
+```
+
+---
+
+## Assignment Operators
+
+Shorthand operators that combine arithmetic with assignment.
+
+```java
+int x = 10;
+
+x += 5;    // x = x + 5  → 15
+x -= 3;    // x = x - 3  → 12
+x *= 2;    // x = x * 2  → 24
+x /= 4;    // x = x / 4  → 6
+x %= 4;    // x = x % 4  → 2
+```
+
+These are just shortcuts. They don't do anything you couldn't do with the long form, but they make code more concise.
+
+---
+
+## Ternary Operator
+
+A compact if-else in a single line.
+
+```java
+int age = 20;
+String status = (age >= 18) ? "Adult" : "Minor";
+
+// Same as:
+String status;
+if (age >= 18) {
+    status = "Adult";
+} else {
+    status = "Minor";
+}
+```
+
+Use ternary for simple assignments. If the logic is complex, an `if-else` block is clearer.
+
+---
+
+## Operator Precedence
+
+When you write `3 + 4 * 5`, Java doesn't just go left to right. Multiplication happens before addition.
+
+```
+3 + 4 * 5  →  3 + 20  →  23
+```
+
+Here's the full precedence (from highest to lowest):
+
+| Precedence | Operators | Associativity |
+|------------|-----------|---------------|
+| 1 | `()` | Left to right |
+| 2 | `!` `++` `--` | Right to left |
+| 3 | `*` `/` `%` | Left to right |
+| 4 | `+` `-` | Left to right |
+| 5 | `<` `<=` `>` `>=` | Left to right |
+| 6 | `==` `!=` | Left to right |
+| 7 | `&&` | Left to right |
+| 8 | `\|\|` | Left to right |
+| 9 | `=` `+=` `-=` etc. | Right to left |
+
+When in doubt, use parentheses. They make your intent clear and have zero performance cost.
+
+```java
+// Hard to read
+int result = a + b * c - d / e;
+
+// Clear
+int result = (a + (b * c)) - (d / e);
+```
+
+---
+
+## Common Mistakes
+
+**Confusing `&&` with `&`:**
+```java
+// && is short-circuit (stops early)
+// & is bitwise AND (always evaluates both)
+// Always use && for boolean logic
+if (x != null && x.length() > 0) { }
+```
+
+**Forgetting operator precedence:**
+```java
+// What does this print?
+System.out.println(2 + 3 * 4);  // 14, not 20
+```
+
+**Using `=` instead of `==`:**
+```java
+if (x = 5) { }   // won't compile — assignment isn't a boolean
+if (x == 5) { }  // correct comparison
+```
+
+---
+
+## Practice
+
+1. What's the result of `17 % 5`? Calculate it by hand, then verify.
+2. Write a program that checks if a number is positive, negative, or zero.
+3. Use the ternary operator to assign "Even" or "Odd" to a variable.
+4. What's `true && false || true`? Think about it before running the code.
+
+---
+
+**Previous:** [01-Variables](../01-variables/)
+**Next:** [03-Control Flow](../03-control-flow/)
