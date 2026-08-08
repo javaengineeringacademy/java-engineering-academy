@@ -1,125 +1,267 @@
-# Concurrency
+# Concurrency — C++ Language
 
-## What it is
-The ability to execute multiple tasks simultaneously.
+## The Problem Concurrency Solves
 
-## Why it exists
-To improve performance and responsiveness of applications.
+Modern CPUs have multiple cores. Sequential code leaves most of them idle. Concurrency enables programs to do multiple things simultaneously — processing different requests, updating UI while computing, or parallelizing expensive algorithms across cores. Without concurrency, a server handles one request at a time; with it, it handles thousands.
 
-## When to use it
-When you need parallel processing, async operations, or responsive UIs.
+**Production reality**: A trading engine processed 100 orders/second sequentially. After adding concurrency, it processed 8,000 orders/second across 8 cores. But a data race in the shared order book caused $2M in incorrect P&L calculations. Concurrency is powerful but dangerous.
 
-## How it works
+## What Is Concurrency in C++?
 
-### Threads
+C++ provides threads, mutexes, condition variables, atomics, and async/futures for concurrency. These primitives let you execute code simultaneously while coordinating access to shared data.
+
+## Architecture: How Concurrency Fits Together
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  C++ Concurrency                             │
+├───────────────┬───────────────┬─────────────────────────────┤
+│   std::thread │   std::mutex  │   std::atomic               │
+│ (Execution)   │  (Exclusion)  │   (Lock-free data)          │
+├───────────────┴───────────────┴─────────────────────────────┤
+│        std::condition_variable (Synchronization)             │
+├─────────────────────────────────────────────────────────────┤
+│     std::async / std::future (Async results)                 │
+├─────────────────────────────────────────────────────────────┤
+│              Thread Pools & Lock-Free Structures              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Threads
+
 ```cpp
 #include <thread>
+#include <iostream>
 
-void task() {
-    std::cout << "Thread running" << std::endl;
+void task(int id) {
+    std::cout << "Thread " << id << " running\n";
 }
 
 int main() {
-    std::thread t(task);
-    t.join();
+    std::thread t1(task, 1);
+    std::thread t2(task, 2);
+
+    t1.join();  // Wait for t1 to finish
+    t2.join();  // Wait for t2 to finish
 }
 ```
 
-### Mutexes
+## Mutexes
+
 ```cpp
 #include <mutex>
+#include <thread>
+#include <vector>
 
 std::mutex mtx;
 int counter = 0;
 
 void increment() {
-    std::lock_guard<std::mutex> lock(mtx);
-    counter++;
+    for (int i = 0; i < 1000; ++i) {
+        std::lock_guard<std::mutex> lock(mtx);
+        counter++;
+    }
+}
+
+int main() {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 10; ++i) {
+        threads.emplace_back(increment);
+    }
+    for (auto& t : threads) t.join();
+    std::cout << "Counter: " << counter << "\n";  // 10000
 }
 ```
 
-### Condition Variables
+## Condition Variables
+
 ```cpp
 #include <condition_variable>
+#include <mutex>
+#include <queue>
+#include <thread>
 
+std::queue<int> tasks;
+std::mutex q_mutex;
 std::condition_variable cv;
-std::mutex mtx;
-bool ready = false;
+bool done = false;
 
-void wait() {
-    std::unique_lock<std::mutex> lock(mtx);
-    cv.wait(lock, []{ return ready; });
+void producer() {
+    for (int i = 0; i < 10; ++i) {
+        {
+            std::lock_guard<std::mutex> lock(q_mutex);
+            tasks.push(i);
+        }
+        cv.notify_one();
+    }
+    {
+        std::lock_guard<std::mutex> lock(q_mutex);
+        done = true;
+    }
+    cv.notify_all();
+}
+
+void consumer() {
+    while (true) {
+        std::unique_lock<std::mutex> lock(q_mutex);
+        cv.wait(lock, [] { return !tasks.empty() || done; });
+        while (!tasks.empty()) {
+            int task = tasks.front();
+            tasks.pop();
+            lock.unlock();
+            std::cout << "Processing: " << task << "\n";
+            lock.lock();
+        }
+        if (done) break;
+    }
 }
 ```
 
-### Async
+## Atomics
+
+```cpp
+#include <atomic>
+#include <thread>
+
+std::atomic<int> counter{0};
+
+void increment() {
+    for (int i = 0; i < 1000; ++i) {
+        counter++;  // Atomic — no lock needed
+    }
+}
+
+// atomic operations: load, store, exchange, compare_exchange_strong/weak
+// Memory orders: relaxed, acquire, release, acq_rel, seq_cst
+```
+
+## Async and Futures
+
 ```cpp
 #include <future>
+#include <iostream>
 
-std::future<int> result = std::async([]{ return 42; });
-int value = result.get();
+int compute(int x) {
+    return x * x;
+}
+
+int main() {
+    // Launch async task
+    auto future = std::async(std::launch::async, compute, 42);
+    int result = future.get();  // Blocks until result is ready
+    std::cout << "Result: " << result << "\n";  // 1764
+
+    // Promise/future
+    std::promise<int> promise;
+    auto future2 = promise.get_future();
+    std::thread([](std::promise<int> p) {
+        p.set_value(100);
+    }, std::move(promise)).detach();
+    std::cout << "Promise: " << future2.get() << "\n";
+}
 ```
+
+## std::scoped_lock (C++17)
+
+```cpp
+// Locks multiple mutexes atomically — prevents deadlock
+std::mutex m1, m2;
+std::scoped_lock lock(m1, m2);  // Both locked atomically
+```
+
+## Engineering Decision Framework
+
+### When to Use Concurrency
+- Parallel processing of independent data
+- Responsive UI (background computation)
+- I/O-bound operations (network, disk)
+- Real-time processing
+
+### When NOT to Use Concurrency
+- Simple sequential tasks
+- When synchronization overhead exceeds parallelism benefit
+- When shared state makes coordination complex
+
+### Common Pitfalls
+| Issue | Description | Solution |
+|-------|-------------|----------|
+| Data Race | Unsynchronized access to shared data | Use mutex, atomic, or immutable data |
+| Deadlock | Circular lock waiting | Use `std::scoped_lock` or lock ordering |
+| False Sharing | Threads invalidating each other's cache lines | Pad shared atomics with `alignas(64)` |
+| Starvation | One thread never gets the lock | Use fair mutexes or work distribution |
+
+### Real-World Production Examples
+1. **Game Engines**: Main thread for game logic, render thread for GPU, audio thread for sound
+2. **Web Servers**: Thread-per-request or async I/O (Boost.Asio)
+3. **Databases**: Lock-free data structures for high-throughput transaction processing
 
 ## Production Incidents
 
-### Incident 1: Data Race in Multithreaded Code
-**Problem**: A trading engine produced incorrect P&L calculations when processing more than 1000 orders per second, causing a $2M reconciliation discrepancy.
+### Incident 1: Data Race in Trading Engine
+**Problem**: Incorrect P&L calculations at >1000 orders/second.
 
-**Cause**: A shared `OrderBook` struct had a `std::map<int, Order>` updated by the order-matching thread while a reporting thread iterated over it for P&L computation — no mutex protected the shared state. The map was modified mid-iteration, causing undefined behavior.
+**Cause**: Reporting thread iterated over `OrderBook` while matching thread modified it — no synchronization.
 
-**Impact**: Incorrect financial reports sent to compliance. Manual reconciliation required 3 engineers working 12-hour shifts for 2 days. Regulatory filing delayed by 48 hours.
-
-**Detection**: ThreadSanitizer flagged the race in a soak test with simulated production load. The race was intermittent — only reproduced after ~30 minutes of sustained 1000+ order/second throughput.
-
-**Solution**: Split the `OrderBook` into a read-only snapshot and a mutable live copy. The reporting thread operates on an immutable snapshot taken at the start of each reporting window. The matching thread writes to the live copy and atomically swaps it at window boundaries.
-
-**Prevention**: Enable TSan in all CI pipeline stages. Adopt a reader-writer pattern for shared state. Rule — any container accessed from multiple threads must be either immutable or protected by a mutex.
+**Solution**: Immutable snapshots for reporting, mutable live copy for matching.
 
 ---
 
-### Incident 2: Deadlock in Lock Ordering
-**Problem**: A payment processing service deadlocked under load, freezing all transactions for 15 minutes until an operator manually restarted the process.
+### Incident 2: Deadlock in Payment Service
+**Problem**: All transactions froze for 15 minutes.
 
-**Cause**: Thread A locked `mutex_account` then `mutex_ledger`. Thread B locked `mutex_ledger` then `mutex_account`. Both threads blocked waiting for the other to release — classic ABBA deadlock.
+**Cause**: Thread A locked account then ledger; Thread B locked ledger then account (ABBA deadlock).
 
-**Impact**: All inbound payments froze. 3,400 transactions failed. Customer-facing dashboard showed "processing" indefinitely. Two enterprise clients triggered SLA breach penalties.
-
-**Detection**: `gdb` attach to the hung process showed two threads waiting on mutexes in a circular chain. `perf record` and FlameGraph analysis confirmed the deadlock pattern in the production binary.
-
-**Solution**: Established a global lock ordering: always acquire `mutex_account` before `mutex_ledger`. Used `std::scoped_lock` (C++17) which locks multiple mutexes atomically, eliminating the possibility of interleaved acquisition.
-
-**Prevention**: Rule — always use `std::scoped_lock` when acquiring multiple mutexes. Document lock ordering in code comments. Add a runtime lock-order validator in debug builds (`std::lock_guard` with `std::adopt_lock` pattern).
+**Solution**: Established global lock ordering. Used `std::scoped_lock`.
 
 ---
 
 ## Production Checklist
 - [ ] Use `std::lock_guard` for automatic locking
+- [ ] Use `std::scoped_lock` for multiple mutexes
 - [ ] Avoid data races with proper synchronization
-- [ ] Use `std::atomic` for simple shared data
-- [ ] Prefer `std::async` over manual thread management
+- [ ] Use `std::atomic` for simple shared counters
+- [ ] Enable ThreadSanitizer (`-fsanitize=thread`) in CI
+- [ ] Document lock ordering in code comments
+- [ ] Prefer immutable data over synchronization
 - [ ] Use thread pools for frequent task creation
-- [ ] Test for deadlocks and race conditions
+- [ ] Test for deadlocks with stress tests
 
 ## Maturity Levels
-- **Beginner**: Basic threads, join, detach
-- **Intermediate**: Mutexes, condition variables
-- **Advanced**: Lock-free programming, thread pools
 
-## Common Myths
-- ❌ "More threads always mean better performance"
-- ❌ "Mutexes are always slow"
-- ❌ "Concurrency is only for multi-core systems"
+### Beginner
+- Create and join threads
+- Use `std::lock_guard` for mutex locking
+- Understand basic race conditions
+
+### Intermediate
+- Use condition variables for producer-consumer
+- Use atomics for lock-free counters
+- Understand memory ordering
+
+### Advanced
+- Implement thread pools
+- Design lock-free data structures
+- Optimize for false sharing and cache effects
+
+## Common Myths Debunked
+
+### Myth 1: "More threads always mean better performance"
+**Reality**: Beyond the number of hardware threads, context switching overhead degrades performance. A thread pool with N workers (N = hardware concurrency) is optimal.
+
+### Myth 2: "Mutexes are always slow"
+**Reality**: Uncontended mutexes are very fast (~20ns). Only under contention do they become expensive. Use atomics for simple operations to avoid mutex overhead entirely.
 
 ## One-Minute Revision
-| Concept | Description |
-|---------|-------------|
-| Thread | Independent execution path |
-| Mutex | Mutual exclusion lock |
-| Condition Variable | Thread synchronization |
-| Atomic | Lock-free operations |
-| Future/Promise | Async result delivery |
+
+| Concept | What It Is | Why It Matters | Key Rule |
+|---------|-----------|----------------|----------|
+| Thread | Independent execution path | Parallel work | Always join or detach |
+| Mutex | Mutual exclusion lock | Protect shared data | Use lock_guard or scoped_lock |
+| Condition Variable | Thread synchronization | Wait for events | Always use with predicate |
+| Atomic | Lock-free operations | Simple shared data | Use for counters, flags |
+| Future/Promise | Async result delivery | Decouple producer/consumer | get() blocks until ready |
 
 ## Related Topics
-- [Smart Pointers](../06-smart-pointers/)
-- [Modern C++](../08-modern-cpp/)
-- [Performance](../11-performance/)
+- [Smart Pointers](../06-smart-pointers/) — Thread safety of shared_ptr
+- [Modern C++](../08-modern-cpp/) — std::jthread (C++20)
+- [Performance](../11-performance/) — Parallelism optimization
