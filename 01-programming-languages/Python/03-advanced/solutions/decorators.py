@@ -1,243 +1,243 @@
 """
-Module 03: Advanced - Decorators Solutions
-Practice decorator implementation in Python.
+Module 03 - Advanced: Decorators Solutions
+Difficulty: Intermediate to Advanced
 """
 
+# =============================================================================
+# Exercise 1: Function Decorators - Solution
+# =============================================================================
 import time
-import functools
-from collections import defaultdict
-
+from functools import wraps
 
 def timer(func):
-    """Decorator that measures and prints function execution time."""
-    @functools.wraps(func)
+    """Decorator that measures and prints execution time."""
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
         end = time.time()
-        print(f"{func.__name__} took {(end - start) * 1000:.2f}ms")
+        print(f"{func.__name__} took {end - start:.4f} seconds")
         return result
     return wrapper
 
+@timer
+def slow_function(n):
+    """Simulate slow function."""
+    total = 0
+    for i in range(n):
+        total += i * i
+    return total
 
-def timer_with_units(unit="ms"):
-    """Decorator factory that measures execution time with configurable units."""
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            start = time.time()
-            result = func(*args, **kwargs)
-            end = time.time()
-            elapsed = end - start
-            if unit == "ms":
-                elapsed *= 1000
-            print(f"{func.__name__} took {elapsed:.2f}{unit}")
-            return result
-        return wrapper
-    return decorator
+result = slow_function(1000000)
+print(f"Result: {result}")
 
 
-def memoize(func):
-    """Decorator that caches function results."""
-    cache = {}
-
-    @functools.wraps(func)
-    def wrapper(*args):
-        if args not in cache:
-            cache[args] = func(*args)
-        return cache[args]
-
-    wrapper.clear_cache = cache.clear
-    return wrapper
-
-
-def memoize_with_limit(max_size=128):
-    """Decorator factory that caches with a maximum size limit (LRU)."""
-    def decorator(func):
-        cache = {}
-        order = []
-
-        @functools.wraps(func)
-        def wrapper(*args):
-            if args in cache:
-                order.remove(args)
-                order.append(args)
-                return cache[args]
-
-            if len(order) >= max_size:
-                oldest = order.pop(0)
-                del cache[oldest]
-
-            result = func(*args)
-            cache[args] = result
-            order.append(args)
-            return result
-
-        wrapper.clear_cache = lambda: (cache.clear(), order.clear())
-        return wrapper
-    return decorator
-
-
-def rate_limit(max_calls, period):
-    """Decorator that limits function calls."""
-    def decorator(func):
-        calls = []
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            now = time.time()
-            calls.append(now)
-
-            # Remove old timestamps
-            while calls and calls[0] < now - period:
-                calls.pop(0)
-
-            if len(calls) > max_calls:
-                raise RuntimeError(f"Rate limit exceeded: {max_calls} calls per {period}s")
-
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
-
-
-def validate_return_type(expected_type):
-    """Decorator that validates function return type."""
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            if not isinstance(result, expected_type):
-                raise TypeError(
-                    f"Expected return type {expected_type.__name__}, "
-                    f"got {type(result).__name__}"
-                )
-            return result
-        return wrapper
-    return decorator
-
-
-def validate_input_types(*types):
-    """Decorator that validates input argument types."""
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            for i, (arg, expected) in enumerate(zip(args, types)):
-                if not isinstance(arg, expected):
-                    raise TypeError(
-                        f"Argument {i} must be {expected.__name__}, "
-                        f"got {type(arg).__name__}"
-                    )
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
-
-
-def add_repr(cls):
-    """Class decorator that adds __repr__ method if not present."""
-    if '__repr__' not in cls.__dict__:
-        def __repr__(self):
-            attrs = ', '.join(f"{k}={v!r}" for k, v in self.__dict__.items())
-            return f"{cls.__name__}({attrs})"
-        cls.__repr__ = __repr__
-    return cls
-
-
+# =============================================================================
+# Exercise 2: Class Decorators - Solution
+# =============================================================================
 def singleton(cls):
-    """Class decorator that implements Singleton pattern."""
+    """Decorator that ensures only one instance of a class exists."""
     instances = {}
-
-    @functools.wraps(cls)
+    @wraps(cls)
     def get_instance(*args, **kwargs):
         if cls not in instances:
             instances[cls] = cls(*args, **kwargs)
         return instances[cls]
     return get_instance
 
+def cached(cls):
+    """Decorator that caches method results."""
+    cache = {}
+    original_init = cls.__init__
 
-def auto_log_methods(cls):
-    """Class decorator that adds logging to all methods."""
-    for attr_name, attr_value in cls.__dict__.items():
-        if callable(attr_value) and not attr_name.startswith('__'):
-            def make_logged(func, name):
-                def logged_method(self, *args, **kwargs):
-                    print(f"Calling {name}")
-                    return func(self, *args, **kwargs)
-                return logged_method
-            setattr(cls, attr_name, make_logged(attr_value, attr_name))
+    def new_init(self, *args, **kwargs):
+        original_init(self, *args, **kwargs)
+        self._cache = {}
+
+    cls.__init__ = new_init
+
+    for attr_name in dir(cls):
+        if not attr_name.startswith('_'):
+            attr = getattr(cls, attr_name)
+            if callable(attr):
+                def make_cached(method):
+                    @wraps(method)
+                    def cached_method(self, *args):
+                        key = (method.__name__, args)
+                        if key not in self._cache:
+                            self._cache[key] = method(self, *args)
+                        return self._cache[key]
+                    return cached_method
+                setattr(cls, attr_name, make_cached(attr))
+
     return cls
 
+@singleton
+class Database:
+    def __init__(self):
+        self.connection = "Connected"
 
-if __name__ == "__main__":
-    print("Testing Decorators Solutions...")
+db1 = Database()
+db2 = Database()
+print(db1 is db2)  # True
 
-    # Test timer
-    @timer
-    def slow_function():
-        time.sleep(0.01)
-        return "done"
-    result = slow_function()
-    assert result == "done"
-
-    # Test memoize
-    call_count = [0]
-
-    @memoize
-    def expensive_function(n):
-        call_count[0] += 1
+@cached
+class Calculator:
+    def expensive_calculation(self, n):
+        print(f"Computing for {n}...")
         return n * n
 
-    assert expensive_function(5) == 25
-    assert expensive_function(5) == 25
-    assert call_count[0] == 1
+calc = Calculator()
+print(calc.expensive_calculation(5))  # Prints "Computing for 5..." then 25
+print(calc.expensive_calculation(5))  # Returns 25 without computing
 
-    # Test rate_limit
-    @rate_limit(max_calls=3, period=1)
-    def limited_function():
-        return "called"
 
-    assert limited_function() == "called"
-    assert limited_function() == "called"
-    assert limited_function() == "called"
-    try:
-        limited_function()
-        assert False, "Should have raised RuntimeError"
-    except RuntimeError:
-        pass
+# =============================================================================
+# Exercise 3: Decorators with Arguments - Solution
+# =============================================================================
+def retry(max_attempts=3, delay=1):
+    """Decorator that retries function on failure."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            import time
+            last_exception = None
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_attempts - 1:
+                        time.sleep(delay)
+            raise last_exception
+        return wrapper
+    return decorator
 
-    # Test validate_return_type
-    @validate_return_type(int)
-    def add_numbers(a, b):
-        return a + b
+def rate_limit(calls_per_second=1):
+    """Decorator that limits function calls."""
+    min_interval = 1.0 / calls_per_second
+    last_called = [0.0]
 
-    assert add_numbers(1, 2) == 3
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            import time
+            elapsed = time.time() - last_called[0]
+            if elapsed < min_interval:
+                time.sleep(min_interval - elapsed)
+            last_called[0] = time.time()
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
-    @validate_return_type(int)
-    def wrong_return():
-        return "not an int"
+@retry(max_attempts=3, delay=0.1)
+def unreliable_function():
+    import random
+    if random.random() < 0.7:
+        raise ValueError("Random failure")
+    return "Success!"
 
-    try:
-        wrong_return()
-        assert False, "Should have raised TypeError"
-    except TypeError:
-        pass
+try:
+    result = unreliable_function()
+    print(result)
+except ValueError as e:
+    print(f"Failed after retries: {e}")
 
-    # Test class decorators
-    @add_repr
-    class Point:
-        def __init__(self, x, y):
-            self.x = x
-            self.y = y
 
-    p = Point(1, 2)
-    assert "Point" in repr(p)
-    assert "x=1" in repr(p)
+# =============================================================================
+# Exercise 4: Decorator Stacking - Solution
+# =============================================================================
+def log_calls(func):
+    """Decorator that logs function calls."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__} with args={args}, kwargs={kwargs}")
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} returned {result}")
+        return result
+    return wrapper
 
-    @singleton
-    class Database:
-        pass
+def validate_types(*types):
+    """Decorator that validates argument types."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i, (arg, expected_type) in enumerate(zip(args, types)):
+                if not isinstance(arg, expected_type):
+                    raise TypeError(f"Argument {i} must be {expected_type.__name__}")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
-    db1 = Database()
-    db2 = Database()
-    assert db1 is db2
+def cache_result(func):
+    """Decorator that caches results."""
+    cache = {}
+    @wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    return wrapper
 
-    print("All Decorators solutions passed!")
+@log_calls
+@validate_types(int, int)
+@cache_result
+def add(a, b):
+    return a + b
+
+print(add(2, 3))  # Logs call, validates types, returns 5
+print(add(2, 3))  # Returns cached result
+
+
+# =============================================================================
+# Exercise 5: Decorator Pattern - Solution
+# =============================================================================
+def require_permission(permission):
+    """Decorator that checks user permissions."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(user, *args, **kwargs):
+            if permission not in user.permissions:
+                raise PermissionError(f"User {user.name} lacks '{permission}' permission")
+            return func(user, *args, **kwargs)
+        return wrapper
+    return decorator
+
+def audit(action):
+    """Decorator that logs actions for audit trail."""
+    audit_log = []
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            import datetime
+            entry = {
+                "action": action,
+                "timestamp": datetime.datetime.now().isoformat(),
+                "function": func.__name__
+            }
+            audit_log.append(entry)
+            print(f"AUDIT: {action} at {entry['timestamp']}")
+            return func(*args, **kwargs)
+        wrapper.audit_log = audit_log
+        return wrapper
+    return decorator
+
+class User:
+    def __init__(self, name, permissions):
+        self.name = name
+        self.permissions = permissions
+
+@require_permission("admin")
+@audit("delete_user")
+def delete_user(current_user, target_user):
+    return f"Deleted {target_user}"
+
+admin = User("Alice", ["admin", "read", "write"])
+regular = User("Bob", ["read"])
+
+print(delete_user(admin, "Charlie"))  # "Deleted Charlie"
+try:
+    print(delete_user(regular, "Charlie"))
+except PermissionError as e:
+    print(e)  # "User Bob lacks 'admin' permission"

@@ -324,3 +324,20 @@ class Point(metaclass=ReprMeta):
 - **`__init_subclass__`**: Modern alternative; runs when subclass is created; no metaclass needed
 - **Class decorator**: Simpler alternative for one-time transformations; stacks easily
 - **Best practice**: Try `__init_subclass__` first; use metaclasses only when you need `__new__` control
+
+## Interview Questions
+
+### Q1: What is the difference between `type()` and `type`?
+**Answer:** type(object) returns the type of object. type is the base metaclass. type('Name', (bases,), dict) creates a class dynamically.
+
+### Q2: What is the difference between `__new__` and `__init__`?
+**Answer:** __new__ creates the instance (class method). __init__ initializes it (instance method). __new__ runs first, __init__ second.
+
+### Q3: What is the descriptor protocol?
+**Answer:** Objects implementing __get__, __set__, __delete__. Data descriptors (with __set__) take precedence over instance attributes.
+
+### Q4: When should you use metaclasses?
+**Answer:** Almost never. Use class decorators instead. Metaclasses for: ORM frameworks, API design, automatic registration.
+
+### Q5: What is the difference between metaclass and class decorator?
+**Answer:** Both modify class creation. Class decorator is simpler (applied to result). Metaclass controls creation process. Prefer class decorators.

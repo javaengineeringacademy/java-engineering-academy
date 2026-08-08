@@ -48,3 +48,20 @@ SQLite3 is included with Python's standard library.
 Each library folder contains:
 - `README.md` - Overview and concepts
 - `examples/` - Practical code examples
+
+## Interview Questions
+
+### Q1: When would you use NumPy over Python lists?
+**Answer:** NumPy for: numerical computation, large arrays, vectorized operations, memory efficiency. Lists for: mixed types, small datasets, simple operations.
+
+### Q2: What is the difference between pandas DataFrame and SQL?
+**Answer:** DataFrame is in-memory, flexible, Python-native. SQL is persistent, optimized for queries. Use pandas for analysis, SQL for storage.
+
+### Q3: When would you use Flask over Django?
+**Answer:** Flask: microservices, APIs, simple apps, learning. Django: complex apps, admin panels, batteries-included. Flask is flexible, Django is productive.
+
+### Q4: What is the difference between requests and httpx?
+**Answer:** requests: synchronous HTTP. httpx: sync and async HTTP, HTTP/2 support. Use httpx for async, requests for simple scripts.
+
+### Q5: What is the difference between SQLAlchemy Core and ORM?
+**Answer:** Core: SQL expressions, faster, more control. ORM: object-oriented, easier for complex domains. Use Core for performance, ORM for productivity.

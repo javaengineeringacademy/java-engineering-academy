@@ -1,165 +1,297 @@
 """
-Module 11: Design Patterns - Observer Exercises
-===============================================
-Practice implementing the Observer design pattern.
+Module 11 - Design Patterns: Observer Exercises
+Difficulty: ⭐⭐⭐ (Intermediate)
+Topic: Observer pattern implementation
 """
 
+
 # =============================================================================
-# Exercise 1: Basic Observer (★☆☆☆☆)
+# Exercise 1: Basic Observer (⭐⭐⭐)
 # =============================================================================
-# TODO: Implement simple observer pattern
+
+class Subject:
+    """
+    Implement a basic Subject that manages observers.
+    
+    TODO:
+    1. Add attach() method to register observers
+    2. Add detach() method to remove observers
+    3. Add notify() method to inform all observers
+    """
+    def __init__(self):
+        self._observers = []
+        self._state = None
+    
+    def attach(self, observer):
+        # TODO: Add observer to list
+        pass
+    
+    def detach(self, observer):
+        # TODO: Remove observer from list
+        pass
+    
+    def notify(self):
+        # TODO: Notify all observers
+        pass
+    
+    @property
+    def state(self):
+        return self._state
+    
+    @state.setter
+    def state(self, value):
+        # TODO: Update state and notify observers
+        pass
+
+
+class Observer:
+    """Observer interface."""
+    def update(self, subject):
+        pass
+
+
+# =============================================================================
+# Exercise 2: Event System (⭐⭐⭐⭐)
+# =============================================================================
 
 class EventEmitter:
-    """Simple event emitter with subscribe/emit."""
-    # TODO: Implement on, off, and emit methods
-    pass
-
-# Test Cases
-def test_basic_observer():
-    emitter = EventEmitter()
-    results = []
+    """
+    Implement an event system with multiple event types.
     
-    def handler(data):
-        results.append(data)
-    
-    emitter.on("data", handler)
-    emitter.emit("data", "hello")
-    emitter.emit("data", "world")
-    
-    assert results == ["hello", "world"]
-    print(f"✓ Exercise 1 passed: received {len(results)} events")
-
-# =============================================================================
-# Exercise 2: Multi-Event Observer (★★☆☆☆)
-# =============================================================================
-# TODO: Support multiple event types
-
-class EventBus:
-    """Event bus supporting multiple named events."""
-    # TODO: Implement subscribe, unsubscribe, publish
-    pass
-
-# Test Cases
-def test_event_bus():
-    bus = EventBus()
-    results = {"click": [], "hover": []}
-    
-    def on_click(pos):
-        results["click"].append(pos)
-    
-    def on_hover(elem):
-        results["hover"].append(elem)
-    
-    bus.subscribe("click", on_click)
-    bus.subscribe("hover", on_hover)
-    
-    bus.publish("click", (100, 200))
-    bus.publish("hover", "button")
-    bus.publish("click", (150, 250))
-    
-    assert len(results["click"]) == 2
-    assert len(results["hover"]) == 1
-    print("✓ Exercise 2 passed: multi-event working")
-
-# =============================================================================
-# Exercise 3: Priority Observer (★★★☆☆)
-# =============================================================================
-# TODO: Execute observers in priority order
-
-class PriorityEventEmitter:
-    """Event emitter with priority-based execution order."""
-    # TODO: Support priority parameter in subscribe
-    pass
-
-# Test Cases
-def test_priority_observer():
-    emitter = PriorityEventEmitter()
-    order = []
-    
-    def low_priority(data):
-        order.append("low")
-    
-    def high_priority(data):
-        order.append("high")
-    
-    def medium_priority(data):
-        order.append("medium")
-    
-    emitter.on("event", low_priority, priority=1)
-    emitter.on("event", high_priority, priority=10)
-    emitter.on("event", medium_priority, priority=5)
-    
-    emitter.emit("event", None)
-    
-    assert order == ["high", "medium", "low"]
-    print(f"✓ Exercise 3 passed: execution order is {order}")
-
-# =============================================================================
-# Exercise 4: Once Observer (★★★★☆)
-# =============================================================================
-# TODO: Support one-time observers that auto-remove
-
-class OnceEmitter:
-    """Event emitter supporting one-time listeners."""
-    # TODO: Implement once method
-    pass
-
-# Test Cases
-def test_once_observer():
-    emitter = OnceEmitter()
-    call_count = 0
-    
-    def handler(data):
-        nonlocal call_count
-        call_count += 1
-    
-    emitter.once("event", handler)
-    emitter.emit("event", "first")
-    emitter.emit("event", "second")
-    emitter.emit("event", "third")
-    
-    assert call_count == 1
-    print(f"✓ Exercise 4 passed: once handler called {call_count} time(s)")
-
-# =============================================================================
-# Exercise 5: Observable Property (★★★★★)
-# =============================================================================
-# TODO: Create property that notifies on change
-
-class Observable:
-    """Class with observable properties."""
-    # TODO: Use descriptor or metaclass to make properties observable
-    pass
-
-# Test Cases
-class User(Observable):
+    TODO:
+    1. Implement on() to subscribe to events
+    2. Implement off() to unsubscribe
+    3. Implement emit() to trigger events
+    4. Support multiple event types
+    """
     def __init__(self):
-        self.name = ""
-        self.email = ""
+        self._handlers = {}
+    
+    def on(self, event_type, handler):
+        # TODO: Register handler for event type
+        pass
+    
+    def off(self, event_type, handler):
+        # TODO: Unregister handler
+        pass
+    
+    def emit(self, event_type, *args, **kwargs):
+        # TODO: Call all handlers for event type
+        pass
 
-def test_observable_property():
-    user = User()
-    changes = []
+
+# =============================================================================
+# Exercise 3: Observable Property (⭐⭐⭐⭐)
+# =============================================================================
+
+class ObservableProperty:
+    """
+    Implement a property that notifies when changed.
     
-    def on_change(attr, old_val, new_val):
-        changes.append((attr, old_val, new_val))
+    TODO:
+    1. Create a descriptor or property that tracks changes
+    2. Notify listeners when value changes
+    3. Support old_value and new_value in notification
+    """
+    def __init__(self, name, default=None):
+        self.name = name
+        self.default = default
+        self._listeners = []
     
-    user.observe(on_change)
-    user.name = "Alice"
-    user.name = "Bob"
-    user.email = "bob@example.com"
+    def add_listener(self, callback):
+        # TODO: Add callback to listeners
+        pass
     
-    assert len(changes) == 3
-    assert changes[0] == ("name", "", "Alice")
-    print(f"✓ Exercise 5 passed: observed {len(changes)} changes")
+    def remove_listener(self, callback):
+        # TODO: Remove callback from listeners
+        pass
+    
+    def __get__(self, obj, objtype=None):
+        # TODO: Return value
+        pass
+    
+    def __set__(self, obj, value):
+        # TODO: Set value and notify if changed
+        pass
+
+
+# =============================================================================
+# Exercise 4: Observer with Priority (⭐⭐⭐⭐)
+# =============================================================================
+
+class PrioritySubject:
+    """
+    Implement a Subject that supports observer priority.
+    
+    TODO:
+    1. Support priority when attaching observers
+    2. Notify observers in priority order (higher first)
+    3. Allow updating observer priority
+    """
+    def __init__(self):
+        self._observers = {}  # observer -> priority
+        self._state = None
+    
+    def attach(self, observer, priority=0):
+        # TODO: Add observer with priority
+        pass
+    
+    def detach(self, observer):
+        # TODO: Remove observer
+        pass
+    
+    def update_priority(self, observer, priority):
+        # TODO: Update observer's priority
+        pass
+    
+    def notify(self):
+        # TODO: Notify observers in priority order
+        pass
+
+
+# =============================================================================
+# Exercise 5: Async Observer (⭐⭐⭐⭐⭐)
+# =============================================================================
+
+import asyncio
+
+class AsyncSubject:
+    """
+    Implement an async Subject that notifies observers asynchronously.
+    
+    TODO:
+    1. Support async observer callbacks
+    2. Implement async attach and detach
+    3. Implement async notify that awaits all observers
+    """
+    def __init__(self):
+        self._observers = []
+        self._state = None
+    
+    async def attach(self, observer):
+        # TODO: Add observer
+        pass
+    
+    async def detach(self, observer):
+        # TODO: Remove observer
+        pass
+    
+    async def notify(self):
+        # TODO: Await all observer callbacks
+        pass
+    
+    @property
+    def state(self):
+        return self._state
+    
+    @state.setter
+    def state(self, value):
+        # TODO: Update state (consider async notification)
+        pass
+
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 11 - Observer Exercises\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Basic Observer")
+    try:
+        subject = Subject()
+        results = []
+        
+        class ConcreteObserver(Observer):
+            def __init__(self, name):
+                self.name = name
+            def update(self, subject):
+                results.append(self.name)
+        
+        obs1 = ConcreteObserver("obs1")
+        obs2 = ConcreteObserver("obs2")
+        subject.attach(obs1)
+        subject.attach(obs2)
+        subject.state = "new"
+        assert len(results) == 2, "Both observers should be notified"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Event System")
+    try:
+        emitter = EventEmitter()
+        results = []
+        emitter.on("click", lambda x: results.append(x))
+        emitter.emit("click", "clicked")
+        assert "clicked" in results, "Handler should be called"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Observable Property")
+    try:
+        class MyClass:
+            name = ObservableProperty("name", "default")
+        
+        obj = MyClass()
+        changes = []
+        obj.name.add_listener(lambda o, n: changes.append((o, n)))
+        obj.name = "new_value"
+        assert len(changes) == 1, "Should have one change"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Observer with Priority")
+    try:
+        subject = PrioritySubject()
+        results = []
+        
+        class PriorityObserver:
+            def __init__(self, name):
+                self.name = name
+            def update(self, subject):
+                results.append(self.name)
+        
+        obs_high = PriorityObserver("high")
+        obs_low = PriorityObserver("low")
+        subject.attach(obs_low, priority=1)
+        subject.attach(obs_high, priority=10)
+        subject.notify()
+        assert results == ["high", "low"], "Should notify in priority order"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Async Observer")
+    try:
+        async def test_async():
+            subject = AsyncSubject()
+            results = []
+            
+            class AsyncObserver:
+                def __init__(self, name):
+                    self.name = name
+                async def update(self, subject):
+                    results.append(self.name)
+            
+            obs1 = AsyncObserver("obs1")
+            await subject.attach(obs1)
+            subject._state = "new"
+            await subject.notify()
+            return len(results) == 1
+        
+        assert asyncio.run(test_async()), "Async observer should work"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+
 
 if __name__ == "__main__":
-    print("Running Observer Pattern Exercises...")
-    print("=" * 50)
-    test_basic_observer()
-    test_event_bus()
-    test_priority_observer()
-    test_once_observer()
-    test_observable_property()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

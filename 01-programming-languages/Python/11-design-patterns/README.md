@@ -122,3 +122,20 @@ By the end of this module, you'll be able to:
 - **Iterator**: Implement `__iter__` and `__next__`; generators are built-in iterators
 - **Context Manager**: `__enter__`/`__exit__`; `contextlib` for simpler patterns
 - **Anti-patterns**: Don't use Singleton when module works; don't add Factory when constructor suffices
+
+## Interview Questions
+
+### Q1: What is the Singleton pattern and when to avoid it?
+**Answer:** Singleton ensures one instance. Avoid: makes testing hard, hides dependencies, creates global state. Use module-level instance instead.
+
+### Q2: What is the difference between Strategy and Observer?
+**Answer:** Strategy: object behavior changes at runtime. Observer: multiple objects react to state changes. Strategy is one-to-one, Observer is one-to-many.
+
+### Q3: What is the Factory pattern and when to use it?
+**Answer:** Factory creates objects without specifying exact class. Use when: object creation is complex, you need to create different types based on input.
+
+### Q4: What is the Decorator pattern vs Python decorators?
+**Answer:** Decorator pattern adds behavior to objects (OOP). Python decorators modify functions (functional). Different concepts, similar name.
+
+### Q5: What is dependency injection?
+**Answer:** Passing dependencies as parameters instead of creating them internally. Makes code testable, loosely coupled. Use constructor injection.

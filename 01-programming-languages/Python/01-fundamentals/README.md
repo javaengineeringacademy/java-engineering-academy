@@ -356,6 +356,23 @@ def read_file_safe(filepath: str) -> str | None:
 
 **Common mistake:** Forgetting to specify `encoding="utf-8"`. On Windows, the default encoding varies by locale, which can corrupt data silently.
 
+## Interview Questions
+
+### Q1: What is the difference between a list and a tuple?
+**Answer:** Lists are mutable (can be modified), tuples are immutable (fixed). Lists use more memory, tuples are faster and can be dictionary keys.
+
+### Q2: Explain mutable default argument gotcha.
+**Answer:** Default arguments are evaluated once at function definition. If mutable (list, dict), they're shared across calls. Use None as default and create inside function.
+
+### Q3: What is LEGB scope?
+**Answer:** Local → Enclosing → Global → Built-in. Python looks up variables in this order. Understanding LEGB prevents NameError and unexpected behavior.
+
+### Q4: What is the difference between `*args` and `**kwargs`?
+**Answer:** `*args` collects positional arguments as tuple, `**kwargs` collects keyword arguments as dict. They can be combined in that order.
+
+### Q5: How do f-strings work internally?
+**Answer:** f-strings are compiled to bytecode that calls __format__ on each expression. They're faster than .format() and % formatting.
+
 ## Production Checklist
 
 ### ✅ Before using fundamentals in production:

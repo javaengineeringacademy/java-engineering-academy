@@ -412,6 +412,25 @@ Master these atoms, and you'll read Python source code like a native speaker rea
 
 ---
 
+## Interview Questions
+
+### Q1: What is duck typing and why does Python use it?
+**Answer:** Duck typing means "if it walks like a duck and quacks like a duck, it's a duck." Python checks object behavior rather than type. This enables flexibility and polymorphism without inheritance.
+
+### Q2: Explain the GIL and its impact on multithreading.
+**Answer:** The Global Interpreter Lock prevents multiple threads from executing Python bytecodes simultaneously. This means CPU-bound threads don't parallelize, but I/O-bound threads still benefit from concurrency.
+
+### Q3: What is the difference between `is` and `==`?
+**Answer:** `is` checks identity (same object in memory), `==` checks equality (same value). Use `is` for None checks, `==` for value comparison.
+
+### Q4: How does Python's garbage collector work?
+**Answer:** Python uses reference counting as primary mechanism and a cyclic garbage collector for reference cycles. The gc module manages generational collection.
+
+### Q5: What is the data model and why is it important?
+**Answer:** The data model defines how Python objects behave through special methods (__init__, __len__, __getitem__). It enables operator overloading, context managers, and iteration.
+
+---
+
 ## Production Checklist
 
 - [ ] Use duck typing for flexible interfaces; avoid unnecessary `isinstance()` checks

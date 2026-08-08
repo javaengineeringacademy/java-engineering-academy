@@ -18,6 +18,23 @@ By the end of this module, you'll be able to:
 - Handle exceptions at the right abstraction level
 - Write exception-safe code that doesn't leak resources
 
+## Interview Questions
+
+### Q1: What is the difference between `except Exception` and `except`?
+**Answer:** `except Exception` catches all exceptions except SystemExit, KeyboardInterrupt. Bare `except` catches everything including SystemExit. Always use `except Exception`.
+
+### Q2: What is exception chaining?
+**Answer:** Using `raise NewException() from original_exception` preserves the original traceback. The `__cause__` attribute links exceptions.
+
+### Q3: What is the difference between `finally` and `else`?
+**Answer:** `finally` runs always (exception or not). `else` runs only if no exception occurred. Use else for code that shouldn't run on exception.
+
+### Q4: What is a custom exception and when to create one?
+**Answer:** Custom exceptions inherit from Exception. Create when you need specific error types for your domain (PaymentError, ValidationError).
+
+### Q5: What is the EAFP principle?
+**Answer:** Easier to Ask Forgiveness than Permission. Try the operation and catch exceptions rather than checking conditions first. More Pythonic.
+
 ## When
 
 | Scenario | Exception Strategy |

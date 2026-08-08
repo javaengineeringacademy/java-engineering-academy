@@ -874,3 +874,20 @@ Python's memory management:
 - **objgraph**: Visualize object references; find growing types; detect leaks
 - **String optimization**: Use `join()` not `+=`; `sys.intern()` for repeated strings
 - **Best practice**: Profile before optimizing; use weakref for caches; prefer generators for large data
+
+## Interview Questions
+
+### Q1: What is the difference between `sys.getsizeof()` and `pympler.asizeof()`?
+**Answer:** sys.getsizeof() returns shallow size. pympler.asizeof() returns deep size (includes referenced objects). Use asizeof for accurate memory.
+
+### Q2: What are `__slots__` and when to use them?
+**Answer:** __slots__ prevents __dict__ creation, saves memory. Use for: many instances, memory-constrained, performance-critical. Don't use if you need dynamic attributes.
+
+### Q3: What is a weak reference?
+**Answer:** A reference that doesn't increase refcount. Used for caches, avoid circular references. weakref.ref() creates weak reference.
+
+### Q4: What is the difference between garbage collection and reference counting?
+**Answer:** Reference counting is primary (immediate deallocation). GC handles cycles (periodic). Both work together.
+
+### Q5: How do you detect memory leaks in Python?
+**Answer:** Use tracemalloc, objgraph, memory_profiler. Track allocations over time. Check for growing object counts.

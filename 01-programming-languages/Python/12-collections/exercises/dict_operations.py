@@ -1,134 +1,216 @@
 """
-Module 12: Collections - Dict Operations Exercises
-==================================================
-Practice advanced dictionary operations and techniques.
+Module 12 - Collections: Dictionary Operations Exercises
+Difficulty: ⭐⭐ (Intermediate)
+Topic: Advanced dictionary operations
 """
 
-# =============================================================================
-# Exercise 1: Dict Merge (★☆☆☆☆)
-# =============================================================================
-# TODO: Merge multiple dictionaries with precedence
-
-def merge_dicts(*dicts, precedence="last"):
-    """Merge multiple dicts. precedence='last' means later dicts win."""
-    # TODO: Implement dict merging
-    pass
-
-# Test Cases
-def test_dict_merge():
-    d1 = {"a": 1, "b": 2}
-    d2 = {"b": 3, "c": 4}
-    d3 = {"c": 5, "d": 6}
-    
-    result = merge_dicts(d1, d2, d3)
-    assert result == {"a": 1, "b": 3, "c": 5, "d": 6}
-    
-    result_first = merge_dicts(d1, d2, d3, precedence="first")
-    assert result_first["b"] == 2
-    print("✓ Exercise 1 passed: dict merging works")
 
 # =============================================================================
-# Exercise 2: Dict Inversion (★★☆☆☆)
+# Exercise 1: Dictionary Comprehension (⭐⭐)
 # =============================================================================
-# TODO: Invert dict keys and values
 
-def invert_dict(d):
-    """Invert dict: values become keys, keys become values.
-    
-    invert_dict({"a": 1, "b": 2}) => {1: "a", 2: "b"}
+def exercise_1_dict_comprehension():
     """
-    # TODO: Implement dict inversion
-    pass
-
-# Test Cases
-def test_invert_dict():
-    assert invert_dict({"a": 1, "b": 2}) == {1: "a", 2: "b"}
-    assert invert_dict({"x": "hello"}) == {"hello": "x"}
-    assert invert_dict({}) == {}
-    print("✓ Exercise 2 passed: dict inversion works")
-
-# =============================================================================
-# Exercise 3: Nested Dict Access (★★★☆☆)
-# =============================================================================
-# TODO: Access nested dict with dot notation
-
-def get_nested(d, path, default=None):
-    """Get value from nested dict using dot-separated path.
+    Create dictionaries using comprehensions.
     
-    get_nested({"a": {"b": {"c": 1}}}, "a.b.c") => 1
+    TODO:
+    1. Create dict mapping numbers to their squares
+    2. Create dict from two lists (keys and values)
+    3. Filter dict by value
     """
-    # TODO: Implement nested access
+    numbers = [1, 2, 3, 4, 5]
+    keys = ['a', 'b', 'c', 'd']
+    values = [10, 20, 30, 40]
+    data = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}
+    
+    squares = {}
+    combined = {}
+    filtered = {}
+    
+    # TODO: Implement dictionary comprehensions
     pass
 
-# Test Cases
-def test_nested_access():
-    data = {"user": {"profile": {"name": "Alice", "age": 30}}}
-    
-    assert get_nested(data, "user.profile.name") == "Alice"
-    assert get_nested(data, "user.profile.age") == 30
-    assert get_nested(data, "user.address.city", "Unknown") == "Unknown"
-    print("✓ Exercise 3 passed: nested access works")
 
 # =============================================================================
-# Exercise 4: Dict Grouping (★★★★☆)
+# Exercise 2: Dictionary Merging (⭐⭐⭐)
 # =============================================================================
-# TODO: Group list of dicts by key
 
-def group_by(items, key):
-    """Group list of dicts by specified key.
-    
-    group_by([{"type": "a", "val": 1}, {"type": "b", "val": 2}, {"type": "a", "val": 3}], "type")
-    => {"a": [{"type": "a", "val": 1}, {"type": "a", "val": 3}], "b": [...]}
+def exercise_2_dict_merging():
     """
-    # TODO: Implement grouping
-    pass
-
-# Test Cases
-def test_grouping():
-    items = [
-        {"type": "fruit", "name": "apple"},
-        {"type": "veggie", "name": "carrot"},
-        {"type": "fruit", "name": "banana"},
-        {"type": "veggie", "name": "spinach"}
-    ]
+    Merge dictionaries using different methods.
     
-    result = group_by(items, "type")
-    assert len(result["fruit"]) == 2
-    assert len(result["veggie"]) == 2
-    print("✓ Exercise 4 passed: grouping works")
-
-# =============================================================================
-# Exercise 5: Dict Diff (★★★★★)
-# =============================================================================
-# TODO: Compute difference between two dicts
-
-def dict_diff(d1, d2):
-    """Compute diff between two dicts.
-    
-    Returns dict with keys: 'added', 'removed', 'changed', 'unchanged'
+    TODO:
+    1. Merge using | operator (Python 3.9+)
+    2. Merge using {**d1, **d2}
+    3. Handle conflicts (second dict wins)
     """
-    # TODO: Implement dict diffing
+    dict1 = {'a': 1, 'b': 2, 'c': 3}
+    dict2 = {'b': 20, 'c': 30, 'd': 40}
+    
+    merged_operator = {}
+    merged_unpack = {}
+    merged_update = {}
+    
+    # TODO: Implement merging methods
     pass
 
-# Test Cases
-def test_dict_diff():
-    d1 = {"a": 1, "b": 2, "c": 3}
-    d2 = {"b": 2, "c": 4, "d": 5}
+
+# =============================================================================
+# Exercise 3: Default Dictionary (⭐⭐⭐)
+# =============================================================================
+
+def exercise_3_default_dict():
+    """
+    Use defaultdict for groupby operations.
     
-    result = dict_diff(d1, d2)
-    assert result["added"] == {"d": 5}
-    assert result["removed"] == {"a": 1}
-    assert result["changed"] == {"c": (3, 4)}
-    assert result["unchanged"] == {"b": 2}
-    print("✓ Exercise 5 passed: dict diff works")
+    TODO:
+    1. Group words by first letter
+    2. Count occurrences
+    3. Build adjacency list
+    """
+    from collections import defaultdict
+    
+    words = ['apple', 'banana', 'cherry', 'avocado', 'blueberry', 'cantaloupe']
+    
+    grouped = defaultdict(list)
+    counts = defaultdict(int)
+    adjacency = defaultdict(list)
+    
+    edges = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('C', 'D')]
+    
+    # TODO: Implement operations
+    pass
+
+
+# =============================================================================
+# Exercise 4: Dictionary Sorting (⭐⭐⭐)
+# =============================================================================
+
+def exercise_4_dict_sorting():
+    """
+    Sort dictionaries by various criteria.
+    
+    TODO:
+    1. Sort by key
+    2. Sort by value
+    3. Sort by multiple criteria
+    """
+    data = {
+        'Charlie': 3,
+        'Alice': 1,
+        'Bob': 2,
+        'Diana': 4,
+        'Eve': 2
+    }
+    
+    sorted_by_key = {}
+    sorted_by_value = {}
+    sorted_by_value_then_key = {}
+    
+    # TODO: Implement sorting operations
+    pass
+
+
+# =============================================================================
+# Exercise 5: Advanced Dict Operations (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_5_advanced_dict():
+    """
+    Perform advanced dictionary operations.
+    
+    TODO:
+    1. Deep merge two nested dicts
+    2. Flatten nested dict
+    3. Invert dict (swap keys and values)
+    """
+    def deep_merge(d1, d2):
+        # TODO: Deep merge two dicts
+        pass
+    
+    def flatten_dict(d, parent_key='', sep='.'):
+        # TODO: Flatten nested dict
+        pass
+    
+    def invert_dict(d):
+        # TODO: Invert dict (swap keys/values)
+        pass
+    
+    return deep_merge, flatten_dict, invert_dict
+
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 12 - Dictionary Operations Exercises\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Dictionary Comprehension")
+    try:
+        result = exercise_1_dict_comprehension()
+        print(f"  Squares: {result['squares']}")
+        print(f"  Combined: {result['combined']}")
+        print(f"  Filtered: {result['filtered']}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Dictionary Merging")
+    try:
+        result = exercise_2_dict_merging()
+        print(f"  Operator: {result['merged_operator']}")
+        print(f"  Unpack: {result['merged_unpack']}")
+        print(f"  Update: {result['merged_update']}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Default Dictionary")
+    try:
+        result = exercise_3_default_dict()
+        print(f"  Grouped: {dict(result['grouped'])}")
+        print(f"  Counts: {dict(result['counts'])}")
+        print(f"  Adjacency: {dict(result['adjacency'])}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Dictionary Sorting")
+    try:
+        result = exercise_4_dict_sorting()
+        print(f"  By key: {result['sorted_by_key']}")
+        print(f"  By value: {result['sorted_by_value']}")
+        print(f"  By value+key: {result['sorted_by_value_then_key']}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Advanced Dict Operations")
+    try:
+        deep_merge, flatten_dict, invert_dict = exercise_5_advanced_dict()
+        
+        d1 = {'a': 1, 'b': {'c': 2, 'd': 3}}
+        d2 = {'b': {'d': 4, 'e': 5}, 'f': 6}
+        merged = deep_merge(d1, d2)
+        print(f"  Deep merged: {merged}")
+        
+        nested = {'a': {'b': 1, 'c': 2}, 'd': 3}
+        flat = flatten_dict(nested)
+        print(f"  Flattened: {flat}")
+        
+        simple = {'a': 1, 'b': 2, 'c': 3}
+        inverted = invert_dict(simple)
+        print(f"  Inverted: {inverted}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+
 
 if __name__ == "__main__":
-    print("Running Dict Operations Exercises...")
-    print("=" * 50)
-    test_dict_merge()
-    test_invert_dict()
-    test_nested_access()
-    test_grouping()
-    test_dict_diff()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

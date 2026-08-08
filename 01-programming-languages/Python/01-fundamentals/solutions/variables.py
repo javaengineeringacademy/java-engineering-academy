@@ -1,58 +1,109 @@
 """
-Module 01: Fundamentals - Variables Solutions
-Practice variable operations and manipulation.
+Module 01 - Fundamentals: Variables Solutions
+Difficulty: Beginner
 """
 
+# =============================================================================
+# Exercise 1: Variable Assignment - Solution
+# =============================================================================
+# Python supports multiple assignment and tuple unpacking.
 
-def celsius_to_fahrenheit(celsius):
-    """Convert Celsius to Fahrenheit."""
-    return (celsius * 9/5) + 32
+a = 10
+b = 20
+# Swap without temporary variable using tuple unpacking
+a, b = b, a
 
-
-def fahrenheit_to_celsius(fahrenheit):
-    """Convert Fahrenheit to Celsius."""
-    return (fahrenheit - 32) * 5/9
-
-
-def reverse_list(lst):
-    """Return a new list with elements in reverse order."""
-    result = []
-    for i in range(len(lst) - 1, -1, -1):
-        result.append(lst[i])
-    return result
+# Test cases
+print(f"a: {a}, b: {b}")  # Expected: a: 20, b: 10
 
 
-def flatten_list(nested_list):
-    """Flatten a nested list into a single list."""
-    result = []
-    for item in nested_list:
-        if isinstance(item, list):
-            result.extend(flatten_list(item))
-        else:
-            result.append(item)
-    return result
+# =============================================================================
+# Exercise 2: Type Checking - Solution
+# =============================================================================
+# Python is dynamically typed, but we can check types with type().
+
+my_int = 42
+my_float = 3.14
+my_string = "hello"
+my_bool = True
+my_list = [1, 2, 3]
+my_dict = {"key": "value"}
+my_none = None
+
+# Test cases
+print(type(my_int))      # Expected: <class 'int'>
+print(type(my_float))    # Expected: <class 'float'>
+print(type(my_string))   # Expected: <class 'str'>
 
 
-def filter_even_numbers(lst):
-    """Return a new list containing only even numbers."""
-    return [x for x in lst if x % 2 == 0]
+# =============================================================================
+# Exercise 3: Multiple Assignment - Solution
+# =============================================================================
+# Python's unpacking syntax makes this elegant.
+
+x, y, z = 1, 2, 3
+
+colors = ["red", "green", "blue"]
+first, second, third = colors
+
+numbers = [1, 2, 3, 4, 5]
+first, *middle, last = numbers
+
+# Test cases
+print(f"x: {x}, y: {y}, z: {z}")  # Expected: x: 1, y: 2, z: 3
+print(f"Colors: {first}, {second}, {third}")  # Expected: red, green, blue
+print(f"Numbers: first={first}, middle={middle}, last={last}")  # Expected: first=1, middle=[2,3,4], last=5
 
 
-def is_palindrome(text):
-    """Check if text is a palindrome (case-insensitive, ignoring spaces)."""
-    cleaned = text.lower().replace(" ", "")
-    return cleaned == cleaned[::-1]
+# =============================================================================
+# Exercise 4: Variable Scope - Solution
+# =============================================================================
+# Use 'global' keyword to modify global variables from inside functions.
+
+counter = 0
+
+def increment_global():
+    """Increment the global counter variable."""
+    global counter
+    counter += 1
+
+def local_only():
+    """Create a local variable 'x' and return it."""
+    x = 100
+    return x
+
+# Test cases
+increment_global()
+increment_global()
+print(f"Global counter: {counter}")  # Expected: 2
+print(f"Local: {local_only()}")  # Expected: 100
 
 
-if __name__ == "__main__":
-    print("Testing Variables Solutions...")
-    assert celsius_to_fahrenheit(0) == 32.0
-    assert celsius_to_fahrenheit(100) == 212.0
-    assert fahrenheit_to_celsius(32) == 0.0
-    assert fahrenheit_to_celsius(212) == 100.0
-    assert reverse_list([1, 2, 3]) == [3, 2, 1]
-    assert flatten_list([[1, 2], [3, 4], [5]]) == [1, 2, 3, 4, 5]
-    assert filter_even_numbers([1, 2, 3, 4, 5, 6]) == [2, 4, 6]
-    assert is_palindrome("racecar") == True
-    assert is_palindrome("Race Car") == True
-    print("All Variables solutions passed!")
+# =============================================================================
+# Exercise 5: Mutable vs Immutable - Solution
+# =============================================================================
+# Immutable types (int, str, tuple) cannot be changed in-place.
+# Mutable types (list, dict, set) can be modified.
+
+def modify_string(s):
+    """Try to modify the string (immutable).
+    Strings cannot be modified - reassigning creates a new object."""
+    s = "modified"
+    return s
+
+def modify_list(lst):
+    """Modify the list in-place (mutable).
+    Lists can be modified - append() changes the original object."""
+    lst.append(4)
+    return lst
+
+# Test cases
+original_str = "hello"
+result_str = modify_string(original_str)
+print(f"Original string: {original_str}")  # Expected: "hello" (unchanged)
+print(f"Result string: {result_str}")      # Expected: "modified"
+
+original_list = [1, 2, 3]
+result_list = modify_list(original_list)
+print(f"Original list: {original_list}")   # Expected: [1, 2, 3, 4] (changed!)
+print(f"Result list: {result_list}")       # Expected: [1, 2, 3, 4]

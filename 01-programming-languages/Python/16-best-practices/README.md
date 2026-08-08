@@ -1006,3 +1006,20 @@ Python best practices:
 - **Performance**: Profile before optimizing; use built-ins; cache expensive computations
 - **Project structure**: `src/` layout; separate tests from source; `pyproject.toml` at root
 - **CI/CD**: Run linting, type checking, and tests on every push; enforce coverage thresholds
+
+## Interview Questions
+
+### Q1: What is the difference between PEP 8 and company style guides?
+**Answer:** PEP 8 is Python's official style guide. Companies may have variations. Follow PEP 8 unless company specifies otherwise. Consistency matters most.
+
+### Q2: What is the difference between a module and a package?
+**Answer:** Module is a single .py file. Package is a directory with __init__.py. Packages can contain sub-packages.
+
+### Q3: What is the difference between `import` and `from X import Y`?
+**Answer:** `import X` imports module (use X.name). `from X import Y` imports name directly (use Y). Prefer `import X` for clarity.
+
+### Q4: What is the difference between public, private, and protected?
+**Answer:** public: no underscore. _protected: single underscore (convention). __private: double underscore (name mangling). Python uses conventions, not strict access control.
+
+### Q5: What is the difference between a docstring and comments?
+**Answer:** Docstrings describe what something does (accessible via __doc__). Comments explain why. Use docstrings for public APIs, comments for implementation details.

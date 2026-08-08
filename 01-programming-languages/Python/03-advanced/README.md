@@ -31,6 +31,23 @@ By the end of this module, you'll be able to:
 - Python Fundamentals (01-fundamentals)
 - Object-Oriented Programming (02-oop)
 
+## Interview Questions
+
+### Q1: What is a closure and how is it different from a nested function?
+**Answer:** A closure is a nested function that captures variables from enclosing scope. The closure keeps references to free variables even after the outer function returns.
+
+### Q2: Explain decorator execution order.
+**Answer:** Decorators are applied bottom-up. @a @b def f is equivalent to f = a(b(f)). The innermost decorator runs first.
+
+### Q3: What is the difference between `yield` and `return`?
+**Answer:** `return` exits the function and returns a value. `yield` suspends execution and returns a value, maintaining state for next call.
+
+### Q4: What is the iterator protocol?
+**Answer:** Objects implement __iter__() and __next__() methods. __iter__() returns self, __next__() returns next value or raises StopIteration.
+
+### Q5: What is a generator expression vs list comprehension?
+**Answer:** Generator expression uses () and yields one item at a time (lazy). List comprehension uses [] and creates entire list in memory (eager).
+
 ## Learning Objectives
 
 By the end of this module you will be able to:

@@ -1,102 +1,91 @@
 """
-Module 02: OOP - Inheritance Solutions
-Practice inheritance and polymorphism in Python.
+Module 02 - OOP: Inheritance Solutions
+Difficulty: Intermediate
 """
 
-from abc import ABC, abstractmethod
-import math
+# =============================================================================
+# Exercise 1: Basic Inheritance - Solution
+# =============================================================================
+class Animal:
+    """Base class for all animals."""
 
-
-class Animal(ABC):
-    """Abstract base class for all animals."""
-
-    def __init__(self, name, legs=4):
+    def __init__(self, name, species, sound):
         self.name = name
-        self.legs = legs
+        self.species = species
+        self.sound = sound
 
-    @abstractmethod
-    def sound(self):
-        """Return the sound this animal makes."""
-        pass
+    def speak(self):
+        return f"{self.name} says {self.sound}!"
 
-    @abstractmethod
-    def move(self):
-        """Return how this animal moves."""
-        pass
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}('{self.name}')"
-
+    def __str__(self):
+        return f"{self.name} the {self.species}"
 
 class Dog(Animal):
-    """A Dog class that inherits from Animal."""
+    """Dog class inheriting from Animal."""
 
     def __init__(self, name, breed):
-        super().__init__(name)
+        super().__init__(name, "Dog", "Woof")
         self.breed = breed
 
-    def sound(self):
-        return "Woof!"
-
-    def move(self):
-        return "Running"
-
     def fetch(self, item):
-        return f"{self.name} fetched the {item}!"
+        return f"{self.name} fetches the {item}"
+
+class Cat(Animal):
+    """Cat class inheriting from Animal."""
+
+    def __init__(self, name, indoor=True):
+        super().__init__(name, "Cat", "Meow")
+        self.indoor = indoor
+
+    def purr(self):
+        return f"{self.name} purrs contentedly"
+
+dog = Dog("Rex", "German Shepherd")
+cat = Cat("Whiskers")
+print(dog.speak())     # "Rex says Woof!"
+print(cat.speak())     # "Whiskers says Meow!"
+print(dog.fetch("ball"))  # "Rex fetches the ball!"
+print(cat.purr())      # "Whiskers purrs contentedly"
 
 
-class Bird(Animal):
-    """A Bird class that inherits from Animal."""
+# =============================================================================
+# Exercise 2: Method Overriding - Solution
+# =============================================================================
+import math
 
-    def __init__(self, name, can_fly=True):
-        super().__init__(name, legs=2)
-        self.can_fly = can_fly
+class Shape:
+    """Base shape class."""
 
-    def sound(self):
-        return "Tweet!"
+    def __init__(self, color="red"):
+        self.color = color
 
-    def move(self):
-        return "Flying" if self.can_fly else "Walking"
-
-    def fly(self):
-        return self.can_fly
-
-
-class Shape(ABC):
-    """Abstract base class for geometric shapes."""
-
-    @abstractmethod
     def area(self):
-        pass
+        return 0
 
-    @abstractmethod
     def perimeter(self):
-        pass
+        return 0
 
-    @abstractmethod
-    def shape_type(self):
-        pass
-
-    def __repr__(self):
-        return f"{self.shape_type()}()"
-
+    def describe(self):
+        return f"A {self.color} {self.__class__.__name__.lower()}"
 
 class Circle(Shape):
-    def __init__(self, radius):
+    """Circle shape."""
+
+    def __init__(self, radius, color="red"):
+        super().__init__(color)
         self.radius = radius
 
     def area(self):
-        return math.pi * self.radius**2
+        return math.pi * self.radius ** 2
 
     def perimeter(self):
         return 2 * math.pi * self.radius
 
-    def shape_type(self):
-        return "Circle"
-
-
 class Rectangle(Shape):
-    def __init__(self, width, height):
+    """Rectangle shape."""
+
+    def __init__(self, width, height, color="red"):
+        super().__init__(color)
         self.width = width
         self.height = height
 
@@ -106,227 +95,137 @@ class Rectangle(Shape):
     def perimeter(self):
         return 2 * (self.width + self.height)
 
-    def shape_type(self):
-        return "Rectangle"
-
-    def is_square(self):
-        return self.width == self.height
-
-
-class Triangle(Shape):
-    def __init__(self, a, b, c):
-        self.a = a
-        self.b = b
-        self.c = c
-
-    def area(self):
-        s = (self.a + self.b + self.c) / 2
-        return math.sqrt(s * (s - self.a) * (s - self.b) * (s - self.c))
-
-    def perimeter(self):
-        return self.a + self.b + self.c
-
-    def shape_type(self):
-        return "Triangle"
-
-    def is_valid(self):
-        return (self.a + self.b > self.c and
-                self.a + self.c > self.b and
-                self.b + self.c > self.a)
+circle = Circle(5)
+rect = Rectangle(4, 6)
+print(f"Circle area: {circle.area():.2f}")      # 78.54
+print(f"Rectangle area: {rect.area()}")         # 24
+print(circle.describe())                         # "A red circle"
 
 
-class Employee(ABC):
-    """Abstract base class for employees."""
+# =============================================================================
+# Exercise 3: Multiple Inheritance - Solution
+# =============================================================================
+class Flyer:
+    """Mixin for flying ability."""
 
-    def __init__(self, name, employee_id, base_salary):
-        self.name = name
-        self.employee_id = employee_id
-        self.base_salary = base_salary
-
-    @abstractmethod
-    def calculate_bonus(self):
-        pass
-
-    @abstractmethod
-    def employee_type(self):
-        pass
-
-    def total_compensation(self):
-        return self.base_salary + self.calculate_bonus()
-
-    def __repr__(self):
-        return f"{self.employee_type()}('{self.name}', '{self.employee_id}')"
-
-
-class Developer(Employee):
-    def __init__(self, name, employee_id, base_salary, projects_completed=0):
-        super().__init__(name, employee_id, base_salary)
-        self.projects_completed = projects_completed
-
-    def calculate_bonus(self):
-        return self.base_salary + (self.projects_completed * 1000)
-
-    def employee_type(self):
-        return "Developer"
-
-    def add_project(self):
-        self.projects_completed += 1
-
-
-class Manager(Employee):
-    def __init__(self, name, employee_id, base_salary, team_size=0):
-        super().__init__(name, employee_id, base_salary)
-        self.team_size = team_size
-
-    def calculate_bonus(self):
-        return self.base_salary + (self.team_size * 500)
-
-    def employee_type(self):
-        return "Manager"
-
-    def add_team_member(self):
-        self.team_size += 1
-
-
-class Executive(Employee):
-    def __init__(self, name, employee_id, base_salary, stock_options=0):
-        super().__init__(name, employee_id, base_salary)
-        self.stock_options = stock_options
-
-    def calculate_bonus(self):
-        return self.base_salary + (self.stock_options * 100)
-
-    def employee_type(self):
-        return "Executive"
-
-
-class AppError(Exception):
-    """Base application error."""
-
-    def __init__(self, message, error_code=None):
-        super().__init__(message)
-        self.message = message
-        self.error_code = error_code
-
-    def to_dict(self):
-        return {"message": self.message, "error_code": self.error_code}
-
-
-class ValidationError(AppError):
-    def __init__(self, field, value, message="Invalid value"):
-        super().__init__(message)
-        self.field = field
-        self.value = value
-
-
-class NotFoundError(AppError):
-    def __init__(self, resource_type, resource_id):
-        super().__init__(f"{resource_type} with id {resource_id} not found")
-        self.resource_type = resource_type
-        self.resource_id = resource_id
-
-
-class PermissionError(AppError):
-    def __init__(self, action, resource):
-        super().__init__(f"Permission denied: cannot {action} on {resource}")
-        self.action = action
-        self.resource = resource
-
-
-class Plugin(ABC):
-    """Base plugin class."""
-
-    def __init__(self, name, version="1.0.0"):
-        self.name = name
-        self.version = version
-
-    @abstractmethod
-    def execute(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def get_description(self):
-        pass
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}('{self.name}', v{self.version})"
-
-
-class PluginManager:
     def __init__(self):
-        self._plugins = {}
+        self.can_fly = True
 
-    def register(self, plugin):
-        if plugin.name in self._plugins:
-            raise ValueError(f"Plugin '{plugin.name}' already registered")
-        self._plugins[plugin.name] = plugin
+    def fly(self):
+        return f"{self.name} flies with wings!"
 
-    def unregister(self, name):
-        if name not in self._plugins:
-            raise KeyError(f"Plugin '{name}' not found")
-        del self._plugins[name]
+class Swimmer:
+    """Mixin for swimming ability."""
 
-    def get_plugin(self, name):
-        if name not in self._plugins:
-            raise KeyError(f"Plugin '{name}' not found")
-        return self._plugins[name]
+    def __init__(self):
+        self.can_swim = True
 
-    def list_plugins(self):
-        return list(self._plugins.keys())
+    def swim(self):
+        return f"{self.name} swims gracefully!"
 
-    def execute_plugin(self, name, *args, **kwargs):
-        return self._plugins[name].execute(*args, **kwargs)
+class Duck(Flyer, Swimmer):
+    """Duck can both fly and swim."""
+
+    def __init__(self, name):
+        Flyer.__init__(self)
+        Swimmer.__init__(self)
+        self.name = name
+
+duck = Duck("Donald")
+print(duck.fly())    # "Donald flies with wings!"
+print(duck.swim())   # "Donald swims gracefully!"
+print(Duck.__mro__)  # Shows method resolution order
 
 
-if __name__ == "__main__":
-    print("Testing Inheritance Solutions...")
+# =============================================================================
+# Exercise 4: super() Usage - Solution
+# =============================================================================
+class Vehicle:
+    """Base vehicle class."""
 
-    # Test Animal Hierarchy
-    dog = Dog("Rex", "German Shepherd")
-    bird = Bird("Tweety")
-    assert dog.sound() == "Woof!"
-    assert bird.move() == "Flying"
-    assert bird.fly() == True
-    assert dog.fetch("ball") == "Rex fetched the ball!"
+    def __init__(self, make, model, year):
+        self.make = make
+        self.model = model
+        self.year = year
 
-    # Test Shape Calculator
-    circle = Circle(5)
-    rect = Rectangle(4, 6)
-    tri = Triangle(3, 4, 5)
-    assert abs(circle.area() - 78.54) < 0.01
-    assert rect.area() == 24
-    assert rect.perimeter() == 20
-    assert tri.area() == 6.0
-    assert rect.is_square() == False
+    def get_info(self):
+        return f"{self.year} {self.make} {self.model}"
 
-    # Test Employee System
-    dev = Developer("Alice", "D001", 80000, 5)
-    mgr = Manager("Bob", "M001", 100000, 10)
-    exec = Executive("Charlie", "E001", 150000, 100)
-    assert dev.calculate_bonus() == 85000
-    assert mgr.calculate_bonus() == 105000
-    assert exec.calculate_bonus() == 160000
+class ElectricVehicle(Vehicle):
+    """Electric vehicle with battery."""
 
-    # Test Custom Exceptions
-    try:
-        raise ValidationError("email", "invalid-email")
-    except ValidationError as e:
-        assert e.field == "email"
+    def __init__(self, make, model, year, battery_kwh):
+        super().__init__(make, model, year)
+        self.battery_kwh = battery_kwh
 
-    try:
-        raise NotFoundError("User", 123)
-    except NotFoundError as e:
-        assert "User" in str(e)
+    def get_info(self):
+        base_info = super().get_info()
+        return f"{base_info} ({self.battery_kwh}kWh)"
 
-    # Test Plugin System
-    manager = PluginManager()
-    greet = type('GreetPlugin', (Plugin,), {
-        'execute': lambda self, name="World": f"Hello, {name}!",
-        'get_description': lambda self: "A greeting plugin"
-    })()
-    greet.name = "greet"
-    manager.register(greet)
-    assert manager.list_plugins() == ["greet"]
-    assert manager.execute_plugin("greet", "World") == "Hello, World!"
+class TeslaModel3(ElectricVehicle):
+    """Specific Tesla model."""
 
-    print("All Inheritance solutions passed!")
+    def __init__(self, year, color="white"):
+        super().__init__("Tesla", "Model 3", year, 75)
+        self.color = color
+
+    def get_info(self):
+        base_info = super().get_info()
+        return f"{base_info} [{self.color}]"
+
+tesla = TeslaModel3(2023, "red")
+print(tesla.get_info())  # "2023 Tesla Model 3 (75kWh) [red]"
+
+
+# =============================================================================
+# Exercise 5: Abstract Base Classes - Solution
+# =============================================================================
+from abc import ABC, abstractmethod
+
+class Database(ABC):
+    """Abstract database class."""
+
+    @abstractmethod
+    def connect(self):
+        pass
+
+    @abstractmethod
+    def query(self, sql):
+        pass
+
+    @abstractmethod
+    def close(self):
+        pass
+
+class MySQLDatabase(Database):
+    """MySQL implementation."""
+
+    def connect(self):
+        return "Connected to MySQL"
+
+    def query(self, sql):
+        return f"MySQL executing: {sql}"
+
+    def close(self):
+        return "MySQL connection closed"
+
+class PostgreSQLDatabase(Database):
+    """PostgreSQL implementation."""
+
+    def connect(self):
+        return "Connected to PostgreSQL"
+
+    def query(self, sql):
+        return f"PostgreSQL executing: {sql}"
+
+    def close(self):
+        return "PostgreSQL connection closed"
+
+mysql = MySQLDatabase()
+postgres = PostgreSQLDatabase()
+print(mysql.connect())     # "Connected to MySQL"
+print(postgres.connect())  # "Connected to PostgreSQL"
+try:
+    db = Database()
+except TypeError as e:
+    print(e)  # Can't instantiate abstract class

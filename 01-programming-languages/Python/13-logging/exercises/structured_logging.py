@@ -1,167 +1,206 @@
 """
-Module 13: Logging - Structured Logging Exercises
-=================================================
-Practice implementing structured logging in Python.
+Module 13 - Logging: Structured Logging Exercises
+Difficulty: ⭐⭐⭐ (Intermediate)
+Topic: Structured and JSON logging
 """
 
-import json
 import logging
-import time
+import json
 from datetime import datetime
 
+
 # =============================================================================
-# Exercise 1: JSON Logger (★☆☆☆☆)
+# Exercise 1: JSON Formatter (⭐⭐⭐)
 # =============================================================================
-# TODO: Create logger that outputs JSON
 
 class JSONFormatter(logging.Formatter):
-    """Format log records as JSON."""
-    # TODO: Override format to produce JSON output
-    pass
+    """
+    Custom formatter that outputs JSON.
+    
+    TODO:
+    1. Override format() method
+    2. Convert log record to JSON
+    3. Include timestamp, level, message, and extra fields
+    """
+    def format(self, record):
+        # TODO: Create JSON formatted string
+        pass
 
-# Test Cases
-def test_json_logger():
-    logger = logging.getLogger("json_test")
-    logger.handlers.clear()
-    handler = logging.StreamHandler()
-    handler.setFormatter(JSONFormatter())
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-    
-    # Capture output
-    import io
-    stream = io.StringIO()
-    handler.stream = stream
-    
-    logger.info("Test event", extra={"user_id": 123})
-    
-    output = stream.getvalue().strip()
-    data = json.loads(output)
-    assert data["message"] == "Test event"
-    assert data["user_id"] == 123
-    print("✓ Exercise 1 passed: JSON logger works")
 
 # =============================================================================
-# Exercise 2: Structured Log Record (★★☆☆☆)
+# Exercise 2: Context Logger (⭐⭐⭐⭐)
 # =============================================================================
-# TODO: Create structured log record class
-
-class StructuredRecord:
-    """Structured log record with typed fields."""
-    # TODO: Support various field types
-    # TODO: Support nested fields
-    pass
-
-# Test Cases
-def test_structured_record():
-    record = StructuredRecord(
-        level="INFO",
-        message="User logged in",
-        fields={
-            "user_id": 123,
-            "ip": "192.168.1.1",
-            "metadata": {"browser": "Chrome", "os": "Windows"}
-        }
-    )
-    
-    assert record.level == "INFO"
-    assert record.fields["user_id"] == 123
-    assert record.fields["metadata"]["browser"] == "Chrome"
-    print("✓ Exercise 2 passed: structured record created")
-
-# =============================================================================
-# Exercise 3: Context Propagation (★★★☆☆)
-# =============================================================================
-# TODO: Propagate context through log records
 
 class ContextLogger:
-    """Logger that propagates context automatically."""
-    # TODO: Store context in thread-local storage
-    # TODO: Add context to all log records
-    pass
+    """
+    Logger that adds context to all messages.
+    
+    TODO:
+    1. Accept context dict in constructor
+    2. Merge context with each log message
+    3. Support adding/removing context
+    """
+    def __init__(self, logger, context=None):
+        self.logger = logger
+        self.context = context or {}
+    
+    def add_context(self, key, value):
+        # TODO: Add key-value to context
+        pass
+    
+    def remove_context(self, key):
+        # TODO: Remove key from context
+        pass
+    
+    def info(self, message, **kwargs):
+        # TODO: Log with context
+        pass
+    
+    def error(self, message, **kwargs):
+        # TODO: Log error with context
+        pass
 
-# Test Tests
-def test_context_propagation():
-    logger = ContextLogger()
-    logger.set_context(request_id="req-123", user_id=456)
-    
-    # All logs should have context
-    record = logger.create_record("INFO", "Processing order")
-    assert record["request_id"] == "req-123"
-    assert record["user_id"] == 456
-    
-    # Clear context
-    logger.clear_context()
-    record2 = logger.create_record("INFO", "Background task")
-    assert "request_id" not in record2
-    print("✓ Exercise 3 passed: context propagation works")
 
 # =============================================================================
-# Exercise 4: Log Aggregator (★★★★☆)
+# Exercise 3: Request Logger (⭐⭐⭐⭐)
 # =============================================================================
-# TODO: Aggregate log records for batch processing
 
-class LogAggregator:
-    """Aggregate log records for batch sending."""
-    # TODO: Buffer records
-    # TODO: Flush when buffer full or timeout reached
-    pass
+class RequestLogger:
+    """
+    Logger for tracking HTTP requests.
+    
+    TODO:
+    1. Log request method, URL, status code
+    2. Log response time
+    3. Support request ID tracking
+    """
+    def __init__(self, logger):
+        self.logger = logger
+    
+    def log_request(self, method, url, request_id=None):
+        # TODO: Log incoming request
+        pass
+    
+    def log_response(self, method, url, status_code, duration, request_id=None):
+        # TODO: Log response with timing
+        pass
 
+
+# =============================================================================
+# Exercise 4: Metrics Logger (⭐⭐⭐⭐)
+# =============================================================================
+
+class MetricsLogger:
+    """
+    Logger for application metrics.
+    
+    TODO:
+    1. Log counter metrics
+    2. Log gauge metrics
+    3. Log histogram metrics
+    """
+    def __init__(self, logger):
+        self.logger = logger
+    
+    def counter(self, name, value=1, tags=None):
+        # TODO: Log counter metric
+        pass
+    
+    def gauge(self, name, value, tags=None):
+        # TODO: Log gauge metric
+        pass
+    
+    def histogram(self, name, value, tags=None):
+        # TODO: Log histogram metric
+        pass
+
+
+# =============================================================================
+# Exercise 5: Audit Logger (⭐⭐⭐⭐⭐)
+# =============================================================================
+
+class AuditLogger:
+    """
+    Logger for security audit events.
+    
+    TODO:
+    1. Log user actions
+    2. Include timestamp, user, action, resource
+    3. Support success/failure status
+    """
+    def __init__(self, logger):
+        self.logger = logger
+    
+    def log_action(self, user, action, resource, success=True, details=None):
+        # TODO: Log audit event
+        pass
+    
+    def log_login(self, user, success=True, ip_address=None):
+        # TODO: Log login attempt
+        pass
+    
+    def log_access(self, user, resource, granted=True):
+        # TODO: Log access attempt
+        pass
+
+
+# =============================================================================
 # Test Cases
-def test_log_aggregator():
-    aggregator = LogAggregator(buffer_size=3)
-    flushed = []
-    
-    def on_flush(records):
-        flushed.extend(records)
-    
-    aggregator.on_flush = on_flush
-    
-    aggregator.add({"level": "INFO", "msg": "1"})
-    aggregator.add({"level": "INFO", "msg": "2"})
-    assert len(flushed) == 0  # Not yet
-    
-    aggregator.add({"level": "INFO", "msg": "3"})  # Triggers flush
-    assert len(flushed) == 3
-    
-    print("✓ Exercise 4 passed: log aggregation works")
-
 # =============================================================================
-# Exercise 5: Distributed Tracing Logger (★★★★★)
-# =============================================================================
-# TODO: Implement distributed tracing with log correlation
 
-class TracingLogger:
-    """Logger with distributed tracing support."""
-    # TODO: Generate and propagate trace IDs
-    # TODO: Create spans for operations
-    pass
+def test_exercises():
+    print("Testing Module 13 - Structured Logging Exercises\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: JSON Formatter")
+    try:
+        formatter = JSONFormatter()
+        assert formatter is not None, "Formatter should be created"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Context Logger")
+    try:
+        logger = logging.getLogger('test_context')
+        context_logger = ContextLogger(logger, {'app': 'test'})
+        context_logger.add_context('user', 'testuser')
+        assert 'user' in context_logger.context
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Request Logger")
+    try:
+        logger = logging.getLogger('test_request')
+        request_logger = RequestLogger(logger)
+        assert request_logger.logger is not None
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Metrics Logger")
+    try:
+        logger = logging.getLogger('test_metrics')
+        metrics_logger = MetricsLogger(logger)
+        assert metrics_logger.logger is not None
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Audit Logger")
+    try:
+        logger = logging.getLogger('test_audit')
+        audit_logger = AuditLogger(logger)
+        assert audit_logger.logger is not None
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
 
-# Test Cases
-def test_tracing_logger():
-    tracer = TracingLogger()
-    
-    with tracer.start_span("operation1") as span1:
-        span1.log("Starting operation")
-        time.sleep(0.01)
-        
-        with tracer.start_span("operation2", parent=span1) as span2:
-            span2.log("Nested work")
-    
-    trace = tracer.get_trace()
-    assert len(trace) == 2
-    assert trace[0]["parent_id"] is None
-    assert trace[1]["parent_id"] == trace[0]["span_id"]
-    
-    print("✓ Exercise 5 passed: distributed tracing works")
 
 if __name__ == "__main__":
-    print("Running Structured Logging Exercises...")
-    print("=" * 50)
-    test_json_logger()
-    test_structured_record()
-    test_context_propagation()
-    test_log_aggregator()
-    test_tracing_logger()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

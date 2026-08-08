@@ -1,127 +1,211 @@
 """
-Module 11: Design Patterns - Singleton Exercises
-================================================
-Practice implementing the Singleton design pattern.
+Module 11 - Design Patterns: Singleton Exercises
+Difficulty: ⭐⭐⭐ (Intermediate)
+Topic: Singleton pattern implementation
 """
 
-# =============================================================================
-# Exercise 1: Basic Singleton (★☆☆☆☆)
-# =============================================================================
-# TODO: Implement singleton using __new__
-
-class DatabaseConnection:
-    """Singleton database connection."""
-    # TODO: Override __new__ to ensure single instance
-    pass
-
-# Test Cases
-def test_basic_singleton():
-    db1 = DatabaseConnection()
-    db2 = DatabaseConnection()
-    assert db1 is db2
-    print("✓ Exercise 1 passed: singleton pattern works")
 
 # =============================================================================
-# Exercise 2: Thread-Safe Singleton (★★☆☆☆)
+# Exercise 1: Basic Singleton (⭐⭐⭐)
 # =============================================================================
-# TODO: Make singleton thread-safe
+
+class SingletonBasic:
+    """
+    Implement a basic Singleton using __new__.
+    
+    TODO:
+    1. Override __new__ to ensure only one instance exists
+    2. Store the instance in a class variable
+    3. Return existing instance if it exists
+    """
+    _instance = None
+    
+    def __new__(cls, *args, **kwargs):
+        # TODO: Implement singleton pattern
+        pass
+    
+    def __init__(self, value=None):
+        # TODO: Initialize only once
+        pass
+
+
+# =============================================================================
+# Exercise 2: Thread-Safe Singleton (⭐⭐⭐⭐)
+# =============================================================================
 
 import threading
 
 class ThreadSafeSingleton:
-    """Thread-safe singleton using lock."""
-    # TODO: Use threading.Lock to ensure thread safety
+    """
+    Implement a thread-safe Singleton using a lock.
+    
+    TODO:
+    1. Add a class-level lock
+    2. Use the lock in __new__ to ensure thread safety
+    3. Handle double-checked locking pattern
+    """
+    _instance = None
+    _lock = threading.Lock()
+    
+    def __new__(cls, *args, **kwargs):
+        # TODO: Implement thread-safe singleton
+        pass
+    
+    def __init__(self, value=None):
+        # TODO: Initialize only once
+        pass
+
+
+# =============================================================================
+# Exercise 3: Singleton with Decoration (⭐⭐⭐)
+# =============================================================================
+
+def singleton(cls):
+    """
+    Implement a singleton decorator.
+    
+    TODO:
+    1. Create a decorator that wraps the class
+    2. Store the instance in the decorator
+    3. Return existing instance if it exists
+    """
+    # TODO: Implement singleton decorator
     pass
 
-# Test Cases
-def test_thread_safe_singleton():
-    instances = []
-    
-    def create_instance():
-        instances.append(ThreadSafeSingleton())
-    
-    threads = [threading.Thread(target=create_instance) for _ in range(10)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-    
-    assert all(inst is instances[0] for inst in instances)
-    print(f"✓ Exercise 2 passed: all {len(instances)} instances identical")
 
 # =============================================================================
-# Exercise 3: Singleton with Reset (★★★☆☆)
+# Exercise 4: Singleton Registry (⭐⭐⭐⭐)
 # =============================================================================
-# TODO: Singleton that can be reset for testing
-
-class ResettableSingleton:
-    """Singleton that can be reset."""
-    # TODO: Add _reset class method
-    pass
-
-# Test Cases
-def test_resettable_singleton():
-    s1 = ResettableSingleton()
-    s2 = ResettableSingleton()
-    assert s1 is s2
-    
-    ResettableSingleton._reset()
-    s3 = ResettableSingleton()
-    assert s1 is not s3
-    print("✓ Exercise 3 passed: singleton reset works")
-
-# =============================================================================
-# Exercise 4: Singleton Registry (★★★★☆)
-# =============================================================================
-# TODO: Registry that enforces singleton per key
 
 class SingletonRegistry:
-    """Registry ensuring one instance per key."""
-    # TODO: Implement get_or_create method
-    pass
+    """
+    Implement a registry that manages multiple singleton instances.
+    
+    TODO:
+    1. Create a registry dictionary
+    2. Implement get_or_create method
+    3. Implement get_instance method
+    4. Implement list_instances method
+    """
+    _registry = {}
+    
+    @classmethod
+    def get_or_create(cls, name, instance_class, *args, **kwargs):
+        # TODO: Get existing or create new singleton
+        pass
+    
+    @classmethod
+    def get_instance(cls, name):
+        # TODO: Get instance by name
+        pass
+    
+    @classmethod
+    def list_instances(cls):
+        # TODO: Return list of all registered singletons
+        pass
 
-# Test Cases
-def test_singleton_registry():
-    registry = SingletonRegistry()
-    
-    db1 = registry.get_or_create("primary", DatabaseConnection)
-    db2 = registry.get_or_create("primary", DatabaseConnection)
-    db3 = registry.get_or_create("secondary", DatabaseConnection)
-    
-    assert db1 is db2
-    assert db1 is not db3
-    print("✓ Exercise 4 passed: registry enforces singletons per key")
 
 # =============================================================================
-# Exercise 5: Metaclass Singleton (★★★★★)
+# Exercise 5: Singleton with Reset (⭐⭐⭐⭐⭐)
 # =============================================================================
-# TODO: Implement singleton using metaclass
 
-class SingletonMeta(type):
-    """Metaclass that creates singleton classes."""
-    # TODO: Override __call__ to return existing instance
-    pass
+class ResettableSingleton:
+    """
+    Implement a Singleton that can be reset (useful for testing).
+    
+    TODO:
+    1. Implement basic singleton pattern
+    2. Add a class method to reset/delete the instance
+    3. Ensure reset works correctly
+    """
+    _instance = None
+    
+    def __new__(cls, *args, **kwargs):
+        # TODO: Implement singleton pattern
+        pass
+    
+    def __init__(self, value=None):
+        # TODO: Initialize only once
+        pass
+    
+    @classmethod
+    def reset(cls):
+        # TODO: Reset the singleton instance
+        pass
 
+
+# =============================================================================
 # Test Cases
-class AppConfig(metaclass=SingletonMeta):
-    def __init__(self):
-        self.settings = {}
+# =============================================================================
 
-def test_metaclass_singleton():
-    config1 = AppConfig()
-    config2 = AppConfig()
-    assert config1 is config2
-    config1.settings["debug"] = True
-    assert config2.settings["debug"] is True
-    print("✓ Exercise 5 passed: metaclass singleton works")
+def test_exercises():
+    print("Testing Module 11 - Singleton Exercises\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Basic Singleton")
+    try:
+        s1 = SingletonBasic("first")
+        s2 = SingletonBasic("second")
+        assert s1 is s2, "Should be same instance"
+        assert s1.value == "first", "Value should be 'first'"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Thread-Safe Singleton")
+    try:
+        s1 = ThreadSafeSingleton("first")
+        s2 = ThreadSafeSingleton("second")
+        assert s1 is s2, "Should be same instance"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Singleton with Decoration")
+    try:
+        @singleton
+        class MyClass:
+            def __init__(self, value):
+                self.value = value
+        
+        o1 = MyClass("first")
+        o2 = MyClass("second")
+        assert o1 is o2, "Should be same instance"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Singleton Registry")
+    try:
+        class ServiceA:
+            pass
+        class ServiceB:
+            pass
+        
+        SingletonRegistry.get_or_create("service_a", ServiceA)
+        SingletonRegistry.get_or_create("service_b", ServiceB)
+        
+        instances = SingletonRegistry.list_instances()
+        assert len(instances) == 2, "Should have 2 instances"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Singleton with Reset")
+    try:
+        s1 = ResettableSingleton("first")
+        s1_id = id(s1)
+        ResettableSingleton.reset()
+        s2 = ResettableSingleton("second")
+        assert s1_id != id(s2), "Should be different instances after reset"
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+
 
 if __name__ == "__main__":
-    print("Running Singleton Pattern Exercises...")
-    print("=" * 50)
-    test_basic_singleton()
-    test_thread_safe_singleton()
-    test_resettable_singleton()
-    test_singleton_registry()
-    test_metaclass_singleton()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

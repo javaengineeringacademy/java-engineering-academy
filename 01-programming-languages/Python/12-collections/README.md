@@ -890,3 +890,20 @@ d['a'] = 1  # Hash: some other value
 
 ## Version Validation
 - Verified against: Python 3.7+ (dict ordering guaranteed)
+
+## Interview Questions
+
+### Q1: What is the time complexity of list.append() vs list.insert(0, x)?
+**Answer:** append() is O(1) amortized. insert(0, x) is O(n) because all elements shift. Use deque for O(1) prepend.
+
+### Q2: How does dict maintain insertion order?
+**Answer:** Python 3.7+ guarantees insertion order. Dict uses hash table with compact layout. Order is preserved until rehash.
+
+### Q3: What is the difference between set and frozenset?
+**Answer:** set is mutable (add, remove). frozenset is immutable (can be dict key, set element). frozenset is hashable.
+
+### Q4: When would you use deque over list?
+**Answer:** deque for queue/stack operations (append/pop from both ends). list for random access. deque is O(1) for both ends, list is O(n) for front operations.
+
+### Q5: What is the difference between defaultdict and dict?
+**Answer:** defaultdict calls factory function for missing keys. No KeyError. dict raises KeyError for missing keys. Use defaultdict for grouping/counting.

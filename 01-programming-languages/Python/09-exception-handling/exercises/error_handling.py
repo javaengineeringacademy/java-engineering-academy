@@ -1,128 +1,150 @@
 """
-Module 09: Exception Handling - Error Handling Exercises
-=======================================================
-Practice error handling patterns and best practices.
+Module 09 - Exception Handling: Error Handling Exercises
+Difficulty: Intermediate
 """
 
 # =============================================================================
-# Exercise 1: Safe Division (★☆☆☆☆)
+# Exercise 1: Try/Except Patterns (Difficulty: Beginner)
 # =============================================================================
-# TODO: Implement safe division that handles all edge cases
+# Practice different try/except patterns.
 
-def safe_divide(a, b, default=0):
-    """Divide a by b, returning default on any error."""
-    # TODO: Handle ZeroDivisionError, TypeError, and return default
+# TODO: Implement safe operations
+def safe_divide(a, b):
+    """Divide with error handling."""
     pass
 
-# Test Cases
-def test_safe_divide():
-    assert safe_divide(10, 2) == 5.0
-    assert safe_divide(10, 0) == 0
-    assert safe_divide(10, 0, default=-1) == -1
-    assert safe_divide("10", 2) == 0  # TypeError
-    print("✓ Exercise 1 passed: safe division works")
-
-# =============================================================================
-# Exercise 2: Context Manager with Cleanup (★★☆☆☆)
-# =============================================================================
-# TODO: Create context manager that ensures cleanup on any exception
-
-class ManagedResource:
-    """Context manager that tracks open/close state."""
-    # TODO: Implement __enter__ and __close__ with error handling
+def safe_get(dictionary, key, default=None):
+    """Get from dictionary with error handling."""
     pass
 
-# Test Cases
-def test_managed_resource():
-    resource = ManagedResource()
-    
-    with resource as r:
-        assert resource.is_open
-        # Simulate work
-    
-    assert not resource.is_open
-    print("✓ Exercise 2 passed: resource properly managed")
-
-# =============================================================================
-# Exercise 3: Exception Chaining (★★★☆☆)
-# =============================================================================
-# TODO: Implement proper exception chaining
-
-def process_config(config_path):
-    """Load and validate config, chaining exceptions properly."""
-    # TODO: Load JSON, validate fields, chain exceptions
+def safe_int(value):
+    """Convert to int with error handling."""
     pass
 
-# Test Cases
-def test_exception_chaining():
-    import tempfile
-    import json
-    import os
-    
-    invalid_config = {"host": "localhost"}  # Missing port
-    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
-        json.dump(invalid_config, f)
-        temp_path = f.name
-    
-    try:
-        process_config(temp_path)
-    except ValueError as e:
-        assert e.__cause__ is not None
-        print(f"✓ Exercise 3 passed: exception chained properly")
-    finally:
-        os.unlink(temp_path)
+# Test cases
+# print(safe_divide(10, 2))    # Expected: 5.0
+# print(safe_divide(10, 0))    # Expected: None
+# print(safe_get({"a": 1}, "b", 0))  # Expected: 0
+# print(safe_int("123"))       # Expected: 123
+# print(safe_int("abc"))       # Expected: None
+
 
 # =============================================================================
-# Exercise 4: Error Collector Pattern (★★★★☆)
+# Exercise 2: Exception Handling Patterns (Difficulty: Intermediate)
 # =============================================================================
-# TODO: Implement error collector that doesn't stop on first error
+# Implement common error handling patterns.
 
-class ErrorCollector:
-    """Collect errors during batch processing."""
-    # TODO: Implement as context manager that collects errors
+# TODO: Implement patterns
+def handle_with_retry(func, max_attempts=3):
+    """Retry pattern."""
     pass
 
-# Test Cases
-def test_error_collector():
-    with ErrorCollector() as collector:
-        collector.collect(lambda: 1 / 0)  # Should not raise
-        collector.collect(lambda: int("abc"))  # Should not raise
-        collector.collect(lambda: 42)  # Should succeed
-    
-    assert len(collector.errors) == 2
-    assert len(collector.results) == 1
-    print(f"✓ Exercise 4 passed: collected {len(collector.errors)} errors")
-
-# =============================================================================
-# Exercise 5: Resilient Pipeline (★★★★★)
-# =============================================================================
-# TODO: Build pipeline that handles errors at each stage
-
-class Pipeline:
-    """Process data through multiple stages with error handling."""
-    # TODO: Implement add_stage and run methods
-    # TODO: Track which stages succeeded/failed
+def handle_with_fallback(primary_func, fallback_func):
+    """Fallback pattern."""
     pass
 
-# Test Cases
-def test_pipeline():
-    pipeline = Pipeline()
-    pipeline.add_stage("validate", lambda x: x if x > 0 else None)
-    pipeline.add_stage("double", lambda x: x * 2)
-    pipeline.add_stage("stringify", lambda x: str(x))
-    
-    result = pipeline.run(5)
-    assert result == "10"
-    assert pipeline.stats["validate"]["success"] == 1
-    print(f"✓ Exercise 5 passed: pipeline processed through stages")
+def handle_with_default(func, default_value):
+    """Default value pattern."""
+    pass
 
-if __name__ == "__main__":
-    print("Running Error Handling Exercises...")
-    print("=" * 50)
-    test_safe_divide()
-    test_managed_resource()
-    test_exception_chaining()
-    test_error_collector()
-    test_pipeline()
-    print("=" * 50)
-    print("All tests passed!")
+# Test cases
+# result = handle_with_retry(lambda: 1/0, max_attempts=3)
+# print(result)  # Expected: None (after 3 failures)
+#
+# result = handle_with_fallback(
+#     lambda: 1/0,
+#     lambda: "fallback value"
+# )
+# print(result)  # Expected: "fallback value"
+
+
+# =============================================================================
+# Exercise 3: Logging Errors (Difficulty: Intermediate)
+# =============================================================================
+# Log exceptions properly.
+
+# TODO: Implement error logging
+import logging
+
+def setup_error_logger():
+    """Set up error logger."""
+    pass
+
+def log_and_raise(error_type, message):
+    """Log error and raise exception."""
+    pass
+
+def process_with_logging(data):
+    """Process data with error logging."""
+    pass
+
+# Test cases
+# try:
+#     log_and_raise(ValueError, "Invalid input")
+# except ValueError as e:
+#     print(e)
+
+
+# =============================================================================
+# Exercise 4: Exception Translation (Difficulty: Intermediate)
+# =============================================================================
+# Translate between exception types.
+
+# TODO: Implement exception translation
+class ExternalAPIError(Exception):
+    """External API error."""
+    pass
+
+class InternalServiceError(Exception):
+    """Internal service error."""
+    pass
+
+def call_external_api(endpoint):
+    """Call external API (may raise ExternalAPIError)."""
+    pass
+
+def translate_api_error(endpoint):
+    """Translate external API error to internal error."""
+    pass
+
+# Test cases
+# try:
+#     translate_api_error("/invalid/endpoint")
+# except InternalServiceError as e:
+#     print(e)
+
+
+# =============================================================================
+# Exercise 5: Resource Cleanup (Difficulty: Intermediate)
+# =============================================================================
+# Ensure proper resource cleanup.
+
+# TODO: Implement resource management
+class DatabaseConnection:
+    """Database connection with cleanup."""
+
+    def __init__(self):
+        self.connected = False
+
+    def connect(self):
+        self.connected = True
+
+    def disconnect(self):
+        self.connected = False
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+# TODO: Implement cleanup function
+def execute_with_cleanup(func):
+    """Execute function with proper cleanup."""
+    pass
+
+# Test cases
+# with DatabaseConnection() as conn:
+#     conn.connect()
+#     # Do work
+# # Connection automatically closed

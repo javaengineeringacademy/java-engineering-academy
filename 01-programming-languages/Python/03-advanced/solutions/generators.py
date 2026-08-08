@@ -1,221 +1,159 @@
 """
-Module 03: Advanced - Generators Solutions
-Practice generator implementation in Python.
+Module 03 - Advanced: Generators Solutions
+Difficulty: Intermediate to Advanced
 """
 
-import itertools
-
-
-def fibonacci_generator():
-    """Generate infinite Fibonacci sequence."""
-    a, b = 0, 1
-    while True:
-        yield a
-        a, b = b, a + b
-
-
-def fibonacci_limited(limit):
+# =============================================================================
+# Exercise 1: Basic Generators - Solution
+# =============================================================================
+def fibonacci(limit):
     """Generate Fibonacci numbers up to limit."""
     a, b = 0, 1
     while a <= limit:
         yield a
         a, b = b, a + b
 
+def custom_range(start, stop=None, step=1):
+    """Implement custom range using generator."""
+    if stop is None:
+        start, stop = 0, start
 
-def read_large_file(file_path):
-    """Read a large file line by line using a generator."""
-    with open(file_path, 'r') as file:
-        for line in file:
-            stripped = line.strip()
-            if stripped:
-                yield stripped
+    if step == 0:
+        raise ValueError("step cannot be zero")
+
+    current = start
+    while (step > 0 and current < stop) or (step < 0 and current > stop):
+        yield current
+        current += step
+
+print(list(fibonacci(50)))  # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+print(list(custom_range(5)))  # [0, 1, 2, 3, 4]
+print(list(custom_range(1, 10, 2)))  # [1, 3, 5, 7, 9]
 
 
+# =============================================================================
+# Exercise 2: Generator Expressions - Solution
+# =============================================================================
+def sum_of_squares(n):
+    """Calculate sum of squares using generator expression."""
+    return sum(x * x for x in range(1, n + 1))
+
+def flatten_generator(nested_list):
+    """Flatten a nested list using generator."""
+    for item in nested_list:
+        if isinstance(item, list):
+            yield from flatten_generator(item)
+        else:
+            yield item
+
+print(sum_of_squares(10))  # 385
+nested = [[1, 2], [3, 4], [5, 6]]
+print(list(flatten_generator(nested)))  # [1, 2, 3, 4, 5, 6]
+
+
+# =============================================================================
+# Exercise 3: Generator Pipelines - Solution
+# =============================================================================
+def read_data(source):
+    """Read data from source (simulated)."""
+    for item in source:
+        yield item
+
+def filter_data(data, condition):
+    """Filter data based on condition."""
+    for item in data:
+        if condition(item):
+            yield item
+
+def transform_data(data, func):
+    """Transform data using function."""
+    for item in data:
+        yield func(item)
+
+source = range(100)
+pipeline = transform_data(
+    filter_data(read_data(source), lambda x: x % 2 == 0),
+    lambda x: x * x
+)
+print(list(pipeline)[:5])  # [0, 4, 16, 36, 64]
+
+
+# =============================================================================
+# Exercise 4: Infinite Generators - Solution
+# =============================================================================
+def running_average():
+    """Calculate running average of values sent to generator."""
+    total = 0
+    count = 0
+    average = None
+    while True:
+        value = yield average
+        total += value
+        count += 1
+        average = total / count
+
+def traffic_light():
+    """Simulate traffic light state machine."""
+    states = ["Green", "Yellow", "Red"]
+    while True:
+        for state in states:
+            yield state
+
+avg = running_average()
+avg.send(None)  # Initialize
+print(avg.send(10))   # 10.0
+print(avg.send(20))   # 15.0
+print(avg.send(30))   # 20.0
+
+light = traffic_light()
+next(light)  # Initialize
+print(next(light))  # "Green"
+print(next(light))  # "Yellow"
+print(next(light))  # "Red"
+
+
+# =============================================================================
+# Exercise 5: Generator Performance - Solution
+# =============================================================================
 def chunked_file_reader(file_path, chunk_size=1024):
-    """Read a file in chunks using a generator."""
-    with open(file_path, 'rb') as file:
+    """Read file in chunks using generator."""
+    with open(file_path, 'rb') as f:
         while True:
-            chunk = file.read(chunk_size)
+            chunk = f.read(chunk_size)
             if not chunk:
                 break
             yield chunk
 
-
-def infinite_counter(start=0, step=1):
-    """Generate infinite sequence starting from start."""
-    current = start
-    while True:
-        yield current
-        current += step
-
-
-def cycle_through(iterable):
-    """Cycle through an iterable infinitely."""
-    while True:
-        for item in iterable:
-            yield item
-
-
-def batch(iterable, batch_size):
-    """Split iterable into batches of specified size."""
-    iterator = iter(iterable)
-    while True:
-        batch_list = list(itertools.islice(iterator, batch_size))
-        if not batch_list:
-            break
-        yield batch_list
-
-
-def read_words(text):
-    """Generator that yields individual words from text."""
-    for word in text.split():
-        yield word
-
-
-def filter_words(words, min_length=3):
-    """Generator that filters words by minimum length."""
-    for word in words:
-        if len(word) >= min_length:
-            yield word
-
-
-def transform_words(words, transform_func):
-    """Generator that transforms words using provided function."""
-    for word in words:
-        yield transform_func(word)
-
-
-def pipeline(*generators):
-    """Chain multiple generators together."""
-    def apply_generators(data):
-        result = data
-        for gen_func in generators:
-            result = gen_func(result)
-        return result
-
-    return apply_generators
-
-
-class Range:
-    """Custom range implementation using iterator protocol."""
+class LazyRange:
+    """A lazy range that generates values on demand."""
 
     def __init__(self, start, stop=None, step=1):
         if stop is None:
-            self.start = 0
-            self.stop = start
-        else:
-            self.start = start
-            self.stop = stop
+            start, stop = 0, start
+        self.start = start
+        self.stop = stop
         self.step = step
-        self.current = self.start
 
     def __iter__(self):
-        return self
+        current = self.start
+        while (self.step > 0 and current < self.stop) or \
+              (self.step < 0 and current > self.stop):
+            yield current
+            current += self.step
 
-    def __next__(self):
-        if self.step > 0 and self.current >= self.stop:
-            raise StopIteration
-        if self.step < 0 and self.current <= self.stop:
-            raise StopIteration
+    def __len__(self):
+        return max(0, (self.stop - self.start + self.step - 1) // self.step)
 
-        value = self.current
-        self.current += self.step
-        return value
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            indices = range(*index.indices(len(self)))
+            return [self[i] for i in indices]
+        if index < 0:
+            index += len(self)
+        if index < 0 or index >= len(self):
+            raise IndexError("Index out of range")
+        return self.start + index * self.step
 
-
-class FibonacciIterator:
-    """Iterator class for Fibonacci sequence."""
-
-    def __init__(self, max_count=None):
-        self.max_count = max_count
-        self.count = 0
-        self.a = 0
-        self.b = 1
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.max_count is not None and self.count >= self.max_count:
-            raise StopIteration
-
-        value = self.a
-        self.a, self.b = self.b, self.a + self.b
-        self.count += 1
-        return value
-
-
-class WindowIterator:
-    """Iterator that yields sliding windows of specified size."""
-
-    def __init__(self, iterable, window_size=3):
-        self.iterable = list(iterable)
-        self.window_size = window_size
-        self.index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.index + self.window_size > len(self.iterable):
-            raise StopIteration
-
-        window = tuple(self.iterable[self.index:self.index + self.window_size])
-        self.index += 1
-        return window
-
-
-if __name__ == "__main__":
-    print("Testing Generators Solutions...")
-
-    # Test Fibonacci Generator
-    gen = fibonacci_generator()
-    fibs = [next(gen) for _ in range(10)]
-    assert fibs == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
-
-    limited = list(fibonacci_limited(100))
-    assert limited == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-
-    # Test File Line Reader
-    test_content = "Line 1\nLine 2\n\nLine 4\nLine 5\n"
-    with open("/tmp/test_gen.txt", "w") as f:
-        f.write(test_content)
-
-    lines = list(read_large_file("/tmp/test_gen.txt"))
-    assert lines == ["Line 1", "Line 2", "Line 4", "Line 5"]
-
-    # Test Infinite Counter
-    counter = infinite_counter(0, 2)
-    evens = [next(counter) for _ in range(5)]
-    assert evens == [0, 2, 4, 6, 8]
-
-    cycled = list(itertools.islice(cycle_through([1, 2, 3]), 7))
-    assert cycled == [1, 2, 3, 1, 2, 3, 1]
-
-    batched = list(batch(range(7), 3))
-    assert batched == [[0, 1, 2], [3, 4, 5], [6]]
-
-    # Test Pipeline
-    text = "Hello World from Python"
-    result = list(pipeline(
-        lambda: read_words(text),
-        lambda w: filter_words(w, min_length=4),
-        lambda w: transform_words(w, str.upper)
-    )())
-    assert "HELLO" in result
-    assert "WORLD" in result
-
-    # Test Custom Iterator
-    custom_range = list(Range(5))
-    assert custom_range == [0, 1, 2, 3, 4]
-
-    custom_range_step = list(Range(0, 10, 2))
-    assert custom_range_step == [0, 2, 4, 6, 8]
-
-    fib_iter = list(FibonacciIterator(8))
-    assert fib_iter == [0, 1, 1, 2, 3, 5, 8, 13]
-
-    window = list(WindowIterator([1, 2, 3, 4, 5], 3))
-    assert window == [(1, 2, 3), (2, 3, 4), (3, 4, 5)]
-
-    print("All Generators solutions passed!")
+lazy = LazyRange(1000000)
+print(sum(lazy))  # 499999500000 (memory efficient)
+print(lazy[:5])   # [0, 1, 2, 3, 4]

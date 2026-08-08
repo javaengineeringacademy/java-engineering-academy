@@ -1,314 +1,197 @@
 """
-Python OOP - Classes Exercises
-Complete each exercise by implementing the required class.
-Run the test cases to verify your solution.
+Module 02 - OOP: Classes Exercises
+Difficulty: Beginner to Intermediate
 """
 
-from abc import ABC, abstractmethod
+# =============================================================================
+# Exercise 1: Basic Class (Difficulty: Beginner)
+# =============================================================================
+# Create a class with basic attributes and methods.
 
+# TODO: Implement the Car class
+class Car:
+    """A class representing a car."""
 
-# Exercise 1: Bank Account (Easy)
-# Create a BankAccount class with proper encapsulation
+    # Class variable (shared by all instances)
+    vehicle_count = 0
 
-class BankAccount:
-    """
-    A bank account with deposit, withdraw, and transfer functionality.
-    
-    Requirements:
-    - Private balance attribute
-    - Proper validation for negative amounts
-    - Transaction history
-    """
-    
-    def __init__(self, owner, initial_balance=0):
-        """Initialize account with owner name and optional balance."""
-        # TODO: Implement this method
-        pass
-    
-    def deposit(self, amount):
-        """Deposit money to account. Raise ValueError for negative amounts."""
-        # TODO: Implement this method
-        pass
-    
-    def withdraw(self, amount):
-        """Withdraw money from account. Raise ValueError for insufficient funds."""
-        # TODO: Implement this method
-        pass
-    
-    def get_balance(self):
-        """Return current balance."""
-        # TODO: Implement this method
-        pass
-    
-    def transfer(self, other_account, amount):
-        """Transfer money to another account."""
-        # TODO: Implement this method
-        pass
-    
-    def get_history(self):
-        """Return list of transactions."""
-        # TODO: Implement this method
+    def __init__(self, make, model, year, mileage=0):
+        """Initialize car with make, model, year, and mileage."""
         pass
 
-
-# Exercise 2: Vector Class (Medium)
-# Implement a 2D vector with mathematical operations
-
-class Vector:
-    """
-    A 2D vector class with mathematical operations.
-    
-    Requirements:
-    - Support addition, subtraction, magnitude
-    - Support dot product and normalization
-    - Proper string representation
-    """
-    
-    def __init__(self, x, y):
-        """Initialize vector with x and y components."""
-        # TODO: Implement this method
-        pass
-    
-    def __repr__(self):
-        """Return string representation like Vector(1, 2)"""
-        # TODO: Implement this method
-        pass
-    
-    def __add__(self, other):
-        """Add two vectors."""
-        # TODO: Implement this method
-        pass
-    
-    def __sub__(self, other):
-        """Subtract two vectors."""
-        # TODO: Implement this method
-        pass
-    
-    def __eq__(self, other):
-        """Check if two vectors are equal."""
-        # TODO: Implement this method
-        pass
-    
-    def magnitude(self):
-        """Calculate the magnitude (length) of the vector."""
-        # TODO: Implement this method
-        pass
-    
-    def dot(self, other):
-        """Calculate dot product with another vector."""
-        # TODO: Implement this method
-        pass
-    
-    def normalize(self):
-        """Return a normalized (unit) vector."""
-        # TODO: Implement this method
+    def drive(self, miles):
+        """Add miles to odometer."""
         pass
 
-
-# Exercise 3: Stack Implementation (Medium)
-# Create a Stack class with LIFO behavior
-
-class Stack:
-    """
-    A stack data structure with LIFO (Last In, First Out) behavior.
-    
-    Requirements:
-    - push, pop, peek operations
-    - Proper exception handling for empty stack
-    - Support len() and bool()
-    """
-    
-    def __init__(self):
-        """Initialize an empty stack."""
-        # TODO: Implement this method
-        pass
-    
-    def push(self, item):
-        """Add item to top of stack."""
-        # TODO: Implement this method
-        pass
-    
-    def pop(self):
-        """Remove and return top item. Raise IndexError if empty."""
-        # TODO: Implement this method
-        pass
-    
-    def peek(self):
-        """Return top item without removing. Raise IndexError if empty."""
-        # TODO: Implement this method
-        pass
-    
-    def is_empty(self):
-        """Check if stack is empty."""
-        # TODO: Implement this method
-        pass
-    
-    def __len__(self):
-        """Return number of items in stack."""
-        # TODO: Implement this method
-        pass
-    
-    def __contains__(self, item):
-        """Check if item is in stack."""
-        # TODO: Implement this method
+    def get_info(self):
+        """Return a string with car information."""
         pass
 
-
-# Exercise 4: Shopping Cart (Medium)
-# Build a ShoppingCart class with item management
-
-class Item:
-    """Represents an item in the cart."""
-    
-    def __init__(self, name, price, quantity=1):
-        # TODO: Implement this method
-        pass
-    
-    def __repr__(self):
-        # TODO: Implement this method
-        pass
+# Test cases
+# car1 = Car("Toyota", "Camry", 2023)
+# car2 = Car("Honda", "Civic", 2022, 5000)
+# car1.drive(100)
+# car2.drive(200)
+# print(car1.get_info())   # Expected: "2023 Toyota Camry - 100 miles"
+# print(car2.get_info())   # Expected: "2022 Honda Civic - 2500 miles"
+# print(f"Total cars: {Car.vehicle_count}")  # Expected: 2
 
 
-class ShoppingCart:
-    """
-    A shopping cart that manages items and calculates totals.
-    
-    Requirements:
-    - Add/remove items
-    - Calculate subtotal, tax, and total
-    - Apply discounts
-    """
-    
-    def __init__(self, tax_rate=0.08):
-        """Initialize empty cart with tax rate."""
-        # TODO: Implement this method
+# =============================================================================
+# Exercise 2: Class Methods and Static Methods (Difficulty: Intermediate)
+# =============================================================================
+# Implement class methods and static methods.
+
+# TODO: Implement the Product class
+class Product:
+    """A class representing a product with price tracking."""
+
+    all_products = []
+    tax_rate = 0.08
+
+    def __init__(self, name, price):
         pass
-    
-    def add_item(self, name, price, quantity=1):
-        """Add item to cart or increment quantity if exists."""
-        # TODO: Implement this method
+
+    @classmethod
+    def set_tax_rate(cls, rate):
+        """Set the tax rate for all products."""
         pass
-    
-    def remove_item(self, name):
-        """Remove item from cart. Raise KeyError if not found."""
-        # TODO: Implement this method
+
+    @classmethod
+    def get_all_products(cls):
+        """Return list of all products."""
         pass
-    
-    def get_subtotal(self):
-        """Calculate sum of all items before tax."""
-        # TODO: Implement this method
-        pass
-    
-    def get_tax(self):
+
+    @staticmethod
+    def calculate_tax(price, rate):
         """Calculate tax amount."""
-        # TODO: Implement this method
-        pass
-    
-    def get_total(self):
-        """Calculate total with tax."""
-        # TODO: Implement this method
-        pass
-    
-    def apply_discount(self, percentage):
-        """Apply percentage discount (e.g., 10 for 10%)."""
-        # TODO: Implement this method
-        pass
-    
-    def __len__(self):
-        """Return total number of items in cart."""
-        # TODO: Implement this method
         pass
 
-
-# Exercise 5: Singleton Pattern (Hard)
-# Implement the Singleton design pattern
-
-class SingletonMeta(type):
-    """
-    A metaclass that creates Singleton classes.
-    
-    Usage:
-        class Database(metaclass=SingletonMeta):
-            pass
-    """
-    _instances = {}
-    
-    def __call__(cls, *args, **kwargs):
-        # TODO: Implement singleton behavior
+    def price_with_tax(self):
+        """Return price including tax."""
         pass
 
-
-class Database(metaclass=SingletonMeta):
-    """Example database class using Singleton pattern."""
-    
-    def __init__(self, connection_string=""):
-        self.connection_string = connection_string
-        self.connected = False
-    
-    def connect(self):
-        self.connected = True
-        return f"Connected to {self.connection_string}"
+# Test cases
+# p1 = Product("Laptop", 999.99)
+# p2 = Product("Mouse", 29.99)
+# Product.set_tax_rate(0.10)
+# print(p1.price_with_tax())   # Expected: 1099.989
+# print(Product.calculate_tax(100, 0.08))  # Expected: 8.0
+# print(len(Product.get_all_products()))   # Expected: 2
 
 
-# ==================== TEST CASES ====================
+# =============================================================================
+# Exercise 3: Properties (Difficulty: Intermediate)
+# =============================================================================
+# Use properties for controlled access.
 
-def test_exercises():
-    print("Testing Exercise 1: Bank Account")
-    acc1 = BankAccount("Alice", 1000)
-    acc2 = BankAccount("Bob", 500)
-    assert acc1.get_balance() == 1000
-    acc1.deposit(500)
-    assert acc1.get_balance() == 1500
-    acc1.withdraw(200)
-    assert acc1.get_balance() == 1300
-    acc1.transfer(acc2, 300)
-    assert acc1.get_balance() == 1000
-    assert acc2.get_balance() == 800
-    print("  ✓ All tests passed!\n")
+# TODO: Implement the BankAccount class
+class BankAccount:
+    """A class representing a bank account with validation."""
 
-    print("Testing Exercise 2: Vector Class")
-    v1 = Vector(1, 2)
-    v2 = Vector(3, 4)
-    assert repr(v1) == "Vector(1, 2)"
-    assert (v1 + v2) == Vector(4, 6)
-    assert (v2 - v1) == Vector(2, 2)
-    assert abs(v1.magnitude() - 2.236) < 0.01
-    assert v1.dot(v2) == 11
-    print("  ✓ All tests passed!\n")
+    def __init__(self, owner, balance=0):
+        pass
 
-    print("Testing Exercise 3: Stack")
-    stack = Stack()
-    assert stack.is_empty() == True
-    stack.push(1)
-    stack.push(2)
-    stack.push(3)
-    assert len(stack) == 3
-    assert stack.peek() == 3
-    assert stack.pop() == 3
-    assert 2 in stack
-    print("  ✓ All tests passed!\n")
+    @property
+    def balance(self):
+        """Get current balance."""
+        pass
 
-    print("Testing Exercise 4: Shopping Cart")
-    cart = ShoppingCart(tax_rate=0.10)
-    cart.add_item("Apple", 1.00, 3)
-    cart.add_item("Banana", 0.50, 2)
-    assert cart.get_subtotal() == 4.00
-    assert cart.get_tax() == 0.40
-    assert cart.get_total() == 4.40
-    assert len(cart) == 5
-    cart.remove_item("Banana")
-    assert cart.get_subtotal() == 3.00
-    print("  ✓ All tests passed!\n")
+    @balance.setter
+    def balance(self, value):
+        """Set balance with validation (cannot be negative)."""
+        pass
 
-    print("Testing Exercise 5: Singleton")
-    db1 = Database("localhost:5432")
-    db2 = Database("different_host")
-    assert db1 is db2
-    assert db1.connection_string == "localhost:5432"
-    print("  ✓ All tests passed!\n")
+    @property
+    def owner(self):
+        """Get owner name (read-only)."""
+        pass
 
-    print("All OOP class exercises passed!")
+# Test cases
+# account = BankAccount("Alice", 1000)
+# print(account.balance)     # Expected: 1000
+# account.balance = 500      # Should work
+# print(account.balance)     # Expected: 500
+# try:
+#     account.balance = -100  # Should raise ValueError
+# except ValueError as e:
+#     print(e)               # Expected: "Balance cannot be negative"
+# print(account.owner)       # Expected: "Alice"
 
 
-if __name__ == "__main__":
-    test_exercises()
+# =============================================================================
+# Exercise 4: String Representation (Difficulty: Beginner)
+# =============================================================================
+# Implement __repr__ and __str__ methods.
+
+# TODO: Implement the Employee class
+class Employee:
+    """An employee class with proper string representations."""
+
+    def __init__(self, name, department, salary):
+        pass
+
+    def __repr__(self):
+        """Developer-friendly representation."""
+        pass
+
+    def __str__(self):
+        """User-friendly representation."""
+        pass
+
+    def __eq__(self, other):
+        """Two employees are equal if they have the same name and department."""
+        pass
+
+# Test cases
+# emp1 = Employee("John Smith", "Engineering", 85000)
+# emp2 = Employee("John Smith", "Engineering", 85000)
+# emp3 = Employee("Jane Doe", "Marketing", 75000)
+# print(repr(emp1))  # Expected: "Employee('John Smith', 'Engineering', 85000)"
+# print(str(emp1))   # Expected: "John Smith (Engineering)"
+# print(emp1 == emp2)  # Expected: True
+# print(emp1 == emp3)  # Expected: False
+
+
+# =============================================================================
+# Exercise 5: Composition (Difficulty: Intermediate)
+# =============================================================================
+# Use composition to build complex objects.
+
+# TODO: Implement the classes below
+class Engine:
+    """Represents a car engine."""
+
+    def __init__(self, horsepower, fuel_type):
+        pass
+
+    def __str__(self):
+        pass
+
+class Wheel:
+    """Represents a car wheel."""
+
+    def __init__(self, size, brand):
+        pass
+
+    def __str__(self):
+        pass
+
+class Vehicle:
+    """A vehicle composed of engine and wheels."""
+
+    def __init__(self, make, model, engine, wheels):
+        pass
+
+    def __str__(self):
+        pass
+
+    def start(self):
+        pass
+
+# Test cases
+# engine = Engine(200, "Gasoline")
+# wheels = [Wheel(17, "Michelin") for _ in range(4)]
+# car = Vehicle("Toyota", "Camry", engine, wheels)
+# print(car)         # Expected: "Toyota Camry - 200hp Gasoline"
+# car.start()        # Expected: "Toyota Camry starts with a roar!"

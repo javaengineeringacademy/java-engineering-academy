@@ -1,145 +1,220 @@
 """
-Module 09: Exception Handling - Custom Exceptions Solutions
-Practice creating and using custom exception classes.
+Module 09 - Exception Handling: Custom Exceptions Solutions
+Difficulty: Intermediate
 """
 
+# =============================================================================
+# Exercise 1: Basic Custom Exceptions - Solution
+# =============================================================================
+class InsufficientFundsError(Exception):
+    """Exception raised when account has insufficient funds."""
 
-class ValidationError(Exception):
-    """Custom exception for validation errors."""
-    def __init__(self, field_name, message):
-        super().__init__(f"{field_name}: {message}")
-        self.field = field_name
-        self.message = message
-
-
-class BankingError(Exception):
-    """Base exception for banking errors."""
-    pass
-
-
-class InsufficientFundsError(BankingError):
-    """Raised when account has insufficient funds."""
     def __init__(self, balance, amount):
-        super().__init__(f"Insufficient funds: balance={balance}, requested={amount}")
         self.balance = balance
         self.amount = amount
+        super().__init__(f"Insufficient funds: have {balance}, tried to withdraw {amount}")
+
+class InvalidAgeError(Exception):
+    """Exception raised for invalid age."""
+
+    def __init__(self, age):
+        self.age = age
+        super().__init__(f"Invalid age: {age}")
+
+class ValidationError(Exception):
+    """Exception raised for validation errors."""
+
+    def __init__(self, field, message):
+        self.field = field
+        self.message = message
+        super().__init__(f"Validation error for {field}: {message}")
+
+class BankAccount:
+    """Bank account with custom exceptions."""
+
+    def __init__(self, balance=0):
+        self.balance = balance
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise InsufficientFundsError(self.balance, amount)
+        self.balance -= amount
+        return self.balance
+
+class User:
+    """User with age validation."""
+
+    def __init__(self, name, age):
+        if age < 0 or age > 150:
+            raise InvalidAgeError(age)
+        self.name = name
+        self.age = age
+
+account = BankAccount(100)
+try:
+    account.withdraw(150)
+except InsufficientFundsError as e:
+    print(e)  # "Insufficient funds: have 100, tried to withdraw 150"
+
+try:
+    user = User("Alice", -5)
+except InvalidAgeError as e:
+    print(e)  # "Invalid age: -5"
 
 
-class AccountLockedError(BankingError):
-    """Raised when account is locked."""
-    def __init__(self, lock_reason):
-        super().__init__(f"Account locked: {lock_reason}")
-        self.lock_reason = lock_reason
+# =============================================================================
+# Exercise 2: Exception Hierarchy - Solution
+# =============================================================================
+class AppError(Exception):
+    """Base application error."""
+    pass
+
+class DatabaseError(AppError):
+    """Database-related errors."""
+    pass
+
+class ConnectionError(DatabaseError):
+    """Database connection errors."""
+    pass
+
+class QueryError(DatabaseError):
+    """Database query errors."""
+    pass
+
+class APIError(AppError):
+    """API-related errors."""
+    pass
+
+def execute_query(query):
+    """Execute query with proper error handling."""
+    if "DROP" in query.upper():
+        raise QueryError(f"Dangerous query: {query}")
+    return f"Executed: {query}"
+
+def connect_to_database(connection_string):
+    """Connect to database with error handling."""
+    if "invalid" in connection_string.lower():
+        raise ConnectionError(f"Cannot connect to: {connection_string}")
+    return f"Connected to {connection_string}"
+
+try:
+    connect_to_database("invalid://connection")
+except ConnectionError as e:
+    print(f"Connection failed: {e}")
+
+try:
+    execute_query("DROP TABLE users")
+except QueryError as e:
+    print(f"Query failed: {e}")
 
 
-class APIError(Exception):
-    """Exception with API request context."""
-    def __init__(self, status_code, url, response_body):
-        from datetime import datetime
-        super().__init__(f"API Error {status_code}: {url}")
-        self.status_code = status_code
-        self.url = url
-        self.response_body = response_body
-        self.timestamp = datetime.now()
+# =============================================================================
+# Exercise 3: Exception Chaining - Solution
+# =============================================================================
+class ServiceError(Exception):
+    """Service layer error."""
+    pass
+
+class RepositoryError(Exception):
+    """Repository layer error."""
+    pass
+
+def fetch_data_from_repository(url):
+    """Fetch data, may raise RepositoryError."""
+    if "invalid" in url:
+        raise RepositoryError(f"Cannot fetch from {url}")
+    return {"id": 1, "name": "Alice"}
+
+def process_data(data):
+    """Process data, may raise ServiceError."""
+    if not data:
+        raise ServiceError("No data to process")
+    return f"Processed: {data}"
+
+def get_user_data(user_id):
+    """High-level function that chains exceptions."""
+    try:
+        data = fetch_data_from_repository(f"/users/{user_id}")
+        return process_data(data)
+    except RepositoryError as e:
+        raise ServiceError("Failed to get user data") from e
+
+try:
+    get_user_data(123)
+except ServiceError as e:
+    print(f"Service error: {e}")
+    print(f"Original cause: {e.__cause__}")
 
 
-class CompositeError(Exception):
-    """Collects multiple validation errors."""
+# =============================================================================
+# Exercise 4: Exception Groups - Solution
+# =============================================================================
+class ValidationErrors(Exception):
+    """Group of validation errors."""
+
     def __init__(self, errors):
         self.errors = errors
-        super().__init__(self._format_errors())
+        super().__init__(f"Validation failed with {len(errors)} errors")
 
-    def _format_errors(self):
-        return "; ".join(str(e) for e in self.errors)
+def validate_user_data(data):
+    """Validate user data, collect all errors."""
+    errors = []
+    if not data.get("name"):
+        errors.append("Name is required")
+    if not data.get("email") or "@" not in data.get("email", ""):
+        errors.append("Valid email is required")
+    age = data.get("age")
+    if age is None or age < 0 or age > 150:
+        errors.append("Age must be between 0 and 150")
+    if errors:
+        raise ValidationErrors(errors)
+    return True
 
-    def __str__(self):
-        return self._format_errors()
-
-
-def retry_on_exception(max_retries=3, exceptions=(Exception,)):
-    """Decorator that retries function on specified exceptions."""
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            last_exception = None
-            for attempt in range(max_retries):
-                try:
-                    return func(*args, **kwargs)
-                except exceptions as e:
-                    last_exception = e
-                    if attempt < max_retries - 1:
-                        continue
-            raise last_exception
-        return wrapper
-    return decorator
+try:
+    validate_user_data({"name": "", "email": "invalid", "age": -1})
+except ValidationErrors as e:
+    for error in e.errors:
+        print(f"  - {error}")
 
 
-if __name__ == "__main__":
-    print("Testing Custom Exceptions Solutions...")
+# =============================================================================
+# Exercise 5: Exception Safety - Solution
+# =============================================================================
+class ExceptionSafeTransaction:
+    """Transaction that handles exceptions properly."""
 
-    # Test ValidationError
-    try:
-        raise ValidationError("email", "invalid format")
-    except ValidationError as e:
-        assert e.field == "email"
-        assert e.message == "invalid format"
-        print(f"✓ Exercise 1 passed: caught {e.field}: {e.message}")
+    def __init__(self, connection):
+        self.connection = connection
+        self.queries = []
 
-    # Test banking exceptions
-    try:
-        raise InsufficientFundsError(100, 500)
-    except InsufficientFundsError as e:
-        assert e.balance == 100
-        assert e.amount == 500
-        print(f"✓ Exercise 2a passed: insufficient funds detected")
+    def __enter__(self):
+        return self
 
-    try:
-        raise InsufficientFundsError(100, 500)
-    except BankingError:
-        print(f"✓ Exercise 2b passed: hierarchy works correctly")
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            print(f"Rolling back due to: {exc_val}")
+            return False
+        print("Committing transaction")
+        return False
 
-    # Test APIError
-    try:
-        raise APIError(
-            status_code=404,
-            url="https://api.example.com/users",
-            response_body='{"error": "not found"}'
-        )
-    except APIError as e:
-        assert e.status_code == 404
-        assert e.url == "https://api.example.com/users"
-        assert hasattr(e.timestamp, 'timestamp') or hasattr(e.timestamp, 'now')
-        print(f"✓ Exercise 3 passed: API error with status {e.status_code}")
+    def execute(self, query):
+        self.queries.append(query)
+        return f"Queued: {query}"
 
-    # Test CompositeError
-    errors = [
-        ValidationError("name", "required"),
-        ValidationError("email", "invalid"),
-        ValidationError("age", "must be positive")
-    ]
+def retry_with_backoff(func, max_retries=3, base_delay=1):
+    """Retry function with exponential backoff."""
+    import time
+    last_exception = None
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except Exception as e:
+            last_exception = e
+            if attempt < max_retries - 1:
+                delay = base_delay * (2 ** attempt)
+                time.sleep(delay)
+    raise last_exception
 
-    try:
-        raise CompositeError(errors)
-    except CompositeError as e:
-        assert len(e.errors) == 3
-        error_str = str(e)
-        assert "name" in error_str
-        assert "email" in error_str
-        print(f"✓ Exercise 4 passed: aggregated {len(e.errors)} errors")
-
-    # Test retry decorator
-    call_count = 0
-
-    @retry_on_exception(max_retries=3, exceptions=(ValueError,))
-    def flaky_function():
-        nonlocal call_count
-        call_count += 1
-        if call_count < 3:
-            raise ValueError("Temporary failure")
-        return "success"
-
-    result = flaky_function()
-    assert result == "success"
-    assert call_count == 3
-    print(f"✓ Exercise 5 passed: function succeeded after {call_count} retries")
-
-    print("All Custom Exceptions solutions passed!")
+with ExceptionSafeTransaction(None) as tx:
+    tx.execute("INSERT INTO users VALUES (1, 'Alice')")
+    tx.execute("INSERT INTO users VALUES (2, 'Bob')")

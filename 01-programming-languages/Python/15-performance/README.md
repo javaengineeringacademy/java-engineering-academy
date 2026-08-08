@@ -761,3 +761,20 @@ Python performance optimization:
 - **Cython**: Compile Python to C; add type declarations for 10-100x speedup
 - **C extensions**: Ultimate performance; release GIL for parallel execution
 - **Statistical benchmarking**: Run multiple iterations; report mean, median, stdev
+
+## Interview Questions
+
+### Q1: What is the difference between cProfile and line_profiler?
+**Answer:** cProfile profiles function calls (who calls what). line_profiler profiles line-by-line (where time is spent). Use cProfile first, then line_profiler for hotspots.
+
+### Q2: What is memoization and when to use it?
+**Answer:** Caching function results based on arguments. Use functools.lru_cache for pure functions with hashable args. Don't use for side effects.
+
+### Q3: What is the difference between `timeit` and `time.perf_counter()`?
+**Answer:** timeit runs code multiple times (accurate). time.perf_counter() measures elapsed time. Use timeit for benchmarking, perf_counter for profiling.
+
+### Q4: What is vectorization?
+**Answer:** Applying operations to entire arrays instead of loops. NumPy vectorization is 10-100x faster than Python loops. Use numpy operations instead of for loops.
+
+### Q5: What is the difference between lazy and eager evaluation?
+**Answer:** Lazy: compute on demand (generators, iterators). Eager: compute immediately (lists, dicts). Lazy saves memory, eager is simpler.

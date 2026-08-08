@@ -278,3 +278,20 @@ async_logger.addHandler(queue_handler)
 ---
 
 > **Remember:** Logs are your application's voice. Make sure they speak clearly, contextually, and only when necessary.
+
+## Interview Questions
+
+### Q1: What are the logging levels and when to use each?
+**Answer:** DEBUG (detailed), INFO (confirmation), WARNING (unexpected), ERROR (problem), CRITICAL (fatal). Use INFO for normal operations, ERROR for failures.
+
+### Q2: What is the difference between logging and print?
+**Answer:** print is for development. logging has levels, timestamps, handlers, rotation. Use logging in production.
+
+### Q3: What is a handler in logging?
+**Answer:** Handlers direct log records to destinations (file, console, network). Multiple handlers can be attached to one logger.
+
+### Q4: What is structured logging?
+**Answer:** Logging in JSON format with consistent fields. Enables log aggregation, search, analytics. Use structlog or python-json-logger.
+
+### Q5: What is log rotation?
+**Answer:** Automatically rotating log files when they reach size limit. Prevents disk exhaustion. Use RotatingFileHandler or TimedRotatingFileHandler.

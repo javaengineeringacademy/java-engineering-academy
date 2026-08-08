@@ -1,92 +1,130 @@
 """
-Module 01: Fundamentals - Control Flow Solutions
-Practice control flow structures in Python.
+Module 01 - Fundamentals: Control Flow Solutions
+Difficulty: Beginner
 """
 
+# =============================================================================
+# Exercise 1: If/Elif/Else - Solution
+# =============================================================================
+def calculate_grade(score):
+    """Return letter grade based on score."""
+    if not isinstance(score, (int, float)) or score < 0 or score > 100:
+        return "Invalid"
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    elif score >= 60:
+        return "D"
+    else:
+        return "F"
 
-def sieve_of_eratosthenes(limit):
-    """Generate all prime numbers up to limit using Sieve of Eratosthenes."""
-    if limit < 2:
+print(calculate_grade(95))   # A
+print(calculate_grade(85))   # B
+print(calculate_grade(72))   # C
+print(calculate_grade(65))   # D
+print(calculate_grade(45))   # F
+print(calculate_grade(105))  # Invalid
+
+
+# =============================================================================
+# Exercise 2: For Loops - Solution
+# =============================================================================
+def sum_even_numbers(n):
+    """Return sum of all even numbers from 1 to n."""
+    total = 0
+    for i in range(1, n + 1):
+        if i % 2 == 0:
+            total += i
+    return total
+
+def fibonacci(n):
+    """Return first n Fibonacci numbers as a list."""
+    if n <= 0:
         return []
+    if n == 1:
+        return [0]
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i-1] + fib[i-2])
+    return fib
 
-    is_prime = [True] * (limit + 1)
-    is_prime[0] = is_prime[1] = False
-
-    for i in range(2, int(limit**0.5) + 1):
-        if is_prime[i]:
-            for j in range(i*i, limit + 1, i):
-                is_prime[j] = False
-
-    return [i for i, prime in enumerate(is_prime) if prime]
-
-
-def is_prime(n):
-    """Check if a number is prime."""
-    if n < 2:
-        return False
-    if n < 4:
-        return True
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
-            return False
-        i += 6
-    return True
+print(sum_even_numbers(10))  # 30
+print(fibonacci(8))          # [0, 1, 1, 2, 3, 5, 8, 13]
 
 
-def transpose_matrix(matrix):
-    """Transpose a matrix (2D list)."""
-    if not matrix or not matrix[0]:
-        return []
+# =============================================================================
+# Exercise 3: While Loops - Solution
+# =============================================================================
+def largest_power_of_2(n):
+    """Find the largest power of 2 that is less than n."""
+    power = 1
+    while power * 2 < n:
+        power *= 2
+    return power
 
-    rows = len(matrix)
-    cols = len(matrix[0])
-    return [[matrix[j][i] for j in range(rows)] for i in range(cols)]
+def reverse_number(n):
+    """Reverse the digits of a number."""
+    reversed_num = 0
+    temp = n
+    while temp > 0:
+        reversed_num = reversed_num * 10 + temp % 10
+        temp //= 10
+    return reversed_num
 
-
-def matrix_dimensions(matrix):
-    """Return (rows, columns) of a matrix."""
-    if not matrix:
-        return (0, 0)
-    return (len(matrix), len(matrix[0]) if matrix[0] else 0)
-
-
-def fibonacci_memo(n, memo=None):
-    """Calculate nth Fibonacci number with memoization."""
-    if memo is None:
-        memo = {}
-
-    if n in memo:
-        return memo[n]
-
-    if n < 2:
-        return n
-
-    memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo)
-    return memo[n]
+print(largest_power_of_2(100))   # 64
+print(largest_power_of_2(1024))  # 512
+print(reverse_number(12345))     # 54321
+print(reverse_number(9876))      # 6789
 
 
-def fibonacci_generator(limit):
-    """Generate Fibonacci numbers up to limit."""
-    a, b = 0, 1
-    while a <= limit:
-        yield a
-        a, b = b, a + b
+# =============================================================================
+# Exercise 4: Break and Continue - Solution
+# =============================================================================
+def first_divisible_by_3_and_5(start, end):
+    """Find the first number in range [start, end) divisible by both 3 and 5."""
+    for num in range(start, end):
+        if num % 3 == 0 and num % 5 == 0:
+            return num
+    return None
+
+def sum_non_multiples_of_3(n):
+    """Sum numbers from 1 to n, skipping multiples of 3."""
+    total = 0
+    for i in range(1, n + 1):
+        if i % 3 == 0:
+            continue
+        total += i
+    return total
+
+print(first_divisible_by_3_and_5(1, 100))   # 15
+print(first_divisible_by_3_and_5(20, 50))   # 30
+print(sum_non_multiples_of_3(10))           # 37
 
 
-if __name__ == "__main__":
-    print("Testing Control Flow Solutions...")
-    assert sieve_of_eratosthenes(30) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
-    assert is_prime(2) == True
-    assert is_prime(4) == False
-    assert is_prime(17) == True
-    assert transpose_matrix([[1, 2, 3], [4, 5, 6]]) == [[1, 4], [2, 5], [3, 6]]
-    assert matrix_dimensions([[1, 2, 3], [4, 5, 6]]) == (2, 3)
-    assert fibonacci_memo(10) == 55
-    assert fibonacci_memo(0) == 0
-    assert fibonacci_memo(1) == 1
-    gen = list(fibonacci_generator(20))
-    assert gen == [0, 1, 1, 2, 3, 5, 8, 13]
-    print("All Control Flow solutions passed!")
+# =============================================================================
+# Exercise 5: Nested Loops - Solution
+# =============================================================================
+def multiplication_table(n):
+    """Return a list of strings for multiplication table from 1 to n."""
+    table = []
+    for i in range(1, n + 1):
+        for j in range(1, n + 1):
+            table.append(f"{i} x {j} = {i * j}")
+    return table
+
+def common_elements(list1, list2):
+    """Find elements that appear in both lists (without using set)."""
+    common = []
+    for item in list1:
+        if item in list2 and item not in common:
+            common.append(item)
+    return common
+
+table = multiplication_table(3)
+for row in table:
+    print(row)
+
+print(common_elements([1, 2, 3, 4, 5], [3, 4, 5, 6, 7]))  # [3, 4, 5]

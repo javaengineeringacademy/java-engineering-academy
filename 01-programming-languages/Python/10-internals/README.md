@@ -1126,3 +1126,20 @@ COMPARE_OP becomes:
 
 ## Version Validation
 - Verified against: Python 3.12+ (specialization), Python 3.13+ (free-threaded preview)
+
+## Interview Questions
+
+### Q1: What is reference counting and when does it fail?
+**Answer:** Every object has ob_refcnt. When it reaches 0, object is deallocated. Fails with reference cycles (A→B→A). Cyclic GC handles this.
+
+### Q2: What is the difference between `gc.collect()` and automatic GC?
+**Answer:** gc.collect() forces collection immediately. Automatic GC runs when generation thresholds are exceeded. Use gc.collect() for debugging or forcing cleanup.
+
+### Q3: What is a descriptor and how do properties use it?
+**Answer:** Descriptors implement __get__, __set__, __delete__. Properties are data descriptors that intercept attribute access. This is how @property works.
+
+### Q4: What is MRO and how is C3 linearization calculated?
+**Answer:** MRO is method resolution order. C3 linearization ensures consistent lookup: children before parents, left to right, no duplicates.
+
+### Q5: What is the GIL and what are its alternatives?
+**Answer:** GIL prevents concurrent Python execution. Alternatives: multiprocessing (separate processes), asyncio (cooperative), C extensions (release GIL), free-threaded Python (3.13+).

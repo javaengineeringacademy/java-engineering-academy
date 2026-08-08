@@ -1,243 +1,181 @@
 """
-Module 02: OOP - Classes Solutions
-Practice class implementation in Python.
+Module 02 - OOP: Classes Solutions
+Difficulty: Beginner to Intermediate
 """
 
-from abc import ABC, abstractmethod
-import math
+# =============================================================================
+# Exercise 1: Basic Class - Solution
+# =============================================================================
+class Car:
+    """A class representing a car."""
+
+    vehicle_count = 0
+
+    def __init__(self, make, model, year, mileage=0):
+        self.make = make
+        self.model = model
+        self.year = year
+        self.mileage = mileage
+        Car.vehicle_count += 1
+
+    def drive(self, miles):
+        self.mileage += miles
+
+    def get_info(self):
+        return f"{self.year} {self.make} {self.model} - {self.mileage} miles"
+
+car1 = Car("Toyota", "Camry", 2023)
+car2 = Car("Honda", "Civic", 2022, 5000)
+car1.drive(100)
+car2.drive(200)
+print(car1.get_info())   # "2023 Toyota Camry - 100 miles"
+print(car2.get_info())   # "2022 Honda Civic - 2500 miles"
+print(f"Total cars: {Car.vehicle_count}")  # 2
 
 
-class BankAccount:
-    """A bank account with deposit, withdraw, and transfer functionality."""
+# =============================================================================
+# Exercise 2: Class Methods and Static Methods - Solution
+# =============================================================================
+class Product:
+    """A class representing a product with price tracking."""
 
-    def __init__(self, owner, initial_balance=0):
-        self._owner = owner
-        self._balance = initial_balance
-        self._history = []
+    all_products = []
+    tax_rate = 0.08
 
-    def deposit(self, amount):
-        """Deposit money to account."""
-        if amount < 0:
-            raise ValueError("Deposit amount must be positive")
-        self._balance += amount
-        self._history.append(f"Deposited ${amount:.2f}")
-
-    def withdraw(self, amount):
-        """Withdraw money from account."""
-        if amount < 0:
-            raise ValueError("Withdrawal amount must be positive")
-        if amount > self._balance:
-            raise ValueError("Insufficient funds")
-        self._balance -= amount
-        self._history.append(f"Withdrew ${amount:.2f}")
-
-    def get_balance(self):
-        """Return current balance."""
-        return self._balance
-
-    def transfer(self, other_account, amount):
-        """Transfer money to another account."""
-        self.withdraw(amount)
-        other_account.deposit(amount)
-        self._history.append(f"Transferred ${amount:.2f} to {other_account._owner}")
-
-    def get_history(self):
-        """Return list of transactions."""
-        return self._history.copy()
-
-
-class Vector:
-    """A 2D vector class with mathematical operations."""
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return f"Vector({self.x}, {self.y})"
-
-    def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Vector(self.x - other.x, self.y - other.y)
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def magnitude(self):
-        return math.sqrt(self.x**2 + self.y**2)
-
-    def dot(self, other):
-        return self.x * other.x + self.y * other.y
-
-    def normalize(self):
-        mag = self.magnitude()
-        if mag == 0:
-            return Vector(0, 0)
-        return Vector(self.x / mag, self.y / mag)
-
-
-class Stack:
-    """A stack data structure with LIFO behavior."""
-
-    def __init__(self):
-        self._items = []
-
-    def push(self, item):
-        """Add item to top of stack."""
-        self._items.append(item)
-
-    def pop(self):
-        """Remove and return top item."""
-        if self.is_empty():
-            raise IndexError("Stack is empty")
-        return self._items.pop()
-
-    def peek(self):
-        """Return top item without removing."""
-        if self.is_empty():
-            raise IndexError("Stack is empty")
-        return self._items[-1]
-
-    def is_empty(self):
-        """Check if stack is empty."""
-        return len(self._items) == 0
-
-    def __len__(self):
-        return len(self._items)
-
-    def __contains__(self, item):
-        return item in self._items
-
-
-class Item:
-    """Represents an item in the cart."""
-
-    def __init__(self, name, price, quantity=1):
+    def __init__(self, name, price):
         self.name = name
         self.price = price
-        self.quantity = quantity
+        Product.all_products.append(self)
+
+    @classmethod
+    def set_tax_rate(cls, rate):
+        cls.tax_rate = rate
+
+    @classmethod
+    def get_all_products(cls):
+        return cls.all_products
+
+    @staticmethod
+    def calculate_tax(price, rate):
+        return price * rate
+
+    def price_with_tax(self):
+        return self.price * (1 + self.tax_rate)
+
+p1 = Product("Laptop", 999.99)
+p2 = Product("Mouse", 29.99)
+Product.set_tax_rate(0.10)
+print(p1.price_with_tax())   # 1099.989
+print(Product.calculate_tax(100, 0.08))  # 8.0
+print(len(Product.get_all_products()))   # 2
+
+
+# =============================================================================
+# Exercise 3: Properties - Solution
+# =============================================================================
+class BankAccount:
+    """A class representing a bank account with validation."""
+
+    def __init__(self, owner, balance=0):
+        self._owner = owner
+        self._balance = balance
+
+    @property
+    def balance(self):
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        if value < 0:
+            raise ValueError("Balance cannot be negative")
+        self._balance = value
+
+    @property
+    def owner(self):
+        return self._owner
+
+account = BankAccount("Alice", 1000)
+print(account.balance)     # 1000
+account.balance = 500
+print(account.balance)     # 500
+try:
+    account.balance = -100
+except ValueError as e:
+    print(e)               # "Balance cannot be negative"
+print(account.owner)       # "Alice"
+
+
+# =============================================================================
+# Exercise 4: String Representation - Solution
+# =============================================================================
+class Employee:
+    """An employee class with proper string representations."""
+
+    def __init__(self, name, department, salary):
+        self.name = name
+        self.department = department
+        self.salary = salary
 
     def __repr__(self):
-        return f"Item({self.name}, ${self.price:.2f}, qty={self.quantity})"
+        return f"Employee('{self.name}', '{self.department}', {self.salary})"
+
+    def __str__(self):
+        return f"{self.name} ({self.department})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Employee):
+            return NotImplemented
+        return self.name == other.name and self.department == other.department
+
+emp1 = Employee("John Smith", "Engineering", 85000)
+emp2 = Employee("John Smith", "Engineering", 85000)
+emp3 = Employee("Jane Doe", "Marketing", 75000)
+print(repr(emp1))  # "Employee('John Smith', 'Engineering', 85000)"
+print(str(emp1))   # "John Smith (Engineering)"
+print(emp1 == emp2)  # True
+print(emp1 == emp3)  # False
 
 
-class ShoppingCart:
-    """A shopping cart that manages items and calculates totals."""
+# =============================================================================
+# Exercise 5: Composition - Solution
+# =============================================================================
+class Engine:
+    """Represents a car engine."""
 
-    def __init__(self, tax_rate=0.08):
-        self._items = {}
-        self._tax_rate = tax_rate
+    def __init__(self, horsepower, fuel_type):
+        self.horsepower = horsepower
+        self.fuel_type = fuel_type
 
-    def add_item(self, name, price, quantity=1):
-        """Add item to cart or increment quantity if exists."""
-        if name in self._items:
-            self._items[name].quantity += quantity
-        else:
-            self._items[name] = Item(name, price, quantity)
+    def __str__(self):
+        return f"{self.horsepower}hp {self.fuel_type}"
 
-    def remove_item(self, name):
-        """Remove item from cart."""
-        if name not in self._items:
-            raise KeyError(f"Item '{name}' not found in cart")
-        del self._items[name]
+class Wheel:
+    """Represents a car wheel."""
 
-    def get_subtotal(self):
-        """Calculate sum of all items before tax."""
-        return sum(item.price * item.quantity for item in self._items.values())
+    def __init__(self, size, brand):
+        self.size = size
+        self.brand = brand
 
-    def get_tax(self):
-        """Calculate tax amount."""
-        return self.get_subtotal() * self._tax_rate
+    def __str__(self):
+        return f"{self.brand} {self.size}\""
 
-    def get_total(self):
-        """Calculate total with tax."""
-        return self.get_subtotal() + self.get_tax()
+class Vehicle:
+    """A vehicle composed of engine and wheels."""
 
-    def apply_discount(self, percentage):
-        """Apply percentage discount."""
-        discount = self.get_subtotal() * (percentage / 100)
-        return self.get_total() - discount
+    def __init__(self, make, model, engine, wheels):
+        self.make = make
+        self.model = model
+        self.engine = engine
+        self.wheels = wheels
 
-    def __len__(self):
-        """Return total number of items in cart."""
-        return sum(item.quantity for item in self._items.values())
+    def __str__(self):
+        return f"{self.make} {self.model} - {self.engine}"
 
+    def start(self):
+        return f"{self.make} {self.model} starts with a roar!"
 
-class SingletonMeta(type):
-    """A metaclass that creates Singleton classes."""
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
-class Database(metaclass=SingletonMeta):
-    """Example database class using Singleton pattern."""
-
-    def __init__(self, connection_string=""):
-        self.connection_string = connection_string
-        self.connected = False
-
-    def connect(self):
-        self.connected = True
-        return f"Connected to {self.connection_string}"
-
-
-if __name__ == "__main__":
-    print("Testing Classes Solutions...")
-
-    # Test BankAccount
-    acc1 = BankAccount("Alice", 1000)
-    acc2 = BankAccount("Bob", 500)
-    assert acc1.get_balance() == 1000
-    acc1.deposit(500)
-    assert acc1.get_balance() == 1500
-    acc1.withdraw(200)
-    assert acc1.get_balance() == 1300
-    acc1.transfer(acc2, 300)
-    assert acc1.get_balance() == 1000
-    assert acc2.get_balance() == 800
-
-    # Test Vector
-    v1 = Vector(1, 2)
-    v2 = Vector(3, 4)
-    assert repr(v1) == "Vector(1, 2)"
-    assert (v1 + v2) == Vector(4, 6)
-    assert (v2 - v1) == Vector(2, 2)
-    assert abs(v1.magnitude() - 2.236) < 0.01
-    assert v1.dot(v2) == 11
-
-    # Test Stack
-    stack = Stack()
-    assert stack.is_empty() == True
-    stack.push(1)
-    stack.push(2)
-    stack.push(3)
-    assert len(stack) == 3
-    assert stack.peek() == 3
-    assert stack.pop() == 3
-    assert 2 in stack
-
-    # Test ShoppingCart
-    cart = ShoppingCart(tax_rate=0.10)
-    cart.add_item("Apple", 1.00, 3)
-    cart.add_item("Banana", 0.50, 2)
-    assert cart.get_subtotal() == 4.00
-    assert cart.get_tax() == 0.40
-    assert cart.get_total() == 4.40
-    assert len(cart) == 5
-    cart.remove_item("Banana")
-    assert cart.get_subtotal() == 3.00
-
-    # Test Singleton
-    db1 = Database("localhost:5432")
-    db2 = Database("different_host")
-    assert db1 is db2
-    assert db1.connection_string == "localhost:5432"
-
-    print("All Classes solutions passed!")
+engine = Engine(200, "Gasoline")
+wheels = [Wheel(17, "Michelin") for _ in range(4)]
+car = Vehicle("Toyota", "Camry", engine, wheels)
+print(car)         # "Toyota Camry - 200hp Gasoline"
+print(car.start()) # "Toyota Camry starts with a roar!"

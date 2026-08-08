@@ -28,6 +28,23 @@ By the end of this module, you'll be able to:
 - Python Fundamentals (01-fundamentals)
 - Object-Oriented Programming (02-oop)
 
+## Interview Questions
+
+### Q1: What is the difference between unit, integration, and end-to-end tests?
+**Answer:** Unit tests test individual functions. Integration tests test component interactions. End-to-end tests test complete workflows. Unit tests are fastest and most numerous.
+
+### Q2: What is test-driven development (TDD)?
+**Answer:** Write tests before code. Red (fail) → Green (pass) → Refactor. TDD ensures test coverage and forces clear interfaces.
+
+### Q3: What is mocking and when should you use it?
+**Answer:** Mocking replaces real objects with fake ones. Use for external services (APIs, databases), slow operations, or non-deterministic behavior.
+
+### Q4: What is the difference between `unittest` and `pytest`?
+**Answer:** unittest is Python's built-in framework (class-based, verbose). pytest is third-party (simpler syntax, fixtures, parametrize). pytest is more popular.
+
+### Q5: What is a fixture in pytest?
+**Answer:** A fixture is a function that provides test setup/teardown. Decorated with @pytest.fixture, can be injected into tests by name.
+
 ## Learning Objectives
 
 By the end of this module you will be able to:

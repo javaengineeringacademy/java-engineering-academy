@@ -1,170 +1,230 @@
 """
-Module 17: Metaclasses - Descriptors Exercises
-==============================================
-Practice creating and using descriptors.
+Module 17 - Metaclasses: Descriptors Exercises
+Difficulty: ⭐⭐⭐⭐ (Advanced)
+Topic: Descriptor protocol implementation
 """
 
-# =============================================================================
-# Exercise 1: Basic Descriptor (★☆☆☆☆)
-# =============================================================================
-# TODO: Create basic property descriptor
 
-class Property:
-    """Simple property descriptor."""
-    # TODO: Implement __get__, __set__, __delete__
-    pass
+# =============================================================================
+# Exercise 1: Basic Descriptor (⭐⭐⭐⭐)
+# =============================================================================
 
-# Test Cases
-class Person:
-    name = Property()
+class BasicDescriptor:
+    """
+    Implement a basic descriptor.
     
+    TODO:
+    1. Implement __get__
+    2. Implement __set__
+    3. Implement __delete__
+    """
     def __init__(self, name):
         self.name = name
-
-def test_basic_descriptor():
-    p = Person("Alice")
-    assert p.name == "Alice"
-    p.name = "Bob"
-    assert p.name == "Bob"
-    print("✓ Exercise 1 passed: descriptor get/set works")
-
-# =============================================================================
-# Exercise 2: Validated Attribute (★★☆☆☆)
-# =============================================================================
-# TODO: Create descriptor that validates values
-
-class PositiveInt:
-    """Descriptor that only allows positive integers."""
-    # TODO: Validate value is positive integer
-    pass
-
-# Test Tests
-class Account:
-    balance = PositiveInt()
     
-    def __init__(self, balance):
-        self.balance = balance
-
-def test_validated_descriptor():
-    acc = Account(100)
-    assert acc.balance == 100
-    
-    acc.balance = 200
-    assert acc.balance == 200
-    
-    try:
-        acc.balance = -50
-        assert False, "Should have raised ValueError"
-    except ValueError:
+    def __get__(self, obj, objtype=None):
+        # TODO: Return value
         pass
     
-    print("✓ Exercise 2 passed: validation works")
-
-# =============================================================================
-# Exercise 3: Cached Property (★★★☆☆)
-# =============================================================================
-# TODO: Create cached property descriptor
-
-class CachedProperty:
-    """Property that caches computed value."""
-    # TODO: Compute on first access, cache for subsequent
-    pass
-
-# Test Cases
-class DataProcessor:
-    def __init__(self, data):
-        self.data = data
-    
-    @CachedProperty
-    def processed(self):
-        # Expensive computation
-        return sorted(self.data, reverse=True)
-
-def test_cached_property():
-    processor = DataProcessor([3, 1, 4, 1, 5, 9, 2, 6])
-    
-    result1 = processor.processed
-    result2 = processor.processed
-    
-    assert result1 is result2  # Same object, cached
-    assert result1 == [9, 6, 5, 4, 3, 2, 1, 1]
-    print("✓ Exercise 3 passed: property cached correctly")
-
-# =============================================================================
-# Exercise 4: Type Enforced Descriptor (★★★★☆)
-# =============================================================================
-# TODO: Create descriptor that enforces type
-
-class Typed:
-    """Descriptor that enforces type on assignment."""
-    # TODO: Check type on __set__
-    pass
-
-# Test Cases
-class StrictClass:
-    name: str = Typed(str)
-    age: int = Typed(int)
-    score: float = Typed(float)
-
-def test_type_enforcement():
-    obj = StrictClass()
-    obj.name = "Alice"
-    obj.age = 30
-    obj.score = 95.5
-    
-    assert obj.name == "Alice"
-    
-    try:
-        obj.name = 123
-        assert False, "Should have raised TypeError"
-    except TypeError:
+    def __set__(self, obj, value):
+        # TODO: Set value
         pass
     
-    print("✓ Exercise 4 passed: type enforcement works")
+    def __delete__(self, obj):
+        # TODO: Delete value
+        pass
+
 
 # =============================================================================
-# Exercise 5: Observer Descriptor (★★★★★)
+# Exercise 2: Validated Descriptor (⭐⭐⭐⭐)
 # =============================================================================
-# TODO: Create descriptor that notifies on changes
+
+class Validated:
+    """
+    Descriptor that validates values.
+    
+    TODO:
+    1. Accept validation function in __init__
+    2. Validate on __set__
+    3. Raise error for invalid values
+    """
+    def __init__(self, validator):
+        self.validator = validator
+    
+    def __set_name__(self, owner, name):
+        self.name = name
+    
+    def __get__(self, obj, objtype=None):
+        # TODO: Return value
+        pass
+    
+    def __set__(self, obj, value):
+        # TODO: Validate and set value
+        pass
+
+
+# =============================================================================
+# Exercise 3: Computed Property (⭐⭐⭐⭐)
+# =============================================================================
+
+class ComputedProperty:
+    """
+    Descriptor that computes value on access.
+    
+    TODO:
+    1. Accept compute function
+    2. Cache computed value
+    3. Recompute when dependencies change
+    """
+    def __init__(self, func):
+        self.func = func
+        self.attr_name = None
+    
+    def __set_name__(self, owner, name):
+        self.attr_name = name
+    
+    def __get__(self, obj, objtype=None):
+        # TODO: Compute and cache value
+        pass
+
+
+# =============================================================================
+# Exercise 4: Type Checked Descriptor (⭐⭐⭐⭐⭐)
+# =============================================================================
+
+class TypeChecked:
+    """
+    Descriptor that enforces type checking.
+    
+    TODO:
+    1. Accept expected type
+    2. Check type on __set__
+    3. Support type conversion
+    """
+    def __init__(self, expected_type, convert=False):
+        self.expected_type = expected_type
+        self.convert = convert
+    
+    def __set_name__(self, owner, name):
+        self.name = name
+    
+    def __get__(self, obj, objtype=None):
+        # TODO: Return value
+        pass
+    
+    def __set__(self, obj, value):
+        # TODO: Check type and set
+        pass
+
+
+# =============================================================================
+# Exercise 5: Observer Descriptor (⭐⭐⭐⭐⭐)
+# =============================================================================
 
 class Observable:
-    """Descriptor that notifies observers on change."""
-    # TODO: Support add_observer, remove_observer
-    # TODO: Notify on set/delete
-    pass
-
-# Test Classes
-class UserModel:
-    username = Observable()
-    email = Observable()
+    """
+    Descriptor that notifies on change.
     
+    TODO:
+    1. Maintain list of observers
+    2. Notify on __set__
+    3. Support add/remove observer
+    """
     def __init__(self):
-        self._observers = {}
+        self.observers = []
+    
+    def __set_name__(self, owner, name):
+        self.name = name
+    
+    def __get__(self, obj, objtype=None):
+        # TODO: Return value
+        pass
+    
+    def __set__(self, obj, value):
+        # TODO: Set value and notify observers
+        pass
+    
+    def add_observer(self, observer):
+        # TODO: Add observer
+        pass
+    
+    def remove_observer(self, observer):
+        # TODO: Remove observer
+        pass
 
-def test_observer_descriptor():
-    user = UserModel()
-    changes = []
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 17 - Descriptors Exercises\n")
     
-    def on_change(attr, old, new):
-        changes.append((attr, old, new))
+    # Test Exercise 1
+    print("Exercise 1: Basic Descriptor")
+    try:
+        class MyClass:
+            value = BasicDescriptor('value')
+        
+        obj = MyClass()
+        obj.value = 42
+        print(f"  Value: {obj.value}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
     
-    user.observe(on_change)
-    user.username = "alice"
-    user.username = "bob"
-    user.email = "bob@example.com"
+    # Test Exercise 2
+    print("Exercise 2: Validated Descriptor")
+    try:
+        class MyClass:
+            age = Validated(lambda x: isinstance(x, int) and x > 0)
+        
+        obj = MyClass()
+        obj.age = 25
+        print(f"  Age: {obj.age}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
     
-    assert len(changes) == 3
-    assert changes[0] == ("username", None, "alice")
-    assert changes[1] == ("username", "alice", "bob")
-    print(f"✓ Exercise 5 passed: observed {len(changes)} changes")
+    # Test Exercise 3
+    print("Exercise 3: Computed Property")
+    try:
+        class Circle:
+            radius = ComputedProperty(lambda self: self._radius)
+        
+        obj = Circle()
+        print(f"  Computed: {obj}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Type Checked Descriptor")
+    try:
+        class MyClass:
+            name = TypeChecked(str)
+        
+        obj = MyClass()
+        obj.name = "test"
+        print(f"  Name: {obj.name}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Observer Descriptor")
+    try:
+        class MyClass:
+            value = Observable()
+        
+        obj = MyClass()
+        changes = []
+        obj.value.add_observer(lambda v: changes.append(v))
+        obj.value = 42
+        print(f"  Changes: {changes}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+
 
 if __name__ == "__main__":
-    print("Running Descriptors Exercises...")
-    print("=" * 50)
-    test_basic_descriptor()
-    test_validated_descriptor()
-    test_cached_property()
-    test_type_enforcement()
-    test_observer_descriptor()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

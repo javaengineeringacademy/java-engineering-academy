@@ -31,6 +31,23 @@ By the end of this module, you'll be able to:
 
 - Python Fundamentals (01-fundamentals)
 
+## Interview Questions
+
+### Q1: What is the difference between `__str__` and `__repr__`?
+**Answer:** `__str__` is for human-readable output (print, str()), `__repr__` is for unambiguous representation (repr(), interactive shell). Always implement `__repr__`.
+
+### Q2: Explain method resolution order (MRO).
+**Answer:** MRO determines method lookup order in inheritance. Python uses C3 linearization. Check with Class.__mro__. Super() follows MRO.
+
+### Q3: What is the difference between class and instance attributes?
+**Answer:** Class attributes are shared across all instances. Instance attributes are unique to each object. Instance attributes shadow class attributes.
+
+### Q4: How do properties work internally?
+**Answer:** Properties use descriptor protocol. @property creates a descriptor with __get__, __set__, __delete__ that intercepts attribute access.
+
+### Q5: What is the diamond problem and how does Python solve it?
+**Answer:** Diamond problem occurs with multiple inheritance. Python uses MRO (C3 linearization) to determine method lookup order.
+
 ## Learning Objectives
 
 By the end of this module you will be able to:

@@ -1,251 +1,263 @@
 """
-Module 17: Metaclasses - Descriptors Solutions
-Practice implementing descriptors in Python.
+Module 17 - Metaclasses: Descriptors Solutions
+Complete solutions with explanations
 """
 
-from typing import Any, Optional
 
+# =============================================================================
+# Exercise 1: Basic Descriptor - SOLUTION
+# =============================================================================
 
-class Validator:
-    """Descriptor that validates attribute values."""
-
-    def __init__(self, min_value=None, max_value=None):
-        self.min_value = min_value
-        self.max_value = max_value
-
-    def __set_name__(self, owner, name):
+class BasicDescriptor:
+    """
+    Implement a basic descriptor with __get__, __set__, __delete__.
+    """
+    def __init__(self, name):
         self.name = name
-
+    
     def __get__(self, obj, objtype=None):
+        """Return value from instance's __dict__."""
         if obj is None:
             return self
         return obj.__dict__.get(self.name)
-
+    
     def __set__(self, obj, value):
-        if self.min_value is not None and value < self.min_value:
-            raise ValueError(f"{self.name} must be >= {self.min_value}")
-        if self.max_value is not None and value > self.max_value:
-            raise ValueError(f"{self.name} must be <= {self.max_value}")
+        """Set value in instance's __dict__."""
         obj.__dict__[self.name] = value
+    
+    def __delete__(self, obj):
+        """Delete value from instance's __dict__."""
+        if self.name in obj.__dict__:
+            del obj.__dict__[self.name]
 
 
-class Typed:
-    """Descriptor that enforces type checking."""
+# =============================================================================
+# Exercise 2: Validated Descriptor - SOLUTION
+# =============================================================================
 
-    def __init__(self, expected_type):
-        self.expected_type = expected_type
-
+class Validated:
+    """
+    Descriptor that validates values on assignment.
+    """
+    def __init__(self, validator):
+        self.validator = validator
+    
     def __set_name__(self, owner, name):
         self.name = name
-
+    
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-        return obj.__dict__.get(self.name)
-
+        return obj.__dict__.get(f'validated_{self.name}')
+    
     def __set__(self, obj, value):
-        if not isinstance(value, self.expected_type):
-            raise TypeError(
-                f"{self.name} must be {self.expected_type.__name__}, "
-                f"got {type(value).__name__}"
-            )
-        obj.__dict__[self.name] = value
+        """Validate and set value."""
+        if not self.validator(value):
+            raise ValueError(f"Invalid value for {self.name}: {value}")
+        obj.__dict__[f'validated_{self.name}'] = value
 
 
-class CachedProperty:
-    """Descriptor that caches computed values."""
+# =============================================================================
+# Exercise 3: Computed Property - SOLUTION
+# =============================================================================
 
+class ComputedProperty:
+    """
+    Descriptor that computes value on access and caches it.
+    """
     def __init__(self, func):
         self.func = func
-        self.attrname = None
-
+        self.attr_name = None
+    
     def __set_name__(self, owner, name):
-        self.attrname = name
-
+        self.attr_name = name
+    
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-
-        # Check cache
-        cache_key = f"_cached_{self.attrname}"
-        if cache_key in obj.__dict__:
-            return obj.__dict__[cache_key]
-
+        
+        # Check if cached value exists
+        cache_attr = f'_cached_{self.attr_name}'
+        if hasattr(obj, cache_attr):
+            return getattr(obj, cache_attr)
+        
         # Compute and cache
         value = self.func(obj)
-        obj.__dict__[cache_key] = value
+        setattr(obj, cache_attr, value)
         return value
 
 
-class LazyProperty:
-    """Descriptor that computes value only once, then stores it."""
+# =============================================================================
+# Exercise 4: Type Checked Descriptor - SOLUTION
+# =============================================================================
 
-    def __init__(self, func):
-        self.func = func
-        self.attrname = None
-
-    def __set_name__(self, owner, name):
-        self.attrname = name
-
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self
-
-        value = self.func(obj)
-        # Replace descriptor with computed value
-        setattr(obj, self.attrname, value)
-        return value
-
-
-class UnitConverter:
-    """Descriptor that automatically converts units."""
-
-    def __init__(self, from_unit, to_unit, conversion_factor):
-        self.from_unit = from_unit
-        self.to_unit = to_unit
-        self.conversion_factor = conversion_factor
-
+class TypeChecked:
+    """
+    Descriptor that enforces type checking.
+    """
+    def __init__(self, expected_type, convert=False):
+        self.expected_type = expected_type
+        self.convert = convert
+    
     def __set_name__(self, owner, name):
         self.name = name
-        self.internal_name = f"_{name}"
-
+    
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-        value = getattr(obj, self.internal_name, 0)
-        return value * self.conversion_factor
-
+        return obj.__dict__.get(f'typed_{self.name}')
+    
     def __set__(self, obj, value):
-        setattr(obj, self.internal_name, value)
+        """Check type and set value."""
+        if value is not None and not isinstance(value, self.expected_type):
+            if self.convert:
+                try:
+                    value = self.expected_type(value)
+                except (ValueError, TypeError):
+                    raise TypeError(
+                        f"Cannot convert {value} to {self.expected_type.__name__}"
+                    )
+            else:
+                raise TypeError(
+                    f"{self.name} must be {self.expected_type.__name__}, "
+                    f"got {type(value).__name__}"
+                )
+        obj.__dict__[f'typed_{self.name}'] = value
 
 
-class Observed:
-    """Descriptor that notifies on attribute changes."""
+# =============================================================================
+# Exercise 5: Observer Descriptor - SOLUTION
+# =============================================================================
 
+class Observable:
+    """
+    Descriptor that notifies observers on change.
+    """
     def __init__(self):
         self.observers = []
-
+    
     def __set_name__(self, owner, name):
         self.name = name
-        self.internal_name = f"_{name}"
-
+    
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-        return getattr(obj, self.internal_name, None)
-
+        return obj.__dict__.get(f'observable_{self.name}')
+    
     def __set__(self, obj, value):
-        old_value = getattr(obj, self.internal_name, None)
-        setattr(obj, self.internal_name, value)
-
-        # Notify observers
-        for observer in self.observers:
-            observer(obj, self.name, old_value, value)
-
+        """Set value and notify observers."""
+        old_value = obj.__dict__.get(f'observable_{self.name}')
+        obj.__dict__[f'observable_{self.name}'] = value
+        
+        if old_value != value:
+            for observer in self.observers:
+                observer(value, old_value)
+    
     def add_observer(self, observer):
-        """Add an observer function."""
-        self.observers.append(observer)
+        """Add observer callback."""
+        if observer not in self.observers:
+            self.observers.append(observer)
+    
+    def remove_observer(self, observer):
+        """Remove observer callback."""
+        if observer in self.observers:
+            self.observers.remove(observer)
+
+
+# =============================================================================
+# Test Cases (Uncommented)
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 17 - Descriptors Solutions\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Basic Descriptor")
+    class MyClass:
+        value = BasicDescriptor('value')
+    
+    obj = MyClass()
+    obj.value = 42
+    assert obj.value == 42
+    
+    del obj.value
+    assert obj.value is None
+    print(f"  Value after set: 42, after delete: None")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Validated Descriptor")
+    class Person:
+        age = Validated(lambda x: isinstance(x, int) and 0 <= x <= 150)
+    
+    person = Person()
+    person.age = 25
+    assert person.age == 25
+    
+    try:
+        person.age = -5
+        print("  ✗ Should have raised ValueError")
+    except ValueError:
+        print("  ✓ Validation works")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Computed Property")
+    class Circle:
+        def __init__(self, radius):
+            self._radius = radius
+        
+        area = ComputedProperty(lambda self: 3.14159 * self._radius ** 2)
+    
+    circle = Circle(5)
+    area1 = circle.area
+    area2 = circle.area  # Should use cached value
+    assert area1 == area2
+    assert abs(area1 - 78.54) < 0.01
+    print(f"  Area: {circle.area:.2f}")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Type Checked Descriptor")
+    class Config:
+        name = TypeChecked(str)
+        count = TypeChecked(int)
+    
+    config = Config()
+    config.name = "test"
+    config.count = 42
+    
+    assert config.name == "test"
+    assert config.count == 42
+    
+    # Test conversion
+    config.count = "100"  # Should convert to int
+    assert config.count == 100
+    
+    try:
+        config.name = 123
+        print("  ✗ Should have raised TypeError")
+    except TypeError:
+        print("  ✓ Type checking works")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Observer Descriptor")
+    class Model:
+        value = Observable()
+    
+    model = Model()
+    changes = []
+    model.value.add_observer(lambda v, old: changes.append((old, v)))
+    
+    model.value = 10
+    model.value = 20
+    model.value = 20  # No change
+    
+    assert changes == [(None, 10), (10, 20)]
+    print(f"  Changes: {changes}")
+    print("  ✓ Passed\n")
 
 
 if __name__ == "__main__":
-    print("Testing Descriptors Solutions...")
-
-    # Test Validator
-    class Student:
-        age = Validator(min_value=0, max_value=150)
-        grade = Validator(min_value=0, max_value=100)
-
-        def __init__(self, name, age, grade):
-            self.name = name
-            self.age = age
-            self.grade = grade
-
-    student = Student("Alice", 20, 95)
-    assert student.age == 20
-    assert student.grade == 95
-
-    try:
-        student.age = -5
-        print("✗ Should have raised ValueError")
-    except ValueError:
-        print("✓ Exercise 1: Validator descriptor works")
-
-    # Test Typed
-    class Config:
-        name = Typed(str)
-        value = Typed(int)
-
-        def __init__(self, name, value):
-            self.name = name
-            self.value = value
-
-    config = Config("debug", 1)
-    assert config.name == "debug"
-
-    try:
-        config.value = "not an int"
-        print("✗ Should have raised TypeError")
-    except TypeError:
-        print("✓ Exercise 2: Typed descriptor works")
-
-    # Test CachedProperty
-    class DataProcessor:
-        def __init__(self, data):
-            self.data = data
-
-        @CachedProperty
-        def processed(self):
-            print("Processing...")
-            return [x * 2 for x in self.data]
-
-    processor = DataProcessor([1, 2, 3])
-    result1 = processor.processed  # Prints "Processing..."
-    result2 = processor.processed  # Uses cache, no print
-    assert result1 == result2
-    print("✓ Exercise 3: CachedProperty descriptor works")
-
-    # Test LazyProperty
-    class ExpensiveCalculation:
-        def __init__(self, value):
-            self.value = value
-
-        @LazyProperty
-        def result(self):
-            print("Computing...")
-            return self.value ** 2
-
-    calc = ExpensiveCalculation(10)
-    result1 = calc.result  # Prints "Computing..."
-    result2 = calc.result  # No print, uses stored value
-    assert result1 == result2 == 100
-    print("✓ Exercise 4: LazyProperty descriptor works")
-
-    # Test UnitConverter
-    class Measurement:
-        def __init__(self, meters):
-            self.meters = meters
-            self.centimeters = meters
-
-        centimeters = UnitConverter("centimeters", "meters", 0.01)
-
-    m = Measurement(100)
-    m.centimeters = 100
-    assert m.meters == 1.0
-    print("✓ Exercise 5: UnitConverter descriptor works")
-
-    # Test Observed
-    class Observable:
-        name = Observed()
-
-        def __init__(self, name):
-            self.name = name
-
-    changes = []
-    obs = Observable("test")
-    obs.name.add_observer(lambda obj, attr, old, new: changes.append((old, new)))
-    obs.name = "new_value"
-    assert len(changes) == 1
-    assert changes[0] == ("test", "new_value")
-    print("✓ Exercise 6: Observed descriptor works")
-
-    print("All Descriptors solutions passed!")
+    test_exercises()

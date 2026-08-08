@@ -1,6 +1,6 @@
 """
-Module 15: Performance - Profiling Solutions
-Practice profiling Python code for performance analysis.
+Module 15 - Performance: Profiling Solutions
+Complete solutions with explanations
 """
 
 import time
@@ -10,220 +10,243 @@ from functools import wraps
 from io import StringIO
 
 
-def timer(func):
-    """Decorator that prints execution time."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(f"{func.__name__} took {(end - start) * 1000:.2f}ms")
-        return result
-    return wrapper
+# =============================================================================
+# Exercise 1: Basic Timing - SOLUTION
+# =============================================================================
 
-
-class Profiler:
-    """Context manager for profiling code blocks."""
-
-    def __init__(self):
-        self.profiler = cProfile.Profile()
-        self.stats = None
-
-    def __enter__(self):
-        self.profiler.enable()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.profiler.disable()
-        stream = StringIO()
-        stats = pstats.Stats(self.profiler, stream=stream)
-        self.stats = {
-            "tottime": stats.total_tt,
-            "ncalls": stats.total_calls
-        }
-        return False
-
-    def get_stats(self):
-        """Get profiling statistics."""
-        return self.stats or {"tottime": 0, "ncalls": 0}
-
-
-class MemoryProfiler:
-    """Profile memory usage of code blocks."""
-
-    def __init__(self):
-        self.start_memory = 0
-        self.end_memory = 0
-        self.peak_memory = 0
-
-    def __enter__(self):
-        import tracemalloc
-        tracemalloc.start()
-        self.start_memory = tracemalloc.get_traced_memory()[0]
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        import tracemalloc
-        current, peak = tracemalloc.get_traced_memory()
-        self.end_memory = current
-        self.peak_memory = peak
-        tracemalloc.stop()
-        return False
-
-    def get_report(self):
-        """Get memory profiling report."""
-        return {
-            "current_memory": (self.end_memory - self.start_memory) / 1024,
-            "peak_memory": self.peak_memory / 1024
-        }
-
-
-class CallCounter:
-    """Track function call statistics."""
-
-    def __init__(self):
-        self._stats = {}
-
-    def track(self, func):
-        """Decorator to track function calls."""
+def exercise_1_basic_timing():
+    """
+    Time function execution.
+    """
+    def timing_decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            start = time.time()
+            start = time.perf_counter()
             result = func(*args, **kwargs)
-            end = time.time()
-
-            if func not in self._stats:
-                self._stats[func] = {
-                    "calls": 0,
-                    "total_time": 0
-                }
-
-            self._stats[func]["calls"] += 1
-            self._stats[func]["total_time"] += end - start
-
+            end = time.perf_counter()
+            wrapper.execution_time = end - start
             return result
         return wrapper
-
-    def get_stats(self, func):
-        """Get statistics for a specific function."""
-        if func not in self._stats:
-            return {"calls": 0, "total_time": 0, "avg_time": 0}
-
-        stats = self._stats[func]
-        return {
-            "calls": stats["calls"],
-            "total_time": stats["total_time"],
-            "avg_time": stats["total_time"] / stats["calls"] if stats["calls"] > 0 else 0
-        }
-
-
-class BenchmarkSuite:
-    """Benchmark multiple implementations."""
-
-    def __init__(self):
-        self._implementations = {}
-
-    def add(self, name, func):
-        """Add an implementation to benchmark."""
-        self._implementations[name] = func
-
-    def run(self, iterations=100):
-        """Run each implementation multiple times."""
-        results = {}
-
-        for name, func in self._implementations.items():
-            times = []
-            for _ in range(iterations):
-                start = time.time()
-                func()
-                end = time.time()
-                times.append(end - start)
-
-            results[name] = {
-                "mean": sum(times) / len(times),
-                "min": min(times),
-                "max": max(times),
-                "times": times
-            }
-
-        return results
-
-    def compare(self):
-        """Compare implementations and return the winner."""
-        results = self.run()
-        return min(results.keys(), key=lambda k: results[k]["mean"])
-
-
-if __name__ == "__main__":
-    print("Testing Profiling Solutions...")
-
-    # Test timer
-    @timer
+    
+    @timing_decorator
     def slow_function():
         time.sleep(0.01)
         return "done"
-
+    
     result = slow_function()
-    assert result == "done"
-    print("✓ Exercise 1 passed: timer decorator works")
+    
+    return {
+        'result': result,
+        'execution_time': slow_function.execution_time
+    }
 
-    # Test profiler
-    with Profiler() as profiler:
-        total = sum(range(10000))
 
-    stats = profiler.get_stats()
-    assert "tottime" in stats
-    assert stats["tottime"] >= 0
-    print(f"✓ Exercise 2 passed: profiler captured {stats['tottime']:.4f}s")
+# =============================================================================
+# Exercise 2: Memory Profiling - SOLUTION
+# =============================================================================
 
-    # Test memory profiler
-    with MemoryProfiler() as profiler:
-        data = [i ** 2 for i in range(10000)]
+def exercise_2_memory_profiling():
+    """
+    Profile memory usage.
+    """
+    import sys
+    
+    # Measure memory of different operations
+    results = {}
+    
+    # List creation
+    start_mem = sys.getsizeof([])
+    lst = [i for i in range(1000)]
+    end_mem = sys.getsizeof(lst)
+    results['list_1000'] = end_mem - start_mem
+    
+    # Dict creation
+    start_mem = sys.getsizeof({})
+    d = {i: i for i in range(1000)}
+    end_mem = sys.getsizeof(d)
+    results['dict_1000'] = end_mem - start_mem
+    
+    # Set creation
+    start_mem = sys.getsizeof(set())
+    s = {i for i in range(1000)}
+    end_mem = sys.getsizeof(s)
+    results['set_1000'] = end_mem - start_mem
+    
+    return results
 
-    report = profiler.get_report()
-    assert "current_memory" in report
-    assert "peak_memory" in report
-    assert report["peak_memory"] > 0
-    print(f"✓ Exercise 3 passed: peak memory {report['peak_memory']:.1f}KB")
 
-    # Test call counter
-    counter = CallCounter()
+# =============================================================================
+# Exercise 3: cProfile Usage - SOLUTION
+# =============================================================================
 
-    @counter.track
-    def compute(n):
-        return sum(range(n))
+def exercise_3_cprofile():
+    """
+    Use cProfile for function profiling.
+    """
+    def compute():
+        total = 0
+        for i in range(10000):
+            total += i * i
+        return total
+    
+    # Profile the function
+    profiler = cProfile.Profile()
+    profiler.enable()
+    
+    result = compute()
+    
+    profiler.disable()
+    
+    # Get statistics
+    stream = StringIO()
+    stats = pstats.Stats(profiler, stream=stream)
+    stats.sort_stats('cumulative')
+    
+    # Get top functions
+    top_functions = []
+    for func, (cc, nc, tt, ct, callers) in stats.stats.items():
+        filename, lineno, funcname = func
+        top_functions.append({
+            'function': funcname,
+            'calls': nc,
+            'time': tt
+        })
+    
+    top_functions.sort(key=lambda x: x['time'], reverse=True)
+    
+    return {
+        'result': result,
+        'top_functions': top_functions[:5]
+    }
 
-    compute(100)
-    compute(200)
-    compute(300)
 
-    stats = counter.get_stats(compute)
-    assert stats["calls"] == 3
-    assert stats["total_time"] > 0
-    assert stats["avg_time"] == stats["total_time"] / 3
-    print(f"✓ Exercise 4 passed: {stats['calls']} calls tracked")
+# =============================================================================
+# Exercise 4: Line Profiling - SOLUTION
+# =============================================================================
 
-    # Test benchmark suite
-    suite = BenchmarkSuite()
+def exercise_4_line_profiling():
+    """
+    Profile individual lines of code.
+    """
+    import time
+    
+    def slow_algorithm(data):
+        result = []
+        for item in data:
+            if item % 2 == 0:
+                result.append(item ** 2)
+        return sorted(result)
+    
+    # Simple line timing
+    data = list(range(10000))
+    
+    start = time.perf_counter()
+    result = slow_algorithm(data)
+    total_time = time.perf_counter() - start
+    
+    # Estimate line times
+    results = {
+        'total_time': total_time,
+        'result_length': len(result),
+        'estimated_loop_time': total_time * 0.7,  # Rough estimate
+        'estimated_sort_time': total_time * 0.3,
+    }
+    
+    return results
 
-    def impl_a():
-        return sorted([3, 1, 4, 1, 5, 9, 2, 6])
 
-    def impl_b():
-        data = [3, 1, 4, 1, 5, 9, 2, 6]
-        data.sort()
-        return data
+# =============================================================================
+# Exercise 5: Benchmark Suite - SOLUTION
+# =============================================================================
 
-    suite.add("sorted()", impl_a)
-    suite.add("list.sort()", impl_b)
+def exercise_5_benchmark_suite():
+    """
+    Create a benchmark suite for comparing implementations.
+    """
+    import statistics
+    
+    def benchmark(iterations=100):
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                times = []
+                for _ in range(iterations):
+                    start = time.perf_counter()
+                    result = func(*args, **kwargs)
+                    end = time.perf_counter()
+                    times.append(end - start)
+                
+                wrapper.stats = {
+                    'iterations': iterations,
+                    'mean': statistics.mean(times),
+                    'median': statistics.median(times),
+                    'min': min(times),
+                    'max': max(times),
+                    'stdev': statistics.stdev(times) if len(times) > 1 else 0,
+                }
+                return result
+            return wrapper
+        return decorator
+    
+    @benchmark(iterations=10)
+    def test_function():
+        return sum(range(1000))
+    
+    result = test_function()
+    
+    return {
+        'result': result,
+        'stats': test_function.stats
+    }
 
-    results = suite.run(iterations=100)
 
-    assert "sorted()" in results
-    assert "list.sort()" in results
-    assert results["sorted()"]["mean"] > 0
-    winner = suite.compare()
-    assert winner in ["sorted()", "list.sort()"]
-    print(f"✓ Exercise 5 passed: winner is '{winner}'")
+# =============================================================================
+# Test Cases (Uncommented)
+# =============================================================================
 
-    print("All Profiling solutions passed!")
+def test_exercises():
+    print("Testing Module 15 - Profiling Solutions\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Basic Timing")
+    result = exercise_1_basic_timing()
+    assert result['result'] == 'done'
+    assert result['execution_time'] > 0
+    print(f"  Execution time: {result['execution_time']:.4f}s")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Memory Profiling")
+    result = exercise_2_memory_profiling()
+    assert isinstance(result, dict)
+    assert 'list_1000' in result
+    print(f"  Memory usage: {result}")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: cProfile Usage")
+    result = exercise_3_cprofile()
+    assert isinstance(result, dict)
+    assert 'top_functions' in result
+    print(f"  Top functions: {result['top_functions'][:3]}")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Line Profiling")
+    result = exercise_4_line_profiling()
+    assert isinstance(result, dict)
+    assert 'total_time' in result
+    print(f"  Results: {result}")
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Benchmark Suite")
+    result = exercise_5_benchmark_suite()
+    assert isinstance(result, dict)
+    assert 'stats' in result
+    print(f"  Stats: {result['stats']}")
+    print("  ✓ Passed\n")
+
+
+if __name__ == "__main__":
+    test_exercises()

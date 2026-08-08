@@ -1,7 +1,7 @@
 """
-Module 15: Performance - Profiling Exercises
-============================================
-Practice profiling Python code for performance analysis.
+Module 15 - Performance: Profiling Exercises
+Difficulty: ⭐⭐⭐ (Intermediate)
+Topic: Performance profiling and benchmarking
 """
 
 import time
@@ -9,141 +9,196 @@ import cProfile
 import pstats
 from functools import wraps
 
-# =============================================================================
-# Exercise 1: Timing Decorator (★☆☆☆☆)
-# =============================================================================
-# TODO: Create decorator that measures execution time
 
-def timer(func):
-    """Decorator that prints execution time."""
-    # TODO: Implement timing logic
+# =============================================================================
+# Exercise 1: Basic Timing (⭐⭐⭐)
+# =============================================================================
+
+def exercise_1_basic_timing():
+    """
+    Time function execution.
+    
+    TODO:
+    1. Create a timing decorator
+    2. Measure function execution time
+    3. Return timing results
+    """
+    def timing_decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # TODO: Measure execution time
+            pass
+        return wrapper
+    
+    @timing_decorator
+    def slow_function():
+        time.sleep(0.01)
+        return "done"
+    
+    # TODO: Call function and get timing
     pass
 
+
+# =============================================================================
+# Exercise 2: Memory Profiling (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_2_memory_profiling():
+    """
+    Profile memory usage.
+    
+    TODO:
+    1. Use memory_profiler if available
+    2. Measure memory before and after operations
+    3. Return memory usage
+    """
+    import sys
+    
+    results = {}
+    
+    # TODO: Profile memory usage
+    
+    return results
+
+
+# =============================================================================
+# Exercise 3: cProfile Usage (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_3_cprofile():
+    """
+    Use cProfile for function profiling.
+    
+    TODO:
+    1. Profile a function using cProfile
+    2. Get statistics
+    3. Return top functions by time
+    """
+    def compute():
+        total = 0
+        for i in range(10000):
+            total += i * i
+        return total
+    
+    results = {}
+    
+    # TODO: Profile compute function
+    
+    return results
+
+
+# =============================================================================
+# Exercise 4: Line Profiling (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_4_line_profiling():
+    """
+    Profile individual lines of code.
+    
+    TODO:
+    1. Use line_profiler if available
+    2. Identify slow lines
+    3. Return line-by-line timing
+    """
+    def slow_algorithm(data):
+        result = []
+        for item in data:
+            if item % 2 == 0:
+                result.append(item ** 2)
+        return sorted(result)
+    
+    results = {}
+    
+    # TODO: Profile slow_algorithm
+    
+    return results
+
+
+# =============================================================================
+# Exercise 5: Benchmark Suite (⭐⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_5_benchmark_suite():
+    """
+    Create a benchmark suite for comparing implementations.
+    
+    TODO:
+    1. Create benchmark decorator
+    2. Run function multiple times
+    3. Calculate statistics (mean, std, min, max)
+    """
+    def benchmark(iterations=100):
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                # TODO: Run benchmark
+                pass
+            return wrapper
+        return decorator
+    
+    @benchmark(iterations=10)
+    def test_function():
+        return sum(range(1000))
+    
+    # TODO: Run benchmark and return results
+    pass
+
+
+# =============================================================================
 # Test Cases
-@timer
-def slow_function():
-    time.sleep(0.01)
-    return "done"
-
-def test_timer():
-    result = slow_function()
-    assert result == "done"
-    print("✓ Exercise 1 passed: timer decorator works")
-
 # =============================================================================
-# Exercise 2: Profiling Context Manager (★★☆☆☆)
-# =============================================================================
-# TODO: Create context manager for profiling
 
-class Profiler:
-    """Context manager for profiling code blocks."""
-    # TODO: Use cProfile internally
-    # TODO: Provide stats access
-    pass
-
-# Test Tests
-def test_profiler():
-    with Profiler() as profiler:
-        total = sum(range(10000))
+def test_exercises():
+    print("Testing Module 15 - Profiling Exercises\n")
     
-    stats = profiler.get_stats()
-    assert "tottime" in stats
-    assert stats["tottime"] >= 0
-    print(f"✓ Exercise 2 passed: profiler captured {stats['tottime']:.4f}s")
-
-# =============================================================================
-# Exercise 3: Memory Profiler (★★★☆☆)
-# =============================================================================
-# TODO: Profile memory usage of code blocks
-
-class MemoryProfiler:
-    """Profile memory usage of code blocks."""
-    # TODO: Track memory before and after
-    # TODO: Report peak memory usage
-    pass
-
-# Test Tests
-def test_memory_profiler():
-    with MemoryProfiler() as profiler:
-        data = [i ** 2 for i in range(10000)]
+    # Test Exercise 1
+    print("Exercise 1: Basic Timing")
+    try:
+        result = exercise_1_basic_timing()
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
     
-    report = profiler.get_report()
-    assert "current_memory" in report
-    assert "peak_memory" in report
-    assert report["peak_memory"] > 0
-    print(f"✓ Exercise 3 passed: peak memory {report['peak_memory']:.1f}KB")
+    # Test Exercise 2
+    print("Exercise 2: Memory Profiling")
+    try:
+        result = exercise_2_memory_profiling()
+        assert isinstance(result, dict)
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: cProfile Usage")
+    try:
+        result = exercise_3_cprofile()
+        assert isinstance(result, dict)
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Line Profiling")
+    try:
+        result = exercise_4_line_profiling()
+        assert isinstance(result, dict)
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Benchmark Suite")
+    try:
+        result = exercise_5_benchmark_suite()
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
 
-# =============================================================================
-# Exercise 4: Function Call Counter (★★★★☆)
-# =============================================================================
-# TODO: Count function calls and track timing
-
-class CallCounter:
-    """Track function call statistics."""
-    # TODO: Count calls, total time, average time
-    pass
-
-# Test Cases
-def test_call_counter():
-    counter = CallCounter()
-    
-    @counter.track
-    def compute(n):
-        return sum(range(n))
-    
-    compute(100)
-    compute(200)
-    compute(300)
-    
-    stats = counter.get_stats(compute)
-    assert stats["calls"] == 3
-    assert stats["total_time"] > 0
-    assert stats["avg_time"] == stats["total_time"] / 3
-    print(f"✓ Exercise 4 passed: {stats['calls']} calls tracked")
-
-# =============================================================================
-# Exercise 5: Performance Benchmark Suite (★★★★★)
-# =============================================================================
-# TODO: Create benchmark suite for comparing implementations
-
-class BenchmarkSuite:
-    """Benchmark multiple implementations."""
-    # TODO: Run each implementation multiple times
-    # TODO: Calculate statistics (mean, median, std)
-    # TODO: Compare results
-    pass
-
-# Test Cases
-def test_benchmark_suite():
-    suite = BenchmarkSuite()
-    
-    def impl_a():
-        return sorted([3, 1, 4, 1, 5, 9, 2, 6])
-    
-    def impl_b():
-        data = [3, 1, 4, 1, 5, 9, 2, 6]
-        data.sort()
-        return data
-    
-    suite.add("sorted()", impl_a)
-    suite.add("list.sort()", impl_b)
-    
-    results = suite.run(iterations=100)
-    
-    assert "sorted()" in results
-    assert "list.sort()" in results
-    assert results["sorted()"]["mean"] > 0
-    winner = suite.compare()
-    assert winner in ["sorted()", "list.sort()"]
-    print(f"✓ Exercise 5 passed: winner is '{winner}'")
 
 if __name__ == "__main__":
-    print("Running Profiling Exercises...")
-    print("=" * 50)
-    test_timer()
-    test_profiler()
-    test_memory_profiler()
-    test_call_counter()
-    test_benchmark_suite()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

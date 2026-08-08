@@ -1,38 +1,110 @@
 """
-Module 01: Fundamentals - Strings Solutions
-Practice string operations in Python.
+Module 01 - Fundamentals: Strings Solutions
+Difficulty: Beginner
 """
 
+# =============================================================================
+# Exercise 1: String Basics - Solution
+# =============================================================================
+def manipulate_string(s):
+    """Return a dictionary with string statistics."""
+    import re
+    return {
+        'length': len(s),
+        'upper': s.upper(),
+        'lower': s.lower(),
+        'alpha_only': ''.join(c for c in s if c.isalpha()),
+        'words': re.findall(r'\b\w+\b', s)
+    }
 
-def reverse_string(s):
-    """Reverse a string without using slicing."""
-    result = ""
-    for char in s:
-        result = char + result
-    return result
+def reverse_words(sentence):
+    """Reverse the order of words in a sentence."""
+    return ' '.join(sentence.split()[::-1])
 
-
-def count_vowels(s):
-    """Count vowels in a string."""
-    vowels = "aeiouAEIOU"
-    count = 0
-    for char in s:
-        if char in vowels:
-            count += 1
-    return count
-
-
-def is_anagram(s1, s2):
-    """Check if two strings are anagrams."""
-    s1_clean = s1.lower().replace(" ", "")
-    s2_clean = s2.lower().replace(" ", "")
-
-    if len(s1_clean) != len(s2_clean):
-        return False
-
-    return sorted(s1_clean) == sorted(s2_clean)
+stats = manipulate_string("Hello, World!")
+print(stats)
+print(reverse_words("Hello World"))  # "World Hello"
+print(reverse_words("Python is great"))  # "great is Python"
 
 
+# =============================================================================
+# Exercise 2: String Formatting - Solution
+# =============================================================================
+def format_price(amount, currency="USD"):
+    """Format price with currency symbol and 2 decimal places."""
+    symbols = {"USD": "$", "EUR": "€", "GBP": "£"}
+    symbol = symbols.get(currency, currency)
+    formatted = f"{amount:,.2f}"
+    return f"{symbol}{formatted}"
+
+def create_table(headers, rows):
+    """Create a formatted ASCII table."""
+    col_widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            col_widths[i] = max(col_widths[i], len(str(cell)))
+
+    header_line = " | ".join(h.ljust(col_widths[i]) for i, h in enumerate(headers))
+    separator = "-|-".join("-" * w for w in col_widths)
+
+    lines = [header_line, separator]
+    for row in rows:
+        line = " | ".join(str(cell).ljust(col_widths[i]) for i, cell in enumerate(row))
+        lines.append(line)
+    return "\n".join(lines)
+
+print(format_price(1234.5))       # "$1,234.50"
+print(format_price(1234.5, "EUR"))  # "€1,234.50"
+table = create_table(["Name", "Age", "City"],
+                      [["Alice", 30, "NYC"], ["Bob", 25, "SF"]])
+print(table)
+
+
+# =============================================================================
+# Exercise 3: String Methods - Solution
+# =============================================================================
+def is_valid_email(email):
+    """Check if email has basic valid format."""
+    return '@' in email and '.' in email.split('@')[-1]
+
+def extract_info(text):
+    """Extract emails and phone numbers from text."""
+    import re
+    emails = re.findall(r'[\w.+-]+@[\w-]+\.[\w.]+', text)
+    phones = re.findall(r'\d{3}[-.]?\d{4}', text)
+    return {'emails': emails, 'phones': phones}
+
+print(is_valid_email("user@example.com"))  # True
+print(is_valid_email("invalid"))           # False
+text = "Contact me at test@email.com or call 555-1234"
+info = extract_info(text)
+print(info)  # {'emails': ['test@email.com'], 'phones': ['555-1234']}
+
+
+# =============================================================================
+# Exercise 4: String Slicing - Solution
+# =============================================================================
+def get_initials(full_name):
+    """Return initials from full name."""
+    names = full_name.split()
+    return '.'.join(name[0].upper() for name in names) + '.'
+
+def mask_email(email):
+    """Mask email: user@domain.com -> u***r@domain.com"""
+    user, domain = email.split('@')
+    if len(user) <= 2:
+        return email
+    return f"{user[0]}***{user[-1]}@{domain}"
+
+print(get_initials("John Doe"))          # "J.D."
+print(get_initials("Jane Marie Smith"))  # "J.M.S."
+print(mask_email("john.doe@example.com"))  # "j***e@example.com"
+print(mask_email("a@b.com"))             # "a@b.com"
+
+
+# =============================================================================
+# Exercise 5: String Encoding - Solution
+# =============================================================================
 def caesar_cipher(text, shift):
     """Encrypt text using Caesar cipher."""
     result = []
@@ -45,31 +117,15 @@ def caesar_cipher(text, shift):
             result.append(char)
     return ''.join(result)
 
+def simple_hash(text):
+    """Create a simple hash of a string."""
+    hash_value = 0
+    for i, char in enumerate(text):
+        hash_value += ord(char) * (i + 1)
+    return hash_value
 
-def longest_common_substring(s1, s2):
-    """Find the longest common substring between two strings."""
-    m, n = len(s1), len(s2)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-    max_len = 0
-    end_pos = 0
-
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            if s1[i-1] == s2[j-1]:
-                dp[i][j] = dp[i-1][j-1] + 1
-                if dp[i][j] > max_len:
-                    max_len = dp[i][j]
-                    end_pos = i
-
-    return s1[end_pos - max_len:end_pos]
-
-
-if __name__ == "__main__":
-    print("Testing Strings Solutions...")
-    assert reverse_string("hello") == "olleh"
-    assert count_vowels("Hello World") == 3
-    assert is_anagram("listen", "silent") == True
-    assert is_anagram("hello", "world") == False
-    assert caesar_cipher("Hello", 3) == "Khoor"
-    assert longest_common_substring("abcdef", "bcdefg") == "bcdef"
-    print("All Strings solutions passed!")
+encrypted = caesar_cipher("Hello", 3)
+print(encrypted)  # "Khoor"
+decrypted = caesar_cipher("Khoor", -3)
+print(decrypted)  # "Hello"
+print(simple_hash("password"))

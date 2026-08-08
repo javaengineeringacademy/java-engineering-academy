@@ -29,6 +29,23 @@ By the end of this module, you'll be able to:
 - Python Fundamentals (01-fundamentals)
 - Object-Oriented Programming (02-oop)
 
+## Interview Questions
+
+### Q1: When would you use threading vs multiprocessing?
+**Answer:** Threading for I/O-bound tasks (file I/O, network). Multiprocessing for CPU-bound tasks (computation, data processing). GIL prevents CPU parallelism in threads.
+
+### Q2: What is the difference between a thread and a process?
+**Answer:** A process has its own memory space, a thread shares memory with its parent. Processes are heavier to create, threads are lighter but受限 by GIL.
+
+### Q3: Explain asyncio's event loop.
+**Answer:** The event loop runs coroutines, manages I/O events, and schedules callbacks. It's single-threaded but handles concurrency through cooperative multitasking.
+
+### Q4: What is a race condition?
+**Answer:** A race condition occurs when multiple threads access shared data concurrently and the result depends on timing. Use locks, queues, or thread-safe data structures.
+
+### Q5: What is a deadlock?
+**Answer:** A deadlock occurs when two or more threads wait for each other to release locks. Prevention: acquire locks in consistent order, use timeouts, use threading.RLock.
+
 ## Learning Objectives
 
 By the end of this module you will be able to:

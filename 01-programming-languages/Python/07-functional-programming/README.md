@@ -20,6 +20,25 @@ By the end of this module, you'll be able to:
 
 ---
 
+## Interview Questions
+
+### Q1: What is a higher-order function?
+**Answer:** A function that takes a function as argument or returns a function. Examples: map, filter, sorted, functools.partial.
+
+### Q2: What is the difference between `map` and list comprehension?
+**Answer:** Both transform iterables. map applies function to each item. List comprehension is more readable and can filter. Prefer list comprehension.
+
+### Q3: What is `functools.reduce` used for?
+**Answer:** reduce applies a function cumulatively to items, reducing to a single value. Use for aggregation (sum, product, concatenation). Prefer sum() for addition.
+
+### Q4: What is currying?
+**Answer:** Converting a function with multiple arguments into a sequence of functions each taking one argument. Python doesn't have native currying, use functools.partial.
+
+### Q5: What is the difference between `lambda` and `def`?
+**Answer:** lambda creates anonymous functions (single expression). def creates named functions (multiple statements). lambda is limited, def is preferred.
+
+---
+
 ## Lambda Functions
 
 Anonymous functions for short, throwaway operations.

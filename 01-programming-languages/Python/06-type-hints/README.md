@@ -20,6 +20,25 @@ By the end of this module, you'll be able to:
 
 ---
 
+## Interview Questions
+
+### Q1: What is the difference between `List[int]` and `list[int]`?
+**Answer:** `List[int]` is from typing module (Python 3.5+). `list[int]` is built-in generics (Python 3.9+). Both work, prefer built-in for Python 3.9+.
+
+### Q2: What is type erasure in Python?
+**Answer:** Type hints are erased at runtime. Python doesn't enforce types - they're for static analysis only. mypy and pyright check types at development time.
+
+### Q3: What is the difference between `Optional[X]` and `X | None`?
+**Answer:** Both mean the same thing. `Optional[X]` is older syntax (typing module). `X | None` is newer syntax (Python 3.10+). Prefer the newer syntax.
+
+### Q4: What is a Protocol?
+**Answer:** A Protocol defines a structural subtyping interface. Classes don't need to explicitly inherit from Protocol - they just need to implement the methods.
+
+### Q5: What is the difference between `Any` and `object`?
+**Answer:** `Any` disables type checking (accepts anything). `object` is the base type (accepts anything but requires casting). Use `Any` sparingly.
+
+---
+
 ## Basic Types
 
 ### Primitive Types

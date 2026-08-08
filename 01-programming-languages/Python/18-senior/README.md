@@ -737,3 +737,20 @@ Scaling: Horizontal (more machines) > Vertical (bigger machine)
 Cost: Python wins on development speed, loses on raw performance
 Checklist: Code quality, Security, Performance, Deployment, Operations
 ```
+
+## Interview Questions
+
+### Q1: What is the difference between monolith and microservices?
+**Answer:** Monolith: single deployable unit. Microservices: distributed services. Monolith simpler to start, microservices scale better. Choose based on team size and complexity.
+
+### Q2: What is the 12-factor app methodology?
+**Answer:** 12 principles for cloud-native apps: codebase, dependencies, config, backing services, build/release/run, processes, port binding, concurrency, disposability, dev/prod parity, logs, admin processes.
+
+### Q3: What is the difference between horizontal and vertical scaling?
+**Answer:** Vertical: add more power to existing machine. Horizontal: add more machines. Horizontal is more fault-tolerant, vertical is simpler.
+
+### Q4: What is the CAP theorem?
+**Answer:** Distributed systems can guarantee only 2 of 3: Consistency, Availability, Partition tolerance. Choose based on your requirements.
+
+### Q5: What is the difference between SRE and DevOps?
+**Answer:** DevOps: culture and practices for collaboration. SRE: specific implementation of DevOps with error budgets, SLIs, SLOs.

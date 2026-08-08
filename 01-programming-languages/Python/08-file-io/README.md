@@ -68,6 +68,25 @@ async def read_file(path: str) -> str:
 
 ---
 
+## Interview Questions
+
+### Q1: What is the difference between text and binary mode?
+**Answer:** Text mode handles encoding (UTF-8, ASCII). Binary mode reads raw bytes. Use binary for images, text for strings. Always specify encoding in text mode.
+
+### Q2: What is the `with` statement and why use it?
+**Answer:** `with` ensures file is closed even if exception occurs. It's a context manager that calls __enter__ and __exit__. Always use with for file operations.
+
+### Q3: What is the difference between `read()`, `readline()`, and `readlines()`?
+**Answer:** read() reads entire file. readline() reads one line. readlines() reads all lines into list. For large files, use iteration (for line in f).
+
+### Q4: What is pathlib and why prefer it over os.path?
+**Answer:** pathlib provides object-oriented paths (Path('/home/user/file.txt')). It's more readable, cross-platform, and has methods like .stem, .suffix, .parent.
+
+### Q5: How do you handle encoding errors?
+**Answer:** Use errors parameter: 'ignore' (skip bad chars), 'replace' (use ?), 'strict' (raise exception). Always specify encoding='utf-8' explicitly.
+
+---
+
 ## pathlib (Modern File Handling)
 
 `pathlib` is the modern, object-oriented way to handle file paths.

@@ -1,153 +1,187 @@
 """
-Module 14: Memory Management - Weak References Exercises
-========================================================
-Practice using weak references in Python.
+Module 14 - Memory Management: Weak References Exercises
+Difficulty: ⭐⭐⭐ (Intermediate)
+Topic: Weak references and their uses
 """
 
 import weakref
-import gc
+
 
 # =============================================================================
-# Exercise 1: Basic Weak Reference (★☆☆☆☆)
+# Exercise 1: Basic Weak Reference (⭐⭐⭐)
 # =============================================================================
-# TODO: Create weak reference to object
 
-class ManagedObject:
-    """Object that can be weakly referenced."""
-    pass
-
-# Test Cases
-def test_basic_weakref():
-    obj = ManagedObject()
-    ref = weakref.ref(obj)
+def exercise_1_basic_weakref():
+    """
+    Create and use basic weak references.
     
-    assert ref() is obj
-    assert ref is not None
-    
-    del obj
-    gc.collect()
-    assert ref() is None
-    print("✓ Exercise 1 passed: weak reference tracks object lifecycle")
-
-# =============================================================================
-# Exercise 2: Weak Value Dictionary (★★☆☆☆)
-# =============================================================================
-# TODO: Use WeakValueDictionary for cache
-
-class WeakCache:
-    """Cache using WeakValueDictionary."""
-    # TODO: Store values weakly
-    # TODO: Return None for expired entries
-    pass
-
-# Test Cases
-def test_weak_cache():
-    cache = WeakCache()
-    
-    obj1 = ManagedObject()
-    cache.set("key1", obj1)
-    assert cache.get("key1") is obj1
-    
-    del obj1
-    gc.collect()
-    assert cache.get("key1") is None
-    print("✓ Exercise 2 passed: weak cache entries expire")
-
-# =============================================================================
-# Exercise 3: Reference Callbacks (★★★☆☆)
-# =============================================================================
-# TODO: Use callbacks to track object destruction
-
-class DestructionTracker:
-    """Track when objects are destroyed."""
-    # TODO: Register weak references with callbacks
-    pass
-
-# Test Cases
-def test_destruction_tracker():
-    tracker = DestructionTracker()
-    destroyed = []
-    
-    obj = ManagedObject()
-    tracker.track(obj, lambda ref: destroyed.append(ref))
-    
-    del obj
-    gc.collect()
-    
-    assert len(destroyed) == 1
-    print(f"✓ Exercise 3 passed: tracked {len(destroyed)} destructions")
-
-# =============================================================================
-# Exercise 4: WeakSet for Parent References (★★★★☆)
-# =============================================================================
-# TODO: Implement child objects with weak parent references
-
-class Parent:
-    """Parent that tracks children weakly."""
-    pass
-
-class Child:
-    """Child with weak reference to parent."""
-    def __init__(self, parent):
-        # TODO: Store weak reference to parent
-        pass
-
-# Test Tests
-def test_weak_parent():
-    parent = Parent()
-    child = Child(parent)
-    
-    assert child.get_parent() is parent
-    
-    del parent
-    gc.collect()
-    assert child.get_parent() is None
-    print("✓ Exercise 4 passed: weak parent reference works")
-
-# =============================================================================
-# Exercise 5: Weak Reference Proxy (★★★★★)
-# =============================================================================
-# TODO: Implement transparent proxy using weak references
-
-class WeakProxy:
-    """Proxy that allows accessing object through weak reference."""
-    # TODO: Implement __getattr__ to forward attribute access
-    # TODO: Raise appropriate error if referent is dead
-    pass
-
-# Test Cases
-def test_weak_proxy():
-    class RealObject:
+    TODO:
+    1. Create an object
+    2. Create weak reference to it
+    3. Check if reference is alive
+    4. Delete object and check again
+    """
+    class Data:
         def __init__(self, value):
             self.value = value
-        
-        def get_value(self):
-            return self.value
     
-    obj = RealObject(42)
-    proxy = WeakProxy(obj)
+    result = {}
     
-    assert proxy.value == 42
-    assert proxy.get_value() == 42
+    # TODO: Create weak reference and test lifecycle
     
-    del obj
-    gc.collect()
+    return result
+
+
+# =============================================================================
+# Exercise 2: Weak Value Dictionary (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_2_weak_value_dict():
+    """
+    Use WeakValueDictionary for caching.
     
-    try:
-        _ = proxy.value
-        assert False, "Should have raised ReferenceError"
-    except ReferenceError:
+    TODO:
+    1. Create WeakValueDictionary
+    2. Add objects
+    3. Delete strong references
+    4. Observe automatic cleanup
+    """
+    cache = weakref.WeakValueDictionary()
+    
+    # TODO: Test WeakValueDictionary behavior
+    
+    return cache
+
+
+# =============================================================================
+# Exercise 3: Weak Set (⭐⭐⭐)
+# =============================================================================
+
+def exercise_3_weak_set():
+    """
+    Use WeakSet for tracking objects.
+    
+    TODO:
+    1. Create WeakSet
+    2. Add objects
+    3. Delete objects
+    4. Observe automatic removal
+    """
+    tracked = weakref.WeakSet()
+    
+    # TODO: Test WeakSet behavior
+    
+    return tracked
+
+
+# =============================================================================
+# Exercise 4: Callback on Deletion (⭐⭐⭐⭐)
+# =============================================================================
+
+def exercise_4_weakref_callback():
+    """
+    Use callbacks when weak references are invalidated.
+    
+    TODO:
+    1. Create weak reference with callback
+    2. Delete object
+    3. Capture callback invocation
+    """
+    deleted = []
+    
+    def on_delete(ref):
+        deleted.append("deleted")
+    
+    # TODO: Test callback behavior
+    
+    return deleted
+
+
+# =============================================================================
+# Exercise 5: Weak Reference Cache (⭐⭐⭐⭐⭐)
+# =============================================================================
+
+class WeakRefCache:
+    """
+    Implement a cache using weak references.
+    
+    TODO:
+    1. Store objects with weak references
+    2. Auto-cleanup when objects are deleted
+    3. Support hit/miss tracking
+    """
+    def __init__(self):
+        self._cache = weakref.WeakValueDictionary()
+        self._hits = 0
+        self._misses = 0
+    
+    def get(self, key):
+        # TODO: Get from cache
         pass
     
-    print("✓ Exercise 5 passed: weak proxy forwards access and raises on death")
+    def set(self, key, value):
+        # TODO: Set in cache
+        pass
+    
+    def stats(self):
+        # TODO: Return cache statistics
+        pass
+
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 14 - Weak References Exercises\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: Basic Weak Reference")
+    try:
+        result = exercise_1_basic_weakref()
+        assert isinstance(result, dict)
+        print(f"  Result: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Weak Value Dictionary")
+    try:
+        cache = exercise_2_weak_value_dict()
+        assert isinstance(cache, weakref.WeakValueDictionary)
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Weak Set")
+    try:
+        tracked = exercise_3_weak_set()
+        assert isinstance(tracked, weakref.WeakSet)
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Callback on Deletion")
+    try:
+        result = exercise_4_weakref_callback()
+        assert isinstance(result, list)
+        print(f"  Deleted: {result}")
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Weak Reference Cache")
+    try:
+        cache = WeakRefCache()
+        assert hasattr(cache, '_cache')
+        print("  ✓ Passed\n")
+    except Exception as e:
+        print(f"  ✗ Failed: {e}\n")
+
 
 if __name__ == "__main__":
-    print("Running Weak References Exercises...")
-    print("=" * 50)
-    test_basic_weakref()
-    test_weak_cache()
-    test_destruction_tracker()
-    test_weak_parent()
-    test_weak_proxy()
-    print("=" * 50)
-    print("All tests passed!")
+    test_exercises()

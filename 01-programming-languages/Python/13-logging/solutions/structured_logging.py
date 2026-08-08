@@ -1,163 +1,289 @@
 """
-Module 13: Logging - Structured Logging Solutions
-Practice structured logging patterns.
+Module 13 - Logging: Structured Logging Solutions
+Complete solutions with explanations
 """
 
-import json
 import logging
+import json
 from datetime import datetime
-from typing import Any, Dict
 
 
-class StructuredFormatter(logging.Formatter):
-    """Formatter that outputs JSON structured logs."""
+# =============================================================================
+# Exercise 1: JSON Formatter - SOLUTION
+# =============================================================================
 
+class JSONFormatter(logging.Formatter):
+    """
+    Custom formatter that outputs JSON.
+    
+    JSON logging is useful for log aggregation systems like ELK stack.
+    """
     def format(self, record):
-        log_entry = {
-            "timestamp": datetime.now().isoformat(),
-            "level": record.levelname,
-            "logger": record.name,
-            "message": record.getMessage(),
-            "module": record.module,
-            "function": record.funcName,
-            "line": record.lineno
+        log_data = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'level': record.levelname,
+            'logger': record.name,
+            'message': record.getMessage(),
+            'module': record.module,
+            'function': record.funcName,
+            'line': record.lineno,
         }
-
+        
+        # Add extra fields if present
         if hasattr(record, 'extra_data'):
-            log_entry["data"] = record.extra_data
-
+            log_data['extra'] = record.extra_data
+        
+        # Add exception info if present
         if record.exc_info:
-            log_entry["exception"] = self.formatException(record.exc_info)
-
-        return json.dumps(log_entry)
-
-
-class ContextFilter(logging.Filter):
-    """Filter that adds context to log records."""
-
-    def __init__(self, **context):
-        super().__init__()
-        self.context = context
-
-    def filter(self, record):
-        for key, value in self.context.items():
-            setattr(record, key, value)
-        return True
+            log_data['exception'] = self.formatException(record.exc_info)
+        
+        return json.dumps(log_data)
 
 
-class JSONLogger:
-    """Logger that outputs structured JSON."""
+# =============================================================================
+# Exercise 2: Context Logger - SOLUTION
+# =============================================================================
 
-    def __init__(self, name: str):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.DEBUG)
+class ContextLogger:
+    """
+    Logger that adds context to all messages.
+    
+    Context is useful for adding request IDs, user IDs, etc.
+    """
+    def __init__(self, logger, context=None):
+        self.logger = logger
+        self.context = context or {}
+    
+    def add_context(self, key, value):
+        """Add key-value to context."""
+        self.context[key] = value
+    
+    def remove_context(self, key):
+        """Remove key from context."""
+        if key in self.context:
+            del self.context[key]
+    
+    def _log_with_context(self, level, message, **kwargs):
+        """Log message with merged context."""
+        extra = {**self.context, **kwargs}
+        self.logger.log(level, message, extra=extra)
+    
+    def debug(self, message, **kwargs):
+        self._log_with_context(logging.DEBUG, message, **kwargs)
+    
+    def info(self, message, **kwargs):
+        self._log_with_context(logging.INFO, message, **kwargs)
+    
+    def warning(self, message, **kwargs):
+        self._log_with_context(logging.WARNING, message, **kwargs)
+    
+    def error(self, message, **kwargs):
+        self._log_with_context(logging.ERROR, message, **kwargs)
+    
+    def critical(self, message, **kwargs):
+        self._log_with_context(logging.CRITICAL, message, **kwargs)
 
-        # Console handler
-        handler = logging.StreamHandler()
-        handler.setFormatter(StructuredFormatter())
-        self.logger.addHandler(handler)
 
-    def info(self, message: str, **data):
-        extra = {"extra_data": data} if data else {}
-        self.logger.info(message, extra=extra)
-
-    def error(self, message: str, **data):
-        extra = {"extra_data": data} if data else {}
-        self.logger.error(message, extra=extra)
-
-    def warning(self, message: str, **data):
-        extra = {"extra_data": data} if data else {}
-        self.logger.warning(message, extra=extra)
-
-    def debug(self, message: str, **data):
-        extra = {"extra_data": data} if data else {}
-        self.logger.debug(message, extra=extra)
-
+# =============================================================================
+# Exercise 3: Request Logger - SOLUTION
+# =============================================================================
 
 class RequestLogger:
-    """Logger that tracks request context."""
-
-    def __init__(self, logger: logging.Logger):
+    """
+    Logger for tracking HTTP requests.
+    
+    Useful for monitoring API performance and debugging.
+    """
+    def __init__(self, logger):
         self.logger = logger
-        self.context: Dict[str, Any] = {}
+    
+    def log_request(self, method, url, request_id=None):
+        """Log incoming request."""
+        extra = {
+            'request_method': method,
+            'request_url': url,
+        }
+        if request_id:
+            extra['request_id'] = request_id
+        
+        self.logger.info(f"Incoming request: {method} {url}", extra=extra)
+    
+    def log_response(self, method, url, status_code, duration, request_id=None):
+        """Log response with timing."""
+        extra = {
+            'request_method': method,
+            'request_url': url,
+            'response_code': status_code,
+            'duration_ms': round(duration * 1000, 2),
+        }
+        if request_id:
+            extra['request_id'] = request_id
+        
+        level = logging.INFO if status_code < 400 else logging.WARNING
+        self.logger.log(level, f"Response: {status_code} ({duration:.3f}s)", extra=extra)
 
-    def set_context(self, **context):
-        """Set context for all subsequent log messages."""
-        self.context.update(context)
 
-    def clear_context(self):
-        """Clear all context."""
-        self.context.clear()
+# =============================================================================
+# Exercise 4: Metrics Logger - SOLUTION
+# =============================================================================
 
-    def log(self, level: str, message: str, **data):
-        """Log a message with context."""
-        combined_data = {**self.context, **data}
-        extra = {"extra_data": combined_data} if combined_data else {}
+class MetricsLogger:
+    """
+    Logger for application metrics.
+    
+    Metrics are useful for monitoring application health and performance.
+    """
+    def __init__(self, logger):
+        self.logger = logger
+    
+    def counter(self, name, value=1, tags=None):
+        """Log counter metric."""
+        metric = {
+            'type': 'counter',
+            'name': name,
+            'value': value,
+            'tags': tags or {},
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        self.logger.info(f"METRIC: {name} +{value}", extra={'metric': metric})
+    
+    def gauge(self, name, value, tags=None):
+        """Log gauge metric."""
+        metric = {
+            'type': 'gauge',
+            'name': name,
+            'value': value,
+            'tags': tags or {},
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        self.logger.info(f"METRIC: {name} = {value}", extra={'metric': metric})
+    
+    def histogram(self, name, value, tags=None):
+        """Log histogram metric."""
+        metric = {
+            'type': 'histogram',
+            'name': name,
+            'value': value,
+            'tags': tags or {},
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        self.logger.info(f"METRIC: {name} {value}", extra={'metric': metric})
 
-        log_func = getattr(self.logger, level.lower())
-        log_func(message, extra=extra)
 
+# =============================================================================
+# Exercise 5: Audit Logger - SOLUTION
+# =============================================================================
 
 class AuditLogger:
-    """Logger for audit trails."""
-
-    def __init__(self, name: str):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.INFO)
-
-        handler = logging.StreamHandler()
-        handler.setFormatter(StructuredFormatter())
-        self.logger.addHandler(handler)
-
-    def audit(self, action: str, user: str, resource: str, **details):
-        """Log an audit event."""
+    """
+    Logger for security audit events.
+    
+    Audit logs are critical for security and compliance.
+    """
+    def __init__(self, logger):
+        self.logger = logger
+    
+    def log_action(self, user, action, resource, success=True, details=None):
+        """Log audit event."""
         audit_data = {
-            "action": action,
-            "user": user,
-            "resource": resource,
-            "timestamp": datetime.now().isoformat(),
-            **details
+            'event_type': 'action',
+            'user': user,
+            'action': action,
+            'resource': resource,
+            'success': success,
+            'timestamp': datetime.utcnow().isoformat(),
         }
-        self.logger.info(f"Audit: {action}", extra={"extra_data": audit_data})
+        if details:
+            audit_data['details'] = details
+        
+        level = logging.INFO if success else logging.WARNING
+        self.logger.log(level, f"AUDIT: {user} {action} {resource}", extra=audit_data)
+    
+    def log_login(self, user, success=True, ip_address=None):
+        """Log login attempt."""
+        audit_data = {
+            'event_type': 'login',
+            'user': user,
+            'success': success,
+            'ip_address': ip_address,
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        
+        level = logging.INFO if success else logging.WARNING
+        status = "successful" if success else "failed"
+        self.logger.log(level, f"AUDIT: Login {status} for {user}", extra=audit_data)
+    
+    def log_access(self, user, resource, granted=True):
+        """Log access attempt."""
+        audit_data = {
+            'event_type': 'access',
+            'user': user,
+            'resource': resource,
+            'granted': granted,
+            'timestamp': datetime.utcnow().isoformat(),
+        }
+        
+        level = logging.INFO if granted else logging.WARNING
+        status = "granted" if granted else "denied"
+        self.logger.log(level, f"AUDIT: Access {status} for {user} to {resource}", extra=audit_data)
+
+
+# =============================================================================
+# Test Cases (Uncommented)
+# =============================================================================
+
+def test_exercises():
+    print("Testing Module 13 - Structured Logging Solutions\n")
+    
+    # Test Exercise 1
+    print("Exercise 1: JSON Formatter")
+    formatter = JSONFormatter()
+    record = logging.LogRecord(
+        name='test', level=logging.INFO, pathname='', lineno=0,
+        msg='Test message', args=(), exc_info=None
+    )
+    output = formatter.format(record)
+    data = json.loads(output)
+    assert data['level'] == 'INFO'
+    assert data['message'] == 'Test message'
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 2
+    print("Exercise 2: Context Logger")
+    logger = logging.getLogger('test_context')
+    context_logger = ContextLogger(logger, {'app': 'test'})
+    context_logger.add_context('user', 'testuser')
+    assert 'user' in context_logger.context
+    context_logger.remove_context('user')
+    assert 'user' not in context_logger.context
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 3
+    print("Exercise 3: Request Logger")
+    logger = logging.getLogger('test_request')
+    request_logger = RequestLogger(logger)
+    request_logger.log_request('GET', '/api/users', 'req-123')
+    request_logger.log_response('GET', '/api/users', 200, 0.05, 'req-123')
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 4
+    print("Exercise 4: Metrics Logger")
+    logger = logging.getLogger('test_metrics')
+    metrics_logger = MetricsLogger(logger)
+    metrics_logger.counter('requests', 1, {'method': 'GET'})
+    metrics_logger.gauge('queue_size', 42)
+    metrics_logger.histogram('response_time', 0.15)
+    print("  ✓ Passed\n")
+    
+    # Test Exercise 5
+    print("Exercise 5: Audit Logger")
+    logger = logging.getLogger('test_audit')
+    audit_logger = AuditLogger(logger)
+    audit_logger.log_action('admin', 'DELETE', '/api/users/123')
+    audit_logger.log_login('user1', success=True, ip_address='192.168.1.1')
+    audit_logger.log_access('user1', '/admin', granted=False)
+    print("  ✓ Passed\n")
 
 
 if __name__ == "__main__":
-    print("Testing Structured Logging Solutions...")
-
-    # Test JSON Logger
-    json_logger = JSONLogger("test_json")
-    json_logger.info("Test message", user="alice", action="login")
-    print("✓ Exercise 1 passed: JSON logger works")
-
-    # Test Context Filter
-    logger = logging.getLogger("context_test")
-    logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    handler.setFormatter(StructuredFormatter())
-    logger.addHandler(handler)
-
-    context_filter = ContextFilter(request_id="123", session="abc")
-    logger.addFilter(context_filter)
-    logger.info("Message with context")
-    print("✓ Exercise 2 passed: context filter works")
-
-    # Test Request Logger
-    base_logger = logging.getLogger("request_test")
-    base_logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    handler.setFormatter(StructuredFormatter())
-    base_logger.addHandler(handler)
-
-    request_logger = RequestLogger(base_logger)
-    request_logger.set_context(user="bob", request_id="456")
-    request_logger.log("INFO", "Processing request")
-    request_logger.clear_context()
-    print("✓ Exercise 3 passed: request logger works")
-
-    # Test Audit Logger
-    audit_logger = AuditLogger("audit")
-    audit_logger.audit("login", "alice", "auth_service", ip="192.168.1.1")
-    audit_logger.audit("read", "bob", "database", table="users")
-    print("✓ Exercise 4 passed: audit logger works")
-
-    print("All Structured Logging solutions passed!")
+    test_exercises()
