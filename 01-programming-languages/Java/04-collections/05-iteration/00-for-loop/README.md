@@ -1,20 +1,21 @@
 # For Loop Iteration
 
-## What
-Basic indexed iteration using counter.
+## Overview
+Basic indexed iteration using a counter variable.
 
-## When
-- Need index during iteration
-- Need to skip elements
-- Need to iterate backwards
+## Directory Structure
+- `00-examples/` - Example code demonstrating for loop usage
+- `01-exercises/` - Practice exercises to complete
+- `02-solutions/` - Solutions to exercises
+- `03-internals/` - Internal documentation and details
+- `04-memory/` - Memory behavior documentation
 
-## Syntax
-```java
-for (int i = 0; i < list.size(); i++) {
-    T element = list.get(i);
-}
-```
+## Key Concepts
+- Index-based access
+- Forward and backward iteration
+- Random access patterns
 
-## Time Complexity
-- O(1) per access (ArrayList)
-- O(n) per access (LinkedList)
+## Quick Start
+1. Review `00-examples/ForLoopExample.java`
+2. Complete exercises in `01-exercises/`
+3. Check solutions in `02-solutions/`

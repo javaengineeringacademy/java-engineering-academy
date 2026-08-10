@@ -1,16 +1,21 @@
-# ListIterator
+# ListIterator Pattern
 
-## What
-Bidirectional iterator for List.
+## Overview
+Bidirectional Iterator for List collections.
 
-## Methods
-- hasNext(), next() - forward
-- hasPrevious(), previous() - backward
-- nextIndex(), previousIndex() - positions
-- set() - replace last returned
-- add() - insert element
+## Directory Structure
+- `00-examples/` - Example code demonstrating ListIterator
+- `01-exercises/` - Practice exercises to complete
+- `02-solutions/` - Solutions to exercises
+- `03-internals/` - Internal documentation and details
+- `04-memory/` - Memory behavior documentation
 
-## When
-- Need bidirectional traversal
-- Need to modify during iteration
-- Need index position
+## Key Concepts
+- Bidirectional traversal
+- add() and set() operations
+- Index-based positioning
+
+## Quick Start
+1. Review `00-examples/ListIteratorExample.java`
+2. Complete exercises in `01-exercises/`
+3. Check solutions in `02-solutions/`
