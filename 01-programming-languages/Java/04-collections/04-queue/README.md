@@ -3,7 +3,27 @@
 ## Scope
 
 This folder focuses on the Queue and Deque interfaces.
-Examples and exercises compare and combine all Queue implementations (PriorityQueue, Deque, BlockingQueue).
+Examples and exercises compare and combine all Queue implementations (PriorityQueue, ArrayDeque, BlockingQueue).
+
+## Why It Exists
+
+Before Java 1.2, queue operations were scattered:
+- `Vector` had `insertElementAt()` and `removeElementAt()` (FIFO)
+- `Stack` inherited Vector for LIFO
+- Manual implementations for priority queues
+
+Queue unified FIFO, LIFO, and priority queue semantics under one API with consistent methods like `offer()`, `poll()`, `peek()`.
+
+## Design Rationale
+
+JDK designers made Queue and Deque separate interfaces (part of Collection) because:
+
+1. **Different contracts**: Queue (FIFO), Deque (bidirectional), BlockingQueue (thread-safe)
+2. **Use-case distinction**: Different APIs better reflect different behavioral contracts
+3. **Implementation flexibility**: ArrayDeque efficient for both Queue and Deque needs
+4. **Backward compatibility**: Vector/Stack kept for legacy, modern Queue/Deque for new code
+
+**Trade-offs**: PriorityQueue offers ordering but not thread-safe; ArrayDeque fast but no nulls; BlockingQueue thread-safe but more complex.
 
 ## 1. What Is It
 

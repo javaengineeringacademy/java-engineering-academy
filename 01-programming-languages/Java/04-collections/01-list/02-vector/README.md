@@ -169,29 +169,50 @@ Vector object (on heap):
 
 ## 10. Engineering Decision Framework
 
-### Use Vector when:
+### When Should I Use This?
 - Maintaining legacy code that already uses Vector
 - Required by external library or API
 - Simple synchronized list needed (but prefer alternatives)
 
-### Avoid Vector when:
-- Writing new code (use ArrayList)
-- Performance matters (synchronized overhead)
-- Concurrent access needed (use CopyOnWriteArrayList or synchronizedList)
-
-### When NOT to Use Vector
-- **New code**: Use ArrayList with explicit synchronization
+### When Should I NOT Use This?
+- **Writing new code**: Use ArrayList with explicit synchronization
+- **Performance matters**: Synchronized overhead is too high
+- **Concurrent access needed**: Use CopyOnWriteArrayList or synchronizedList
 - **High contention**: Use ConcurrentHashMap.newKeySet() or Collections.synchronizedList()
-- **Performance**: Vector grows 2x (wasteful), ArrayList 1.5x
 
-### Alternatives
+### What Are the Alternatives?
 
-| Alternative | When to Use |
-|-------------|-------------|
-| ArrayList | General purpose, no synchronization needed |
-| CopyOnWriteArrayList | Read-heavy concurrent access |
-| Collections.synchronizedList() | When you need synchronization on ArrayList |
-| ConcurrentHashMap.newKeySet() | Set-like behavior with thread safety |
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| ArrayList | General purpose, no synchronization needed | Faster, no thread safety |
+| CopyOnWriteArrayList | Read-heavy concurrent access | Higher memory for writes |
+| Collections.synchronizedList() | When you need synchronization on ArrayList | Simple wrapper |
+| ConcurrentHashMap.newKeySet() | Set-like behavior with thread safety | Better concurrency |
+
+### What Trade-offs Am I Making?
+- **Thread Safety**: Synchronized but slow vs fast but unsafe (ArrayList)
+- **Memory**: 2x growth factor vs 1.5x (ArrayList)
+- **Legacy vs Modern**: Legacy code vs modern alternatives
+- **Performance**: Synchronized overhead vs fine-grained locking
+
+### What Would I Choose in Production?
+> Never use Vector in new code. If you're maintaining legacy code, plan migration to ArrayList + Collections.synchronizedList() or CopyOnWriteArrayList.
+
+### Common Code Review Comments
+- "Why are you using Vector? Use ArrayList + Collections.synchronizedList() instead."
+- "Vector is legacy — plan migration to ArrayList."
+- "This Vector should be a CopyOnWriteArrayList for read-heavy workloads."
+- "Vector Enumeration is legacy — use Iterator instead."
+
+### Common Production Mistakes
+
+> Notice: Vector is not deprecated but strongly discouraged — use ArrayList + Collections.synchronizedList() instead.
+
+> Notice: Vector.toString() is synchronized — it can cause contention in concurrent code.
+
+> Notice: Vector.grow() doubles the size — ArrayList grows by 50%, which is more memory-efficient.
+
+> Notice: Vector is legacy — it was part of Java 1.0, before the Collections Framework.
 
 ## 11. Debugging Tips
 
@@ -212,7 +233,43 @@ Vector object (on heap):
 - [ ] Checking for compound operation atomicity
 - [ ] Performance testing under concurrent load
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where Vector Fits in System Design
+
+| Layer | Use Case | Why Vector |
+|-------|----------|------------|
+| Legacy API | Backward-compatible interfaces | Required by old APIs |
+| Service Layer | Simple synchronized list | Synchronized methods |
+| Migration | Interim during refactoring | Drop-in replacement for old code |
+
+### Integration Patterns
+
+```
+Legacy Client → Vector → Legacy Service → Vector → Legacy Client
+                    ↓
+            Vector → Migration Bridge → ArrayList
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | Vector works but prefer ArrayList |
+| 10K - 100K elements | Migrate to ArrayList + synchronized |
+| 100K - 1M elements | Use CopyOnWriteArrayList or ConcurrentHashMap |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace Vector in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Any new code | ArrayList | No synchronization overhead |
+| Concurrent read-heavy | CopyOnWriteArrayList | Better read performance |
+| Concurrent balanced | Collections.synchronizedList() | Wrapper around ArrayList |
+| High concurrency | ConcurrentHashMap.newKeySet() | Better concurrent access |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -220,7 +277,7 @@ Vector object (on heap):
 | Deadlock from synchronization | Service hang | Use fine-grained locking |
 | Legacy code vulnerabilities | Security risk | Migrate to modern collections |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Migration Path |
 |---------|--------|----------------|
@@ -230,7 +287,7 @@ Vector object (on heap):
 | Java 5 | Generics added | Add type parameters |
 | Java 5 | CopyOnWriteArrayList | Use for read-heavy concurrent access |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -238,7 +295,7 @@ Vector object (on heap):
 | ArrayList | 1.2 | Recommended |
 | CopyOnWriteArrayList | 5.0 | Recommended |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Avoid in new code**: Use ArrayList or CopyOnWriteArrayList
 2. **Migrate existing**: Replace Vector with ArrayList
@@ -247,7 +304,7 @@ Vector object (on heap):
 5. **Monitor performance**: Vector adds overhead even in single-threaded code
 6. **Use modern alternatives**: CopyOnWriteArrayList for concurrent access
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using Vector as default**: ArrayList is faster and more memory efficient
 2. **Thinking Vector is thread-safe for compound operations**: Contains-then-add is not atomic
@@ -255,7 +312,7 @@ Vector object (on heap):
 4. **Ignoring synchronization overhead**: Vector is slower than ArrayList even in single-threaded code
 5. **Not migrating**: Legacy Vector code should be updated
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: Vector is always thread-safe
 **Reality:** Individual methods are synchronized, but compound operations are not atomic.
@@ -269,7 +326,7 @@ Vector object (on heap):
 ### Myth 4: Vector is better for concurrent access
 **Reality:** CopyOnWriteArrayList or synchronizedList() is better.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Legacy synchronized dynamic array (Java 1.0)
 - Every method synchronized, causing overhead
@@ -278,7 +335,7 @@ Vector object (on heap):
 - Use CopyOnWriteArrayList for concurrent access
 - Not deprecated but discouraged
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -288,7 +345,7 @@ Vector object (on heap):
 | Stack | Extends Vector, also legacy |
 | Legacy code | Often contains Vector, should migrate |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the difference between Vector and ArrayList?** — Vector is synchronized (every method), ArrayList is not. Vector has 2x growth factor, ArrayList has 1.5x.
 
@@ -302,7 +359,7 @@ Vector object (on heap):
 
 6. **How do you make ArrayList thread-safe?** — Use Collections.synchronizedList() or CopyOnWriteArrayList.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - Vector](https://docs.oracle.com/javase/8/docs/api/java/util/Vector.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

@@ -260,34 +260,56 @@ Node object: ~32 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use HashMap when:
+### When Should I Use This?
 - Fastest lookup required (O(1))
 - No ordering needed
 - One null key/value allowed
 - General-purpose key-value storage
+- You don't have a specific reason to use something else
 
-### Avoid HashMap when:
-- Sorted keys needed (use TreeMap)
-- Insertion order matters (use LinkedHashMap)
-- Thread safety needed (use ConcurrentHashMap)
-- Null not allowed (use Hashtable or ConcurrentHashMap)
+### When Should I NOT Use This?
+- **Sorted keys needed**: Use TreeMap
+- **Insertion order matters**: Use LinkedHashMap
+- **Thread safety needed**: Use ConcurrentHashMap
+- **Null not allowed**: Use Hashtable or ConcurrentHashMap
+- **Enum keys**: Use EnumMap (faster)
 
-### When NOT to Use HashMap
-- **Sorted keys**: Use TreeMap
-- **Thread safety**: Use ConcurrentHashMap
-- **Insertion order**: Use LinkedHashMap
-- **Null keys**: HashMap allows one null, but avoid in concurrent code
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| LinkedHashMap | Insertion/access order matters | Higher memory, slightly slower |
+| TreeMap | Sorted keys needed | O(log n) vs O(1) |
+| Hashtable | Legacy code (avoid in new code) | Synchronized, slower |
+| ConcurrentHashMap | Thread-safe access | No null keys/values, higher overhead |
+| WeakHashMap | Weak references for caching | Keys can be GC'd |
+| EnumMap | Enum keys | Fastest for enum keys |
+| Map.of() | Immutable map | Thread-safe, no modification |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| LinkedHashMap | Insertion/access order matters |
-| TreeMap | Sorted keys needed |
-| Hashtable | Legacy code (avoid in new code) |
-| ConcurrentHashMap | Thread-safe access |
-| WeakHashMap | Weak references for caching |
-| EnumMap | Enum keys |
+### What Trade-offs Am I Making?
+- **Performance**: O(1) lookup vs O(log n) sorted
+- **Memory**: Compact vs node-based overhead
+- **Thread Safety**: Not thread-safe by default vs synchronized alternatives
+- **Ordering**: No ordering vs sorted/insertion order
+
+### What Would I Choose in Production?
+> For most applications, HashMap is the default choice. Only switch if you need ordering (TreeMap/LinkedHashMap) or thread safety (ConcurrentHashMap). Never use Hashtable in new code.
+
+### Common Code Review Comments
+- "Why are you using Hashtable? Use ConcurrentHashMap instead."
+- "This map is being accessed concurrently — use ConcurrentHashMap."
+- "Consider using Map.of() if this map is immutable."
+- "This should be an EnumMap — you're using enum values as keys."
+
+### Common Production Mistakes
+
+> Notice: HashMap doesn't maintain order — if you need insertion order, use LinkedHashMap.
+
+> Notice: HashMap allows one null key and multiple null values — but in concurrent code, prefer Optional over null.
+
+> Notice: HashMap is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: HashMap.hashCode() is called for each key — make sure your hashCode() implementation is efficient.
 
 ## 11. Debugging Tips
 
@@ -308,7 +330,45 @@ Node object: ~32 bytes
 - [ ] Not using HashMap when order matters
 - [ ] Using entrySet() for efficient iteration
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where HashMap Fits in System Design
+
+| Layer | Use Case | Why HashMap |
+|-------|----------|-------------|
+| API Gateway | Request parameter caching | O(1) lookup |
+| Service Layer | In-memory session store | Fast get/put |
+| Data Access | ResultSet mapping | O(1) key lookup |
+| Caching | Local cache layer | Fastest map implementation |
+| Configuration | Feature flag storage | O(1) containsKey |
+
+### Integration Patterns
+
+```
+Client → API Gateway → HashMap → Service → HashMap → Client
+                    ↓
+            HashMap → Cache Manager → HashMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K entries | HashMap is optimal |
+| 10K - 100K entries | HashMap with proper sizing |
+| 100K - 1M entries | Consider ConcurrentHashMap |
+| > 1M entries | Consider database or Redis |
+
+### When to Replace HashMap in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Sorted keys needed | TreeMap | O(log n) sorted operations |
+| Insertion order | LinkedHashMap | Maintains insertion/access order |
+| Thread-safe map | ConcurrentHashMap | Concurrent access |
+| Enum keys | EnumMap | Faster for enum keys |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -317,7 +377,7 @@ Node object: ~32 bytes
 | Memory exhaustion | OutOfMemoryError | Set max size, use bounded collections |
 | Deserialization attack | Remote code execution | Avoid ObjectInputStream |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -327,7 +387,7 @@ Node object: ~32 bytes
 | Java 9 | Map.of() factory | Immutable map alternatives |
 | Java 10 | Copy-on-write improvements | Better concurrency |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -336,7 +396,7 @@ Node object: ~32 bytes
 | Stream support | 8.0 | Stable |
 | Map.of() | 9.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use immutable objects as keys
 2. Override hashCode/equals correctly
@@ -345,7 +405,7 @@ Node object: ~32 bytes
 5. Use compute/computeIfAbsent for atomic operations
 6. Consider LinkedHashMap for ordered maps
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using mutable objects as keys**: Hash changes, entry lost
 2. **Not overriding hashCode/equals**: Breaks Map behavior
@@ -353,7 +413,7 @@ Node object: ~32 bytes
 4. **Not setting initial capacity**: Wastes time resizing
 5. **Iterating over keySet() when entrySet() needed**: Extra lookup per entry
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: HashMap is always O(1)
 **Reality:** Amortized O(1), but resizing is O(n). Treeification is O(log n).
@@ -367,7 +427,7 @@ Node object: ~32 bytes
 ### Myth 4: HashMap maintains insertion order
 **Reality:** HashMap does not maintain any order. Use LinkedHashMap for insertion order.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Hash table implementation of Map interface
 - O(1) amortized for get/put/remove
@@ -376,7 +436,7 @@ Node object: ~32 bytes
 - Treeification for collision chains with 8+ entries
 - Use immutable objects as keys
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -386,7 +446,7 @@ Node object: ~32 bytes
 | ConcurrentHashMap | Thread-safe variant |
 | hashCode/equals | Contract for keys |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does HashMap work internally?** — Array of Node buckets. Key.hashCode() determines bucket via hash() & (n-1).
 
@@ -400,7 +460,7 @@ Node object: ~32 bytes
 
 6. **What is the time complexity of HashMap operations?** — O(1) amortized for get/put/remove.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - HashMap](https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

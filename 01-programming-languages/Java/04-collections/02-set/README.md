@@ -5,6 +5,28 @@
 This folder focuses on the Set interface.
 Examples and exercises compare and combine all Set implementations (HashSet, LinkedHashSet, TreeSet, EnumSet).
 
+## Why It Exists
+
+Before Java 1.2, developers used lists to represent mathematical sets, leading to:
+
+1. **Duplicate elements**: Lists allowed duplicates where sets shouldn't
+2. **Unordered iteration**: No guarantee of consistency
+3. **Membership checking**: O(n) vs O(1) for HashSet
+4. **Memory waste**: Storing duplicates where only unique elements needed
+
+Set solved these problems with unique element guarantee, hashing for O(1) operations, and standardized mathematical set semantics.
+
+## Design Rationale
+
+JDK designers introduced Set separate from List because:
+
+1. **Mathematical foundation**: Sets have clear contract (no duplicates, unordered but iterator order stable)
+2. **Performance needs**: HashSet provides O(1) contains/lookup for membership testing
+3. **Clarity**: Option in API design: List for ordered sequences, Set for unique collections
+4. **HashSet optimization**: Uses HashMap internally with dummy values for presence tracking
+
+**Trade-offs**: No ordering guarantees (HashSet), sorted order (TreeSet), or insertion order (LinkedHashSet) depending on implementation.
+
 ## 1. What Is It
 
 The `Set` interface is a collection that contains no duplicate elements. It models the mathematical set abstraction and provides operations for membership testing.

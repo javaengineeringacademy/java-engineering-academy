@@ -241,7 +241,45 @@ LinkedBlockingQueue object:
 - [ ] Memory limits monitored
 - [ ] Fair lock considered for ordering requirements
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where BlockingQueue Fits in System Design
+
+| Layer | Use Case | Why BlockingQueue |
+|-------|----------|-------------------|
+| Service Layer | Producer-consumer pattern | Blocking put/take |
+| Message Queue | In-process message passing | Thread-safe handoff |
+| Thread Pool | Work queue for executors | Bounded buffer |
+| Event Processing | Async event buffering | Backpressure support |
+| Pipeline | Stage-to-stage buffering | Rate limiting |
+
+### Integration Patterns
+
+```
+Producer → BlockingQueue → Consumer → BlockingQueue → Consumer
+                    ↓
+            BlockingQueue → Pipeline Manager → BlockingQueue
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 1K elements | ArrayBlockingQueue is optimal |
+| 1K - 10K elements | LinkedBlockingQueue for throughput |
+| 10K - 100K elements | Consider distributed queue |
+| > 100K elements | Consider Kafka or RabbitMQ |
+
+### When to Replace BlockingQueue in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Single-threaded | ArrayDeque | No blocking overhead |
+| Non-blocking concurrent | ConcurrentLinkedQueue | Lock-free operations |
+| Priority processing | PriorityBlockingQueue | Priority-based ordering |
+| Direct handoff | SynchronousQueue | Zero-capacity queue |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -250,7 +288,7 @@ LinkedBlockingQueue object:
 | Thread starvation | Reduced throughput | Monitor thread activity |
 | DoS via producer flood | Service degradation | Implement backpressure |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -259,7 +297,7 @@ LinkedBlockingQueue object:
 | Java 5 | LinkedBlockingQueue | Linked-based blocking queue |
 | Java 7 | LinkedTransferQueue | Transfer queue |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -268,7 +306,7 @@ LinkedBlockingQueue object:
 | LinkedBlockingQueue | 5.0 | Stable |
 | PriorityBlockingQueue | 5.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Always use bounded queue in production
 2. Use timeout versions of put/take
@@ -277,7 +315,7 @@ LinkedBlockingQueue object:
 5. Use appropriate implementation for use case
 6. Consider fair lock for ordering requirements
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Using unbounded queue (memory risk)
 2. Not using timeout versions (deadlock risk)
@@ -285,7 +323,7 @@ LinkedBlockingQueue object:
 4. Using wrong implementation for use case
 5. Not implementing graceful shutdown
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: BlockingQueue is always safe
 **Reality:** Deadlock possible with improper usage.
@@ -299,7 +337,7 @@ LinkedBlockingQueue object:
 ### Myth 4: put() always blocks
 **Reality:** put() blocks only when queue is full.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Thread-safe queue with blocking operations
 - put() blocks when full, take() blocks when empty
@@ -308,7 +346,7 @@ LinkedBlockingQueue object:
 - PriorityBlockingQueue: priority-based
 - Always use timeout versions in production
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -318,7 +356,7 @@ LinkedBlockingQueue object:
 | ReentrantLock | Internal locking mechanism |
 | Condition | Blocking/waiting mechanism |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the difference between put() and offer()?** — put() blocks when full, offer() returns false immediately.
 
@@ -330,7 +368,7 @@ LinkedBlockingQueue object:
 
 5. **What is the SynchronousQueue?** — Queue with zero capacity, requires direct handoff between threads.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - BlockingQueue](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html)
 - [Java Concurrency in Practice](https://jcip.net/)

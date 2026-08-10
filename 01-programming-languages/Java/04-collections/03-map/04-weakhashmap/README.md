@@ -167,32 +167,52 @@ Entry object: ~40 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use WeakHashMap when:
+### When Should I Use This?
 - Cache with weak keys needed
 - Metadata storage where keys can be GC'd
--防止内存泄漏 (prevent memory leaks)
+- Prevent memory leaks with weak references
 - Temporary associations
 
-### Avoid WeakHashMap when:
-- Entries must persist (use HashMap)
-- Thread safety needed (use ConcurrentHashMap)
-- Predictable behavior required (use HashMap)
-- Values are large (memory overhead)
+### When Should I NOT Use This?
+- **Entries must persist**: Use HashMap (entries may disappear)
+- **Thread safety needed**: Use ConcurrentHashMap
+- **Predictable behavior required**: Use HashMap
+- **Values are large**: Memory overhead per entry
 
-### When NOT to Use WeakHashMap
-- **Need persistence**: WeakHashMap entries may disappear
-- **Large data**: Reference overhead per entry
-- **No cleanup needed**: Use HashMap (simpler)
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashMap | Entries must persist | Never GC'd, predictable |
+| ConcurrentHashMap | Thread-safe cache | Higher overhead, faster |
+| Caffeine | Production-grade caching | Feature-rich, faster |
+| Guava Cache | Production-grade caching | Google library |
+| SoftReference cache | Memory-sensitive cache | More control |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashMap | Entries must persist |
-| ConcurrentHashMap | Thread-safe cache |
-| Caffeine | Production-grade caching |
-| Guava Cache | Production-grade caching |
-| SoftReference cache | Memory-sensitive cache |
+### What Trade-offs Am I Making?
+- **GC-friendliness vs Predictability**: Keys can be GC'd vs never GC'd
+- **Simplicity vs Features**: Simple vs Caffeine (feature-rich)
+- **Thread Safety**: Not thread-safe by default
+- **Memory vs Reliability**: GC-friendly vs reliable
+
+### What Would I Choose in Production?
+> Use WeakHashMap for simple caches — keys are GC'd when no longer referenced. Use Caffeine for production caches — it's faster, more feature-rich, and thread-safe. Never use WeakHashMap as a primary data store — keys can be GC'd at any time.
+
+### Common Code Review Comments
+- "Why are you using WeakHashMap? Caffeine is better for production caches."
+- "WeakHashMap keys can be GC'd at any time — don't use it as a primary data store."
+- "Consider using SoftReference for memory-sensitive caches."
+- "This WeakHashMap is being iterated concurrently — use Collections.synchronizedMap()."
+
+### Common Production Mistakes
+
+> Notice: WeakHashMap keys are weakly referenced — they can be GC'd at any time.
+
+> Notice: WeakHashMap is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: WeakHashMap.size() includes stale entries — use entrySet() to check actual size.
+
+> Notice: WeakHashMap is not a cache — it's a map with weak keys. Use Caffeine for caching.
 
 ## 11. Debugging Tips
 
@@ -212,7 +232,45 @@ Entry object: ~40 bytes
 - [ ] Memory usage monitored
 - [ ] Cache size limited if needed
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where WeakHashMap Fits in System Design
+
+| Layer | Use Case | Why WeakHashMap |
+|-------|----------|-----------------|
+| Caching | Metadata cache | Keys GC'd when unreferenced |
+| Resource Mgmt | Resource tracking | Auto-cleanup on GC |
+| Plugin System | Plugin metadata | Weak reference to class loaders |
+| Connection Pool | Connection metadata | Auto-remove closed connections |
+| ThreadLocal | Thread-local storage | Prevent memory leaks |
+
+### Integration Patterns
+
+```
+Client → API Gateway → WeakHashMap → Service → WeakHashMap → Client
+                    ↓
+            WeakHashMap → GC Monitor → WeakHashMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 1K entries | WeakHashMap is optimal |
+| 1K - 10K entries | WeakHashMap with monitoring |
+| 10K - 100K entries | Consider Caffeine with weak keys |
+| > 100K entries | Consider database or external storage |
+
+### When to Replace WeakHashMap in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Entries must persist | HashMap | Strong references |
+| Thread-safe cache | ConcurrentHashMap | Concurrent access |
+| Production caching | Caffeine | Feature-rich, faster |
+| Memory-sensitive | SoftReference cache | More control |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -220,7 +278,7 @@ Entry object: ~40 bytes
 | Memory exhaustion | OutOfMemoryError | Limit cache size |
 | Timing attacks | Security risk | Use consistent timing |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -228,14 +286,14 @@ Entry object: ~40 bytes
 | Java 4 | ReferenceQueue improvements | Better cleanup |
 | Java 5 | Generics added | Type safety |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
 | WeakHashMap | 1.2 | Stable |
 | Generics | 5.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Understand WeakReference behavior before using
 2. Use strong references for critical keys
@@ -243,7 +301,7 @@ Entry object: ~40 bytes
 4. Consider Caffeine or Guava for production caching
 5. Monitor memory usage and entry count
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Assuming entries persist (they don't)
 2. Using for critical data storage
@@ -251,7 +309,7 @@ Entry object: ~40 bytes
 4. Not handling unexpected removal
 5. Using in concurrent code without synchronization
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: WeakHashMap is always safe for caching
 **Reality:** Keys can be GC'd unexpectedly, causing data loss.
@@ -265,7 +323,7 @@ Entry object: ~40 bytes
 ### Myth 4: WeakHashMap is always garbage collected
 **Reality:** Only when keys have no strong references.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Hash table with weak references for keys
 - Entries removed when keys have no strong references
@@ -274,7 +332,7 @@ Entry object: ~40 bytes
 - Not for entries that must persist
 - Consider Caffeine for production caching
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -284,7 +342,7 @@ Entry object: ~40 bytes
 | Cache patterns | Use case |
 | Garbage collection | Entry removal trigger |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does WeakHashMap work?** — Uses WeakReference for keys. Entries removed when keys have no strong references.
 
@@ -296,7 +354,7 @@ Entry object: ~40 bytes
 
 5. **When should you use WeakHashMap?** — For caches where keys can be garbage collected.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - WeakHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/WeakHashMap.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

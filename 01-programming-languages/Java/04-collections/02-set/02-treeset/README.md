@@ -121,20 +121,51 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 
 ## 10. Engineering Decision Framework
 
-### Use TreeSet when:
+### When Should I Use This?
 - Sorted elements required
 - Range queries needed (headSet, tailSet, subSet)
 - Navigation needed (lower, higher, floor, ceiling)
+- Elements implement Comparable or you have a Comparator
 
-### Avoid TreeSet when:
-- O(1) operations needed (use HashSet)
-- Memory is constrained (use HashSet)
-- Insertion order needed (use LinkedHashSet)
+### When Should I NOT Use This?
+- **O(1) operations needed**: TreeSet is O(log n). Use HashSet
+- **Memory is constrained**: TreeNode overhead. Use HashSet
+- **Insertion order needed**: Use LinkedHashSet
+- **Null elements**: TreeSet doesn't allow null
 
-### When NOT to Use TreeSet
-- **O(1) needed**: TreeSet is O(log n). Use HashSet
-- **Memory**: TreeNode overhead. Use HashSet
-- **Null elements**: TreeSet doesn't allow null (in most implementations)
+### What Are the Alternatives?
+
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashSet | O(1) needed, no ordering | Faster, no sorting |
+| LinkedHashSet | Insertion order needed | O(1), insertion order |
+| EnumSet | Enum constants | Fastest for enums |
+| ConcurrentSkipListSet | Thread-safe sorted set | Higher overhead |
+
+### What Trade-offs Am I Making?
+- **Sorting vs Speed**: O(log n) sorted vs O(1) unordered
+- **Memory vs Sort**: Medium memory for sorting
+- **Null vs Safety**: No null elements for sorted order
+- **Immutability vs Flexibility**: Mutable vs Set.of() (immutable)
+
+### What Would I Choose in Production?
+> Use TreeSet only when you need sorted order — it's slower than HashSet for simple deduplication. Implement Comparable for natural ordering.
+
+### Common Code Review Comments
+- "Why are you using TreeSet? HashSet is faster if you don't need sorting."
+- "This TreeSet requires Comparable — make sure your elements implement it."
+- "Consider using NavigableSet methods for range queries."
+- "This TreeSet is being iterated concurrently — use Collections.synchronizedSortedSet()."
+
+### Common Production Mistakes
+
+> Notice: TreeSet requires elements to be Comparable or you must provide a Comparator — otherwise you get ClassCastException.
+
+> Notice: TreeSet doesn't allow null elements — it will throw NullPointerException.
+
+> Notice: TreeSet is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: TreeSet performance is O(log n) — don't use it for simple deduplication where HashSet is faster.
 
 ## 11. Debugging Tips
 
@@ -152,14 +183,52 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 - [ ] Mutable objects not used as elements
 - [ ] Thread safety handled
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where TreeSet Fits in System Design
+
+| Layer | Use Case | Why TreeSet |
+|-------|----------|-------------|
+| Service Layer | Sorted data storage | O(log n) sorted operations |
+| API Gateway | Range query support | headSet/tailSet/subSet |
+| Data Processing | Priority-based filtering | lower/higher/floor/ceiling |
+| Scheduling | Time-sorted events | Natural ordering |
+| Search | Ranked results | Sorted iteration |
+
+### Integration Patterns
+
+```
+Client → API Gateway → TreeSet → Service → TreeSet → Client
+                    ↓
+            TreeSet → Range Query Engine → TreeSet
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | TreeSet is optimal |
+| 10K - 100K elements | TreeSet with proper Comparator |
+| 100K - 1M elements | Consider ConcurrentSkipListSet |
+| > 1M elements | Consider database with indexes |
+
+### When to Replace TreeSet in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| No sorting needed | HashSet | O(1) vs O(log n) |
+| Insertion order | LinkedHashSet | O(1) + insertion order |
+| Thread-safe sorted | ConcurrentSkipListSet | Concurrent access |
+| Enum constants | EnumSet | Faster for enums |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | Memory exhaustion | OutOfMemoryError | Set max size |
 | DoS via bad comparator | Service degradation | Validate comparator |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -167,14 +236,14 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 | Java 6 | NavigableSet added | Navigation methods |
 | Java 8 | Stream support | Stream processing |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
 | TreeSet | 1.2 | Stable |
 | NavigableSet | 6.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use immutable objects as elements
 2. Provide consistent Comparator
@@ -182,14 +251,14 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 4. Set initial capacity for known sizes
 5. Use ConcurrentSkipListSet for concurrent sorted sets
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Adding null elements
 2. Using mutable objects
 3. Bad Comparator implementation
 4. Using when HashSet suffices
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: TreeSet is always O(log n)
 **Reality:** Amortized O(log n), but compareTo() can be expensive.
@@ -200,7 +269,7 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 ### Myth 3: TreeSet is thread-safe
 **Reality:** Not thread-safe. Use ConcurrentSkipListSet.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Sorted set based on Red-Black tree
 - O(log n) for add/remove/contains
@@ -209,7 +278,7 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 - Elements must be Comparable or have Comparator
 - Best for sorted unique elements with navigation
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -219,7 +288,7 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 | Comparable/Comparator | Sorting mechanism |
 | NavigableSet | Navigation interface |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does TreeSet work internally?** — Uses TreeMap (Red-Black tree). add() calls map.put().
 
@@ -231,7 +300,7 @@ Per entry: ~56 bytes (TreeNode with left/right/parent/color pointers)
 
 5. **When should you use TreeSet?** — When sorted elements or range queries are needed.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - TreeSet](https://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

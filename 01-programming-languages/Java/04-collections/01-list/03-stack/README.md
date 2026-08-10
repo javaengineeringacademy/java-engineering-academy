@@ -172,29 +172,50 @@ Stack object (on heap):
 
 ## 10. Engineering Decision Framework
 
-### Use Stack when:
+### When Should I Use This?
 - Maintaining legacy code that already uses Stack
 - Required by external library or API
 - Simple LIFO needed (but prefer alternatives)
 
-### Avoid Stack when:
-- Writing new code (use ArrayDeque)
-- Performance matters (synchronized overhead)
-- Concurrent access needed (use ConcurrentHashMap or synchronized collection)
-
-### When NOT to Use Stack
-- **New code**: Use ArrayDeque (no synchronization overhead)
+### When Should I NOT Use This?
+- **Writing new code**: Use ArrayDeque (no synchronization overhead)
 - **LIFO queue**: Use ArrayDeque.push() and pop()
+- **Performance matters**: Synchronized overhead is too high
 - **Thread safety**: Use explicit synchronization with ArrayList
 
-### Alternatives
+### What Are the Alternatives?
 
-| Alternative | When to Use |
-|-------------|-------------|
-| ArrayDeque | General purpose LIFO (recommended) |
-| LinkedList | LIFO with List operations |
-| Collections.synchronizedList() | When you need synchronization on ArrayList |
-| ConcurrentHashMap | Thread-safe with fine-grained locking |
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| ArrayDeque | General purpose LIFO (recommended) | Faster, no legacy overhead |
+| LinkedList | LIFO with List operations | Higher memory, slower |
+| Collections.synchronizedList() | When you need synchronization on ArrayList | Simple wrapper |
+| ConcurrentHashMap | Thread-safe with fine-grained locking | Better concurrency |
+
+### What Trade-offs Am I Making?
+- **Thread Safety**: Synchronized but slow vs fast but unsafe (ArrayDeque)
+- **Legacy vs Modern**: Legacy code vs modern alternatives
+- **Memory**: Medium memory vs low memory (ArrayDeque)
+- **Performance**: Synchronized overhead vs no overhead
+
+### What Would I Choose in Production?
+> Never use Stack in new code. Use ArrayDeque for LIFO operations. If you're maintaining legacy code, plan migration to ArrayDeque.
+
+### Common Code Review Comments
+- "Why are you using Stack? Use ArrayDeque instead."
+- "Stack is legacy — plan migration to ArrayDeque."
+- "This Stack should be an ArrayDeque for better performance."
+- "Stack extends Vector — it has synchronized overhead."
+
+### Common Production Mistakes
+
+> Notice: Stack is deprecated for removal in Java 9+ — plan migration to ArrayDeque.
+
+> Notice: Stack extends Vector — it inherits all Vector's synchronized overhead.
+
+> Notice: Stack.toString() is synchronized — it can cause contention in concurrent code.
+
+> Notice: Stack is legacy — it was part of Java 1.0, before the Collections Framework.
 
 ## 11. Debugging Tips
 
@@ -215,7 +236,44 @@ Stack object (on heap):
 - [ ] Checking for compound operation atomicity
 - [ ] Performance testing under concurrent load
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where Stack Fits in System Design
+
+| Layer | Use Case | Why Stack |
+|-------|----------|-----------|
+| Expression Parser | Operator precedence | LIFO pattern |
+| Undo/Redo | State management | Stack-based history |
+| Function Call | Recursion simulation | Call stack pattern |
+| Backtracking | Maze/algorithm solving | Push/pop state exploration |
+
+### Integration Patterns
+
+```
+Client → API Gateway → Stack → Service → Stack → Client
+                    ↓
+            Stack → Undo Manager → Stack
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | Stack works but prefer ArrayDeque |
+| 10K - 100K elements | Migrate to ArrayDeque |
+| 100K - 1M elements | Consider iterative approach |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace Stack in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| LIFO operations | ArrayDeque | Faster, no sync overhead |
+| Thread-safe stack | Collections.synchronizedList() | Better performance |
+| Priority stack | PriorityQueue | Priority-based ordering |
+| Bounded stack | LinkedBlockingDeque | Capacity limit |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -223,7 +281,7 @@ Stack object (on heap):
 | Deadlock from synchronization | Service hang | Use fine-grained locking |
 | Legacy code vulnerabilities | Security risk | Migrate to modern collections |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Migration Path |
 |---------|--------|----------------|
@@ -232,14 +290,14 @@ Stack object (on heap):
 | Java 6 | ArrayDeque introduced | Use ArrayDeque for LIFO |
 | Java 5 | Generics added | Add type parameters |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
 | Stack | 1.0 | Legacy (avoid) |
 | ArrayDeque | 6.0 | Recommended |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Avoid in new code**: Use ArrayDeque for LIFO operations
 2. **Migrate existing**: Replace Stack with ArrayDeque
@@ -248,7 +306,7 @@ Stack object (on heap):
 5. **Monitor performance**: Stack adds overhead even in single-threaded code
 6. **Use modern alternatives**: ArrayDeque for LIFO, Deque for double-ended
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using Stack as default**: ArrayDeque is faster and more memory efficient
 2. **Thinking Stack is thread-safe for compound operations**: Contains-then-pop is not atomic
@@ -256,7 +314,7 @@ Stack object (on heap):
 4. **Ignoring synchronization overhead**: Stack is slower than ArrayDeque even in single-threaded code
 5. **Not migrating**: Legacy Stack code should be updated
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: Stack is always thread-safe
 **Reality:** Individual methods are synchronized, but compound operations are not atomic.
@@ -270,7 +328,7 @@ Stack object (on heap):
 ### Myth 4: Stack is better for concurrent access
 **Reality:** ArrayDeque with explicit synchronization or concurrent collections is better.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Legacy LIFO data structure extending Vector
 - Every method synchronized, causing overhead
@@ -279,7 +337,7 @@ Stack object (on heap):
 - Not deprecated but discouraged
 - Prefer ArrayDeque for LIFO operations
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -289,7 +347,7 @@ Stack object (on heap):
 | LIFO | Last-In-First-Out pattern |
 | Legacy code | Often contains Stack, should migrate |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the difference between Stack and ArrayDeque?** — Stack is synchronized, ArrayDeque is not. Stack has 2x growth, ArrayDeque has 2x. ArrayDeque is faster for LIFO.
 
@@ -303,7 +361,7 @@ Stack object (on heap):
 
 6. **How do you implement LIFO in Java?** — Use ArrayDeque for LIFO operations.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - Stack](https://docs.oracle.com/javase/8/docs/api/java/util/Stack.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

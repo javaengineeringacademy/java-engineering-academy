@@ -180,30 +180,50 @@ Entry object: ~32 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use Hashtable when:
+### When Should I Use This?
 - Maintaining legacy code that already uses Hashtable
 - Required by external library or API
 - Simple synchronized map needed (but prefer alternatives)
 
-### Avoid Hashtable when:
-- Writing new code (use HashMap)
-- Performance matters (synchronized overhead)
-- Concurrent access needed (use ConcurrentHashMap)
-- Null keys/values needed (use HashMap)
+### When Should I NOT Use This?
+- **Writing new code**: Use ConcurrentHashMap
+- **Performance matters**: Synchronized overhead is too high
+- **Concurrent access needed**: Use ConcurrentHashMap
+- **Null keys/values needed**: Use HashMap (Hashtable rejects all nulls)
 
-### When NOT to Use Hashtable
-- **New code**: Use ConcurrentHashMap
-- **Null keys/values**: Hashtable rejects all nulls
-- **Performance**: Synchronized = slower. Use ConcurrentHashMap
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashMap | General purpose, no synchronization | Faster, no thread safety |
+| ConcurrentHashMap | Thread-safe with fine-grained locking | Better concurrency |
+| Collections.synchronizedMap() | When you need synchronization on HashMap | Simple wrapper |
+| EnumMap | Enum keys | Fastest for enums |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashMap | General purpose, no synchronization |
-| ConcurrentHashMap | Thread-safe with fine-grained locking |
-| Collections.synchronizedMap() | When you need synchronization on HashMap |
-| EnumMap | Enum keys |
+### What Trade-offs Am I Making?
+- **Thread Safety**: Synchronized but slow vs fast but unsafe (HashMap)
+- **Legacy vs Modern**: Legacy code vs modern alternatives
+- **Performance**: Synchronized overhead vs fine-grained locking
+- **Null vs Safety**: No nulls vs allows nulls (HashMap)
+
+### What Would I Choose in Production?
+> Never use Hashtable in new code. If you're maintaining legacy code, plan migration to ConcurrentHashMap.
+
+### Common Code Review Comments
+- "Why are you using Hashtable? Use ConcurrentHashMap instead."
+- "Hashtable is legacy — plan migration to ConcurrentHashMap."
+- "This Hashtable should be a ConcurrentHashMap for better performance."
+- "Hashtable toString() is synchronized — it can cause contention."
+
+### Common Production Mistakes
+
+> Notice: Hashtable is not deprecated but strongly discouraged — use ConcurrentHashMap instead.
+
+> Notice: Hashtable.toString() is synchronized — it can cause contention in concurrent code.
+
+> Notice: Hashtable doesn't allow null keys or values — ConcurrentHashMap also doesn't allow nulls.
+
+> Notice: Hashtable is legacy — it was part of Java 1.0, before the Collections Framework.
 
 ## 11. Debugging Tips
 
@@ -224,7 +244,43 @@ Entry object: ~32 bytes
 - [ ] Checking for compound operation atomicity
 - [ ] Performance testing under concurrent load
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where Hashtable Fits in System Design
+
+| Layer | Use Case | Why Hashtable |
+|-------|----------|---------------|
+| Legacy API | Backward-compatible interfaces | Required by old APIs |
+| Service Layer | Simple synchronized map | Synchronized methods |
+| Migration | Interim during refactoring | Drop-in replacement for old code |
+
+### Integration Patterns
+
+```
+Legacy Client → Hashtable → Legacy Service → Hashtable → Legacy Client
+                    ↓
+            Hashtable → Migration Bridge → HashMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K entries | Hashtable works but prefer HashMap |
+| 10K - 100K entries | Migrate to ConcurrentHashMap |
+| 100K - 1M entries | Use ConcurrentHashMap |
+| > 1M entries | Consider database or external storage |
+
+### When to Replace Hashtable in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Any new code | HashMap | No synchronization overhead |
+| Concurrent access | ConcurrentHashMap | Fine-grained locking |
+| Simple sync needed | Collections.synchronizedMap() | Wrapper around HashMap |
+| Null keys/values | HashMap | Allows nulls |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -233,7 +289,7 @@ Entry object: ~32 bytes
 | Legacy code vulnerabilities | Security risk | Migrate to modern collections |
 | Null injection | NullPointerException | Validate inputs |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Migration Path |
 |---------|--------|----------------|
@@ -243,7 +299,7 @@ Entry object: ~32 bytes
 | Java 5 | ConcurrentHashMap | Use for concurrent access |
 | Java 5 | Generics added | Add type parameters |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -251,7 +307,7 @@ Entry object: ~32 bytes
 | HashMap | 1.2 | Recommended |
 | ConcurrentHashMap | 5.0 | Recommended |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Avoid in new code**: Use HashMap or ConcurrentHashMap
 2. **Migrate existing**: Replace Hashtable with HashMap
@@ -260,7 +316,7 @@ Entry object: ~32 bytes
 5. **Monitor performance**: Hashtable adds overhead even in single-threaded code
 6. **Use modern alternatives**: ConcurrentHashMap for concurrent access
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using Hashtable as default**: HashMap is faster and more memory efficient
 2. **Thinking Hashtable is thread-safe for compound operations**: Contains-then-put is not atomic
@@ -268,7 +324,7 @@ Entry object: ~32 bytes
 4. **Ignoring synchronization overhead**: Hashtable is slower than HashMap even in single-threaded code
 5. **Not migrating**: Legacy Hashtable code should be updated
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: Hashtable is always thread-safe
 **Reality:** Individual methods are synchronized, but compound operations are not atomic.
@@ -282,7 +338,7 @@ Entry object: ~32 bytes
 ### Myth 4: Hashtable allows null keys/values
 **Reality:** Hashtable throws NullPointerException for null keys or values.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Legacy synchronized hash table (Java 1.0)
 - Every method synchronized, causing overhead
@@ -291,7 +347,7 @@ Entry object: ~32 bytes
 - Avoid in new code, use HashMap or ConcurrentHashMap
 - Use ConcurrentHashMap for concurrent access
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -301,7 +357,7 @@ Entry object: ~32 bytes
 | Legacy code | Often contains Hashtable, should migrate |
 | Enumeration | Legacy iteration (use Iterator instead) |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the difference between Hashtable and HashMap?** — Hashtable is synchronized, HashMap is not. Hashtable does not allow null, HashMap allows one null key.
 
@@ -315,7 +371,7 @@ Entry object: ~32 bytes
 
 6. **How do you make HashMap thread-safe?** — Use Collections.synchronizedMap() or ConcurrentHashMap.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - Hashtable](https://docs.oracle.com/javase/8/docs/api/java/util/Hashtable.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

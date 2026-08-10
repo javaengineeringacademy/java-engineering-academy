@@ -194,31 +194,52 @@ add("D")       : [A, B, C, D] →  New array (kept)
 
 ## 10. Engineering Decision Framework
 
-### Use CopyOnWriteArrayList when:
+### When Should I Use This?
 - Reads vastly outnumber writes (10:1 ratio or more)
 - Iteration must not throw ConcurrentModificationException
 - Snapshot semantics are acceptable
 - Configuration lists that change rarely
+- Listener/event lists (reads are common, writes are rare)
 
-### Avoid CopyOnWriteArrayList when:
-- Writes are frequent
-- Memory is constrained
-- Real-time updates are required
-- Large lists with frequent modifications
-
-### When NOT to Use CopyOnWriteArrayList
+### When Should I NOT Use This?
 - **Frequent writes**: Each write copies entire array. Use ArrayList + sync
 - **Large lists**: Memory overhead from full copies
 - **Real-time reads**: Iterator sees old snapshot, not live changes
+- **Memory constrained**: Each write creates a new array copy
 
-### Alternatives
+### What Are the Alternatives?
 
-| Alternative | When to Use |
-|-------------|-------------|
-| ArrayList + Collections.synchronizedList() | Read-heavy with some writes |
-| ConcurrentHashMap | Key-value concurrent access |
-| Vector | Legacy code (avoid in new code) |
-| ReadWriteLock + ArrayList | When you need read/write separation |
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| ArrayList + Collections.synchronizedList() | Read-heavy with some writes | Lower memory, synchronized |
+| ConcurrentHashMap | Key-value concurrent access | Different data structure |
+| Vector | Legacy code (avoid in new code) | Legacy, synchronized |
+| ReadWriteLock + ArrayList | When you need read/write separation | More complex |
+
+### What Trade-offs Am I Making?
+- **Read vs Write performance**: Fast reads, slow writes
+- **Memory vs Thread-safety**: Very high memory for thread safety
+- **Snapshot vs Fail-fast**: Snapshot iteration, not live
+- **Simplicity vs Performance**: Simple but memory-intensive
+
+### What Would I Choose in Production?
+> Use CopyOnWriteArrayList for read-heavy concurrent access — it's the fastest thread-safe list for reads. Never use it for write-heavy workloads. Use it for listener/event lists where reads are common and writes are rare.
+
+### Common Code Review Comments
+- "This CopyOnWriteArrayList is write-heavy — use Collections.synchronizedList() instead."
+- "CopyOnWriteArrayList is perfect for listener lists — reads are common, writes are rare."
+- "This iteration during modification — CopyOnWriteArrayList avoids ConcurrentModificationException."
+- "CopyOnWriteArrayList memory is very high — make sure you need it."
+
+### Common Production Mistakes
+
+> Notice: CopyOnWriteArrayList copies the entire array on every write — don't use it for write-heavy workloads.
+
+> Notice: CopyOnWriteArrayList snapshot iteration doesn't reflect changes after iteration starts — this is by design.
+
+> Notice: CopyOnWriteArrayList is not lock-free — it uses a lock for writes, not reads.
+
+> Notice: CopyOnWriteArrayList is expensive for large lists — consider ConcurrentHashMap for key-value data.
 
 ## 11. Debugging Tips
 
@@ -239,7 +260,45 @@ add("D")       : [A, B, C, D] →  New array (kept)
 - [ ] Using addIfAbsent() for conditional adds
 - [ ] Monitoring memory usage under write load
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where CopyOnWriteArrayList Fits in System Design
+
+| Layer | Use Case | Why CopyOnWriteArrayList |
+|-------|----------|--------------------------|
+| Service Layer | Event listener registration | Thread-safe iteration, no CME |
+| Configuration | Dynamic config store | Read-heavy, snapshot semantics |
+| Plugin System | Plugin registry | Safe concurrent iteration |
+| Observer Pattern | Observer list | Thread-safe notification |
+| Spring Framework | Bean listener lists | Standard pattern |
+
+### Integration Patterns
+
+```
+Client → API Gateway → CopyOnWriteArrayList → Service → CopyOnWriteArrayList → Client
+                    ↓
+            CopyOnWriteArrayList → Event Bus → CopyOnWriteArrayList
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 1K elements | CopyOnWriteArrayList is optimal |
+| 1K - 10K elements | CopyOnWriteArrayList with write batching |
+| 10K - 100K elements | Consider ReadWriteLock + ArrayList |
+| > 100K elements | Consider ConcurrentHashMap for key-value |
+
+### When to Replace CopyOnWriteArrayList in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Write-heavy workload | ArrayList + synchronized | Lower memory per write |
+| Key-value storage | ConcurrentHashMap | O(1) lookup by key |
+| Real-time updates | ConcurrentLinkedQueue | Non-blocking reads |
+| Large frequent writes | ReadWriteLock + ArrayList | Better write performance |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -247,7 +306,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 | Stale data | Incorrect processing | Understand snapshot semantics |
 | Write amplification | Performance degradation | Use only for read-heavy scenarios |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -255,7 +314,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 | Java 8 | Stream support | Can use with streams |
 | Java 9 | of() factory methods | Immutable list alternatives |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -263,7 +322,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 | Stream support | 8.0 | Stable |
 | of() factory methods | 9.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Read-heavy only**: Use when reads outnumber writes 10:1 or more
 2. **Snapshot semantics**: Iterator sees snapshot at creation time
@@ -272,7 +331,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 5. **Consider alternatives**: For write-heavy scenarios
 6. **Use for event listeners**: Classic use case
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using for write-heavy scenarios**: Creates too many array copies
 2. **Ignoring snapshot semantics**: Iterator may see stale data
@@ -280,7 +339,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 4. **Using for large lists**: Memory overhead too high
 5. **Not considering alternatives**: ConcurrentHashMap may be better
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: CopyOnWriteArrayList is always thread-safe
 **Reality:** Yes, but compound operations may not be atomic.
@@ -294,7 +353,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 ### Myth 4: CopyOnWriteArrayList uses copy-on-write for reads
 **Reality:** Only writes create copies, reads are direct.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Thread-safe variant of ArrayList
 - Writes create new array copy
@@ -303,7 +362,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 - Best for read-heavy scenarios (10:1 ratio or more)
 - Memory overhead for write operations
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -313,7 +372,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 | Event listeners | Classic use case for CopyOnWriteArrayList |
 | Snapshot iterator | Iterator behavior |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does CopyOnWriteArrayList achieve thread safety?** — By creating a new copy of the underlying array for each write operation.
 
@@ -327,7 +386,7 @@ add("D")       : [A, B, C, D] →  New array (kept)
 
 6. **How does CopyOnWriteArrayList differ from Collections.synchronizedList()?** — CopyOnWriteArrayList creates copies for writes, synchronizedList uses synchronization. CopyOnWriteArrayList is better for read-heavy, synchronizedList for balanced.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - CopyOnWriteArrayList](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CopyOnWriteArrayList.html)
 - [Java Concurrency in Practice](https://jcip.net/)

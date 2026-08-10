@@ -259,7 +259,45 @@ LinkedList object (on heap):
 - [ ] Not used for random access (use ArrayList)
 - [ ] Bounded deque implemented if needed
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where Deque Fits in System Design
+
+| Layer | Use Case | Why Deque |
+|-------|----------|-----------|
+| Service Layer | BFS/DFS traversal | Double-ended operations |
+| Task Processing | Work-stealing queues | Both ends access |
+| Event Buffer | Event ring buffer | Circular array efficiency |
+| Undo System | Undo/redo stack | LIFO operations |
+| Request Queue | FIFO request processing | Queue operations |
+
+### Integration Patterns
+
+```
+Client → API Gateway → Deque → Service → Deque → Client
+                    ↓
+            Deque → Work Manager → Deque
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | ArrayDeque is optimal |
+| 10K - 100K elements | ArrayDeque with proper sizing |
+| 100K - 1M elements | Consider ConcurrentLinkedDeque |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace Deque in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Random access needed | ArrayList | O(1) indexed access |
+| Priority processing | PriorityQueue | Priority-based ordering |
+| Thread-safe deque | ConcurrentLinkedDeque | Concurrent access |
+| Blocking operations | LinkedBlockingDeque | Blocking put/take |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -267,7 +305,7 @@ LinkedList object (on heap):
 | Unbounded growth | DoS | Implement backpressure |
 | ConcurrentModification | Service degradation | Use concurrent collections |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -276,7 +314,7 @@ LinkedList object (on heap):
 | Java 8 | Stream support | Stream processing |
 | Java 21 | SequencedCollection | getFirst()/getLast() added |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -284,7 +322,7 @@ LinkedList object (on heap):
 | ArrayDeque | 6.0 | Stable |
 | Stream support | 8.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use ArrayDeque over LinkedList for queue/deque
 2. Use offer/poll/peek for graceful failure
@@ -292,7 +330,7 @@ LinkedList object (on heap):
 4. Use as stack instead of Stack class
 5. Consider bounded deque for production
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Using LinkedList over ArrayDeque for queue/deque
 2. Using Stack class instead of ArrayDeque
@@ -300,7 +338,7 @@ LinkedList object (on heap):
 4. Using add/remove (throw exceptions) instead of offer/poll (return special values)
 5. Using for random access (use ArrayList)
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: LinkedList is better for Deque
 **Reality:** ArrayDeque is faster and uses less memory.
@@ -314,7 +352,7 @@ LinkedList object (on heap):
 ### Myth 4: Stack class is better for LIFO
 **Reality:** ArrayDeque is better for LIFO. Stack is legacy.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Double-ended queue supporting FIFO and LIFO
 - ArrayDeque: recommended implementation (faster, less memory)
@@ -323,7 +361,7 @@ LinkedList object (on heap):
 - Replace Stack class with ArrayDeque
 - Replace Queue with Deque when both ends needed
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -333,7 +371,7 @@ LinkedList object (on heap):
 | Stack | Legacy LIFO (replace with ArrayDeque) |
 | ConcurrentLinkedDeque | Thread-safe variant |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the difference between ArrayDeque and LinkedList?** — ArrayDeque: faster, less memory (circular array). LinkedList: more memory (nodes), implements List.
 
@@ -345,7 +383,7 @@ LinkedList object (on heap):
 
 5. **When should you use Deque over Queue?** — When you need operations on both ends.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - Deque](https://docs.oracle.com/javase/8/docs/api/java/util/Deque.html)
 - [Oracle Java Documentation - ArrayDeque](https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html)

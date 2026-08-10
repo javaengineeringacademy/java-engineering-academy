@@ -221,33 +221,54 @@ Node object: ~32 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use HashSet when:
+### When Should I Use This?
 - Fastest lookup is required (O(1))
 - No ordering needed
 - Memory is not a constraint
 - Unique elements required
+- You don't have a specific reason to use something else
 
-### Avoid HashSet when:
-- Sorted elements needed (use TreeSet)
-- Insertion order matters (use LinkedHashSet)
-- Memory is constrained (use ArrayList if duplicates allowed)
-- Thread safety needed (use ConcurrentSkipListSet)
-
-### When NOT to Use HashSet
-- **Sorted elements**: Use TreeSet
-- **Insertion order**: Use LinkedHashSet
-- **Thread safety**: Use Collections.synchronizedSet() or ConcurrentHashMap.newKeySet()
+### When Should I NOT Use This?
+- **Sorted elements needed**: Use TreeSet
+- **Insertion order matters**: Use LinkedHashSet
+- **Thread safety needed**: Use Collections.synchronizedSet() or ConcurrentHashMap.newKeySet()
 - **Need get**: HashSet doesn't support get(). Use HashMap
+- **Enum constants**: Use EnumSet (faster)
 
-### Alternatives
+### What Are the Alternatives?
 
-| Alternative | When to Use |
-|-------------|-------------|
-| LinkedHashSet | Insertion order matters |
-| TreeSet | Sorted elements needed |
-| EnumSet | Enum constants |
-| ConcurrentSkipListSet | Thread-safe sorted set |
-| ArrayList | Duplicates allowed, indexed access |
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| LinkedHashSet | Insertion order matters | Higher memory, slightly slower |
+| TreeSet | Sorted elements needed | O(log n) vs O(1) |
+| EnumSet | Enum constants | Fastest for enums |
+| ConcurrentSkipListSet | Thread-safe sorted set | Higher overhead |
+| ArrayList | Duplicates allowed, indexed access | No uniqueness guarantee |
+
+### What Trade-offs Am I Making?
+- **Performance**: O(1) lookup vs O(log n) sorted
+- **Memory**: Compact vs node-based overhead
+- **Ordering**: No ordering vs sorted/insertion order
+- **Thread Safety**: Not thread-safe by default vs synchronized alternatives
+
+### What Would I Choose in Production?
+> For most applications, HashSet is the default choice for unique elements. Only switch if you need ordering (TreeSet/LinkedHashSet) or thread safety (Collections.synchronizedSet()).
+
+### Common Code Review Comments
+- "Why are you using TreeSet? HashSet is faster if you don't need sorting."
+- "This should be an EnumSet — you're using enum values as elements."
+- "Consider using Set.of() if this set is immutable."
+- "This set is being iterated concurrently — use Collections.synchronizedSet()."
+
+### Common Production Mistakes
+
+> Notice: HashSet doesn't maintain order — if you need insertion order, use LinkedHashSet.
+
+> Notice: HashSet allows one null element — but in concurrent code, prefer Optional over null.
+
+> Notice: HashSet is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: HashSet.hashCode() is called for each element — make sure your hashCode() implementation is efficient.
 
 ## 11. Debugging Tips
 
@@ -268,7 +289,45 @@ Node object: ~32 bytes
 - [ ] Thread safety handled for concurrent access
 - [ ] Initial capacity set for known-size sets
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where HashSet Fits in System Design
+
+| Layer | Use Case | Why HashSet |
+|-------|----------|-------------|
+| API Gateway | Request deduplication | O(1) membership check |
+| Service Layer | Feature flag storage | Fast contains() |
+| Caching | Cache key tracking | Deduplicate cache keys |
+| Data Processing | Unique value extraction | Fast add/contains |
+| Validation | Whitelist/blacklist | O(1) lookup |
+
+### Integration Patterns
+
+```
+Client → API Gateway → HashSet → Service → HashSet → Client
+                    ↓
+            HashSet → Deduplication Engine → HashSet
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | HashSet is optimal |
+| 10K - 100K elements | HashSet with proper sizing |
+| 100K - 1M elements | Consider ConcurrentHashMap.newKeySet() |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace HashSet in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Insertion order needed | LinkedHashSet | Maintains insertion order |
+| Sorted elements | TreeSet | O(log n) sorted operations |
+| Thread-safe set | ConcurrentHashMap.newKeySet() | Concurrent access |
+| Enum constants | EnumSet | Faster for enums |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -276,7 +335,7 @@ Node object: ~32 bytes
 | Mutable key manipulation | Data corruption | Use immutable objects |
 | Memory exhaustion | OutOfMemoryError | Set max size, use bounded collections |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -285,7 +344,7 @@ Node object: ~32 bytes
 | Java 9 | Set.of() factory | Immutable set alternatives |
 | Java 10 | Copy-on-write improvements | Better concurrency |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -294,7 +353,7 @@ Node object: ~32 bytes
 | Set.of() | 9.0 | Stable |
 | Stream support | 8.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Use immutable objects**: Prevents hash changes after insertion
 2. **Override hashCode/equals**: Correctly for consistent behavior
@@ -303,7 +362,7 @@ Node object: ~32 bytes
 5. **Use TreeSet**: If sorted elements needed
 6. **Monitor load factor**: Default 0.75 balances time/space
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using mutable objects as elements**: Hash changes, element lost
 2. **Not overriding hashCode/equals**: Breaks Set behavior
@@ -311,7 +370,7 @@ Node object: ~32 bytes
 4. **Not setting initial capacity**: Wastes time resizing
 5. **Using for sorted data**: Use TreeSet instead
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: HashSet maintains insertion order
 **Reality:** HashSet does not maintain any order. Use LinkedHashSet for insertion order.
@@ -325,7 +384,7 @@ Node object: ~32 bytes
 ### Myth 4: HashSet is thread-safe
 **Reality:** Not thread-safe. Use Collections.synchronizedSet() or ConcurrentSkipListSet().
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Hash table implementation of Set interface
 - O(1) add/remove/contains operations
@@ -334,7 +393,7 @@ Node object: ~32 bytes
 - Not thread-safe, use concurrent collections
 - Best for fastest lookup when order doesn't matter
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -344,7 +403,7 @@ Node object: ~32 bytes
 | EnumSet | Enum-specific variant |
 | hashCode/equals | Contract for elements |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does HashSet work internally?** — Uses HashMap with dummy PRESENT value. add() calls map.put().
 
@@ -358,7 +417,7 @@ Node object: ~32 bytes
 
 6. **Is HashSet thread-safe?** — No. Use Collections.synchronizedSet() or ConcurrentSkipListSet().
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - HashSet](https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

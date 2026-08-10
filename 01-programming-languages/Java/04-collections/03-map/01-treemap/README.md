@@ -209,32 +209,54 @@ Per entry: ~56 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use TreeMap when:
+### When Should I Use This?
 - Sorted keys required
 - Range queries needed (headMap, tailMap, subMap)
 - Navigation needed (lower, higher, floor, ceiling)
 - Consistent ordering required
+- Keys implement Comparable or you have a Comparator
 
-### Avoid TreeMap when:
-- O(1) operations needed (use HashMap)
-- Memory is constrained (use HashMap)
-- Insertion order needed (use LinkedHashMap)
-- Thread safety needed (use ConcurrentSkipListMap)
-
-### When NOT to Use TreeMap
-- **O(1) needed**: TreeMap is O(log n). Use HashMap
-- **Memory**: TreeNode overhead. Use HashMap
+### When Should I NOT Use This?
+- **O(1) operations needed**: TreeMap is O(log n). Use HashMap
+- **Memory is constrained**: TreeNode overhead. Use HashMap
+- **Insertion order needed**: Use LinkedHashMap
+- **Thread safety needed**: Use ConcurrentSkipListMap
 - **Null keys**: TreeMap doesn't allow null keys
 
-### Alternatives
+### What Are the Alternatives?
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashMap | O(1) operations, no order |
-| LinkedHashMap | Insertion/access order |
-| Hashtable | Legacy code (avoid) |
-| ConcurrentSkipListMap | Thread-safe sorted map |
-| EnumMap | Enum keys |
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashMap | O(1) operations, no order | Faster, no sorting |
+| LinkedHashMap | Insertion/access order | O(1), insertion order |
+| Hashtable | Legacy code (avoid) | Legacy, synchronized |
+| ConcurrentSkipListMap | Thread-safe sorted map | Higher overhead |
+| EnumMap | Enum keys | Fastest for enums |
+
+### What Trade-offs Am I Making?
+- **Sorting vs Speed**: O(log n) sorted vs O(1) unordered
+- **Memory vs Sort**: Medium memory for sorting
+- **Null vs Safety**: No null keys for sorted order
+- **Immutability vs Flexibility**: Mutable vs Map.of() (immutable)
+
+### What Would I Choose in Production?
+> Use TreeMap only when you need sorted order — it's slower than HashMap for simple key-value storage. Implement Comparable for natural ordering.
+
+### Common Code Review Comments
+- "Why are you using TreeMap? HashMap is faster if you don't need sorting."
+- "This TreeMap requires Comparable keys — make sure your keys implement it."
+- "Consider using NavigableMap methods for range queries."
+- "This TreeMap is being iterated concurrently — use Collections.synchronizedSortedMap()."
+
+### Common Production Mistakes
+
+> Notice: TreeMap requires keys to be Comparable or you must provide a Comparator — otherwise you get ClassCastException.
+
+> Notice: TreeMap doesn't allow null keys — it will throw NullPointerException.
+
+> Notice: TreeMap is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: TreeMap performance is O(log n) — don't use it for simple key-value storage where HashMap is faster.
 
 ## 11. Debugging Tips
 
@@ -254,7 +276,45 @@ Per entry: ~56 bytes
 - [ ] Thread safety handled
 - [ ] Initial capacity not applicable (tree grows dynamically)
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where TreeMap Fits in System Design
+
+| Layer | Use Case | Why TreeMap |
+|-------|----------|-------------|
+| Service Layer | Sorted key-value storage | O(log n) sorted operations |
+| API Gateway | Range query support | headMap/tailMap/subMap |
+| Data Processing | Priority-based mapping | lower/higher/floor/ceiling |
+| Search | Ranked results storage | Sorted iteration |
+| Scheduling | Time-sorted events | Natural ordering |
+
+### Integration Patterns
+
+```
+Client → API Gateway → TreeMap → Service → TreeMap → Client
+                    ↓
+            TreeMap → Range Query Engine → TreeMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K entries | TreeMap is optimal |
+| 10K - 100K entries | TreeMap with proper Comparator |
+| 100K - 1M entries | Consider ConcurrentSkipListMap |
+| > 1M entries | Consider database with indexes |
+
+### When to Replace TreeMap in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| No sorting needed | HashMap | O(1) vs O(log n) |
+| Insertion order | LinkedHashMap | O(1) + insertion order |
+| Thread-safe sorted | ConcurrentSkipListMap | Concurrent access |
+| Enum keys | EnumMap | Faster for enums |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -262,7 +322,7 @@ Per entry: ~56 bytes
 | DoS via bad comparator | Service degradation | Validate comparator |
 | Null injection | NullPointerException | Validate inputs |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -270,7 +330,7 @@ Per entry: ~56 bytes
 | Java 8 | Stream support | Stream processing |
 | Java 9 | Map.of() factory | Immutable map alternatives |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -278,7 +338,7 @@ Per entry: ~56 bytes
 | Stream support | 8.0 | Stable |
 | Map.of() | 9.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use immutable objects as keys
 2. Provide consistent Comparator
@@ -286,7 +346,7 @@ Per entry: ~56 bytes
 4. Use ConcurrentSkipListMap for concurrent sorted maps
 5. Use entrySet() for efficient iteration
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Adding null keys
 2. Using mutable objects as keys
@@ -294,7 +354,7 @@ Per entry: ~56 bytes
 4. Using when HashMap suffices
 5. Not considering memory overhead
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: TreeMap is always O(log n)
 **Reality:** Amortized O(log n), but compareTo() can be expensive.
@@ -308,7 +368,7 @@ Per entry: ~56 bytes
 ### Myth 4: TreeMap is slower than HashMap
 **Reality:** O(log n) vs O(1), but TreeMap provides ordering.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Sorted map based on Red-Black tree
 - O(log n) for get/put/remove
@@ -317,7 +377,7 @@ Per entry: ~56 bytes
 - Keys must be Comparable or have Comparator
 - Best for sorted key-value pairs with navigation
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -327,7 +387,7 @@ Per entry: ~56 bytes
 | Comparable/Comparator | Sorting mechanism |
 | NavigableMap | Navigation interface |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does TreeMap work internally?** — Red-Black tree. Keys ordered by natural ordering or Comparator.
 
@@ -341,7 +401,7 @@ Per entry: ~56 bytes
 
 6. **Is TreeMap thread-safe?** — No. Use ConcurrentSkipListMap for concurrent access.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - TreeMap](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

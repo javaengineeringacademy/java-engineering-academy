@@ -185,31 +185,51 @@ Entry object: ~48 bytes
 
 ## 10. Engineering Decision Framework
 
-### Use LinkedHashSet when:
+### When Should I Use This?
 - Insertion order matters
 - Fastest lookup required (O(1))
 - Unique elements required
 - Both HashSet speed and order needed
 
-### Avoid LinkedHashSet when:
-- Order doesn't matter (use HashSet)
-- Sorted elements needed (use TreeSet)
-- Memory is constrained (use HashSet)
-- Thread safety needed (use ConcurrentSkipListSet)
+### When Should I NOT Use This?
+- **Order doesn't matter**: Use HashSet (simpler, faster)
+- **Sorted elements needed**: Use TreeSet
+- **Memory is constrained**: Use HashSet (lower memory)
+- **Thread safety needed**: Use ConcurrentSkipListSet
 
-### When NOT to Use LinkedHashSet
-- **Memory**: Extra linked list overhead
-- **No order needed**: Use HashSet (simpler)
-- **Sorted order**: Use TreeSet
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashSet | Order doesn't matter | Faster, no ordering |
+| TreeSet | Sorted elements needed | O(log n) vs O(1) |
+| EnumSet | Enum constants | Fastest for enums |
+| ConcurrentSkipListSet | Thread-safe sorted set | Higher overhead |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashSet | Order doesn't matter |
-| TreeSet | Sorted elements needed |
-| EnumSet | Enum constants |
-| ConcurrentSkipListSet | Thread-safe sorted set |
+### What Trade-offs Am I Making?
+- **Order vs Memory**: Medium memory for insertion order
+- **Order vs Speed**: Slightly slower than HashSet
+- **Immutability vs Flexibility**: Mutable vs Set.of() (immutable)
+- **Thread Safety**: Not thread-safe by default
+
+### What Would I Choose in Production?
+> Use LinkedHashSet when insertion order matters — it's almost as fast as HashSet. Use HashSet if order doesn't matter — it's faster and uses less memory.
+
+### Common Code Review Comments
+- "Why are you using LinkedHashSet? HashSet is faster if you don't need order."
+- "This LinkedHashSet is for insertion order — LinkedHashMap doesn't support access-order for sets."
+- "Consider using Set.of() if this set is immutable."
+- "This set is being iterated concurrently — use Collections.synchronizedSet()."
+
+### Common Production Mistakes
+
+> Notice: LinkedHashSet is slightly slower than HashSet — don't use it if order doesn't matter.
+
+> Notice: LinkedHashSet memory overhead is higher than HashSet — each element has a linked list node.
+
+> Notice: LinkedHashSet is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: LinkedHashSet maintains insertion order — if you need access-order, use LinkedHashMap instead.
 
 ## 11. Debugging Tips
 
@@ -230,7 +250,45 @@ Entry object: ~48 bytes
 - [ ] Initial capacity set for known-size sets
 - [ ] Load factor appropriate for use case
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where LinkedHashSet Fits in System Design
+
+| Layer | Use Case | Why LinkedHashSet |
+|-------|----------|-------------------|
+| Service Layer | Insertion-ordered dedup | O(1) + order preserved |
+| Caching | LRU-like patterns | Access order tracking |
+| API Gateway | Recent request tracking | Insertion order matters |
+| Event Processing | Event dedup with order | Maintain event sequence |
+| UI Layer | Recent items list | Insertion order for display |
+
+### Integration Patterns
+
+```
+Client → API Gateway → LinkedHashSet → Service → LinkedHashSet → Client
+                    ↓
+            LinkedHashSet → Order Manager → LinkedHashSet
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | LinkedHashSet is optimal |
+| 10K - 100K elements | LinkedHashSet with proper sizing |
+| 100K - 1M elements | Consider LinkedHashMap for key-value |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace LinkedHashSet in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Order doesn't matter | HashSet | Less memory overhead |
+| Sorted elements | TreeSet | O(log n) sorted operations |
+| Thread-safe ordered set | Collections.synchronizedSet() | Concurrent access |
+| LRU cache | LinkedHashMap | Key-value with access order |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -238,7 +296,7 @@ Entry object: ~48 bytes
 | Hash collision DoS | Service degradation | Use randomized hash functions |
 | Mutable key manipulation | Data corruption | Use immutable objects |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -246,7 +304,7 @@ Entry object: ~48 bytes
 | Java 8 | Treeification | O(log n) for collision chains with 8+ entries |
 | Java 9 | Set.of() factory | Immutable set alternatives |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -255,7 +313,7 @@ Entry object: ~48 bytes
 | Set.of() | 9.0 | Stable |
 | Stream support | 8.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Use when order matters**: LinkedHashSet maintains insertion order
 2. **Set initial capacity**: Avoid resizing for known sizes
@@ -264,7 +322,7 @@ Entry object: ~48 bytes
 5. **Use TreeSet if sorted needed**: Better for sorted elements
 6. **Override hashCode/equals**: For consistent behavior
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using when order doesn't matter**: HashSet is more efficient
 2. **Ignoring memory overhead**: 48 bytes vs 40 bytes per element
@@ -272,7 +330,7 @@ Entry object: ~48 bytes
 4. **Using for sorted data**: Use TreeSet instead
 5. **Using mutable objects as elements**: Hash changes, element lost
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: LinkedHashSet is always faster than HashSet
 **Reality:** Same O(1) operations, but more memory overhead.
@@ -286,7 +344,7 @@ Entry object: ~48 bytes
 ### Myth 4: LinkedHashSet allows multiple null elements
 **Reality:** Allows at most one null element.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Hash table with linked list for insertion order
 - O(1) add/remove/contains operations
@@ -295,7 +353,7 @@ Entry object: ~48 bytes
 - Best when both HashSet speed and insertion order needed
 - Not thread-safe, use concurrent collections
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -305,7 +363,7 @@ Entry object: ~48 bytes
 | Insertion order | Key feature |
 | hashCode/equals | Contract for elements |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does LinkedHashSet maintain insertion order?** — Uses LinkedHashMap with doubly-linked list connecting entries.
 
@@ -319,7 +377,7 @@ Entry object: ~48 bytes
 
 6. **Is LinkedHashSet thread-safe?** — No. Use Collections.synchronizedSet() or explicit synchronization.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - LinkedHashSet](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashSet.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

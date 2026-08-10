@@ -245,7 +245,45 @@ PriorityQueue object (on heap):
 - [ ] Queue size monitored
 - [ ] Contains operation not in hot path
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where PriorityQueue Fits in System Design
+
+| Layer | Use Case | Why PriorityQueue |
+|-------|----------|-------------------|
+| Task Scheduling | Priority-based job queue | O(log n) offer/poll |
+| Event Processing | Priority event routing | Head = highest priority |
+| Resource Mgmt | Resource allocation | Min/max element access |
+| Search | Top-K element problems | Efficient head access |
+| Merge | Sorted stream merging | Merge sorted inputs |
+
+### Integration Patterns
+
+```
+Client → API Gateway → PriorityQueue → Service → PriorityQueue → Client
+                    ↓
+            PriorityQueue → Scheduler → PriorityQueue
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | PriorityQueue is optimal |
+| 10K - 100K elements | PriorityQueue with proper sizing |
+| 100K - 1M elements | Consider PriorityBlockingQueue |
+| > 1M elements | Consider database with priority indexing |
+
+### When to Replace PriorityQueue in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| FIFO processing | ArrayDeque | O(1) vs O(log n) |
+| Thread-safe priority | PriorityBlockingQueue | Concurrent access |
+| Priority updates | TreeMap | Update priority efficiently |
+| Contains needed | HashSet + PriorityQueue | O(1) membership test |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -253,21 +291,21 @@ PriorityQueue object (on heap):
 | Unbounded growth | DoS | Implement backpressure |
 | Comparator manipulation | Incorrect ordering | Validate comparator |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
 | Java 5 | PriorityQueue introduced | Priority-based queue |
 | Java 8 | Stream support | Stream processing |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
 | PriorityQueue | 5.0 | Stable |
 | Stream support | 8.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use appropriate Comparator for ordering
 2. Monitor queue size to prevent memory issues
@@ -275,7 +313,7 @@ PriorityQueue object (on heap):
 4. Consider PriorityBlockingQueue for concurrent access
 5. Use offer()/poll() for graceful failure handling
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Using for FIFO processing (use ArrayDeque)
 2. Assuming contains() is O(1)
@@ -283,7 +321,7 @@ PriorityQueue object (on heap):
 4. Ignoring memory growth
 5. Using for priority updates (use TreeMap)
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: PriorityQueue maintains insertion order
 **Reality:** Maintains priority order, not insertion order.
@@ -297,7 +335,7 @@ PriorityQueue object (on heap):
 ### Myth 4: PriorityQueue does not allow null
 **Reality:** PriorityQueue allows one null element (treated as lowest priority).
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Priority-based queue using binary heap
 - O(log n) for add/remove, O(1) for peek
@@ -306,7 +344,7 @@ PriorityQueue object (on heap):
 - Not thread-safe, use PriorityBlockingQueue
 - Best for priority-based processing, not FIFO
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -316,7 +354,7 @@ PriorityQueue object (on heap):
 | Comparator | Custom ordering |
 | Heap sort | Sorting algorithm using heap |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does PriorityQueue work internally?** — Binary heap (array-based). Parent at (i-1)/2, children at 2i+1 and 2i+2.
 
@@ -328,7 +366,7 @@ PriorityQueue object (on heap):
 
 5. **When should you use PriorityQueue?** — Priority-based processing, merge sorted streams, top-K problems.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - PriorityQueue](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

@@ -182,29 +182,50 @@ EnumSet object (on heap):
 
 ## 10. Engineering Decision Framework
 
-### Use EnumSet when:
+### When Should I Use This?
 - Set of enum constants needed
 - Maximum performance required
 - Memory efficiency important
 - Set operations (union, intersection) needed
 
-### Avoid EnumSet when:
-- Non-enum elements needed (use HashSet)
-- Null elements needed (use HashSet)
-- Very large enums (> 64 constants) with memory concerns
+### When Should I NOT Use This?
+- **Non-enum elements needed**: Use HashSet
+- **Null elements needed**: Use HashSet
+- **Very large enums (> 64 constants)**: Memory grows with JumboEnumSet
 
-### When NOT to Use EnumSet
-- **Non-enum types**: Use HashSet
-- **Too many enums** (>128): Memory grows with JumboEnumSet
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashSet | Non-enum elements, null elements | Slower, more memory |
+| LinkedHashSet | Insertion order with non-enum | Slower, insertion order |
+| TreeSet | Sorted non-enum elements | O(log n), sorted |
+| ConcurrentHashMap.newKeySet() | Concurrent enum set | Thread-safe |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashSet | Non-enum elements, null elements |
-| LinkedHashSet | Insertion order with non-enum |
-| TreeSet | Sorted non-enum elements |
-| ConcurrentHashMap.newKeySet() | Concurrent enum set |
+### What Trade-offs Am I Making?
+- **Speed vs Generality**: Enum-only, fastest vs general-purpose, slower
+- **Memory vs Flexibility**: Very low memory vs more flexibility
+- **Immutability vs Performance**: Mutable vs Set.of() (immutable, slower for enums)
+- **Thread Safety**: Not thread-safe by default
+
+### What Would I Choose in Production?
+> Always use EnumSet for enum constants — it's the fastest Set implementation in Java. Use EnumSet.of() for small sets, EnumSet.range() for contiguous enums, EnumSet.complementOf() for "all except".
+
+### Common Code Review Comments
+- "This should be an EnumSet — you're using enum values as elements."
+- "EnumSet is the fastest Set implementation — always use it for enums."
+- "Consider using EnumSet.range() for contiguous enum values."
+- "This EnumSet is being iterated concurrently — use Collections.synchronizedSet()."
+
+### Common Production Mistakes
+
+> Notice: EnumSet doesn't allow null elements — it will throw NullPointerException.
+
+> Notice: EnumSet is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: EnumSet.of() is the most efficient factory method — use it instead of EnumSet.allOf() when possible.
+
+> Notice: EnumSet is a bit-vector — it's the most memory-efficient Set implementation for enums.
 
 ## 11. Debugging Tips
 
@@ -222,28 +243,66 @@ EnumSet object (on heap):
 - [ ] Factory methods used (not constructors)
 - [ ] Correct enum type specified
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where EnumSet Fits in System Design
+
+| Layer | Use Case | Why EnumSet |
+|-------|----------|-------------|
+| Service Layer | Feature flags | Bit-vector O(1) operations |
+| Configuration | Permission sets | Fast union/intersection |
+| Event Processing | Event type filtering | Bitwise set operations |
+| State Machine | State transitions | Fast membership check |
+| API Gateway | Request type routing | O(1) contains |
+
+### Integration Patterns
+
+```
+Client → API Gateway → EnumSet → Service → EnumSet → Client
+                    ↓
+            EnumSet → Flag Manager → EnumSet
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 64 constants | EnumSet with single long |
+| 64 - 128 constants | EnumSet with long[] |
+| > 128 constants | Consider HashSet |
+| Non-enum types | Use HashSet |
+
+### When to Replace EnumSet in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Non-enum elements | HashSet | General-purpose elements |
+| Null elements needed | HashSet | EnumSet rejects nulls |
+| Thread-safe set | ConcurrentHashMap.newKeySet() | Concurrent access |
+| Sorted enums | TreeSet | Sorted iteration |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | Memory exhaustion | OutOfMemoryError | Set max size |
 | Null injection | NullPointerException | Validate inputs |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
 | Java 5 | EnumSet introduced | High-performance enum set |
 | Java 9 | Factory methods | Immutable enum sets |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
 | EnumSet | 5.0 | Stable |
 | Factory methods | 5.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use factory methods, not constructors
 2. Never add null elements
@@ -251,14 +310,14 @@ EnumSet object (on heap):
 4. Use complementOf for opposite sets
 5. Use range for sequential enums
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Using with non-enum types
 2. Adding null elements
 3. Using constructors instead of factory methods
 4. Using HashSet for enum constants
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: EnumSet is always faster than HashSet
 **Reality:** For small enums yes, but for very large enums with many operations, HashSet may be competitive.
@@ -269,7 +328,7 @@ EnumSet object (on heap):
 ### Myth 3: EnumSet is thread-safe
 **Reality:** Not thread-safe. Use ConcurrentHashMap.newKeySet().
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - High-performance Set for enum types
 - Uses bit vector (long or long[])
@@ -278,7 +337,7 @@ EnumSet object (on heap):
 - Factory methods: allOf, noneOf, of, range, complementOf
 - Best for enum constant sets
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -287,7 +346,7 @@ EnumSet object (on heap):
 | Bit vector | Internal implementation |
 | Set operations | Union, intersection via bitwise |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does EnumSet work internally?** — Uses bit vector (long or long[]). Each bit corresponds to an enum constant.
 
@@ -299,7 +358,7 @@ EnumSet object (on heap):
 
 5. **When should you use EnumSet?** — When working with sets of enum constants.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - EnumSet](https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

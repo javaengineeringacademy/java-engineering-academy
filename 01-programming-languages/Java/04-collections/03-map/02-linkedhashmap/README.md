@@ -195,32 +195,52 @@ LinkedHashMap object (on heap):
 
 ## 10. Engineering Decision Framework
 
-### Use LinkedHashMap when:
+### When Should I Use This?
 - Insertion order matters
 - Access order (LRU cache) needed
 - Both HashMap speed and order needed
 - Building LRU caches
 
-### Avoid LinkedHashMap when:
-- Order doesn't matter (use HashMap)
-- Sorted keys needed (use TreeMap)
-- Memory is constrained (use HashMap)
-- Thread safety needed (use ConcurrentHashMap)
+### When Should I NOT Use This?
+- **Order doesn't matter**: Use HashMap (simpler, less memory)
+- **Sorted keys needed**: Use TreeMap
+- **Memory is constrained**: Use HashMap (lower memory)
+- **Thread safety needed**: Use ConcurrentHashMap
 
-### When NOT to Use LinkedHashMap
-- **No order needed**: Use HashMap (simpler, less memory)
-- **Sorted order**: Use TreeMap
-- **Memory**: Extra linked list pointers
+### What Are the Alternatives?
 
-### Alternatives
+| Alternative | When to Use | Trade-off |
+|-------------|-------------|-----------|
+| HashMap | Order doesn't matter | Faster, no ordering |
+| TreeMap | Sorted keys needed | O(log n), sorted |
+| ConcurrentHashLRUMap | Thread-safe LRU cache | Higher overhead |
+| Caffeine | Production-grade caching | Feature-rich, faster |
+| Guava Cache | Production-grade caching | Google library |
 
-| Alternative | When to Use |
-|-------------|-------------|
-| HashMap | Order doesn't matter |
-| TreeMap | Sorted keys needed |
-| ConcurrentHashLRUMap | Thread-safe LRU cache |
-| Caffeine | Production-grade caching |
-| Guava Cache | Production-grade caching |
+### What Trade-offs Am I Making?
+- **Order vs Memory**: Medium memory for insertion/order access
+- **Order vs Speed**: Slightly slower than HashMap
+- **Immutability vs Flexibility**: Mutable vs Map.of() (immutable)
+- **Thread Safety**: Not thread-safe by default
+
+### What Would I Choose in Production?
+> Use LinkedHashMap for insertion order — it's almost as fast as HashMap. Use HashMap if order doesn't matter — it's faster and uses less memory. For LRU caches, set accessOrder=true and override removeEldestEntry().
+
+### Common Code Review Comments
+- "Why are you using LinkedHashMap? HashMap is faster if you don't need order."
+- "This LinkedHashMap is for LRU cache — make sure to override removeEldestEntry()."
+- "Consider using Map.of() if this map is immutable."
+- "This map is being iterated concurrently — use Collections.synchronizedMap()."
+
+### Common Production Mistakes
+
+> Notice: LinkedHashMap is slightly slower than HashMap — don't use it if order doesn't matter.
+
+> Notice: LinkedHashMap memory overhead is higher than HashMap — each entry has a linked list node.
+
+> Notice: LinkedHashMap is not thread-safe — even for reads, concurrent modification can cause data corruption.
+
+> Notice: LinkedHashMap(accessOrder=true) moves entries on access — this affects iteration order.
 
 ## 11. Debugging Tips
 
@@ -240,7 +260,45 @@ LinkedHashMap object (on heap):
 - [ ] Thread safety handled
 - [ ] accessOrder flag set correctly
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where LinkedHashMap Fits in System Design
+
+| Layer | Use Case | Why LinkedHashMap |
+|-------|----------|-------------------|
+| Service Layer | LRU cache implementation | Access order mode |
+| API Gateway | Recent request tracking | Insertion order |
+| Caching | In-memory cache with eviction | removeEldestEntry() |
+| Session Store | Session ordering | Insertion/access order |
+| UI Layer | Recent items list | Insertion order for display |
+
+### Integration Patterns
+
+```
+Client → API Gateway → LinkedHashMap → Service → LinkedHashMap → Client
+                    ↓
+            LinkedHashMap → LRU Cache Manager → LinkedHashMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K entries | LinkedHashMap is optimal |
+| 10K - 100K entries | LinkedHashMap with proper sizing |
+| 100K - 1M entries | Consider Caffeine or Guava Cache |
+| > 1M entries | Consider Redis or external cache |
+
+### When to Replace LinkedHashMap in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Order doesn't matter | HashMap | Less memory overhead |
+| Sorted keys | TreeMap | O(log n) sorted operations |
+| Thread-safe ordered | Collections.synchronizedMap() | Concurrent access |
+| Production caching | Caffeine/Guava | Feature-rich, thread-safe |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -248,7 +306,7 @@ LinkedHashMap object (on heap):
 | Unbounded growth | DoS | Override removeEldestEntry() |
 | Mutable key manipulation | Data corruption | Use immutable objects |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -256,7 +314,7 @@ LinkedHashMap object (on heap):
 | Java 8 | Stream support | Stream processing |
 | Java 9 | Map.of() factory | Immutable map alternatives |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -264,7 +322,7 @@ LinkedHashMap object (on heap):
 | Stream support | 8.0 | Stable |
 | Map.of() | 9.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use insertion order for predictable iteration
 2. Use access order for LRU caches
@@ -272,7 +330,7 @@ LinkedHashMap object (on heap):
 4. Set initial capacity for known sizes
 5. Consider memory overhead vs HashMap
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. Using when order doesn't matter (use HashMap)
 2. Not limiting LRU cache size
@@ -280,7 +338,7 @@ LinkedHashMap object (on heap):
 4. Using for sorted data (use TreeMap)
 5. Using mutable objects as keys
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: LinkedHashMap is always slower than HashMap
 **Reality:** Same O(1) operations, but more memory overhead.
@@ -294,7 +352,7 @@ LinkedHashMap object (on heap):
 ### Myth 4: LinkedHashMap allows multiple null keys
 **Reality:** Allows at most one null key.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Hash table with linked list for insertion/access order
 - O(1) for get/put/remove
@@ -303,7 +361,7 @@ LinkedHashMap object (on heap):
 - Best for insertion order or LRU caches
 - Not thread-safe, use concurrent collections
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -313,7 +371,7 @@ LinkedHashMap object (on heap):
 | Insertion order | Key feature |
 | hashCode/equals | Contract for keys |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does LinkedHashMap maintain insertion order?** — Uses doubly-linked list connecting all entries.
 
@@ -325,7 +383,7 @@ LinkedHashMap object (on heap):
 
 5. **Is LinkedHashMap thread-safe?** — No. Use ConcurrentHashMap or synchronized wrapper.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - LinkedHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)

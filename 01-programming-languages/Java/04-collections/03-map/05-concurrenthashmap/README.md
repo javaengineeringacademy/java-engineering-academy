@@ -280,7 +280,45 @@ Node object: ~32 bytes
 - [ ] Using mappingCount() instead of size()
 - [ ] Considering compute/computeIfAbsent for atomic updates
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where ConcurrentHashMap Fits in System Design
+
+| Layer | Use Case | Why ConcurrentHashMap |
+|-------|----------|----------------------|
+| Service Layer | Concurrent session store | Fine-grained locking |
+| Caching | Thread-safe local cache | O(1) atomic operations |
+| Connection Pool | Connection tracking | Thread-safe get/put |
+| Event Processing | Concurrent event map | Lock-free reads |
+| Configuration | Dynamic config store | Thread-safe updates |
+
+### Integration Patterns
+
+```
+Client → API Gateway → ConcurrentHashMap → Service → ConcurrentHashMap → Client
+                    ↓
+            ConcurrentHashMap → Cache Manager → ConcurrentHashMap
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K entries | ConcurrentHashMap is optimal |
+| 10K - 100K entries | ConcurrentHashMap with proper sizing |
+| 100K - 1M entries | Consider distributed cache |
+| > 1M entries | Consider Redis or external storage |
+
+### When to Replace ConcurrentHashMap in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Single-threaded | HashMap | No concurrency overhead |
+| Null keys/values needed | HashMap | Allows nulls |
+| Sorted keys | ConcurrentSkipListMap | Sorted concurrent map |
+| Production caching | Caffeine | Feature-rich, faster |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -289,7 +327,7 @@ Node object: ~32 bytes
 | DoS via hash collision | Service degradation | Rate limiting |
 | Null injection | NullPointerException | Validate inputs |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -300,7 +338,7 @@ Node object: ~32 bytes
 | Java 8 | Bulk operations | forEach, reduce, search |
 | Java 9 | Map.of() factory | Immutable map alternatives |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -310,7 +348,7 @@ Node object: ~32 bytes
 | Bulk operations | 8.0 | Stable |
 | Map.of() | 9.0 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. Use putIfAbsent for atomic inserts
 2. Use replace for conditional updates
@@ -320,7 +358,7 @@ Node object: ~32 bytes
 6. Consider Caffeine for production caching
 7. Monitor map size to prevent memory issues
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using null keys/values**: ConcurrentHashMap does not allow null
 2. **Assuming size() is O(1)**: It's O(n) in Java 7, approximate in Java 8+
@@ -328,7 +366,7 @@ Node object: ~32 bytes
 4. **Not using atomic operations**: putIfAbsent, replace, compute
 5. **Ignoring memory growth**: Implement bounds
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: ConcurrentHashMap is always faster than Hashtable
 **Reality:** Depends on concurrency level and access patterns.
@@ -342,7 +380,7 @@ Node object: ~32 bytes
 ### Myth 4: ConcurrentHashMap iterators are fail-fast
 **Reality:** Iterators are weakly consistent, not fail-fast.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Thread-safe hash table with fine-grained locking
 - O(1) for get/put/remove
@@ -351,7 +389,7 @@ Node object: ~32 bytes
 - CAS + synchronized (Java 8+)
 - Use atomic operations for thread safety
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -361,7 +399,7 @@ Node object: ~32 bytes
 | Atomic operations | Thread-safe updates |
 | Weakly consistent iterators | Iterator behavior |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **How does ConcurrentHashMap achieve thread safety?** — CAS for empty slots, synchronized on bucket head for collision chains.
 
@@ -375,7 +413,7 @@ Node object: ~32 bytes
 
 6. **When should you use ConcurrentHashMap?** — When thread-safe map is required with high concurrency.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html)
 - [Java Concurrency in Practice](https://jcip.net/)

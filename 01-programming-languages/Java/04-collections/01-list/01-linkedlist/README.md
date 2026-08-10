@@ -283,7 +283,45 @@ LinkedList object (on heap):
 - [ ] Thread safety handled for concurrent access
 - [ ] Not using as default List (ArrayList is usually better)
 
-## 13. Security Considerations
+## 13. Architecture Considerations
+
+### Where LinkedList Fits in System Design
+
+| Layer | Use Case | Why LinkedList |
+|-------|----------|----------------|
+| API Gateway | Request/response buffering | O(1) append at ends |
+| Service Layer | Event-driven message passing | Fast add/remove at known positions |
+| Event Processing | Event queue | Efficient FIFO/Deque operations |
+| Task Scheduling | Job queue | O(1) enqueue/dequeue |
+| Graph Algorithms | Adjacency list | Frequent insert/remove during traversal |
+
+### Integration Patterns
+
+```
+Client → API Gateway → LinkedList → Service → LinkedList → Client
+                    ↓
+            LinkedList → Event Bus → LinkedList
+```
+
+### Scaling Considerations
+
+| Scale | Recommendation |
+|-------|----------------|
+| < 10K elements | LinkedList is optimal |
+| 10K - 100K elements | LinkedList with proper sizing |
+| 100K - 1M elements | Consider ArrayDeque (faster) |
+| > 1M elements | Consider database or external storage |
+
+### When to Replace LinkedList in Architecture
+
+| Pattern | Replacement | Why |
+|---------|-------------|-----|
+| Random access by index | ArrayList | O(1) vs O(n) access |
+| FIFO/LIFO queue | ArrayDeque | Faster, less memory |
+| Thread-safe list | CopyOnWriteArrayList | Better read performance |
+| Sorted data | TreeSet | O(log n) operations |
+
+## 14. Security Considerations
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
@@ -291,7 +329,7 @@ LinkedList object (on heap):
 | ConcurrentModificationException | Service degradation | Use concurrent collections |
 | Null pointer | Application crash | Null checks, use Optional |
 
-## 14. Evolution & Modernization
+## 15. Evolution & Modernization
 
 | Version | Change | Impact |
 |---------|--------|--------|
@@ -300,7 +338,7 @@ LinkedList object (on heap):
 | Java 8 | Stream support | Can use with streams |
 | Java 21 | SequencedCollection | getFirst()/getLast() added |
 
-## 15. Version Validation
+## 16. Version Validation
 
 | Feature | Java Version | Status |
 |---------|-------------|--------|
@@ -309,7 +347,7 @@ LinkedList object (on heap):
 | Stream support | 8.0 | Stable |
 | SequencedCollection | 21 | Stable |
 
-## 16. Best Practices
+## 17. Best Practices
 
 1. **Use as Deque**: LinkedList is faster as Queue/Deque than as List
 2. **Prefer ArrayDeque**: For FIFO/LIFO operations
@@ -318,7 +356,7 @@ LinkedList object (on heap):
 5. **Consider memory**: 6x more memory than ArrayList per element
 6. **Pre-allocate if possible**: Not directly supported, but can add elements in order
 
-## 17. Common Mistakes
+## 18. Common Mistakes
 
 1. **Using as default List**: ArrayList is usually better
 2. **Calling get() in loop**: O(n) per call, use Iterator instead
@@ -326,7 +364,7 @@ LinkedList object (on heap):
 4. **Using for random access**: LinkedList has O(n) indexed access
 5. **Not considering ArrayDeque**: For queue/deque operations
 
-## 18. Common Myths
+## 19. Common Myths
 
 ### Myth 1: LinkedList is always faster for insert/remove
 **Reality:** Only O(1) at known positions. Finding position is O(n).
@@ -340,7 +378,7 @@ LinkedList object (on heap):
 ### Myth 4: LinkedList is thread-safe
 **Reality:** Not thread-safe, use concurrent collections.
 
-## 19. One-Minute Revision
+## 20. One-Minute Revision
 
 - Doubly-linked list implementation of List and Deque
 - O(1) add/remove at ends, O(n) for indexed access
@@ -349,7 +387,7 @@ LinkedList object (on heap):
 - Not thread-safe, use concurrent collections
 - Prefer ArrayDeque for queue/deque operations
 
-## 20. Related Topics
+## 21. Related Topics
 
 | Topic | Relationship |
 |-------|-------------|
@@ -359,7 +397,7 @@ LinkedList object (on heap):
 | Queue | LinkedList implements Queue |
 | Iterator | Used for safe traversal |
 
-## 21. Interview Questions
+## 22. Interview Questions
 
 1. **What is the time complexity of LinkedList.get(index)?** — O(n). Must traverse from head or tail.
 
@@ -373,7 +411,7 @@ LinkedList object (on heap):
 
 6. **Is LinkedList thread-safe?** — No. Use Collections.synchronizedList() or CopyOnWriteArrayList for concurrent access.
 
-## 22. References
+## 23. References
 
 - [Oracle Java Documentation - LinkedList](https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html)
 - [Java Collections Framework Tutorial](https://docs.oracle.com/javase/tutorial/collections/)
