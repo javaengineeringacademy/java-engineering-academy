@@ -39,3 +39,49 @@
 
 ### Q12: How do you safely iterate over a HashMap?
 **Answer:** Use Iterator and call iterator.remove() for removal, or use forEach() method. Don't modify the map during for-each iteration.
+
+## True/False
+
+**Q13: HashMap maintains insertion order.**
+Answer: False — HashMap does not maintain any order. Use LinkedHashMap for insertion order.
+
+**Q14: HashMap allows multiple null keys.**
+Answer: False — HashMap allows at most one null key.
+
+**Q15: HashMap is faster than Hashtable because it is not synchronized.**
+Answer: True — HashMap has no synchronization overhead, making it faster in single-threaded scenarios.
+
+**Q16: HashMap doubles its capacity when it resizes.**
+Answer: True — HashMap capacity doubles (16 → 32 → 64 → ...) when the threshold is exceeded.
+
+**Q17: You can use primitive types as HashMap keys.**
+Answer: False — HashMap requires object keys. Primitives are autoboxed to their wrapper classes (int → Integer).
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+Map<String, Integer> map = new HashMap<>();
+map.put("a", 1);
+map.put("b", 2);
+map.put("a", 3);
+System.out.println(map.get("a"));
+```
+Answer: 3 — put("a", 3) replaces the previous value for key "a".
+
+**Q19: What does this code print?**
+```java
+Map<String, Integer> map = new HashMap<>();
+map.put(null, 0);
+map.put("key", 1);
+System.out.println(map.size());
+```
+Answer: 2 — HashMap allows one null key.
+
+**Q20: What does this code print?**
+```java
+Map<String, Integer> map = new HashMap<>();
+map.put("x", 10);
+System.out.println(map.getOrDefault("y", 99));
+```
+Answer: 99 — key "y" doesn't exist, so default value 99 is returned.

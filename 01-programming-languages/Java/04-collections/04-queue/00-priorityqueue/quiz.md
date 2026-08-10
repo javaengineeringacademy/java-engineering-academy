@@ -39,3 +39,52 @@
 
 ### Q12: Can you use PriorityQueue as a general-purpose sorting mechanism?
 **Answer:** Technically yes (add all elements, then poll them out), but it's inefficient. Use Collections.sort() or Arrays.sort() instead.
+
+## True/False
+
+**Q13: PriorityQueue is a FIFO queue.**
+Answer: False — PriorityQueue is a priority queue, not FIFO. Elements are served by priority, not insertion order.
+
+**Q14: PriorityQueue allows duplicate elements.**
+Answer: True — PriorityQueue allows duplicate elements (unlike TreeSet).
+
+**Q15: PriorityQueue uses a binary heap internally.**
+Answer: True — PriorityQueue uses a binary heap (array-based) for efficient priority operations.
+
+**Q16: PriorityQueue.get(0) returns the highest priority element.**
+Answer: False — PriorityQueue doesn't support indexed access. Use peek() to get the head element.
+
+**Q17: PriorityQueue automatically sorts elements when you add them.**
+Answer: True — Elements are inserted into the heap structure, maintaining the heap property.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+pq.add(3);
+pq.add(1);
+pq.add(2);
+System.out.println(pq.poll());
+```
+Answer: 1 — poll() returns the smallest element (natural ordering).
+
+**Q19: What does this code print?**
+```java
+PriorityQueue<String> pq = new PriorityQueue<>();
+pq.add("banana");
+pq.add("apple");
+pq.add("cherry");
+System.out.println(pq.peek());
+```
+Answer: apple — peek() returns the smallest element alphabetically.
+
+**Q20: What does this code print?**
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+pq.add(3);
+pq.add(1);
+pq.add(2);
+System.out.println(pq.poll());
+```
+Answer: 3 — reverseOrder() makes it a max-heap, so poll() returns the largest.

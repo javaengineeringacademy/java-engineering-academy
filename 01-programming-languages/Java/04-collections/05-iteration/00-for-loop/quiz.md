@@ -39,3 +39,50 @@
 
 ### Q12: What is the traditional for loop also called?
 **Answer:** The C-style for loop.
+
+## True/False
+
+**Q13: A for loop always executes at least once.**
+Answer: False — If the condition is false initially, the loop body never executes.
+
+**Q14: The loop variable declared in for (int i = 0; ...) is accessible outside the loop.**
+Answer: False — The variable is scoped to the for loop block only.
+
+**Q15: for (;;) creates an infinite loop.**
+Answer: True — An empty condition is always true, creating an infinite loop.
+
+**Q16: You can use break to exit a for loop early.**
+Answer: True — break immediately terminates the loop.
+
+**Q17: continue skips the rest of the loop body and moves to the next iteration.**
+Answer: True — continue jumps to the update expression and then checks the condition.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+for (int i = 0; i < 5; i++) {
+    if (i == 3) break;
+    System.out.print(i + " ");
+}
+```
+Answer: 0 1 2 — Loop breaks when i equals 3.
+
+**Q19: What does this code print?**
+```java
+for (int i = 0; i < 5; i++) {
+    if (i % 2 == 0) continue;
+    System.out.print(i + " ");
+}
+```
+Answer: 1 3 — continue skips even numbers.
+
+**Q20: What does this code print?**
+```java
+int sum = 0;
+for (int i = 1; i <= 4; i++) {
+    sum += i;
+}
+System.out.println(sum);
+```
+Answer: 10 — sum = 1 + 2 + 3 + 4 = 10.

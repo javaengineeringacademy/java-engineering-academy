@@ -62,6 +62,51 @@ b) It has no synchronization
 c) It is final
 d) Both a and b
 
+## True/False
+
+**11. ArrayList uses a linked list internally.**
+Answer: False — ArrayList uses an Object array (Object[]) internally.
+
+**12. ArrayList doubles its capacity each time it grows.**
+Answer: False — ArrayList grows by 50% (oldCapacity + oldCapacity >> 1).
+
+**13. ArrayList.get(0) has O(1) time complexity.**
+Answer: True — Array index access is constant time.
+
+**14. ArrayList is faster than LinkedList for random access.**
+Answer: True — ArrayList has O(1) random access vs LinkedList's O(n).
+
+**15. ArrayList.trimToSize() increases the capacity.**
+Answer: False — trimToSize() reduces capacity to match current size.
+
+## Code Output
+
+**16. What does this code print?**
+```java
+List<String> list = new ArrayList<>();
+list.add("A");
+list.add("B");
+list.add("C");
+list.remove(1);
+System.out.println(list);
+```
+Answer: [A, C] — remove(1) removes element at index 1 ("B").
+
+**17. What does this code print?**
+```java
+List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3));
+list.add(0, 10);
+System.out.println(list);
+```
+Answer: [10, 1, 2, 3] — add(0, 10) inserts at index 0.
+
+**18. What does this code print?**
+```java
+List<String> list = new ArrayList<>(Arrays.asList("X", "Y"));
+System.out.println(list.get(2));
+```
+Answer: IndexOutOfBoundsException — Index 2 out of bounds for size 2.
+
 ---
 
 ## Answers

@@ -58,30 +58,13 @@ private void grow(int minCapacity) {
 }
 ```
 
-(Showing lines 1-30 of 288. Use offset=31 to continue.)
-
-## 3. Internal Working
-
-```java
-// ArrayList uses Object[] internally
-private transient Object[] elementData;
-private int size;
-
-// Growth factor: 1.5x
-private void grow(int minCapacity) {
-    int oldCapacity = elementData.length;
-    int newCapacity = oldCapacity + (oldCapacity >> 1); // 1.5x
-    elementData = Arrays.copyOf(elementData, newCapacity);
-}
-```
-
 ### Growth Factor Analysis
 
 | Initial | After 10 adds | After 100 adds | After 1000 adds |
 |---------|---------------|----------------|-----------------|
 | 10 | 15 | 169 | 1706 |
 
-## 4. Constructors
+## 3. Constructors
 
 ```java
 ArrayList<String> list = new ArrayList<>();              // Default capacity 10

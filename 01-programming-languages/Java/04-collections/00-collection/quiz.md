@@ -62,6 +62,50 @@ b) containsAll()
 c) hasAll()
 d) includesAll()
 
+## True/False
+
+**11. Collection is a class, not an interface.**
+Answer: False — Collection is an interface. Implementations include ArrayList, HashSet, etc.
+
+**12. The add() method returns true if the element was added successfully.**
+Answer: True — add(E e) returns true if the collection changed as a result of the call.
+
+**13. All Collection implementations allow null elements.**
+Answer: False — Some implementations like EnumSet and ConcurrentHashMap do not allow nulls.
+
+**14. The iterator() method returns an Iterable object.**
+Answer: False — iterator() returns an Iterator object. The class itself implements Iterable.
+
+**15. size() returns the capacity of the collection, not the number of elements.**
+Answer: False — size() returns the number of elements. Capacity is an internal detail.
+
+## Code Output
+
+**16. What does this code print?**
+```java
+Collection<String> col = new ArrayList<>();
+col.add("A");
+col.add("B");
+col.add("A");
+System.out.println(col.size());
+```
+Answer: 3 — Collection allows duplicate elements.
+
+**17. What does this code print?**
+```java
+Collection<Integer> col = List.of(1, 2, 3);
+System.out.println(col.isEmpty());
+```
+Answer: false — List.of creates a collection with 3 elements.
+
+**18. What does this code print?**
+```java
+Collection<String> col = new ArrayList<>(Arrays.asList("X", "Y", "Z"));
+Object[] arr = col.toArray();
+System.out.println(arr.length);
+```
+Answer: 3 — toArray() returns an array with all elements.
+
 ---
 
 ## Answers
