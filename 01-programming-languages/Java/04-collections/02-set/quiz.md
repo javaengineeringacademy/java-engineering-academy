@@ -62,6 +62,52 @@ b) TreeSet is sorted
 c) HashSet allows null
 d) All of the above
 
+## True/False
+
+**11. Set allows duplicate elements.**
+Answer: False — Set enforces uniqueness; duplicates are rejected.
+
+**12. HashSet maintains insertion order.**
+Answer: False — HashSet has no guaranteed order. Use LinkedHashSet for insertion order.
+
+**13. TreeSet sorts elements using natural ordering or Comparator.**
+Answer: True — TreeSet uses Comparable or Comparator for sorting.
+
+**14. Set can contain multiple null elements.**
+Answer: False — Most implementations allow at most one null element.
+
+**15. Set.of() returns a mutable set.**
+Answer: False — Set.of() returns an immutable set.
+
+## Code Output
+
+**16. What does this code print?**
+```java
+Set<String> set = new HashSet<>();
+set.add("A");
+set.add("B");
+set.add("A");
+System.out.println(set.size());
+```
+Answer: 2 — Duplicate "A" is rejected, set contains only A and B.
+
+**17. What does this code print?**
+```java
+Set<Integer> set = new TreeSet<>();
+set.add(5);
+set.add(1);
+set.add(3);
+System.out.println(set);
+```
+Answer: [1, 3, 5] — TreeSet sorts elements in natural order.
+
+**18. What does this code print?**
+```java
+Set<String> set = Set.of("X", "Y", "Z");
+System.out.println(set.contains("Y"));
+```
+Answer: true — Set.of() creates a set with all three elements.
+
 ---
 
 ## Answers

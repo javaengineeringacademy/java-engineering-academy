@@ -39,3 +39,54 @@
 
 ### Q12: What is interpolation search and how does it differ from binary search?
 **Answer:** Interpolation search estimates position based on value distribution; it is O(log log n) for uniform data but O(n) worst case.
+
+## True/False
+
+**Q13: Binary search can be implemented recursively.**
+Answer: True — Both iterative and recursive implementations exist.
+
+**Q14: Binary search has O(1) space complexity in iterative version.**
+Answer: True — Iterative version uses constant space.
+
+**Q15: Binary search works on LinkedList efficiently.**
+Answer: False — LinkedList has O(n) random access, making binary search inefficient.
+
+**Q16: mid = (left + right) / 2 can cause integer overflow.**
+Answer: True — Use left + (right - left) / 2 instead.
+
+**Q17: Binary search always finds the first occurrence of duplicate elements.**
+Answer: False — Binary search finds any occurrence; modifications needed for first/last.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+int[] arr = {1, 3, 5, 7, 9};
+int left = 0, right = arr.length - 1;
+while (left <= right) {
+    int mid = left + (right - left) / 2;
+    if (arr[mid] == 7) {
+        System.out.println(mid);
+        break;
+    }
+    if (arr[mid] < 7) left = mid + 1;
+    else right = mid - 1;
+}
+```
+Answer: 3 — Binary search finds 7 at index 3.
+
+**Q19: What does this code print?**
+```java
+int[] arr = {1, 3, 5, 7, 9};
+int result = Arrays.binarySearch(arr, 4);
+System.out.println(result);
+```
+Answer: -3 — Element not found; negative value indicates insertion point.
+
+**Q20: What does this code print?**
+```java
+int[] arr = {10, 20, 30, 40, 50};
+int idx = Arrays.binarySearch(arr, 30);
+System.out.println(idx);
+```
+Answer: 2 — Binary search finds 30 at index 2.

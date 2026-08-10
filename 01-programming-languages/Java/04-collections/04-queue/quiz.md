@@ -39,3 +39,51 @@
 
 ### Q12: How do you implement a stack using a Queue?
 **Answer:** Use ArrayDeque as a stack (push/pop operations) — it's faster than Stack class.
+
+## True/False
+
+**Q13: Queue follows FIFO (First-In-First-Out) principle.**
+Answer: True — Elements are added at tail and removed from head.
+
+**Q14: PriorityQueue maintains insertion order.**
+Answer: False — PriorityQueue orders by priority, not insertion order.
+
+**Q15: poll() throws exception when queue is empty.**
+Answer: False — poll() returns null when empty. remove() throws exception.
+
+**Q16: Deque can be used as both queue and stack.**
+Answer: True — Deque supports add/remove from both ends.
+
+**Q17: All Queue implementations allow null elements.**
+Answer: False — PriorityQueue and ArrayDeque don't allow nulls.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+Queue<Integer> queue = new LinkedList<>();
+queue.offer(1);
+queue.offer(2);
+queue.offer(3);
+System.out.println(queue.poll());
+```
+Answer: 1 — poll() removes and returns head (FIFO order).
+
+**Q19: What does this code print?**
+```java
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+pq.offer(3);
+pq.offer(1);
+pq.offer(2);
+System.out.println(pq.peek());
+```
+Answer: 1 — peek() returns smallest element (natural ordering).
+
+**Q20: What does this code print?**
+```java
+Deque<String> deque = new ArrayDeque<>();
+deque.push("A");
+deque.push("B");
+System.out.println(deque.pop());
+```
+Answer: B — push/pop treat deque as stack (LIFO).

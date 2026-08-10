@@ -39,7 +39,7 @@ The `Set` interface is a collection that contains no duplicate elements. It mode
 | Membership testing | O(1) for HashSet, O(log n) for TreeSet |
 | Ordering | Depends on implementation |
 | Null | At most one null element (HashSet) |
-|数学 Set | Models mathematical set |
+| Mathematical Set | Models mathematical set |
 
 ## 3. Set Contract
 

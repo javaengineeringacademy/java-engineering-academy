@@ -39,3 +39,46 @@
 
 ### Q12: How do you sort a Map by values?
 **Answer:** Use map.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect()...
+
+## True/False
+
+**Q13: Comparable defines natural ordering.**
+Answer: True — Comparable is implemented by the class itself.
+
+**Q14: Comparator can define multiple orderings for the same class.**
+Answer: True — You can create multiple Comparator instances.
+
+**Q15: Collections.sort() modifies the original list.**
+Answer: True — Collections.sort() sorts the list in place.
+
+**Q16: TimSort is a stable sorting algorithm.**
+Answer: True — TimSort preserves order of equal elements.
+
+**Q17: You can sort a List without Comparable or Comparator.**
+Answer: False — You need either Comparable or Comparator.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+List<Integer> list = Arrays.asList(3, 1, 4, 1, 5);
+Collections.sort(list);
+System.out.println(list);
+```
+Answer: [1, 1, 3, 4, 5] — Collections.sort() sorts in natural order.
+
+**Q19: What does this code print?**
+```java
+List<String> list = Arrays.asList("banana", "apple", "cherry");
+list.sort(Comparator.reverseOrder());
+System.out.println(list);
+```
+Answer: [cherry, banana, apple] — reverseOrder() sorts in descending order.
+
+**Q20: What does this code print?**
+```java
+int[] arr = {5, 2, 8, 1, 9};
+Arrays.sort(arr);
+System.out.println(arr[2]);
+```
+Answer: 5 — After sorting: [1, 2, 5, 8, 9], arr[2] = 5.

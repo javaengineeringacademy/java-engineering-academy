@@ -62,6 +62,51 @@ b) delete(index)
 c) removeElement(index)
 d) erase(index)
 
+## True/False
+
+**11. List maintains insertion order.**
+Answer: True — List guarantees elements are in insertion order.
+
+**12. ArrayList allows duplicate elements.**
+Answer: True — List allows duplicates (unlike Set).
+
+**13. LinkedList is faster than ArrayList for random access.**
+Answer: False — ArrayList has O(1) random access; LinkedList has O(n).
+
+**14. List can contain multiple null elements.**
+Answer: True — List allows multiple null elements.
+
+**15. subList() returns a copy of the list portion.**
+Answer: False — subList() returns a view, not a copy.
+
+## Code Output
+
+**16. What does this code print?**
+```java
+List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+list.set(1, "X");
+System.out.println(list);
+```
+Answer: [A, X, C] — set(1, "X") replaces element at index 1.
+
+**17. What does this code print?**
+```java
+List<Integer> list = new LinkedList<>();
+list.add(1);
+list.add(2);
+list.add(3);
+System.out.println(list.get(1));
+```
+Answer: 2 — get(1) returns element at index 1.
+
+**18. What does this code print?**
+```java
+List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+list.remove("B");
+System.out.println(list.size());
+```
+Answer: 2 — remove("B") removes the element, size becomes 2.
+
 ---
 
 ## Answers

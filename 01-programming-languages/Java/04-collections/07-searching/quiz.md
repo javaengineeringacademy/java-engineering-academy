@@ -39,3 +39,46 @@
 
 ### Q12: What is the difference between findFirst() and findAny()?
 **Answer:** findFirst() returns the first element (ordered). findAny() returns any element (faster for parallel streams).
+
+## True/False
+
+**Q13: Linear search requires sorted data.**
+Answer: False — Linear search works on any data.
+
+**Q14: Binary search has O(n) time complexity.**
+Answer: False — Binary search has O(log n) time complexity.
+
+**Q15: indexOf() uses linear search internally.**
+Answer: True — indexOf() scans elements sequentially.
+
+**Q16: Binary search is always faster than linear search.**
+Answer: False — For small data, linear search can be faster.
+
+**Q17: HashSet.contains() uses binary search.**
+Answer: False — HashSet uses hash-based lookup (O(1)).
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+List<Integer> list = Arrays.asList(1, 3, 5, 7, 9);
+int index = Collections.binarySearch(list, 5);
+System.out.println(index);
+```
+Answer: 2 — Binary search returns index of element 5.
+
+**Q19: What does this code print?**
+```java
+List<Integer> list = Arrays.asList(1, 3, 5, 7, 9);
+int index = Collections.binarySearch(list, 4);
+System.out.println(index);
+```
+Answer: -3 — Negative value indicates insertion point (-(insertion point) - 1).
+
+**Q20: What does this code print?**
+```java
+String[] arr = {"a", "b", "c", "d"};
+int index = Arrays.binarySearch(arr, "c");
+System.out.println(index);
+```
+Answer: 2 — Binary search returns index of "c".

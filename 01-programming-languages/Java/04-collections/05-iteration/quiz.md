@@ -39,3 +39,52 @@
 
 ### Q12: How does Java 8 forEach() work internally?
 **Answer:** forEach() is a default method on Iterable that calls accept() on each element using Consumer interface.
+
+## True/False
+
+**Q13: for-each loop is faster than traditional for loop.**
+Answer: False — Both have similar performance; for-each is syntactic sugar.
+
+**Q14: Iterator can traverse both List and Set.**
+Answer: True — Iterator works on any Collection.
+
+**Q15: ListIterator can traverse in both directions.**
+Answer: True — ListIterator has hasNext() and hasPrevious().
+
+**Q16: Enumeration is the preferred way to iterate in modern Java.**
+Answer: False — Enumeration is legacy; use Iterator or for-each.
+
+**Q17: Spliterator is used for parallel stream processing.**
+Answer: True — Spliterator splits data for parallel processing.
+
+## Code Output
+
+**Q18: What does this code print?**
+```java
+List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
+int sum = 0;
+for (int n : list) {
+    if (n % 2 == 0) sum += n;
+}
+System.out.println(sum);
+```
+Answer: 6 — Sum of even numbers: 2 + 4 = 6.
+
+**Q19: What does this code print?**
+```java
+List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+Iterator<String> it = list.iterator();
+while (it.hasNext()) {
+    String s = it.next();
+    if (s.equals("B")) it.remove();
+}
+System.out.println(list);
+```
+Answer: [A, C] — Iterator.remove() safely removes "B".
+
+**Q20: What does this code print?**
+```java
+List<Integer> list = Arrays.asList(1, 2, 3);
+list.forEach(n -> System.out.print(n + " "));
+```
+Answer: 1 2 3 — forEach prints each element.
