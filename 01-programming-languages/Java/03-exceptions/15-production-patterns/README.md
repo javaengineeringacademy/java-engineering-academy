@@ -39,6 +39,58 @@ afterthoughts.**
 
 ---
 
+## Global Exception Handler Flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  Request Lifecycle                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌───────────────┐                                      │
+│  │ HTTP Request  │                                      │
+│  └───────┬───────┘                                      │
+│          │                                              │
+│          ▼                                              │
+│  ┌───────────────────────────┐                          │
+│  │ Controller Method         │                          │
+│  └───────┬───────────────────┘                          │
+│          │                                              │
+│          │  throws exception                            │
+│          ▼                                              │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │          @RestControllerAdvice / Filter           │   │
+│  │                                                  │   │
+│  │  ┌──────────────────────────────────────────┐    │   │
+│  │  │         Exception Type?                  │    │   │
+│  │  └────────┬─────────┬──────────┬────────────┘    │   │
+│  │           │         │          │                 │   │
+│  │     ┌─────┴───┐ ┌───┴─────┐ ┌─┴──────────┐     │   │
+│  │     │Resource │ │Validation│ │  Generic   │     │   │
+│  │     │Not Found│ │ Exception │ │  Exception │     │   │
+│  │     └────┬────┘ └────┬────┘ └─────┬──────┘     │   │
+│  │          │           │            │             │   │
+│  │          ▼           ▼            ▼             │   │
+│  │      404 Not    400 Bad      500 Internal      │   │
+│  │        Found     Request     Server Error      │   │
+│  │          │           │            │             │   │
+│  │          └───────────┴────────────┘             │   │
+│  │                      │                          │   │
+│  │                      ▼                          │   │
+│  │              ┌──────────────────┐               │   │
+│  │              │  ErrorResponse   │               │   │
+│  │              │  { code, msg,   │               │   │
+│  │              │    traceId }    │               │   │
+│  │              └──────────────────┘               │   │
+│  └──────────────────────────────────────────────────┘   │
+│          │                                              │
+│          ▼                                              │
+│  ┌───────────────────┐                                  │
+│  │ JSON Response     │                                  │
+│  │ (structured)      │                                  │
+│  └───────────────────┘                                  │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## Global Exception Handling
 
 Instead of catching exceptions in every controller or service, centralize handling
@@ -305,6 +357,19 @@ try (Scope scope = tracer.activateSpan(span)) {
 | **Silent**  | Single 500 error       | Log only, no alert        |
 
 ---
+
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Global Exception Handler | Centralize exception handling in `@RestControllerAdvice` or filters |
+| Structured Error Responses | Uniform JSON structure: errorCode, message, timestamp, traceId |
+| Exception-to-HTTP Mapping | Map exception types to appropriate HTTP status codes (404, 400, 500, etc.) |
+| Monitoring Integration | Log exceptions with full stack trace; integrate with Sentry/DataDog/ELK |
+| Alerting Strategy | Set thresholds for 5xx errors; critical/warning/info levels |
+| Trace IDs | Generate correlation IDs for debugging distributed systems |
+| Security | Never expose internal details; sanitize error outputs |
+| Centralized Handling Benefits | Single responsibility, consistent responses, easier maintenance, security |
 
 ---
 **Continue:** [Part 2](README-Part2.md)

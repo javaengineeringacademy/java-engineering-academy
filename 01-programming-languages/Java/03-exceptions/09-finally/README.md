@@ -93,6 +93,44 @@ try {
 // Output: try, finally
 ```
 
+## try-catch-finally Execution Order
+
+```
+┌──────────────────────────────────────┐
+│           try block                  │
+└──────────────┬───────────────────────┘
+               │
+        ┌──────┴──────┐
+        │ Exception?  │
+        └──────┬──────┘
+       No      │      Yes
+    ┌──────────┘      └──────────┐
+    ▼                            ▼
+┌──────────────┐       ┌──────────────────┐
+│ (skip catch) │       │  catch block     │
+└──────┬───────┘       │  (if type matches)│
+       │               └────────┬─────────┘
+       │                        │
+       └───────────┬────────────┘
+                   ▼
+         ┌──────────────────┐
+         │  finally block   │
+         │  (ALWAYS RUNS)   │
+         └────────┬─────────┘
+                  │
+           ┌──────┴──────┐
+           │ Return/throw│
+           │ in finally? │
+           └──────┬──────┘
+            Yes   │   No
+        ┌─────────┘    └─────────┐
+        ▼                        ▼
+  ┌──────────┐          ┌──────────────┐
+  │ Override │          │ Continue     │
+  │ return   │          │ normally     │
+  └──────────┘          └──────────────┘
+```
+
 ### Exception in catch
 
 ```java
@@ -235,6 +273,19 @@ static void preserveException() {
     }
 }
 ```
+
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Finally Block | Guaranteed execution for cleanup regardless of how try exits |
+| Execution Order | try → catch (if exception) → finally (always); finally runs before return |
+| Try-with-Resources | Modern alternative to finally for AutoCloseable resources (Java 7+) |
+| Return Override | `return` in finally overrides try's return value — avoid this dangerous pattern |
+| Exception Interaction | Exception in finally overrides try's exception; original is lost |
+| When to Use Finally | Non-Closeable cleanup (locks, ThreadLocal), legacy code, multiple cleanup points |
+| Three Valid Forms | try-finally, try-catch-finally, try-catch (without finally) |
+| JVM Enforcement | Compiler inserts finally code into every exit path at bytecode level |
 
 ---
 **Continue:** [Part 2](README-Part2.md)

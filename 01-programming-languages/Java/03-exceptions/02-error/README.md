@@ -59,6 +59,31 @@ public class Error extends Throwable {
 | Catchable | Technically yes, practically no |
 | Examples | `OutOfMemoryError`, `StackOverflowError`, `NoClassDefFoundError` |
 
+## Error Hierarchy
+
+```
+                    ┌───────────────────┐
+                    │      Throwable     │
+                    └─────────┬─────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    │       Error        │
+                    └─────────┬─────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          │                   │                   │
+┌─────────┴─────────┐ ┌──────┴───────┐ ┌─────────┴─────────┐
+│ VirtualMachineError│ │ LinkageError │ │   AssertionError  │
+└─────────┬─────────┘ └──────┬───────┘ └───────────────────┘
+          │                   │
+    ┌─────┴─────┐     ┌──────┴───────┐
+    │           │     │              │
+┌───┴───┐ ┌────┴───┐ ┌┴─────────────┐ ┌──────────────┐
+│OutOfMem│ │StackOvr│ │NoClassDef    │ │ClassFormat   │
+│oryError│ │flowErr │ │FoundError    │ │Error         │
+└────────┘ └────────┘ └──────────────┘ └──────────────┘
+```
+
 ## Error Subtypes
 
 ### VirtualMachineError

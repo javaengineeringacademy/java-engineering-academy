@@ -209,5 +209,18 @@ try {
 
 If you catch an exception, at minimum log it. Ideally, either handle it properly or rethrow it.
 
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| RuntimeException | Extends Exception; unchecked; represents programming bugs |
+| Common Subtypes | NullPointerException, IllegalArgumentException, IllegalStateException, ArithmeticException |
+| RuntimeException vs Error | RuntimeException = application bug; Error = JVM-level failure |
+| When to Use | Use for programming errors; fix the code instead of catching |
+| Custom Subtypes | Extend RuntimeException for domain-specific programming errors |
+| Common Pitfalls | Avoid broad catch, control flow usage, missing messages, swallowing exceptions |
+| Contract | Can throw, catch, chain, and subclass; typically should not be caught |
+| Characteristics | No compile-time enforcement, lower performance overhead, optional throws clause |
+
 ---
 **Continue:** [Part 2](README-Part2.md)

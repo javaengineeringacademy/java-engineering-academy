@@ -1,3 +1,14 @@
+/**
+ * Demonstrates thread exception handling patterns including uncaught
+ * exception handlers, execute vs submit differences, Future.get()
+ * exception handling, and CompletableFuture exceptionally/handle/chain
+ * propagation.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers uncaught exception handlers,
+ * executor exception handling, and CompletableFuture patterns.</p>
+ */
 package academy.javaengineering.exceptions.thread;
 
 import java.util.concurrent.CompletableFuture;

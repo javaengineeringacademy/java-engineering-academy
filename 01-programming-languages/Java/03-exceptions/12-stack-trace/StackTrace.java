@@ -1,3 +1,13 @@
+/**
+ * Demonstrates stack trace access, manipulation, and formatting
+ * including current thread traces, exception stack traces, trace
+ * filtering, limiting, formatting, and fingerprinting for de-duplication.
+ *
+ * <p><b>Complexity:</b> O(n) where n is the stack depth.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static helper methods.</p>
+ * <p><b>Key characteristics:</b> Covers stack trace manipulation,
+ * lightweight exceptions, and exception fingerprinting.</p>
+ */
 package academy.javaengineering.exceptions.stacktrace;
 
 import java.util.Arrays;

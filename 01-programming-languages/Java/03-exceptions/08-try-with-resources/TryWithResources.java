@@ -1,3 +1,13 @@
+/**
+ * Demonstrates try-with-resources (TWR) with various Closeable resources,
+ * including exception suppression, multiple resources, nested TWR,
+ * resource lifecycle tracking, and custom close exception handling.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers TWR syntax, exception suppression,
+ * resource close ordering, and integration with try-catch-finally.</p>
+ */
 package academy.javaengineering.exceptions.trywithresources;
 
 import java.io.BufferedReader;

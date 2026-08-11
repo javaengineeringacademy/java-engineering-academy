@@ -101,6 +101,41 @@ The `ServiceException` is the **outer exception**; the `IOException` is the **ro
 
 ---
 
+## Exception Cause Chain Structure
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Exception Chain                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌───────────────────────────────────────────────┐      │
+│  │ ServiceException ("Failed to process data")   │      │
+│  │    │                                          │      │
+│  │    │  getCause()                              │      │
+│  │    ▼                                          │      │
+│  │  ┌─────────────────────────────────────┐      │      │
+│  │  │ IOException ("Connection refused")  │      │      │
+│  │  │    │                                │      │      │
+│  │  │    │  getCause()                    │      │      │
+│  │  │    ▼                                │      │      │
+│  │  │  ┌──────────────────────────┐       │      │      │
+│  │  │  │ SQLException ("timeout")│       │      │      │
+│  │  │  │    │                    │       │      │      │
+│  │  │  │    │  getCause()        │       │      │      │
+│  │  │  │    ▼                    │       │      │      │
+│  │  │  │  ┌────────────┐        │       │      │      │
+│  │  │  │  │ null       │        │       │      │      │
+│  │  │  │  │ (end)      │        │       │      │      │
+│  │  │  │  └────────────┘        │       │      │      │
+│  │  │  └──────────────────────────┘       │      │      │
+│  │  └─────────────────────────────────────┘      │      │
+│  └───────────────────────────────────────────────┘      │
+│                                                         │
+│  Outermost ──────────────────────────────► Innermost    │
+│  (highest layer)                      (root cause)      │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## Constructors for Chaining
 
 ### Constructor with cause
@@ -283,6 +318,19 @@ High-level:       ServiceException
                      ↓
 Presentation:     UserNotFoundException (user-facing message)
 ```
+
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Exception Chaining | Wrapping one exception inside another to preserve causal context |
+| Constructors | Use `(String, Throwable)` or `initCause()` to link exceptions |
+| Cause Retrieval | `getCause()` and `printStackTrace()` reveal the full exception chain |
+| Exception Translation | Convert low-level exceptions to domain-specific exceptions at each layer |
+| When to Chain | Wrapping checked exceptions, translating exceptions, combining multiple causes |
+| Root Cause Analysis | Iterate cause chain to find the original failure point |
+| initCause() Rule | Can only be called once; calling again throws IllegalStateException |
+| Production Pattern | Use exception translation in layered architecture to isolate implementation details |
 
 ---
 **Continue:** [Part 2](README-Part2.md)

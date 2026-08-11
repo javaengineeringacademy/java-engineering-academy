@@ -1,3 +1,13 @@
+/**
+ * Demonstrates production exception handling patterns including custom
+ * exception hierarchy, structured error responses, circuit breaker,
+ * retry with exponential backoff, and graceful degradation with fallback.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> CircuitBreaker is thread-safe via synchronization.</p>
+ * <p><b>Key characteristics:</b> Covers error code mapping, trace IDs,
+ * circuit breaker pattern, and retry policies.</p>
+ */
 package academy.javaengineering.exceptions.production;
 
 import java.time.Instant;

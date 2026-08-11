@@ -1,3 +1,13 @@
+/**
+ * Demonstrates multi-catch syntax, effectively final variables,
+ * bytecode behavior, and production patterns including exception
+ * translation and retry with multi-catch.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers multi-catch vs multiple catch blocks,
+ * effectively final constraints, and retry patterns.</p>
+ */
 package academy.javaengineering.exceptions.multicatch;
 
 import java.io.FileNotFoundException;

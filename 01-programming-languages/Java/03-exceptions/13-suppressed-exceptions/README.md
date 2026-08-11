@@ -83,6 +83,42 @@ Throwable[] suppressed = primaryException.getSuppressed();
 
 ---
 
+## Suppressed Exception Flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    TWR Execution                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────┐            │
+│  │ try (Resource r = new Resource())       │            │
+│  │    │                                    │            │
+│  │    ▼                                    │            │
+│  │  ┌────────────────────────────────┐     │            │
+│  │  │ Body throws: IOException       │     │            │
+│  │  └────────────────┬───────────────┘     │            │
+│  │                   │                     │            │
+│  │                   ▼                     │            │
+│  │  ┌────────────────────────────────┐     │            │
+│  │  │ r.close() throws RuntimeException│    │            │
+│  │  └────────────────┬───────────────┘     │            │
+│  │                   │                     │            │
+│  └───────────────────┼─────────────────────┘            │
+│                      │                                  │
+│                      ▼                                  │
+│  ┌──────────────────────────────────────────┐           │
+│  │ Result:                                  │           │
+│  │                                          │           │
+│  │  Primary:  IOException                   │           │
+│  │  Suppressed: RuntimeException            │           │
+│  │  (from r.close())                        │           │
+│  │                                          │           │
+│  │  primary.getSuppressed() returns:        │           │
+│  │    [RuntimeException]                    │           │
+│  └──────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## Try-With-Resources and Suppressed Exceptions
 
 TWR is where suppressed exceptions appear most often. When a resource's

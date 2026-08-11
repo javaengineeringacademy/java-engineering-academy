@@ -1,3 +1,13 @@
+/**
+ * Demonstrates the Java exception hierarchy including catching at different
+ * levels, exception chaining, hierarchy traversal with instanceof, and
+ * custom exception hierarchies.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers checked vs unchecked exceptions,
+ * exception chaining, and proper catch ordering.</p>
+ */
 package academy.javaengineering.exceptions.hierarchy;
 
 import java.io.File;

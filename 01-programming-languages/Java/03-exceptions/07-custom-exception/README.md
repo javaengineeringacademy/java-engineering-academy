@@ -300,4 +300,19 @@ public class InsufficientFundsException extends RuntimeException {
 
 ---
 
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Custom Exceptions | User-defined exception classes for domain-specific error conditions |
+| Checked vs Unchecked | Choose checked when caller must recover; unchecked for programming errors |
+| Naming Convention | Always suffix with `Exception`; never use `Error` suffix |
+| Design Steps | Choose type, name, add fields, provide constructors, implement serialVersionUID |
+| Anatomy | Include message, cause (chaining), error codes, and structured fields |
+| Exception Chaining | Preserve original cause when wrapping exceptions for debugging |
+| Package Placement | Place custom exceptions near the code that throws them |
+| Error Codes | Use structured error codes for logging and monitoring |
+
+---
+
 **Continue:** [Part 2](README-Part2.md) | [Part 3](README-Part3.md)

@@ -1,21 +1,30 @@
 # References
 
 ## Official Documentation
+- [JDK 21 — RuntimeException](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/RuntimeException.html) — Javadoc for RuntimeException
+- [JDK 21 — Throwable](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html) — Parent class
+- [Java Tutorials — Unchecked Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/catchOrDeclare.html) — The Controversy
 
-- [Oracle: RuntimeException Class](https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html)
-- [Oracle: Unchecked Exceptions — The Controversy](https://docs.oracle.com/javase/tutorial/essential/exceptions/catchOrDeclare.html)
-- [Oracle: Exception Hierarchy](https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html)
+## Official Source Code
+- [OpenJDK 21 — RuntimeException.java](https://github.com/openjdk/jdk/blob/master/src/java.base/java/lang/RuntimeException.java) — RuntimeException source
+- [OpenJDK 21 — NullPointerException.java](https://github.com/openjdk/jdk/blob/master/src/java.base/java/lang/NullPointerException.java) — NPE source
+- [OpenJDK 21 — IllegalArgumentException.java](https://github.com/openjdk/jdk/blob/master/src/java.base/java/lang/IllegalArgumentException.java) — IAE source
 
-## Books and Guides
+## Language Specification
+- **JLS §11.1.1**: [Compile-Time Step 2: Determine Logic Error Types](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html#jls-11.1.1)
+- **JLS §11.2**: [Compile-Time Checking of Exceptions](https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html#jls-11.2)
+- **JVM Spec §2.10**: [Exceptions](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html#jvms-2.10)
 
-- [Effective Java, Joshua Bloch — Item 69: Use exceptions only for exceptional conditions](https://www.oreilly.com/library/view/effective-java/9780134686097/)
-- [Effective Java, Joshua Bloch — Item 70: Use checked exceptions for recoverable conditions and runtime exceptions for programming errors](https://www.oreilly.com/library/view/effective-java/9780134686097/)
+## Version History
 
-## Style Guides
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | RuntimeException introduced as a Throwable subclass |
+| JDK 5 | Enhanced for-loop and auto-boxing reduced some common NPEs |
+| JDK 8 | Optional introduced to reduce null-related exceptions |
+| JDK 21 | Current state — no changes to RuntimeException |
 
-- [Google Java Style Guide: Exceptions](https://google.github.io/styleguide/javaguide.html#s6.2-try-catch-finally)
-
-## Tutorials
-
-- [Baeldung: Guide to Exceptions in Java](https://www.baeldung.com/java-exceptions)
-- [Baeldung: RuntimeException vs Checked Exceptions](https://www.baeldung.com/java-checked-unchecked-exceptions)
+## Recommended Reading
+- **Effective Java (3rd Ed)** — Item 69: Use exceptions only for exceptional conditions
+- **Effective Java (3rd Ed)** — Item 70: Use checked exceptions for recoverable conditions
+- **Core Java, Vol. I** — Cay S. Horstmann, Chapter on Exception Handling

@@ -386,6 +386,18 @@ See the companion files for hands-on practice:
 
 ---
 
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Unchecked Exception | Extends RuntimeException or Error; no compile-time checking |
+| When to Throw | Programming bugs, invariant violations, null references, illegal arguments |
+| When to Catch | Generally should not; fix the bug instead |
+| Checked vs Unchecked | Checked = recoverable external failures; Unchecked = programming bugs |
+| Production Handling | Global uncaught handler, logging, defensive programming |
+| Common Pitfalls | Silent catching, flow control, broad catch clauses, declaring in throws |
+| Subtypes | RuntimeException subtypes (NPE, IAE, etc.) and Error subtypes (OOM, SOOE, etc.) |
+
 ## 12. Next Steps
 
 Proceed to the next topic to learn about **custom exceptions** — creating your

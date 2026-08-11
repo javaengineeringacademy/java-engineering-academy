@@ -46,6 +46,50 @@ Key characteristics:
 
 ---
 
+## Thread Exception Propagation
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Thread Architecture                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Thread A                        Thread B               │
+│  ┌─────────────────┐            ┌─────────────────┐     │
+│  │  try-catch      │            │  try-catch      │     │
+│  │  handles ex     │            │  handles ex     │     │
+│  │  here           │            │  here           │     │
+│  └────────┬────────┘            └────────┬────────┘     │
+│           │                              │              │
+│     Uncaught?                      Uncaught?            │
+│           │                              │              │
+│           ▼                              ▼              │
+│  ┌─────────────────┐            ┌─────────────────┐     │
+│  │ Thread's own    │            │ Thread's own    │     │
+│  │ UncaughtHandler │            │ UncaughtHandler │     │
+│  └────────┬────────┘            └────────┬────────┘     │
+│           │                              │              │
+│     None set?                       None set?          │
+│           │                              │              │
+│           ▼                              ▼              │
+│  ┌─────────────────┐            ┌─────────────────┐     │
+│  │ ThreadGroup     │            │ ThreadGroup     │     │
+│  │ handler         │            │ handler         │     │
+│  └────────┬────────┘            └────────┬────────┘     │
+│           │                              │              │
+│     None set?                       None set?          │
+│           │                              │              │
+│           ▼                              ▼              │
+│  ┌─────────────────┐            ┌─────────────────┐     │
+│  │ System default  │            │ System default  │     │
+│  │ handler         │            │ handler         │     │
+│  │ (print + exit)  │            │ (print + exit)  │     │
+│  └─────────────────┘            └─────────────────┘     │
+│                                                         │
+│  Note: Threads are independent — no propagation between  │
+│  threads unless explicitly handled (Future.get(), etc.)  │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## UncaughtExceptionHandler
 
 Every thread has an associated uncaught exception handler called when an exception goes uncaught.
@@ -269,6 +313,19 @@ CompletableFuture.allOf(future1, future2, future3)
         return null;
     });
 ```
+
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Thread Isolation | Each thread has its own exception stack; exceptions don't cross thread boundaries |
+| UncaughtExceptionHandler | Last-resort handler for uncaught exceptions; set per thread or globally |
+| Handler Resolution | Thread handler → ThreadGroup → System default (in that order) |
+| ExecutorService | `execute()` propagates to handler; `submit()` captures in Future |
+| Future.get() | Must call to retrieve exception from `submit()` tasks |
+| CompletableFuture | Use `exceptionally()`, `handle()`, `whenComplete()` for async error handling |
+| Exception Propagation | Exceptions propagate through chain until handled; unhandled futures complete exceptionally |
+| Production Setup | Set `setDefaultUncaughtExceptionHandler` early in application startup |
 
 ---
 **Continue:** [Part 2](README-Part2.md)

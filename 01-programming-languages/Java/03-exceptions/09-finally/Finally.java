@@ -1,3 +1,14 @@
+/**
+ * Demonstrates the finally block — guaranteed execution, execution order,
+ * return value override, exception masking, and resource cleanup patterns
+ * including ThreadLocal and timer/metrics.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers finally execution guarantees,
+ * dangerous patterns (return override, exception masking), and
+ * safe exception preservation.</p>
+ */
 package academy.javaengineering.exceptions.finallyblock;
 
 import java.util.ArrayList;

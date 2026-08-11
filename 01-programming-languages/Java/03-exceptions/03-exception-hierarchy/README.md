@@ -278,5 +278,18 @@ Many modern Java developers argue that the checked exception boundary is a mista
 However, checked exceptions remain a useful safety mechanism in many codebases,
 especially when the recovery path is clear.
 
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Throwable | Root class for all errors and exceptions in Java |
+| Error | Unrecoverable JVM-level failures (e.g., OutOfMemoryError, StackOverflowError) |
+| Exception | Recoverable application-level conditions; includes checked and unchecked branches |
+| RuntimeException | Base class for unchecked exceptions representing programming bugs |
+| Checked vs Unchecked | Checked must be caught/declared; unchecked (RuntimeException/Error) are not enforced |
+| JVM Dispatch | JVM searches call stack for most specific matching catch block first |
+| Hierarchy Tree | Tree structure allows catching broader types (Exception) to handle all subtypes |
+| Custom Exceptions | Extend Exception (checked) or RuntimeException (unchecked) for domain-specific errors |
+
 ---
 **Continue:** [Part 2](README-Part2.md)

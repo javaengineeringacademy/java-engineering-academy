@@ -48,6 +48,32 @@ Each line above is one stack frame.
 
 ---
 
+## Stack Frame Layout
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Thread Stack                        │
+├─────────────────────────────────────────────────────────┤
+│  Top of Stack (most recent call)                        │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ Frame 0: Service.handle(Service.java:42)        │ ◄── most recent
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ Frame 1: Controller.process(Controller.java:18) │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ Frame 2: Main.main(Main.java:7)                 │ ◄── entry point
+│  └─────────────────────────────────────────────────┘    │
+│  Bottom of Stack (oldest call)                          │
+├─────────────────────────────────────────────────────────┤
+│  Each StackTraceElement contains:                       │
+│  ┌──────────────┐ ┌───────────┐ ┌─────────┐ ┌────────┐ │
+│  │ className    │ │methodName │ │fileName │ │lineNum │ │
+│  │ (String)     │ │ (String)  │ │ (String)│ │ (int)  │ │
+│  └──────────────┘ └───────────┘ └─────────┘ └────────┘ │
+└─────────────────────────────────────────────────────────┘
+```
+
 ## StackTraceElement Fields
 
 `StackTraceElement` is an immutable class with four key fields:

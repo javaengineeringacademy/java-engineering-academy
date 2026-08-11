@@ -1,3 +1,14 @@
+/**
+ * Demonstrates creating, throwing, and catching RuntimeExceptions.
+ * Shows common subtypes including NullPointerException, IllegalArgumentException,
+ * ArithmeticException, ClassCastException, NumberFormatException, and custom
+ * unchecked exceptions with chaining.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers unchecked exception patterns,
+ * precondition validation, and exception chaining.</p>
+ */
 package academy.javaengineering.exceptions.runtimeexception;
 
 /**

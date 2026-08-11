@@ -136,6 +136,27 @@ try {
 }
 ```
 
+### Multi-Catch vs Multiple Catch Blocks
+
+```
+┌──────────────────────────────┐    ┌──────────────────────────────┐
+│    Multiple Catch Blocks     │    │       Multi-Catch (Java 7+)  │
+├──────────────────────────────┤    ├──────────────────────────────┤
+│ try {                        │    │ try {                        │
+│   // body                    │    │   // body                    │
+│ } catch (IOException e) {   │    │ } catch (IOException |       │
+│   handleError(e);            │    │         SQLException |       │
+│ } catch (SQLException e) {   │    │         TimeoutException e) {│
+│   handleError(e);            │    │   handleError(e);            │
+│ } catch (TimeoutException e)│    │ }                            │
+│   handleError(e);            │    │                              │
+│ }                            │    │                              │
+└──────────────────────────────┘    └──────────────────────────────┘
+     DRY violation                      Clean, DRY, readable
+     3 catch blocks                     1 catch block
+     Different types                    All types in one block
+```
+
 ### When to Prefer Multiple Catch Blocks
 
 - Each exception requires **different recovery** logic.

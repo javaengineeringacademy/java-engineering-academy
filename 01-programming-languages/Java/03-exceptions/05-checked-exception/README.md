@@ -65,6 +65,31 @@ public class InsufficientFundsException extends Exception {
 
 ---
 
+## Checked Exception Decision Flow
+
+```
+┌─────────────────────┐
+│ Method can fail?    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐      No      ┌─────────────────────┐
+│ Is it recoverable?  │─────────────►│ Use unchecked       │
+└──────────┬──────────┘              │ (RuntimeException)  │
+           │ Yes                     └─────────────────────┘
+           ▼
+┌─────────────────────┐      No      ┌─────────────────────┐
+│ Is it a programming │─────────────►│ Use checked          │
+│ error?              │              │ (extends Exception)  │
+└──────────┬──────────┘              └─────────────────────┘
+           │ Yes
+           ▼
+┌─────────────────────┐
+│ Use unchecked       │
+│ (IllegalArgumentException)│
+└─────────────────────┘
+```
+
 ## Common Checked Exceptions
 
 | Exception | Package | Typical Use |

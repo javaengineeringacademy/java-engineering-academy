@@ -71,6 +71,37 @@ public interface Closeable extends AutoCloseable {
 
 **Key difference:** `AutoCloseable.close()` may throw *any* checked exception; `Closeable.close()` throws only `IOException`. If you implement a resource class, prefer `AutoCloseable` unless you specifically need `IOException` narrowing.
 
+## TWR Execution Flow
+
+```
+┌─────────────────────────────────┐
+│  try (Resource r = new ...)     │
+│    │                            │
+│    ▼                            │
+│  ┌─────────────────────────┐    │
+│  │  Execute try body       │    │
+│  └──────────┬──────────────┘    │
+│             │                   │
+│        ┌────┴────┐              │
+│        │Success? │              │
+│        └────┬────┘              │
+│       Yes   │   No              │
+│     ┌───────┘   └──────┐       │
+│     ▼                   ▼       │
+│  ┌──────────┐  ┌──────────────┐ │
+│  │ r.close()│  │ Catch block  │ │
+│  │ (auto)   │  │ (if exists)  │ │
+│  └────┬─────┘  └──────┬───────┘ │
+│       │               │         │
+│       ▼               ▼         │
+│  ┌──────────────────────────┐   │
+│  │  r.close() (auto)       │   │
+│  │  If close throws:       │   │
+│  │  suppress on primary    │   │
+│  └──────────────────────────┘   │
+└─────────────────────────────────┘
+```
+
 ## Syntax and Semantics
 
 ### Resource Declaration

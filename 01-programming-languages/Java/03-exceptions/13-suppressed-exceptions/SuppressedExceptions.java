@@ -1,3 +1,13 @@
+/**
+ * Demonstrates suppressed exception handling including try-with-resources
+ * behavior, manual addSuppressed usage, multiple suppressed exceptions,
+ * and cause chaining vs suppressed exception patterns.
+ *
+ * <p><b>Complexity:</b> O(1) per operation unless noted.</p>
+ * <p><b>Thread-safety:</b> Not thread-safe — uses static mutable state.</p>
+ * <p><b>Key characteristics:</b> Covers TWR exception suppression,
+ * manual suppression, and distinguishing cause from suppressed.</p>
+ */
 package academy.javaengineering.exceptions.suppressed;
 
 /**

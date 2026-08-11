@@ -169,3 +169,16 @@ Throwable
 | Senior | 12–14 | 2–3 hours |
 | Principal/Architect | 15 | 1–2 hours |
 | **Total** | **16 topics** | **9–14 hours** |
+
+## Summary
+
+| Concept | Key Point |
+|---------|-----------|
+| Module Structure | 16 topics organized in 4 levels: Student, Engineer, Senior, Principal |
+| Exception Hierarchy | Throwable → Exception (checked/unchecked) → Error; root of all Java exceptions |
+| Learning Path | Progressive: fundamentals → production quality → concurrency → architecture |
+| RuntimeException vs Unchecked | Two separate topics: class vs category; different perspectives |
+| Implementation Depth | Core Java classes include internals; language concepts don't |
+| When to Use What | Recoverable = checked; bugs = unchecked; JVM failures = Error |
+| Total Duration | 9–14 hours covering all 16 topics |
+| Design Rationale | Java chose both checked and unchecked exceptions; ongoing debate |
