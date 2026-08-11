@@ -1,0 +1,170 @@
+# Try-Catch Internals: How the JVM Handles Exception Dispatch
+
+## Why This Matters
+
+When you write a try-catch block, the Java compiler transforms it into something fundamentally different from normal control flow. Understanding this transformation reveals why try-catch is nearly free when no exception is thrown — and why it becomes expensive the moment an exception occurs.
+
+Most developers treat try-catch as a language-level construct. It is not. It is a bytecode-level mechanism driven by an exception table that lives inside every `.class` file. The JVM does not "jump" to a catch block the way it jumps to a method call. It performs a table lookup, and that lookup has specific performance characteristics that matter in high-throughput code.
+
+## What Problem This Solves
+
+Without understanding the internals, developers make two common mistakes:
+
+1. **Over-wrapping code in try-catch** because they believe the construct itself is expensive. It is not — the overhead is measured in nanoseconds when no exception occurs.
+2. **Ignoring the cost of exception object creation** because they assume the try block is where the cost lives. The real cost is in `fillInStackTrace()` and object allocation, which happen inside the catch path.
+
+The exception table approach also explains why multi-catch (Java 7+) works, why finally blocks cause code duplication, and why the compiler sometimes generates synthetic exception classes.
+
+## How the JVM Handles Try-Catch at Bytecode Level
+
+### The Exception Table
+
+Every compiled Java method contains an **exception table** — a data structure embedded in the method's code attribute in the `.class` file. This table maps ranges of bytecode offsets to handler locations.
+
+The table has four columns:
+
+| Start PC | End PC | Handler PC | Catch Type |
+|----------|--------|------------|------------|
+| 0        | 12     | 15         | java/io/IOException |
+| 0        | 12     | 20         | java/lang/Exception |
+
+- **Start PC / End PC**: The range of bytecode instructions protected by the handler. The range is inclusive on the start, exclusive on the end.
+- **Handler PC**: The bytecode offset where execution resumes if an exception matches.
+- **Catch Type**: An index into the constant pool pointing to the exception class. A value of 0 means the handler is a `finally` block (catch-all).
+
+When you compile this code:
+
+```java
+try {
+    riskyOperation();
+} catch (IOException e) {
+    handleIO(e);
+} catch (Exception e) {
+    handleGeneral(e);
+}
+```
+
+The compiler produces an exception table with two entries, each pointing to a different handler PC but covering the same bytecode range.
+
+### The Dispatch Algorithm
+
+When an exception is thrown, the JVM executes the following algorithm:
+
+1. It records the current bytecode offset (the point of the throw).
+2. It searches the exception table **linearly** for the first entry where:
+   - The current offset falls within the [Start PC, End PC) range.
+   - The thrown exception is an instance of (or a subclass of) the Catch Type.
+3. If a match is found, the JVM:
+   - Clears the operand stack.
+   - Pushes the exception object onto the (now empty) stack.
+   - Sets the PC to the Handler PC.
+4. If no match is found, the JVM **unwinds** one frame from the call stack and repeats the search in the calling method's exception table.
+5. If the top of the stack is reached without finding a handler, the thread terminates (or the `UncaughtExceptionHandler` is invoked).
+
+This linear search is why the order of catch blocks matters at the bytecode level. The first matching entry wins, which is why you must catch subclasses before superclasses.
+
+### Why It Is Nearly Free When No Exception Occurs
+
+When no exception is thrown, the exception table is never consulted. The JVM simply executes bytecode sequentially. There is no "setup" cost for a try block — no implicit flag is set, no context is saved. The only cost is the bytes occupied by the exception table entries in the `.class` file, which does not affect runtime performance.
+
+This is the key insight: **try-catch has zero runtime overhead in the happy path.** The cost only materializes when an exception is thrown.
+
+## Multi-Catch and Synthetic Exception Classes
+
+Java 7 introduced multi-catch syntax:
+
+```java
+try {
+    riskyOperation();
+} catch (IOException | SQLException e) {
+    handle(e);
+}
+```
+
+The JVM bytecode format has no concept of "catch multiple exception types in one handler." Each exception table entry references a single catch type. So the compiler generates a **synthetic exception class** — a class that extends both `IOException` and `SQLException` — and uses that as the catch type in the exception table.
+
+The synthetic class looks something like this in bytecode:
+
+```
+class synthetic implements IOException, SQLException {
+    // compiler-generated
+}
+```
+
+This synthetic class:
+- Is package-private and unnamed in source code.
+- Is generated by the compiler, not by you.
+- Extends one exception type and implements the others (since Java does not support multiple inheritance of classes).
+- Is registered in the constant pool and used by the exception table entry.
+
+The exception object thrown by the JVM will be an instance of the original exception class, not the synthetic class. The synthetic class exists solely to make the exception table lookup succeed for multiple types. The JVM's `instanceof` check works because the original exception class is a superclass (or superinterface) of the synthetic class.
+
+## The Cost of Creating Exception Objects
+
+The real cost of exceptions is not the try-catch mechanism — it is the creation of the exception object itself. Specifically:
+
+### `fillInStackTrace()`
+
+When you call `new Exception()`, the constructor calls `fillInStackTrace()`, which:
+
+1. Iterates through every frame on the current thread's call stack.
+2. For each frame, captures the bytecode pointer, local variable array pointer, and operand stack pointer.
+3. Stores this information in a `Throwable` internal array.
+
+For a stack trace 50 frames deep, this means:
+- 50 iterations.
+- Allocation of an array of `StackTraceElement` objects.
+- String creation for class names, method names, and file names.
+
+This is why `new Exception()` takes **microseconds** — typically 1-10 microseconds depending on stack depth. In tight loops, this adds up fast.
+
+### Mitigation Strategies
+
+The JVM provides two ways to reduce this cost:
+
+1. **`new Exception(false)`** (Java 14+): The `false` parameter tells the constructor to skip `fillInStackTrace()`. The exception object is created but has no stack trace. Useful when the exception is caught and re-thrown immediately, or when you need only the type information.
+
+2. **Pre-allocated exception instances**: For performance-critical code paths, you can pre-create a static exception instance and throw it. The JVM allows re-throwing the same exception object. However, the stack trace will be stale after the first throw.
+
+### Memory Footprint
+
+Each exception object carries:
+- The `Throwable` base fields (message, cause, stack trace, suppressed exceptions).
+- The stack trace array (pointers to `StackTraceElement` objects).
+- The cause chain (another `Throwable` reference).
+- The suppressed exceptions list (an `AutoCloseable` array in Java 7+).
+
+For deeply nested exceptions with suppressed exceptions, the memory footprint can reach kilobytes per exception.
+
+## Code Demonstration
+
+See `TryCatchInternals.java` for a programmatic demonstration of these concepts, including:
+- Measuring the overhead of try-catch in the happy path.
+- Measuring the cost of exception object creation.
+- Observing synthetic multi-catch classes in bytecode output.
+- Comparing `fillInStackTrace()` vs. suppressed stack traces.
+
+## Practical Implications
+
+1. **Do not wrap entire methods in try-catch** "just in case." The exception table entries are cheap, but they encourage catching broad exception types, which makes error handling imprecise.
+
+2. **Catch specific exception types.** Each catch type adds an entry to the exception table. The JVM searches linearly, so fewer entries means faster dispatch when an exception occurs.
+
+3. **Avoid creating exceptions in hot loops.** If an exception is expected in normal execution, it is not an exception — it is a control flow mechanism. Use return values or Optional instead.
+
+4. **Use `Throwable(String, boolean, boolean)` constructor** when you need an exception marker without the stack trace cost (Java 14+).
+
+5. **Remember that `finally` causes code duplication.** The compiler copies the finally bytecode into every exit path, which increases the size of the exception table and the method's bytecode.
+
+## Summary
+
+| Aspect | Cost |
+|--------|------|
+| try-catch block (no exception) | Zero runtime overhead |
+| Exception table lookup (on throw) | Linear search, typically < 1μs |
+| Exception object creation | 1-10μs (depends on stack depth) |
+| `fillInStackTrace()` | O(stack depth), dominates creation cost |
+| Multi-catch synthetic class | Compiler-generated, no runtime cost |
+| finally block | Bytecode duplication, no runtime overhead in happy path |
+
+The try-catch mechanism itself is well-designed and efficient. The cost of exceptions comes from the exception objects, not from the try-catch construct.
