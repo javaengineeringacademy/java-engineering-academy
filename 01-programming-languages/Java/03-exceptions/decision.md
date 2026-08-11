@@ -51,7 +51,7 @@ Need to handle an error condition?
 |----------|-------------|
 | try-with-resources | AutoCloseable resources (Java 7+) |
 | finally block | Non-closeable cleanup, legacy code |
-|两者结合 | Resource + additional cleanup |
+| Both together | Resource + additional cleanup |
 
 ## Production Recommendations
 
