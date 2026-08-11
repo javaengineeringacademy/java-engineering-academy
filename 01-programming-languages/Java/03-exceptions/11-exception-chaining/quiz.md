@@ -1,164 +1,48 @@
-# Exception Chaining Quiz
+# Quiz: Exception Chaining
 
-## Question 1: What is exception chaining?
+## Questions
 
-A) Throwing multiple exceptions in a single try block
-B) Wrapping one exception inside another to preserve the cause
-C) Catching exceptions and rethrowing them
-D) Creating exception hierarchies
+### Q1: What is exception chaining?
+**Answer:** B) Wrapping one exception inside another to preserve the cause — This maintains the causal chain for debugging.
 
-**Answer:** B
+### Q2: Which constructor is used for exception chaining?
+**Answer:** C) `new Exception(String message, Throwable cause)` — This constructor allows you to specify both a message and the original cause.
 
----
+### Q3: What does `getCause()` return?
+**Answer:** C) The cause exception (may be null) — It returns the exception that caused this one.
 
-## Question 2: Which constructor is used for exception chaining?
+### Q4: What happens if you call `initCause()` twice?
+**Answer:** C) An `IllegalStateException` is thrown — You can only set the cause once.
 
-A) `new Exception()`
-B) `new Exception(String message)`
-C) `new Exception(String message, Throwable cause)`
-D) `new Exception(Throwable cause)`
+### Q5: What is the exception translation pattern?
+**Answer:** B) Catching a low-level exception and wrapping it in a higher-level exception — This provides meaningful context to callers.
 
-**Answer:** C
+### Q6: What is the root cause of an exception?
+**Answer:** C) The exception that originally triggered the chain — It's the first exception in the chain.
 
----
+### Q7: How do you print the full exception chain?
+**Answer:** C) `exception.printStackTrace()` — This prints the full stack trace including all causes.
 
-## Question 3: What does `getCause()` return?
+### Q8: Which of the following is a common pitfall?
+**Answer:** B) Creating circular cause chains — This can cause infinite loops when traversing the chain.
 
-A) The exception message
-B) The root cause exception
-C) The cause exception (may be null)
-D) The stack trace
+### Q9: When should you wrap an exception?
+**Answer:** B) When the exception crosses a layer boundary — This provides appropriate context for each layer.
 
-**Answer:** C
+### Q10: What is the purpose of exception chaining?
+**Answer:** B) To preserve the causal chain of exceptions — This enables root-cause analysis.
 
----
+### Q11: Which exception type should be used in the service layer?
+**Answer:** C) `ServiceException` — It provides domain-specific context for the service layer.
 
-## Question 4: What happens if you call `initCause()` twice?
+### Q12: How do you avoid losing the root cause when wrapping exceptions?
+**Answer:** B) Pass the original exception as the cause when creating the new exception — This preserves the chain.
 
-A) The second call overwrites the first cause
-B) The first cause is preserved and the second is ignored
-C) An `IllegalStateException` is thrown
-D) Nothing happens
+### Q13: What is double wrapping?
+**Answer:** B) Wrapping an exception that is already wrapped — This can obscure the original cause.
 
-**Answer:** C
+### Q14: Which method is used to traverse the cause chain?
+**Answer:** B) `getCause()` — It returns the exception that caused the current one.
 
----
-
-## Question 5: What is the exception translation pattern?
-
-A) Converting checked exceptions to unchecked exceptions
-B) Catching a low-level exception and wrapping it in a higher-level exception
-C) Throwing exceptions from a static method
-D) Using `finally` blocks to clean up resources
-
-**Answer:** B
-
----
-
-## Question 6: What is the root cause of an exception?
-
-A) The first exception in the chain
-B) The last exception in the chain
-C) The exception that originally triggered the chain
-D) The exception with the most detailed message
-
-**Answer:** C
-
----
-
-## Question 7: How do you print the full exception chain?
-
-A) `System.out.println(exception)`
-B) `exception.toString()`
-C) `exception.printStackTrace()`
-D) `exception.getCause().printStackTrace()`
-
-**Answer:** C
-
----
-
-## Question 8: Which of the following is a common pitfall?
-
-A) Using the constructor with cause parameter
-B) Creating circular cause chains
-C) Using `initCause()` before the exception is constructed
-D) Logging the full exception chain
-
-**Answer:** B
-
----
-
-## Question 9: When should you wrap an exception?
-
-A) When you want to hide the original exception
-B) When the exception crosses a layer boundary
-C) When you want to add more context
-D) When you want to make the exception message longer
-
-**Answer:** B
-
----
-
-## Question 10: What is the purpose of exception chaining?
-
-A) To make exceptions more readable
-B) To preserve the causal chain of exceptions
-C) To reduce the number of exceptions thrown
-D) To make exception handling easier
-
-**Answer:** B
-
----
-
-## Question 11: Which exception type should be used in the service layer?
-
-A) `SQLException`
-B) `IOException`
-C) `ServiceException`
-D) `RuntimeException`
-
-**Answer:** C
-
----
-
-## Question 12: How do you avoid losing the root cause when wrapping exceptions?
-
-A) Use `initCause()` after catching the exception
-B) Pass the original exception as the cause when creating the new exception
-C) Use `printStackTrace()` to log the original exception
-D) Use `getCause()` to get the original exception
-
-**Answer:** B
-
----
-
-## Question 13: What is double wrapping?
-
-A) Wrapping an exception in a try-finally block
-B) Wrapping an exception that is already wrapped
-C) Throwing two exceptions at the same time
-D) Catching the same exception twice
-
-**Answer:** B
-
----
-
-## Question 14: Which method is used to traverse the cause chain?
-
-A) `getStackTrace()`
-B) `getCause()`
-C) `getMessage()`
-D) `getThrowable()`
-
-**Answer:** B
-
----
-
-## Question 15: What is the recommended approach for exception chaining?
-
-A) Always use `initCause()` over constructors
-B) Always use constructors over `initCause()`
-C) Never use either
-D) Use `initCause()` only for checked exceptions
-
-**Answer:** B
+### Q15: What is the recommended approach for exception chaining?
+**Answer:** B) Always use constructors over `initCause()` — Constructors are more concise and less error-prone.

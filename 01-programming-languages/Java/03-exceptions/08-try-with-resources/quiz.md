@@ -1,120 +1,45 @@
-# Try-with-Resources Quiz
+# Quiz: Try-with-Resources
 
-## Question 1: Basic Syntax
+## Questions
 
-Which is the correct try-with-resources syntax?
+### Q1: Which is the correct try-with-resources syntax?
+**Answer:** B) `try (Resource r = new Resource()) { // body }` — Resources declared in the try parentheses are automatically closed.
 
-A) `try { Resource r = new Resource(); } finally { r.close(); }`
-B) `try (Resource r = new Resource()) { // body }`
-C) `try (Resource r = new Resource()) { // body } finally { r.close(); }`
-D) `try { Resource r = new Resource(); } close { r.close(); }`
+### Q2: In what order are resources closed when using try-with-resources?
+**Answer:** B) C, B, A — Resources are closed in reverse declaration order.
 
-## Question 2: Close Order
+### Q3: What happens if both the try body and close() throw exceptions?
+**Answer:** C) The close exception is suppressed and attached to the body exception — You can access suppressed exceptions via `getSuppressed()`.
 
-Given:
-```java
-try (A a = new A(); B b = new B(); C c = new C()) {
-    // body
-}
-```
+### Q4: Which is valid Java 9+ syntax for try-with-resources?
+**Answer:** D) Both A and C — Java 9 allows effectively final variables and `var` declarations.
 
-In what order are resources closed?
+### Q5: What happens if the first resource's close() throws?
+**Answer:** B) Remaining resources are still closed — All resources are closed regardless of exceptions.
 
-A) A, B, C
-B) C, B, A
-C) Random order
-D) They are not closed automatically
+### Q6: What is the difference between AutoCloseable and Closeable?
+**Answer:** B) Closeable narrows the exception to IOException — AutoCloseable throws `Exception`, while Closeable throws `IOException`.
 
-## Question 3: Exception Handling
+### Q7: Can you reassign a TWR variable inside the try body?
+**Answer:** B) No, it's implicitly final — Resources declared in the try parentheses are effectively final.
 
-What happens if both the try body and close() throw exceptions?
+### Q8: Is this valid? `try { // no resources declared System.out.println("hello"); }`
+**Answer:** A) Yes, but pointless — A try block without resources is valid but useless.
 
-A) Only the body exception is thrown
-B) Only the close exception is thrown
-C) The close exception is suppressed and attached to the body exception
-D) A compile error occurs
+### Q9: To use a custom class in TWR, it must:
+**Answer:** B) Implement AutoCloseable or Closeable — The class must implement the interface and provide a `close()` method.
 
-## Question 4: Effective Final (Java 9+)
+### Q10: How do you access suppressed exceptions?
+**Answer:** A) `e.getSuppressed()` — This returns an array of exceptions that were suppressed during resource closing.
 
-Which is valid Java 9+ syntax?
+### Q11: What happens when a try-with-resources block throws an exception?
+**Answer:** The resource's `close()` method is called, and any exception from `close()` is added as a suppressed exception to the original.
 
-A) `Resource r = new Resource(); try (r) { }`
-B) `try (r = new Resource()) { }`
-C) `try (var r = new Resource()) { }`
-D) Both A and C
+### Q12: Why is try-with-resources preferred over manual try-finally?
+**Answer:** It reduces boilerplate, ensures proper ordering of resource closure, and handles suppressed exceptions automatically.
 
-## Question 5: Multiple Resources
+### Q13: What is the bytecode-level difference between try-with-resources and manual try-finally?
+**Answer:** The compiler generates synthetic code to manage resource closure and exception chaining, producing equivalent bytecode.
 
-What happens if the first resource's close() throws?
-
-A) Remaining resources are not closed
-B) Remaining resources are still closed
-C) A compile error occurs
-D) The exception is swallowed
-
-## Question 6: Interface Difference
-
-What is the difference between AutoCloseable and Closeable?
-
-A) No difference
-B) Closeable narrows the exception to IOException
-C) AutoCloseable is for files only
-D) Closeable is deprecated
-
-## Question 7: Variable Scope
-
-Can you reassign a TWR variable inside the try body?
-
-A) Yes, it's a normal local variable
-B) No, it's implicitly final
-C) Only in Java 9+
-D) Only if it's not used
-
-## Question 8: Empty Resources
-
-Is this valid?
-
-```java
-try {
-    // no resources declared
-    System.out.println("hello");
-}
-```
-
-A) Yes, but pointless
-B) No, compile error
-C) Yes, and it's useful
-D) Only in Java 11+
-
-## Question 9: Custom Resource
-
-To use a custom class in TWR, it must:
-
-A) Extend Closeable
-B) Implement AutoCloseable or Closeable
-C) Have a public close() method
-D) Both B and C
-
-## Question 10: Suppressed Exceptions
-
-How do you access suppressed exceptions?
-
-A) `e.getSuppressed()`
-B) `e.getStackTrace()`
-C) `e.getCause()`
-D) They are automatically printed
-
----
-
-## Answers
-
-1. B
-2. B (reverse declaration order)
-3. C
-4. D (both A and C are valid)
-5. B (all resources are closed)
-6. B
-7. B
-8. A
-9. B
-10. A
+### Q14: When can you omit the parentheses in try-with-resources?
+**Answer:** You cannot omit them; the resources must be declared in the try statement itself.

@@ -74,3 +74,33 @@ DomainRuntimeException (unchecked)
 | Not chaining | Loses cause | Use `throw new X(cause)` |
 | Catching `RuntimeException` | Hides bugs | Validate inputs first |
 | Overusing checked | Boilerplate | Use unchecked where appropriate |
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Deep exception hierarchy | Fine-grained catching; domain clarity | More classes; maintenance overhead |
+| Flat exception hierarchy | Simple; easy to maintain | Cannot distinguish failure types at catch site |
+| Separate checked/unchecked hierarchies | Clear semantic boundary | Two parallel hierarchies to maintain |
+| Single hierarchy (all unchecked) | Simple; clean APIs | No compiler enforcement; callers may ignore |
+
+## Common Code Review Comments
+
+- "Your hierarchy is too deep — do you really need `PaymentDeclinedException` AND `PaymentFailedException`?"
+- "These two exception classes have the same body — merge them."
+- "Don't catch `Exception` — catch the specific type from the hierarchy."
+- "Why is this exception checked? It's thrown from internal code."
+- "Add a base exception for this domain so callers can catch broadly if needed."
+
+## Common Production Mistakes
+
+- **Inconsistent hierarchy design**: Some exceptions extend `Exception`, others `RuntimeException` in the same domain — callers cannot predict what to catch.
+- **Too-deep hierarchy**: Five levels of exception inheritance — catch blocks become complex and brittle to hierarchy changes.
+- **Catching at the wrong level**: Catching `DataAccessException` when the code should catch `DataOptimisticLockException` — hides concurrency bugs.
+- **Not providing a base type for a domain**: Each exception is independent — callers that want to catch all domain exceptions must list every type.
+
+## When to Escalate
+
+- You are designing the exception hierarchy for a new domain — the structure should be reviewed for naming, depth, and checked vs unchecked decisions.
+- A refactoring changes the hierarchy depth or base types — this affects all callers across the system.
+- You are merging two systems with different exception hierarchies — the combined design needs architectural review.

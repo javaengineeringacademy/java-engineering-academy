@@ -92,3 +92,33 @@ Is this a programming error (bug)?
 - [ ] Is the exception specific enough to be useful?
 
 Answer these questions and refer to the decision tree above to make your choice.
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Unchecked for programming errors | Clean API; fail-fast semantics | No compile-time enforcement; callers may not validate |
+| Checked for external failures | Compiler enforces handling; documents recovery | Boilerplate; callers may wrap or swallow |
+| Wrapping checked in unchecked at boundary | Consistent domain exception model | Loses checked contract; callers may not handle |
+| Custom unchecked exception hierarchy | Domain-specific catching; rich context | More classes; naming discipline required |
+
+## Common Code Review Comments
+
+- "Don't declare unchecked exceptions in `throws` — that's an anti-pattern."
+- "This should be unchecked — the caller cannot recover from a broken invariant."
+- "Why are you catching `RuntimeException` broadly? That catches your own bugs."
+- "Create a domain-specific unchecked exception instead of throwing raw `IllegalArgumentException`."
+- "Don't use exceptions for control flow — validate with `if` checks first."
+
+## Common Production Mistakes
+
+- **Using exceptions for control flow**: Throwing `NoSuchElementException` on a missing map key instead of using `containsKey()` or `get()` with null check — destroys performance and hides bugs.
+- **Catching RuntimeException broadly**: `catch (RuntimeException e)` catches every programming bug — masks NPEs, index errors, and concurrent modification bugs.
+- **Declaring unchecked exceptions in throws clause**: `throws IllegalArgumentException` is unusual and confusing — unchecked exceptions should be documented in Javadoc, not the signature.
+- **Throwing generic RuntimeException**: `throw new RuntimeException("something went wrong")` — no type information for callers; debugging is impossible.
+
+## When to Escalate
+
+- You are deciding whether a condition should be checked or unchecked for a team-wide convention — this needs architectural agreement.
+- A condition is ambiguous (could be a bug or an external failure) — the architect should define the boundary.
+- You are designing an unchecked exception hierarchy for a large system — naming and structure should be reviewed.

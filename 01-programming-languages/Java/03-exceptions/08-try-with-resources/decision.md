@@ -74,3 +74,33 @@ try {
     // Don't close — socket is returned
 }
 ```
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| TWR over manual finally | Guaranteed close; cleaner code; suppressed exceptions handled | Cannot control close ordering for multiple resources |
+| Multiple resources in single try | Concise; all close in reverse order | If close of one fails, others still close but their exceptions may be suppressed |
+| TWR with wrapper adapter | Can manage non-AutoCloseable resources | Indirection; wrapper must handle edge cases correctly |
+| Manual finally for non-AutoCloseable | Direct control; no wrapper needed | Boilerplate; risk of missing close; no automatic suppression |
+
+## Common Code Review Comments
+
+- "This resource implements `AutoCloseable` — use try-with-resources instead of manual finally."
+- "You have a `finally` block that closes a `Connection` — that's what TWR is for."
+- "Don't catch `Exception` in TWR — it catches both body and close exceptions; catch specific types."
+- "TWR compiles to the same bytecode as try-finally — there's no performance reason to avoid it."
+- "If you need to handle close() exceptions specially, inspect `getSuppressed()` on the caught exception."
+
+## Common Production Mistakes
+
+- **Ignoring suppressed exceptions**: TWR adds `close()` exceptions as suppressed — if you only log the primary exception, you miss the close failure that may be the real problem.
+- **Not closing resources on exception paths**: Manual `finally` blocks that skip close when an exception occurs — resource leaks under error conditions.
+- **Reassigning TWR variable**: `conn = null;` inside TWR — compiler error; use a separate variable outside TWR if you need to null it out.
+- **Using TWR for resources that outlive the scope**: TWR closes at end of block, but the resource is needed after — leads to use-after-close bugs.
+
+## When to Escalate
+
+- You are managing resources that require specific close ordering not supported by TWR (e.g., dependent connections).
+- A resource's close() method can fail in ways that affect business logic — the error handling strategy needs review.
+- You are designing a custom `AutoCloseable` resource with complex lifecycle semantics.

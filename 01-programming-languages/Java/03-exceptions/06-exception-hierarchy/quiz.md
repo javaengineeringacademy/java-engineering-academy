@@ -2,92 +2,47 @@
 
 ## Questions
 
-### 1. What is the base class for all exceptions and errors in Java?
+### Q1: What is the base class for all exceptions and errors in Java?
+**Answer:** C) `Throwable` — It's the root of the exception hierarchy, from which both `Exception` and `Error` extend.
 
-- A) `Exception`
-- B) `Error`
-- C) `Throwable`
-- D) `RuntimeException`
+### Q2: Which of the following is an unchecked exception?
+**Answer:** C) `NullPointerException` — It extends `RuntimeException`, which is unchecked.
 
-### 2. Which of the following is an unchecked exception?
+### Q3: Which of the following is a checked exception?
+**Answer:** C) `FileNotFoundException` — It extends `Exception` directly, making it checked.
 
-- A) `IOException`
-- B) `SQLException`
-- C) `NullPointerException`
-- D) `ClassNotFoundException`
+### Q4: What is the correct order for catching exceptions?
+**Answer:** B) Specific first, then general — If you catch `Exception` before `IOException`, the `IOException` handler becomes unreachable.
 
-### 3. Which of the following is a checked exception?
+### Q5: Which of the following is an Error (not an Exception)?
+**Answer:** C) `OutOfMemoryError` — Errors represent serious JVM-level failures, not recoverable conditions.
 
-- A) `NullPointerException`
-- B) `IllegalArgumentException`
-- C) `FileNotFoundException`
-- D) `ArithmeticException`
+### Q6: What happens if you catch `Exception` before `IOException`?
+**Answer:** C) `IOException` handler is unreachable — The compiler will flag this as an error.
 
-### 4. What is the correct order for catching exceptions?
+### Q7: What is the purpose of the `Error` class?
+**Answer:** B) Serious JVM-level failures — Errors indicate conditions that applications should not try to catch.
 
-- A) General first, then specific
-- B) Specific first, then general
-- C) Any order is fine
-- D) Only catch the specific exception
+### Q8: Which of the following is NOT a subclass of `RuntimeException`?
+**Answer:** B) `IOException` — It extends `Exception` directly, making it a checked exception.
 
-### 5. Which of the following is an Error (not an Exception)?
+### Q9: What does `Throwable.getCause()` return?
+**Answer:** B) The original exception that caused this one — It provides the causal chain for debugging.
 
-- A) `IOException`
-- B) `RuntimeException`
-- C) `OutOfMemoryError`
-- D) `FileNotFoundException`
+### Q10: Should you catch `Error` in application code?
+**Answer:** C) Generally no, unless there's a specific reason — Errors are typically unrecoverable.
 
-### 6. What happens if you catch `Exception` before `IOException`?
+### Q11: What is the difference between checked and unchecked exceptions?
+**Answer:** Checked exceptions must be declared in the method signature or caught, while unchecked exceptions (subclasses of `RuntimeException`) do not require explicit handling.
 
-- A) Compiler error
-- B) Runtime error
-- C) `IOException` handler is unreachable
-- D) Both handlers are executed
+### Q12: What happens when a `RuntimeException` is thrown but not caught?
+**Answer:** The JVM terminates the thread, printing the stack trace to the console.
 
-### 7. What is the purpose of `Error` class?
+### Q13: Why is catching `Throwable` dangerous in application code?
+**Answer:** It catches both `Exception` and `Error`, potentially masking serious JVM issues that should not be handled.
 
-- A) Recoverable application errors
-- B) Serious JVM-level failures
-- C) Programming bugs
-- D) Input validation failures
+### Q14: What is the recommended way to handle `OutOfMemoryError`?
+**Answer:** It should not be caught in normal code; instead, adjust JVM memory settings or fix memory leaks.
 
-### 8. Which of the following is NOT a subclass of `RuntimeException`?
-
-- A) `NullPointerException`
-- B) `IOException`
-- C) `IllegalArgumentException`
-- D) `ClassCastException`
-
-### 9. What does `Throwable.getCause()` return?
-
-- A) The exception message
-- B) The original exception that caused this one
-- C) The stack trace
-- D) The exception type
-
-### 10. Should you catch `Error` in application code?
-
-- A) Yes, always
-- B) Yes, but only if you can recover
-- C) Generally no, unless there's a specific reason
-- D) No, never
-
-## Answers
-
-1. C) `Throwable`
-2. C) `NullPointerException`
-3. C) `FileNotFoundException`
-4. B) Specific first, then general
-5. C) `OutOfMemoryError`
-6. C) `IOException` handler is unreachable
-7. B) Serious JVM-level failures
-8. B) `IOException`
-9. B) The original exception that caused this one
-10. C) Generally no, unless there's a specific reason
-
-## Scoring
-
-- 9-10 correct: Excellent
-- 7-8 correct: Good
-- 5-6 correct: Needs review
-- Below 5: Review the exception hierarchy topic
+### Q15: When would you create a custom exception extending `Error`?
+**Answer:** When you need to represent a serious system-level failure that should not be caught, such as a fatal configuration error.

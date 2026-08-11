@@ -1,98 +1,45 @@
-# Custom Exceptions Quiz
+# Quiz: Custom Exceptions
 
 ## Questions
 
-### 1. Custom Exception Base Class
-What is the recommended base class for a custom exception that represents a programming error?
+### Q1: What is the recommended base class for a custom exception that represents a programming error?
+**Answer:** C) `RuntimeException` — Programming errors should be unchecked; `Exception` is for recoverable errors.
 
-A) `Exception`
-B) `Error`
-C) `RuntimeException`
-D) `Throwable`
+### Q2: Which naming convention is correct for custom exceptions?
+**Answer:** C) `PaymentDeclinedException` — Always suffix with `Exception`.
 
-### 2. Naming Convention
-Which naming convention is correct for custom exceptions?
+### Q3: Which constructors should a custom exception always provide?
+**Answer:** B) Message, message+cause, and cause-only — This covers all standard cases for exception chaining.
 
-A) `PaymentDeclinedError`
-B) `PaymentDeclined`
-C) `PaymentDeclinedException`
-D) `PaymentExceptionDeclined`
+### Q4: What happens if you don't pass the original exception to the `super` constructor?
+**Answer:** B) The original cause is lost — This makes debugging harder because the causal chain is broken.
 
-### 3. Constructor Requirement
-Which constructors should a custom exception always provide?
+### Q5: Which scenario BEST warrants a custom exception?
+**Answer:** B) A user account is not found — Domain-specific errors benefit from custom exceptions; standard exceptions work for the others.
 
-A) Message-only and cause-only
-B) Message, message+cause, and cause-only
-C) Message-only
-D) Message+cause only
+### Q6: When is `serialVersionUID` required on a custom exception?
+**Answer:** A) Always, for all exceptions — Best practice is to include it for all serializable exceptions.
 
-### 4. Cause Preservation
-What happens if you don't pass the original exception to the `super` constructor?
+### Q7: What is the primary benefit of including error codes in custom exceptions?
+**Answer:** C) Programmatic error handling and monitoring — Error codes enable programmatic handling and log monitoring.
 
-A) The exception is not thrown
-B) The original cause is lost
-C) The JVM adds it automatically
-D) It's logged automatically
+### Q8: For a large enterprise application, what is the recommended maximum hierarchy depth?
+**Answer:** C) 3 levels — Keeps hierarchies manageable while allowing necessary abstraction.
 
-### 5. When to Create
-Which scenario BEST warrants a custom exception?
+### Q9: Why use an exception factory (static methods) instead of constructors directly?
+**Answer:** B) Factories hide constructor complexity and improve readability — They can also provide default values.
 
-A) A null parameter is passed
-B) A user account is not found
-C) An array index is out of bounds
-D) An arithmetic overflow occurs
+### Q10: What is wrong with using exceptions for normal flow control?
+**Answer:** B) It reduces performance and readability — Exception handling is significantly slower than conditional checks.
 
-### 6. serialVersionUID
-When is `serialVersionUID` required on a custom exception?
+### Q11: What is the difference between checked and unchecked custom exceptions?
+**Answer:** Checked custom exceptions extend `Exception` and must be declared, while unchecked ones extend `RuntimeException` and do not require explicit handling.
 
-A) Always, for all exceptions
-B) Only for checked exceptions
-C) Only for exceptions used in RMI
-D) Never required
+### Q12: When should you create a custom exception versus using a standard one?
+**Answer:** When the error has specific meaning in your domain and you need to carry domain-specific data.
 
-### 7. Error Codes
-What is the primary benefit of including error codes in custom exceptions?
+### Q13: Why should custom exceptions not use generic `Exception` as a base?
+**Answer:** It makes the exception too broad, making it difficult to catch specific error conditions.
 
-A) Better performance
-B) More compact stack traces
-C) Programmatic error handling and monitoring
-D) Smaller class files
-
-### 8. Hierarchy Depth
-For a large enterprise application, what is the recommended maximum hierarchy depth?
-
-A) 1 level (flat)
-B) 2 levels
-C) 3 levels
-D) 5 levels
-
-### 9. Exception Factory
-Why use an exception factory (static methods) instead of constructors directly?
-
-A) Factories are faster
-B) Factories hide constructor complexity and improve readability
-C) Constructors are private
-D) Factories reduce memory usage
-
-### 10. Flow Control
-What is wrong with using exceptions for normal flow control?
-
-A) It's not allowed by the compiler
-B) It reduces performance and readability
-C) It causes memory leaks
-D) It prevents serialization
-
----
-
-## Answers
-
-1. **C** — `RuntimeException` for programming errors; `Exception` for recoverable errors.
-2. **C** — Always suffix with `Exception`.
-3. **B** — Message, message+cause, and cause-only covers all standard cases.
-4. **B** — The original cause is lost, making debugging harder.
-5. **B** — Domain-specific errors benefit from custom exceptions; standard exceptions work for the others.
-6. **A** — Best practice is to include it for all serializable exceptions.
-7. **C** — Error codes enable programmatic handling and log monitoring.
-8. **C** — 3 levels maximum keeps hierarchies manageable.
-9. **B** — Factories improve readability and can provide default values.
-10. **B** — It hurts performance and makes code harder to understand.
+### Q14: What happens when a custom exception is thrown and not caught?
+**Answer:** The JVM terminates the thread with a stack trace, unless caught by a higher-level handler.

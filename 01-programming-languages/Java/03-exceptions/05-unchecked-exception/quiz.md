@@ -1,115 +1,48 @@
 # Quiz: Unchecked Exceptions
 
-Test your understanding of unchecked exceptions in Java.
-
----
-
 ## Questions
 
-**1.** Which of the following is an unchecked exception?
+### Q1: Which of the following is an unchecked exception?
+**Answer:** `NullPointerException` (extends `RuntimeException`, which is unchecked).
 
-- A) `IOException`
-- B) `SQLException`
-- C) `NullPointerException`
-- D) `ClassNotFoundException`
+### Q2: Unchecked exceptions extend which class (or its subclasses)?
+**Answer:** `RuntimeException` or `Error`.
 
----
+### Q3: True or False: The Java compiler requires you to catch or declare unchecked exceptions in a `throws` clause.
+**Answer:** False. The compiler does not enforce handling of unchecked exceptions.
 
-**2.** Unchecked exceptions extend which class (or its subclasses)?
+### Q4: Which of these is a reason to use an unchecked exception?
+**Answer:** A method received a null argument that should never be null. This is a programming error.
 
-- A) `Exception`
-- B) `RuntimeException`
-- C) `Throwable`
-- D) `Error`
+### Q5: What is the recommended approach when an unchecked exception occurs that indicates a programming bug?
+**Answer:** Log the exception, let it propagate, and fix the underlying bug.
 
----
+### Q6: Which exception is thrown when a `null` reference is dereferenced?
+**Answer:** `NullPointerException`.
 
-**3.** True or False: The Java compiler requires you to catch or declare
-unchecked exceptions in a `throws` clause.
+### Q7: True or False: `Error` subtypes are checked exceptions.
+**Answer:** False. `Error` subtypes are unchecked.
 
-- A) True
-- B) False
+### Q8: Which of the following is an anti-pattern?
+**Answer:** Using exceptions for control flow instead of if/else checks. This is slow, hides bugs, and is considered an anti-pattern.
 
----
+### Q9: What is the superclass of `IllegalArgumentException`?
+**Answer:** `RuntimeException`.
 
-**4.** Which of these is a reason to use an unchecked exception?
+### Q10: When should you catch an unchecked exception?
+**Answer:** Only catch when you have a meaningful recovery strategy; otherwise let it propagate and fix the bug.
 
-- A) The file cannot be found on disk
-- B) The database connection was refused
-- C) A method received a null argument that should never be null
-- D) The network connection timed out
+### Q11: What is the difference between `RuntimeException` and `Error`?
+**Answer:** `RuntimeException` represents application programming bugs; `Error` represents JVM-level failures that are usually unrecoverable.
 
----
+### Q12: Why is it considered an anti-pattern to catch `RuntimeException` broadly?
+**Answer:** It can mask programming bugs, makes debugging harder, and prevents the bug from being fixed at its source.
 
-**5.** What is the recommended approach when an unchecked exception occurs
-that indicates a programming bug?
+### Q13: What is the performance cost of creating an unchecked exception?
+**Answer:** Filling in the stack trace is expensive; in tight loops, this can cause significant performance degradation.
 
-- A) Catch it silently and continue
-- B) Log it and let it propagate, then fix the bug
-- C) Wrap it in a checked exception
-- D) Ignore it completely
+### Q14: Name a common scenario where you might throw an `IllegalStateException`.
+**Answer:** When a method is called on an object that is not in the correct state, such as trying to use a connection that has been closed.
 
----
-
-**6.** Which exception is thrown when a `null` reference is dereferenced?
-
-- A) `IllegalArgumentException`
-- B) `IllegalStateException`
-- C) `NullPointerException`
-- D) `ClassCastException`
-
----
-
-**7.** True or False: `Error` subtypes are checked exceptions.
-
-- A) True
-- B) False
-
----
-
-**8.** Which of the following is an anti-pattern?
-
-- A) Validating inputs at method boundaries with unchecked exceptions
-- B) Using exceptions for control flow instead of if/else checks
-- C) Creating a custom unchecked exception hierarchy for domain errors
-- D) Setting a global uncaught exception handler for threads
-
----
-
-**9.** What is the superclass of `IllegalArgumentException`?
-
-- A) `Exception`
-- B) `RuntimeException`
-- C) `Error`
-- D) `Throwable`
-
----
-
-**10.** When should you catch an unchecked exception?
-
-- A) Always, to prevent program termination
-- B) Only when you can meaningfully recover from the error
-- C) Never
-- D) In every method that might throw one
-
----
-
-## Answers
-
-1. **C** — `NullPointerException` extends `RuntimeException` (unchecked).
-2. **B** — Unchecked exceptions extend `RuntimeException` or `Error`.
-3. **B** — False. The compiler does not enforce handling of unchecked exceptions.
-4. **C** — A null argument is a programming error; file/network/DB failures are
-   external and should use checked exceptions.
-5. **B** — Log the exception, let it propagate, and fix the underlying bug.
-6. **C** — `NullPointerException` is thrown when dereferencing a null reference.
-7. **B** — False. `Error` subtypes are unchecked.
-8. **B** — Using exceptions for control flow is slow, hides bugs, and is
-   considered an anti-pattern.
-9. **B** — `RuntimeException`.
-10. **B** — Only catch when you have a meaningful recovery strategy; otherwise
-    let it propagate and fix the bug.
-
----
-
-Score: __ / 10
+### Q15: How should you handle `NullPointerException` in production code?
+**Answer:** Validate inputs at method boundaries, use `Objects.requireNonNull()`, and let the exception propagate to a global handler if it occurs unexpectedly.

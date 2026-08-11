@@ -119,3 +119,33 @@ Problem detected
     │
     └─ None match? ──────────────── Custom RuntimeException subclass
 ```
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Using standard RuntimeExceptions | No custom classes; universal understanding | May not carry domain-specific context |
+| Creating custom RuntimeException | Domain-specific semantics; typed catching | More classes to maintain; callers may not catch |
+| IllegalArgumentException over custom | Familiar to all Java developers | Cannot distinguish between different invalid argument scenarios |
+| IllegalStateException over custom | Clear "wrong state" semantics | Cannot distinguish between different state violations |
+
+## Common Code Review Comments
+
+- "Use `IllegalArgumentException`, not a custom exception — this is a standard argument validation."
+- "Why `NullPointerException`? You should validate with `Objects.requireNonNull()` instead."
+- "This should be `IllegalStateException` — the object is in the wrong state, not the caller's fault."
+- "Don't throw raw `RuntimeException` — use a specific subtype so callers can catch selectively."
+- "Add the actual value to the message: `"Expected positive, got: " + value`."
+
+## Common Production Mistakes
+
+- **Throwing NullPointerException manually**: Use `Objects.requireNonNull()` — it's idiomatic and conveys intent without custom messages.
+- **Using IllegalArgumentException for state errors**: The distinction matters — `IllegalArgumentException` means "you gave me bad input"; `IllegalStateException` means "I'm not ready for this operation."
+- **Swallowing IllegalArgumentException in validation**: Catching it silently and continuing with default values masks bugs that should fail fast.
+- **Missing the actual value in the message**: `"Age must be positive"` is less useful than `"Age must be positive, got: -1"` — always include the offending value.
+
+## When to Escalate
+
+- You are designing a domain exception hierarchy with multiple `RuntimeException` subtypes — the naming and structure should be reviewed.
+- A method throws `IllegalArgumentException` but the validation is complex and involves multiple fields — consider a validation exception instead.
+- You need to decide between `IllegalStateException` and a domain-specific exception — the architect should define the convention for the team.

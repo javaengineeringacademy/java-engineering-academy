@@ -1,9 +1,8 @@
-# Finally Block Quiz
+# Quiz: Finally Block
 
-## Question 1: Basic Execution
+## Questions
 
-What is the output?
-
+### Q1: What is the output of this code?
 ```java
 try {
     System.out.println("try");
@@ -11,16 +10,9 @@ try {
     System.out.println("finally");
 }
 ```
+**Answer:** C) `try`, `finally` — The finally block always executes after the try block.
 
-A) `try`
-B) `finally`
-C) `try`, `finally`
-D) `finally`, `try`
-
-## Question 2: Exception Path
-
-What is the output?
-
+### Q2: What is the output of this code?
 ```java
 try {
     System.out.println("try");
@@ -31,16 +23,9 @@ try {
     System.out.println("finally");
 }
 ```
+**Answer:** A) `try`, `catch`, `finally` — The catch block handles the exception, then finally executes.
 
-A) `try`, `catch`, `finally`
-B) `try`, `finally`
-C) `try`, `catch`
-D) `catch`, `finally`
-
-## Question 3: Return Override
-
-What does this method return?
-
+### Q3: What does this method return?
 ```java
 static int value() {
     try {
@@ -50,16 +35,9 @@ static int value() {
     }
 }
 ```
+**Answer:** B) 2 — The finally block's return overrides the try block's return.
 
-A) 1
-B) 2
-C) Compilation error
-D) Throws exception at runtime
-
-## Question 4: Exception Masking
-
-What is the output?
-
+### Q4: What is the output of this code?
 ```java
 try {
     throw new RuntimeException("original");
@@ -67,16 +45,9 @@ try {
     throw new RuntimeException("finally");
 }
 ```
+**Answer:** B) `RuntimeException("finally")` propagates — The finally exception replaces the try exception.
 
-A) `RuntimeException("original")` propagates
-B) `RuntimeException("finally")` propagates
-C) Both propagate
-D) Compilation error
-
-## Question 5: Missing Catch
-
-What happens?
-
+### Q5: What happens in this code?
 ```java
 try {
     throw new RuntimeException("boom");
@@ -84,16 +55,9 @@ try {
     System.out.println("cleanup");
 }
 ```
+**Answer:** B) `cleanup` prints, then `RuntimeException` propagates — Finally runs regardless of exceptions.
 
-A) Compilation error — catch is required
-B) `cleanup` prints, then `RuntimeException` propagates
-C) Exception is swallowed
-D) `cleanup` prints, then program exits
-
-## Question 6: Finally After Return
-
-What does this method return?
-
+### Q6: What does this method return?
 ```java
 static String build() {
     StringBuilder sb = new StringBuilder();
@@ -105,16 +69,9 @@ static String build() {
     }
 }
 ```
+**Answer:** B) `"hello"` — The return value is captured before finally mutates the StringBuilder.
 
-A) `"hello world"`
-B) `"hello"`
-C) `""`
-D) Compilation error
-
-## Question 7: Nested Try-Finally
-
-What is the output?
-
+### Q7: What is the output of this code?
 ```java
 try {
     System.out.println("outer try");
@@ -127,25 +84,12 @@ try {
     System.out.println("outer finally");
 }
 ```
+**Answer:** B) `outer try`, `inner try`, `inner finally`, `outer finally` — Inner finally runs before outer finally.
 
-A) `outer try`, `inner try`, `outer finally`
-B) `outer try`, `inner try`, `inner finally`, `outer finally`
-C) `inner try`, `inner finally`, `outer try`, `outer finally`
-D) `inner try`, `outer try`, `inner finally`, `outer finally`
+### Q8: Which is preferred for closing a `FileInputStream`?
+**Answer:** B) try-with-resources — TWR is the modern idiomatic approach.
 
-## Question 8: Finally vs TWR
-
-Which is preferred for closing a `FileInputStream`?
-
-A) `finally` with `fis.close()`
-B) try-with-resources
-C) Both are equally good
-D) Neither — let GC handle it
-
-## Question 9: Catch Exception in Finally
-
-What is the output?
-
+### Q9: What is the output of this code?
 ```java
 try {
     System.out.println("try");
@@ -159,32 +103,19 @@ try {
 }
 System.out.println("after");
 ```
+**Answer:** B) `try`, `finally`, `caught: in finally`, `after` — Exception in finally is caught, then execution continues.
 
-A) `try`, `finally`, `after`
-B) `try`, `finally`, `caught: in finally`, `after`
-C) `try`, `finally`, `caught: in finally`
-D) Compilation error
+### Q10: Which is the best use case for `finally`?
+**Answer:** B) Releasing a `ReentrantLock` — Lock is not AutoCloseable, so finally is appropriate.
 
-## Question 10: When to Use Finally
+### Q11: Why does finally execute even when an exception is thrown?
+**Answer:** Finally is designed to guarantee cleanup code runs regardless of whether an exception occurs.
 
-Which is the best use case for `finally`?
+### Q12: What happens if you have both catch and finally blocks?
+**Answer:** The catch block handles the exception first, then the finally block executes.
 
-A) Closing a `BufferedReader`
-B) Releasing a `ReentrantLock`
-C) Closing a `Socket`
-D) Disposing a `Graphics` object
+### Q13: Can finally block suppress an exception?
+**Answer:** Yes, if an exception is thrown in finally, it replaces the original exception from the try block.
 
----
-
-## Answers
-
-1. C (both execute in order)
-2. A (catch handles exception, finally always runs)
-3. B (finally return overrides try return)
-4. B (finally exception replaces try exception)
-5. B (finally runs, then uncaught exception propagates)
-6. B (return value captured before finally mutates StringBuilder)
-7. B (inner finally runs before outer finally)
-8. B (TWR is the modern idiomatic approach)
-9. B (exception in finally is caught, then execution continues)
-10. B (Lock is not AutoCloseable, so finally is appropriate)
+### Q14: When is finally NOT executed?
+**Answer:** When the JVM exits, the thread is killed, or `System.exit()` is called.

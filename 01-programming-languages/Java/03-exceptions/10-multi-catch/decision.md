@@ -37,3 +37,33 @@ the right refactor. Two identical blocks may be fine as-is if they are simple.
 | Catching `Exception \| Error` together | Too broad — catches fatal errors |
 | Multi-catch followed by silent `return` | Swallowing exceptions |
 | Mixing checked and unrelated unchecked exceptions | Misleading grouping |
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Multi-catch for related exceptions | Reduced duplication; cleaner code | Cannot access type-specific methods on the caught exception |
+| Separate catch blocks | Type-specific handling; full API access | Verbose; code duplication for identical logic |
+| Multi-catch with instanceof inside | Single block, type-aware logic | Ugly; defeats the purpose of multi-catch |
+| Catching too many types in one block | Concise | May hide unrelated bugs; harder to reason about |
+
+## Common Code Review Comments
+
+- "These two catch blocks do the same thing — use multi-catch."
+- "You're catching `IOException | NullPointerException` together — these are unrelated."
+- "If you need `instanceof` checks inside the catch, use separate catch blocks instead."
+- "Don't catch `Exception | Error` — that's too broad; catch specific types."
+- "Multi-catch is for when the handling is identical — if it's not, keep them separate."
+
+## Common Production Mistakes
+
+- **Grouping unrelated exceptions**: `catch (IOException | IllegalArgumentException e)` — if the handling differs, this hides bugs and makes debugging harder.
+- **Using multi-catch when type-specific methods are needed**: `catch (SQLException | IOException e)` — then calling `e.getSQLState()` fails at runtime for `IOException`.
+- **Silently swallowing multi-catch exceptions**: `catch (A | B e) { log.error("...", e); }` — if recovery differs for A and B, this is a bug.
+- **Multi-catch hiding missing handling**: Compiler doesn't check exhaustive handling for unchecked types in multi-catch — you may miss a new subtype.
+
+## When to Escalate
+
+- You are designing exception handling for a pipeline that processes multiple exception types — the grouping strategy needs review.
+- Multi-catch is used in a critical path where different exceptions require different recovery — the design needs architectural input.
+- A team adopts inconsistent multi-catch conventions — the architect should establish guidelines.

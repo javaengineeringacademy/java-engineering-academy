@@ -2,77 +2,47 @@
 
 ## Questions
 
-**1. What annotation creates a centralized exception handler in Spring Boot?**
-- A) `@ExceptionHandler`
-- B) `@RestControllerAdvice`
-- C) `@ControllerException`
-- D) `@GlobalHandler`
+### Q1: What annotation creates a centralized exception handler in Spring Boot?
+**Answer:** `@RestControllerAdvice` — it combines `@ControllerAdvice` and `@ResponseBody`.
 
-**2. Which HTTP status code indicates a resource was not found?**
-- A) 400
-- B) 409
-- C) 404
-- D) 500
+### Q2: Which HTTP status code indicates a resource was not found?
+**Answer:** 404 Not Found.
 
-**3. What is the primary purpose of a circuit breaker?**
-- A) Log all exceptions
-- B) Prevent cascading failures
-- C) Retry failed requests
-- D) Validate input data
+### Q3: What is the primary purpose of a circuit breaker?
+**Answer:** Prevent cascading failures by stopping requests to failing dependencies.
 
-**4. Which exception should NOT be retried?**
-- A) `SocketTimeoutException`
-- B) `ValidationException`
-- C) `HttpServerErrorException`
-- D) `DatabaseConnectionException`
+### Q4: Which exception should NOT be retried?
+**Answer:** `ValidationException` — it indicates invalid input; retrying won't fix it.
 
-**5. What field should every structured error response include?**
-- A) stackTrace
-- B) traceId
-- C) userId
-- D) password
+### Q5: What field should every structured error response include?
+**Answer:** `traceId` — it enables correlating logs across distributed systems.
 
-**6. What is the correct logging approach for exceptions?**
-- A) `log.error(ex.getMessage())`
-- B) `System.out.println(ex)`
-- C) `log.error("message", ex)`
-- D) `log.error(ex.toString())`
+### Q6: What is the correct logging approach for exceptions?
+**Answer:** `log.error("message", ex)` — pass exception as last argument to preserve stack trace.
 
-**7. Which tool provides distributed tracing for exception monitoring?**
-- A) Log4j
-- B) DataDog
-- C) JUnit
-- D) Maven
+### Q7: Which tool provides distributed tracing for exception monitoring?
+**Answer:** DataDog provides distributed tracing and exception monitoring.
 
-**8. What does the circuit breaker HALF_OPEN state indicate?**
-- A) Service is fully operational
-- B) Service is testing recovery
-- C) Service is completely down
-- D) No requests are allowed
+### Q8: What does the circuit breaker HALF_OPEN state indicate?
+**Answer:** Service is testing recovery — the circuit breaker allows test requests to check if the dependency has recovered.
 
-**9. What is graceful degradation?**
-- A) Throwing more exceptions
-- B) Crashing immediately on failure
-- C) Providing reduced functionality when a dependency fails
-- D) Retrying indefinitely
+### Q9: What is graceful degradation?
+**Answer:** Providing reduced functionality when a dependency fails, instead of crashing completely.
 
-**10. Why are correlation IDs important?**
-- A) They encrypt error messages
-- B) They trace requests across multiple services
-- C) They replace logging
-- D) They prevent exceptions
+### Q10: Why are correlation IDs important?
+**Answer:** They trace requests across multiple services, linking related log entries for debugging.
 
----
+### Q11: What happens when you log only `ex.getMessage()` instead of the full exception?
+**Answer:** You lose the stack trace, which is critical for diagnosing where and why the error occurred.
 
-## Answers
+### Q12: Why should exceptions never be logged and rethrown in the same place?
+**Answer:** It creates duplicate log entries for the same error, making it harder to trace and analyze.
 
-1. **B** - `@RestControllerAdvice` combines `@ControllerAdvice` and `@ResponseBody`
-2. **C** - 404 Not Found is the standard HTTP status for missing resources
-3. **B** - Circuit breakers stop requests to failing dependencies to prevent cascading failures
-4. **B** - `ValidationException` indicates invalid input; retrying won't fix it
-5. **B** - `traceId` enables correlating logs across distributed systems
-6. **C** - Pass exception as last argument to preserve stack trace
-7. **B** - DataDog provides distributed tracing and exception monitoring
-8. **B** - HALF_OPEN means the circuit breaker is allowing test requests to check recovery
-9. **C** - Graceful degradation means providing partial functionality instead of failing completely
-10. **B** - Correlation IDs link related log entries across microservices for debugging
+### Q13: What is the difference between a circuit breaker and a retry pattern?
+**Answer:** A retry pattern attempts the same operation multiple times. A circuit breaker stops trying after repeated failures to prevent overloading a failing service.
+
+### Q14: Why is it important to include the exception object in structured error responses?
+**Answer:** It enables downstream consumers and monitoring tools to categorize and analyze errors programmatically, rather than parsing free-text messages.
+
+### Q15: Why should you use custom exception classes instead of generic ones?
+**Answer:** Custom exceptions provide meaningful names that make error handling clearer, allow targeted catch blocks, and improve code readability.

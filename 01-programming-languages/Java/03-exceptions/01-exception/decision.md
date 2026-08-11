@@ -88,3 +88,33 @@ Some exceptions fall in between:
 - Checked exceptions: the caller can and should handle the failure.
 - Unchecked exceptions: the code is broken, fix it.
 - When in doubt, lean toward unchecked -- checked exceptions add API surface area that cannot be removed without breaking backward compatibility.
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Checked exception | Compiler enforces handling; self-documenting API | Boilerplate; callers may swallow or rethrow carelessly |
+| Unchecked exception | Cleaner signatures; fail-fast semantics | No compile-time enforcement; callers may not handle |
+| Wrapping checked in unchecked at boundary | Cleaner layer APIs; domain-focused exceptions | Loses checked exception contract; callers may not handle |
+| Declaring broad `throws Exception` | Simple method signature | Hides specific failure modes; callers catch everything |
+
+## Common Code Review Comments
+
+- "Why is this checked? The caller can't recover from it — make it unchecked."
+- "Don't wrap this in `RuntimeException` just to avoid the `throws` clause — document the failure."
+- "This checked exception is never actually caught by callers — consider making it unchecked."
+- "Your custom exception extends `Exception` but is only thrown from internal code — should be `RuntimeException`."
+- "Don't declare `throws Exception` — narrow it to the specific types."
+
+## Common Production Mistakes
+
+- **Wrapping every checked exception in RuntimeException**: At layer boundaries, developers wrap `SQLException` in `RuntimeException` and lose the checked contract — callers never handle it.
+- **Catching and rethrowing as generic Exception**: `catch (Exception e) { throw new Exception(e); }` — destroys the original type, making targeted recovery impossible.
+- **Changing checked to unchecked in minor versions**: Breaks backward compatibility — callers that relied on the compiler enforcing `try/catch` now silently ignore failures.
+- **Swallowing checked exceptions in empty catch blocks**: "I'll handle it later" — the failure is logged nowhere and the system continues in an inconsistent state.
+
+## When to Escalate
+
+- You are deciding whether a public API method should use checked or unchecked exceptions — this is a permanent contract decision.
+- A team debate about checked vs unchecked for a domain concept — the architect should establish the convention.
+- You are removing or changing exception types in an existing public API — this is a breaking change requiring architectural review.

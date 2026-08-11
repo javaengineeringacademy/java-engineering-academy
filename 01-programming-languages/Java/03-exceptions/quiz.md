@@ -1,4 +1,4 @@
-# Exception Module Quiz
+# Quiz: Exception Module
 
 ## Questions
 
@@ -32,13 +32,11 @@
 ### Q10: What is a suppressed exception?
 **Answer:** An exception thrown during cleanup (in a try-with-resources) that is automatically attached to the primary exception via `addSuppressed()`.
 
-## Bonus Questions
-
 ### Q11: Why shouldn't you use exceptions for control flow?
 **Answer:** Creating exceptions is expensive — it captures the full stack trace. Use conditionals for expected logic branches. Exception-based flow is 10-100x slower.
 
 ### Q12: What is the difference between `throw` and `throws`?
-**Answer:** `throw` is an statement that throws an exception. `throws` is a declaration in the method signature listing exceptions the method might throw.
+**Answer:** `throw` is a statement that throws an exception. `throws` is a declaration in the method signature listing exceptions the method might throw.
 
 ### Q13: What happens if you don't catch a checked exception?
 **Answer:** The compiler reports an error. You must either catch it with `try-catch` or declare it in the method signature with `throws`.

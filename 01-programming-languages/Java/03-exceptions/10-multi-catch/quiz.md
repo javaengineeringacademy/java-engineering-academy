@@ -1,80 +1,53 @@
-# Multi-Catch Quiz
+# Quiz: Multi-Catch
 
 ## Questions
 
-**1.** What is the correct syntax for catching `IOException` and `SQLException` in one block?
+### Q1: What is the correct syntax for catching `IOException` and `SQLException` in one block?
+**Answer:** B) `catch (IOException | SQLException e)` — The pipe `|` operator separates exception types.
 
-- A) `catch (IOException, SQLException e)`
-- B) `catch (IOException | SQLException e)`
-- C) `catch (IOException or SQLException e)`
-- D) `catch ({IOException, SQLException} e)`
+### Q2: Can the exception types in a multi-catch have an inheritance relationship?
+**Answer:** C) No, the compiler rejects it — The compiler requires disjoint (non-inheriting) types.
 
-**2.** Can the exception types in a multi-catch have an inheritance relationship?
+### Q3: What happens to the exception variable inside a multi-catch block?
+**Answer:** B) It is effectively final — The variable cannot be reassigned.
 
-- A) Yes, the child type must come first
-- B) Yes, the parent type must come first
-- C) No, the compiler rejects it
-- D) Only if both are checked exceptions
+### Q4: What does the compiler generate for a multi-catch at the bytecode level?
+**Answer:** B) A synthetic exception class — The compiler creates a synthetic class extending the common superclass.
 
-**3.** What happens to the exception variable inside a multi-catch block?
+### Q5: Which scenario is the best use case for multi-catch?
+**Answer:** C) Multiple exceptions need identical handling and are semantically related — Identical handling of related exceptions is the ideal case.
 
-- A) It is mutable
-- B) It is effectively final
-- C) It is static
-- D) It has no type at runtime
-
-**4.** What does the compiler generate for a multi-catch at the bytecode level?
-
-- A) Multiple catch clauses
-- B) A synthetic exception class
-- C) An `instanceof` chain
-- D) A switch statement
-
-**5.** Which scenario is the best use case for multi-catch?
-
-- A) Each exception needs different recovery logic
-- B) Exceptions are unrelated but you want to save lines
-- C) Multiple exceptions need identical handling and are semantically related
-- D) You want to catch `Throwable`
-
-**6.** Given this code, what can you do with `e` inside the catch block?
-
+### Q6: Given this code, what can you do with `e` inside the catch block?
 ```java
 catch (IOException | SQLException e) {
     // ?
 }
 ```
+**Answer:** B) Call `e.getMessage()` — You can call common methods like `getMessage()`, but not type-specific methods.
 
-- A) `e = new IOException("x");`
-- B) Call `e.getMessage()`
-- C) Call `e.getSQLState()` directly
-- D) Both A and B
-
-**7.** What error does this code produce?
-
+### Q7: What error does this code produce?
 ```java
 catch (IOException | Exception e) { }
 ```
+**Answer:** B) `Types in multi-catch must be disjoint` — `Exception` is a superclass of `IOException`, so they are not disjoint.
 
-- A) No error — this is valid
-- B) `Types in multi-catch must be disjoint`
-- C) `Incompatible types`
-- D) `Variable 'e' is already defined`
+### Q8: Which statement about multi-catch performance is true?
+**Answer:** C) It has equivalent performance to individual catch blocks — The synthetic class approach yields equivalent bytecode performance.
 
-**8.** Which statement about multi-catch performance is true?
+### Q9: Why was multi-catch introduced in Java 7?
+**Answer:** To reduce boilerplate when handling multiple unrelated exceptions with the same logic.
 
-- A) It is slower than individual catch blocks
-- B) It is faster than individual catch blocks
-- C) It has equivalent performance to individual catch blocks
-- D) Performance depends on the number of exception types
+### Q10: What happens if you try to assign to the exception variable in a multi-catch?
+**Answer:** The compiler throws an error because the variable is implicitly final.
 
-## Answers
+### Q11: What is the benefit of using multi-catch over separate catch blocks?
+**Answer:** It reduces code duplication and improves readability when handling multiple exceptions identically.
 
-1. **B** — The pipe `|` operator separates exception types.
-2. **C** — The compiler requires disjoint (non-inheriting) types.
-3. **B** — The variable is implicitly final and cannot be reassigned.
-4. **B** — The compiler creates a synthetic class extending the common superclass.
-5. **C** — Identical handling of related exceptions is the ideal case.
-6. **B** — You can call common methods like `getMessage()`, but not type-specific methods.
-7. **B** — `Exception` is a superclass of `IOException`, so they are not disjoint.
-8. **C** — The synthetic class approach yields equivalent bytecode performance.
+### Q12: Can you use multi-catch with checked exceptions?
+**Answer:** Yes, as long as the types are disjoint (not related by inheritance).
+
+### Q13: What is the bytecode-level difference between multi-catch and separate catch blocks?
+**Answer:** They produce equivalent bytecode; the compiler generates a synthetic exception class for multi-catch.
+
+### Q14: What is the risk of using multi-catch with too many exception types?
+**Answer:** It can obscure the specific error conditions being handled, making debugging harder.

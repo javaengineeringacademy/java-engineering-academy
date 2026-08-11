@@ -65,3 +65,35 @@ Do you need to signal an abnormal condition?
 3. **Never throw Throwable from application code** — throw a specific Exception subclass
 4. **Only use Throwable as a parameter type** in generic frameworks that must handle anything
 5. **Preserve the cause chain** regardless of which type you use
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Catching Throwable | Catches everything, simple catch-all | Swallows Errors you should let propagate; masks JVM failures |
+| Using Throwable as parameter type | Maximum flexibility for frameworks | Callers lose type safety; harder to reason about what can be thrown |
+| Throwing Throwable from API | Covers all failure modes | Violates principle of least surprise; callers cannot distinguish failure types |
+| Catching Exception vs Throwable | Keeps JVM errors visible | May miss some throwable conditions in generic handlers |
+| Using Error for everything serious | Clear semantic boundary | Some "serious" conditions are recoverable (e.g., OOM from cache); misclassification |
+
+## Common Code Review Comments
+
+- "Why are you catching `Throwable` here? Catch `Exception` and let `Error` propagate."
+- "This method declares `throws Throwable` — that's a code smell. Narrow the type."
+- "Never throw `Throwable` directly from application code — use a specific exception subclass."
+- "If you need to handle both checked and unchecked, catch `Exception` — not `Throwable`."
+- "The `Callable` interface returns `Throwable` for flexibility, but your wrapper should translate it."
+
+## Common Production Mistakes
+
+- **Swallowing OutOfMemoryError**: Catching `Throwable` in a thread pool handler and continuing — the JVM is now in an undefined state. Always re-throw `Error` subclasses.
+- **Losing stack traces**: Catching `Throwable` and creating a new exception without passing the cause — root cause becomes invisible in production logs.
+- **Catching Throwable in finally blocks**: Masks the original exception being thrown from the try/catch block — the real failure is silently replaced.
+- **Using Throwable in method signatures**: Forces every caller to catch or declare `Throwable`, destroying the value of checked exceptions and compiler enforcement.
+
+## When to Escalate
+
+- You are designing a framework that must handle arbitrary throwables (e.g., custom class loaders, agent instrumentation).
+- You are writing a generic `UncaughtExceptionHandler` or thread pool error handler.
+- A production incident involves swallowed `Error` subclasses — escalate to architect to review error handling strategy across the system.
+- You need to decide whether a condition is truly an `Error` or a recoverable `Exception` — this is an architectural decision that affects the entire error hierarchy.

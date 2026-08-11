@@ -89,3 +89,33 @@ Use checked exceptions when all of the following are true:
 - If the library uses checked exceptions, respect that convention.
 - Wrap at the boundary if the checked exceptions leak implementation details.
 - Document the checked exceptions in your API if you propagate them.
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Checked exception for external failure | Compiler forces handling; documents recovery options | Boilerplate; callers may wrap in unchecked anyway |
+| Wrapping checked in unchecked at boundary | Cleaner downstream APIs; domain-focused exceptions | Callers may not handle; loses checked contract |
+| Declaring `throws Exception` on all methods | Simple signature | Hides failure types; callers catch everything broadly |
+| Using unchecked for all external failures | No boilerplate | Callers may forget to handle; silent failures |
+
+## Common Code Review Comments
+
+- "This `IOException` should be caught and wrapped in a domain exception at the service boundary."
+- "Don't let `SQLException` leak through the service layer — translate it to `DataAccessException`."
+- "Why does this method declare `throws Exception`? Narrow it to the specific types."
+- "This checked exception is thrown from one place but caught nowhere — consider unchecked."
+- "Don't catch checked exceptions just to rethrow as `RuntimeException` — that defeats the purpose."
+
+## Common Production Mistakes
+
+- **Swallowing checked exceptions in catch blocks**: A `FileNotFoundException` is caught and logged but the method continues with null — downstream NPEs are now harder to debug.
+- **Wrapping every checked exception in RuntimeException at the boundary**: The entire service layer becomes unchecked — callers have no compile-time guidance on handling.
+- **Changing checked to unchecked in a minor release**: Callers that relied on the `throws` clause now silently ignore failures — this is a breaking API change.
+- **Not logging at the catch site**: Checked exceptions caught and rethrown without logging — the original stack trace is lost in production logs.
+
+## When to Escalate
+
+- You are designing a public API and deciding which methods throw checked exceptions — this is a permanent contract.
+- A team is debating whether to switch from checked to unchecked for an existing exception hierarchy — this affects all consumers.
+- You are integrating with a library that uses checked exceptions differently from your convention — the boundary design needs review.

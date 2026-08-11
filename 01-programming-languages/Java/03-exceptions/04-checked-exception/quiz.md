@@ -1,72 +1,33 @@
 # Quiz: Checked Exceptions
 
-## Question 1
-Which of the following is a checked exception?
+## Questions
 
-- A) `NullPointerException`
-- B) `FileNotFoundException`
-- C) `ArrayIndexOutOfBoundsException`
-- D) `ClassCastException`
+### Q1: Which of the following is a checked exception?
+**Answer:** `FileNotFoundException` (extends `IOException`, which is checked).
 
-**Answer: B**
+### Q2: What must a method do if it can throw a checked exception?
+**Answer:** Either catch it or declare it in a `throws` clause.
 
-## Question 2
-What must a method do if it can throw a checked exception?
+### Q3: A method overrides a parent method that declares `throws IOException`. Which of the following is valid for the overriding method?
+**Answer:** Declare `throws FileNotFoundException` or `throws RuntimeException`. Narrowing checked exceptions or dropping them is valid; declaring broader checked exceptions is not allowed.
 
-- A) Nothing — the JVM handles it automatically.
-- B) Either catch it or declare it in a `throws` clause.
-- C) Only log it in the console.
-- D) Only wrap it in a RuntimeException.
+### Q4: True or False: A method that declares `throws Exception` in its signature is considered good API design.
+**Answer:** False — It hides the specific failures a caller should handle. Always be specific about which checked exceptions a method can throw.
 
-**Answer: B**
+### Q5: What is the main difference between a checked and unchecked exception?
+**Answer:** Checked exceptions must be caught or declared; unchecked exceptions do not.
 
-## Question 3
-A method overrides a parent method that declares `throws IOException`. Which of the
-following is valid for the overriding method?
+### Q6: When should you use a checked exception over an unchecked exception?
+**Answer:** When the failure is caused by an external system and the caller can recover.
 
-- A) Declare `throws Exception`
-- B) Declare `throws FileNotFoundException`
-- C) Declare `throws RuntimeException`
-- D) Declare `throws ArithmeticException`
+### Q7: Which pattern is recommended when a method catches a low-level checked exception (like `SQLException`) and needs to propagate it to a higher layer?
+**Answer:** Wrap it in a domain-specific unchecked exception. Exception translation is the recommended pattern for layer boundaries.
 
-**Answer: B and C** — Narrowing (FileNotFoundException) or dropping checked exceptions
-are both valid. Declaring broader checked exceptions (Exception) is not allowed. Declaring
-unchecked exceptions is always allowed.
+### Q8: What happens if you try to catch a checked exception without declaring it in a `throws` clause?
+**Answer:** The compiler will produce a compile-time error. Checked exceptions must be either caught or declared in the method signature.
 
-## Question 4
-True or False: A method that declares `throws Exception` in its signature is considered
-good API design.
+### Q9: Why does Java enforce checked exceptions at compile time?
+**Answer:** To ensure that developers handle expected failure conditions explicitly, making code more robust and forcing callers to deal with potential errors.
 
-**Answer: False** — It hides the specific failures a caller should handle. Always be
-specific about which checked exceptions a method can throw.
-
-## Question 5
-What is the main difference between a checked and unchecked exception?
-
-- A) Checked exceptions are faster to create.
-- B) Checked exceptions must be caught or declared; unchecked exceptions do not.
-- C) Checked exceptions can only be thrown in main methods.
-- D) Unchecked exceptions extend `Exception`.
-
-**Answer: B**
-
-## Question 6
-When should you use a checked exception over an unchecked exception?
-
-- A) When the failure is a programming error.
-- B) When the failure is caused by an external system and the caller can recover.
-- C) When you want the exception to be silently ignored.
-- D) When you want to avoid using try-catch blocks.
-
-**Answer: B**
-
-## Question 7
-Which pattern is recommended when a method catches a low-level checked exception
-(like `SQLException`) and needs to propagate it to a higher layer?
-
-- A) Declare `throws SQLException` all the way up.
-- B) Wrap it in a domain-specific unchecked exception.
-- C) Catch it and return null.
-- D) Catch it and rethrow it as a checked exception with a different name.
-
-**Answer: B** — Exception translation is the recommended pattern for layer boundaries.
+### Q10: What is the benefit of using custom checked exceptions?
+**Answer:** They provide domain-specific error information, making it clearer to callers what can go wrong and how to recover, while still enforcing compile-time handling.

@@ -45,3 +45,35 @@ and cannot proceed without full functionality.
 - **Every transient failure** needs a retry policy
 - **Every critical path** needs a fallback
 - **Every error response** needs a correlation ID
+
+## Engineering Trade-offs
+
+| Decision | Gain | Loss |
+|----------|------|------|
+| Global exception handler | Consistent error responses; single logging point | May hide endpoint-specific issues |
+| Circuit breaker | Prevents cascade failures; fast-fail | Extra infrastructure; requires tuning thresholds |
+| Retry with backoff | Handles transient failures automatically | Adds latency; may overwhelm recovering service |
+| Graceful degradation | Maintains partial availability | Reduced functionality; may hide underlying issues |
+| Structured error responses | Client-friendly; machine-readable | More code; must not leak internal details |
+
+## Common Code Review Comments
+
+- "This endpoint has no global exception handler — errors return raw 500s."
+- "You're calling an external service without a circuit breaker — what happens when it's down?"
+- "Add exponential backoff to this retry — fixed intervals cause thundering herd."
+- "This fallback returns null — that will cause NPEs downstream; return a meaningful default."
+- "Don't include stack traces in error responses — log them server-side only."
+
+## Common Production Mistakes
+
+- **No global exception handler**: Each endpoint handles exceptions differently — inconsistent error formats; some return 500, some return 200 with error body.
+- **Retrying deterministic failures**: Retrying `IllegalArgumentException` or `400 Bad Request` — wastes resources; only retry transient failures (5xx, timeouts).
+- **Circuit breaker with no fallback**: Circuit opens but there's no fallback — callers get an error with no alternative path.
+- **Logging exceptions at every layer**: Same exception logged at controller, service, and DAO — triple log entries; log once at the boundary.
+- **Exposing internal details in error responses**: Stack traces, SQL state, or class names in API responses — security risk; leaks implementation details.
+
+## When to Escalate
+
+- You are designing the error handling strategy for a microservice architecture — the circuit breaker, retry, and fallback patterns need architectural review.
+- A production incident reveals cascading failures — the architect needs to review the resilience patterns.
+- You are building a shared error handling library for multiple teams — the contract and conventions need agreement.
