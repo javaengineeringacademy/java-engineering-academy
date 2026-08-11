@@ -1,4 +1,4 @@
-# 02 - Error
+# 02 - Error in Java
 
 ## Scope
 

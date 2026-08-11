@@ -1,4 +1,4 @@
-# 00 - Throwable
+# 00 - Throwable in Java
 
 ## Scope
 

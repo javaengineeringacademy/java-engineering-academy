@@ -1,4 +1,4 @@
-# Exception
+# 01 - Exception in Java
 
 ## Scope
 
