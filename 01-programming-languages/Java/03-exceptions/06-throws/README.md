@@ -1,5 +1,15 @@
 # 06 - The throws Declaration
 
+## How This Differs from 05-throw
+
+| 05-throw | 06-throws (this topic) |
+|----------|----------------------|
+| An **action** — explicitly raises an exception | A **declaration** — tells callers an exception may occur |
+| Used inside a method body | Used in a method signature |
+| Creates and throws an exception object | Declares exception types in the contract |
+| `throw new IOException("failed")` | `public void read() throws IOException` |
+| "Something went wrong right here" | "This method might fail with these exceptions" |
+
 ## Scope
 
 This topic covers Java's `throws` keyword in method declarations — the mechanism for declaring that a method may throw certain exceptions. You will learn what `throws` is, its syntax, the distinction between checked and unchecked exceptions in `throws`, exception translation patterns, and production best practices.

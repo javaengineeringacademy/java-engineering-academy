@@ -368,6 +368,18 @@ try (Scope scope = tracer.activateSpan(span)) {
 | JDK 11 | HTTP Client API added structured exception handling for REST calls |
 | JDK 17 | Sealed classes enable more precise exception type hierarchies |
 
+## Engineering Story
+
+### The Correlation ID That Saved the Day
+
+An e-commerce company ran a distributed order processing system across five microservices: order intake, inventory check, payment authorization, shipping allocation, and confirmation notification. On a Friday evening, customers started reporting that orders were failing silently. Support tickets piled up, but the engineering team had no idea which service was causing the failures. Each service had its own logs, its own error codes, and its own format. The intake service returned a 200 OK to the customer. Somewhere downstream, things fell apart.
+
+The team pulled logs from all five services and spent four hours correlating timestamps, trying to match request IDs across different log formats. The order intake service logged an order ID. The inventory service logged a SKU. The payment service logged a transaction reference. None of these identifiers were the same. They could see failures happening, but could not trace a single order through the entire pipeline to find where it broke. The root cause turned out to be a malformed address field that passed validation in intake but failed a format check in shipping allocation. It took four hours to find because no single identifier linked the journey.
+
+The following week, the team added a UUID correlation ID at the order intake entry point. Every service received the ID as a header, included it in every log statement, and attached it to every exception message. They standardized the log format across all services to include the correlation ID, timestamp, service name, and operation. They also added a middleware interceptor that propagated the ID through asynchronous message queues.
+
+The next time a failure occurred, the support team searched the logs for the correlation ID and traced the order through all five services in under fifteen minutes. The malformed address was caught at intake because the shipping service's validation rules were now enforced earlier. The engineering team could see exactly which service threw which exception, when it happened, and what the request state was at that point. Correlation IDs turned an opaque distributed system into a traceable pipeline. The lesson: observability starts with exception messages. Add correlation IDs, timestamps, and service names to every error, and debugging distributed systems becomes tractable instead of heroic.
+
 ## Summary
 
 | Concept | Key Point |

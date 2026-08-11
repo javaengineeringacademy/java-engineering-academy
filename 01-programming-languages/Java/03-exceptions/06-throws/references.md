@@ -29,3 +29,10 @@
 - **Core Java, Vol. I** — Cay S. Horstmann, Chapter on Exception Handling
 - **Clean Code** — Robert C. Martin, Chapter 7: Boundaries (exception translation)
 - **Release It!** — Michael T. Nygard, Chapter 4: Stability Patterns (exception propagation)
+
+---
+
+## Cross-Module References
+
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption

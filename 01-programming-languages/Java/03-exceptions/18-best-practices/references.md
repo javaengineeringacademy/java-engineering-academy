@@ -172,3 +172,12 @@
 ---
 
 *Last updated: August 2026*
+
+---
+
+## Cross-Module References
+
+- [I/O Module](../06-io/) — Exception handling in file and stream operations
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks

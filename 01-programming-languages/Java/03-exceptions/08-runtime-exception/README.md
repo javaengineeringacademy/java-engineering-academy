@@ -218,6 +218,18 @@ If you catch an exception, at minimum log it. Ideally, either handle it properly
 | JDK 5 | `EnumConstantNotPresentException` added for reflection |
 | JDK 7 | `StringIndexOutOfBoundsException` refined from `IndexOutOfBoundsException` |
 
+## Engineering Story
+
+### The Null That Crashed Production
+
+A payment processing service used a fixed-size connection pool of 50 database connections. Background threads handled transaction processing, each pulling a connection from the pool, executing the transaction, and returning the connection. The service had been stable for months when on a Tuesday morning, the entire system went dark. No deployments had happened. No config changes. Just silence.
+
+The on-call engineer found the logs filled with NullPointerException stack traces from the background threads. But the real problem was not the exceptions themselves. Each thread that hit the NPE terminated without returning its database connection to the pool. The thread's default uncaught exception handler printed the stack trace to stderr and moved on. The JVM kept running. The connection pool kept shrinking. After roughly 200 such failures, all 50 connections were leaked, and every new transaction timed out waiting for a connection that would never come.
+
+The NPE came from a field that was null on certain transaction types introduced in a data migration two weeks prior. It only affected transactions where the optional metadata field was absent. The data migration had been clean, but the code never checked for null on that field. The thread died, the connection stayed checked out, and the pool was silently exhausted over the course of six hours.
+
+The fix required two changes. First, add null checks for the optional field. Second, and more importantly, set a custom UncaughtExceptionHandler on every executor thread pool that logged the exception at ERROR level with the thread name and returned the connection in a finally block. Within a week, they had instrumented every thread pool in the service. The lesson: an unhandled RuntimeException on a background thread is not just a logged error. It is a resource leak waiting to happen. Always set UncaughtExceptionHandler on threads, especially when they manage pooled resources.
+
 ## Summary
 
 | Concept | Key Point |

@@ -28,3 +28,12 @@
 - **Release It!** — Michael T. Nygard, Chapter on Circuit Breaker pattern
 - **Designing Data-Intensive Applications** — Martin Kleppmann, Chapter on fault tolerance
 - **Baeldung** — [Exception Handling in Spring MVC](https://www.baeldung.com/exception-handling-for-rest-with-spring) — Practical guide
+
+---
+
+## Cross-Module References
+
+- [I/O Module](../06-io/) — Exception handling in file and stream operations
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks

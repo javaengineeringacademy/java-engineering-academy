@@ -105,3 +105,13 @@
 | SQLException | Checked | Database operation failure |
 | ClassNotFoundException | Checked | Class not found at runtime |
 | InterruptedException | Checked | Thread interrupted during wait |
+
+---
+
+## Cross-Module References
+
+- [I/O Module](../06-io/) — Exception handling in file and stream operations
+- [NIO Module](../07-nio/) — Asynchronous exception handling with Channels
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks

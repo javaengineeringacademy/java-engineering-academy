@@ -28,3 +28,12 @@
 - **Effective Java (3rd Ed)** — Item 9: Use try-with-resources; Item 76: Prefer try-with-resources to try-finally
 - **Core Java, Vol. I** — Cay S. Horstmann, Chapter on Exception Handling
 - **Java Concurrency in Practice** — Brian Goetz, Chapter 7: Cancellation and Shutdown
+
+---
+
+## Cross-Module References
+
+- [I/O Module](../06-io/) — Exception handling in file and stream operations
+- [NIO Module](../07-nio/) — Asynchronous exception handling with Channels
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption

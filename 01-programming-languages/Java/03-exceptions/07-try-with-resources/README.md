@@ -1,5 +1,16 @@
 # 07 - Try With Resources
 
+## How This Differs from 04-finally
+
+| 04-finally | 07-try-with-resources (this topic) |
+|-----------|--------------------------------------|
+| Manual cleanup block — must write `close()` yourself | Automatic cleanup — compiler generates close calls |
+| Risk of resource leak if `close()` is forgotten | Resources guaranteed to close |
+| `finally` runs even if `close()` throws | Suppressed exceptions collected automatically |
+| Pre-Java 7 pattern | Java 7+ replacement |
+| Works with any object | Requires `AutoCloseable` |
+| More boilerplate, more error-prone | Less boilerplate, safer |
+
 ## Scope
 
 This topic covers Java's try-with-resources (TWR) statement, introduced in Java 7 (JSR 334). You will learn what TWR is, why it exists, how it differs from traditional `finally` cleanup, and the underlying bytecode mechanics that make it work. The material progresses from basic usage to advanced patterns including exception suppression, effective final variables (Java 9+), and production-grade resource management.
@@ -300,6 +311,18 @@ static Socket createSocket(String host) throws IOException {
 | JDK 7 | `AutoCloseable` interface added |
 | JDK 7 | Exception suppression for close() failures |
 | JDK 9 | Effectively final variables allowed in resource declaration |
+
+## Engineering Story
+
+### The Suppressed Surprise
+
+A team built a batch file processor that read CSV input, transformed rows, and wrote to output files. They used try-with-resources on both the reader and writer, confident that TWR would handle everything cleanly. The body of the try block parsed each row and wrote transformed data. For months, the system appeared to work flawlessly.
+
+Then a junior developer noticed that output files were occasionally missing rows. The logs showed no exceptions. The processor was returning a success count that matched input count, but downstream validation kept flagging discrepancies. They spent three days tracing the issue through the transformation logic, convinced the bug was in the parser.
+
+The breakthrough came when a senior engineer asked a simple question: "Are you calling getSuppressed() anywhere?" They were not. The writer's close() method had been throwing a FileSystemException on certain output paths due to a permissions issue on a mounted directory. Because the try body completed normally, the suppressed exception was attached to the writer's close exception, but nobody was catching it. The TWR block threw the close exception, but the catch block only caught the body exception type. The close exception propagated silently, and the partial writes remained on disk without being flushed.
+
+The team had been running TWR correctly at the syntax level but completely ignoring the suppression contract. The fix took ten minutes: add a catch block for Exception, log e.getSuppressed(), and investigate the permissions. The lesson was painful but clear. TWR guarantees that close() exceptions are never lost, but only if you actually retrieve them. Every team that uses try-with-resources in production should treat suppressed exceptions as first-class concerns, especially when both the body and close() can independently fail.
 
 ## Summary
 

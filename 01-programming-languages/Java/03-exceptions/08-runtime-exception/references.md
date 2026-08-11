@@ -28,3 +28,10 @@
 - **Effective Java (3rd Ed)** — Item 69: Use exceptions only for exceptional conditions
 - **Effective Java (3rd Ed)** — Item 70: Use checked exceptions for recoverable conditions
 - **Core Java, Vol. I** — Cay S. Horstmann, Chapter on Exception Handling
+
+---
+
+## Cross-Module References
+
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks

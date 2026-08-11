@@ -33,3 +33,10 @@
 - **Effective Java (3rd Ed)** — Item 79: Avoid unnecessary use of checked exceptions
 - **Java Performance** — Scott Oaks, Chapter on Exception Performance
 - **Core Java, Vol. I** — Cay S. Horstmann, Exception Handling chapter
+
+---
+
+## Cross-Module References
+
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption

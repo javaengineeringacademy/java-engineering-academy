@@ -31,3 +31,11 @@
 - **Core Java, Vol. I** — Cay S. Horstmann, Chapter on Exception Handling
 - **Java Concurrency in Practice** — Brian Goetz, Chapter 7: Cancellation and Shutdown (exception propagation)
 - **Clean Code** — Robert C. Martin, Chapter on Error Handling
+
+---
+
+## Cross-Module References
+
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption
+- [Logging Module](../14-logging/) — Exception logging patterns and frameworks

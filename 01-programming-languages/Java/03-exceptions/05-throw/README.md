@@ -1,5 +1,15 @@
 # 05 - The throw Keyword
 
+## How This Differs from 06-throws
+
+| 05-throw (this topic) | 06-throws |
+|----------------------|-----------|
+| An **action** — explicitly raises an exception | A **declaration** — tells callers an exception may occur |
+| Used inside a method body | Used in a method signature |
+| Creates and throws an exception object | Declares exception types in the contract |
+| `throw new IOException("failed")` | `public void read() throws IOException` |
+| "Something went wrong right here" | "This method might fail with these exceptions" |
+
 ## Scope
 
 This topic covers Java's `throw` keyword — the mechanism for explicitly raising exceptions during program execution. You will learn what `throw` is, its syntax, the distinction between `throw` and `throws`, how to throw checked and unchecked exceptions, rethrowing patterns, and exception chaining.
@@ -313,7 +323,25 @@ public class Cache<K, V> {
 }
 ```
 
-## Summary
+## Engineering Story
+
+### "The Vague Error"
+
+A backend team at a logistics company maintained an API that calculated shipping rates. One of their internal methods validated package dimensions before querying a carrier API. The validation method threw an exception when dimensions were outside acceptable ranges. The code looked like this:
+
+```java
+if (weight <= 0 || weight > 150) {
+    throw new Exception("error");
+}
+```
+
+The method threw `new Exception("error")`. No type specificity, no context, no indication of what went wrong or which parameter was invalid. The exception propagated up through three layers of wrapping and finally surfaced in the API gateway as a 500 Internal Server Error with the message "error".
+
+For three days, the support team and two backend engineers tried to reproduce the failure. They checked the carrier API status. They verified network connectivity. They reviewed recent deployments. They set up local environments with test data. Nothing matched. The error log showed the same one-word message repeating every few minutes for a specific customer. Without a meaningful exception message, they had no starting point. They could not tell which parameter was failing, what the actual values were, or which code path was throwing.
+
+On the fourth day, a junior engineer noticed the failing requests were all for packages over 150 pounds. They looked at the validation method, saw the threshold, and realized the exception was being thrown for overweight packages. The fix took five minutes: change the exception to `new IllegalArgumentException("Weight must be between 0 and 150 kg, received: " + weight)`. Add the package dimensions to the message. Use a specific exception type instead of generic Exception.
+
+Three days of debugging, two engineers pulled off their regular work, customer trust eroded because the API returned a generic 500 instead of a meaningful 400 Bad Request. All of it traced back to a single line of code that threw an exception with no message. Exception messages are not decoration. They are the first thing every developer reads when something breaks. A good message can cut debugging time from hours to seconds. A bad message or no message turns every incident into a treasure hunt. When you throw an exception, write the message you would want to read at 3 AM when the on-call phone is ringing.
 
 | Concept | Key Point |
 |---------|-----------|

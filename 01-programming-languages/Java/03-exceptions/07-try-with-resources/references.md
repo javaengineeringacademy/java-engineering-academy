@@ -30,3 +30,12 @@
 
 ## Related Topics
 - [09-finally](../09-finally/references.md) — Finally block references
+
+---
+
+## Cross-Module References
+
+- [I/O Module](../06-io/) — Exception handling in file and stream operations
+- [NIO Module](../07-nio/) — Asynchronous exception handling with Channels
+- [JDBC Module](../10-jdbc/) — SQLException handling in database operations
+- [Concurrency Module](../12-concurrency/) — Thread exception handling and interruption

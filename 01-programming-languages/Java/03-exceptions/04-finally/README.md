@@ -1,5 +1,16 @@
 # 04 - Finally Block
 
+## How This Differs from 07-try-with-resources
+
+| 04-finally (this topic) | 07-try-with-resources |
+|------------------------|----------------------|
+| Manual cleanup block — must write `close()` yourself | Automatic cleanup — compiler generates close calls |
+| Risk of resource leak if `close()` is forgotten | Resources guaranteed to close |
+| `finally` runs even if `close()` throws | Suppressed exceptions collected automatically |
+| Pre-Java 7 pattern | Java 7+ replacement |
+| Works with any object | Requires `AutoCloseable` |
+| More boilerplate, more error-prone | Less boilerplate, safer |
+
 ## Scope
 
 This topic covers Java's `finally` block — the guaranteed execution construct used for cleanup in exception handling. You will learn what `finally` is, why it exists, how execution order works across all control flow paths, and the dangerous interactions between `finally` and `return` statements. The material progresses from basic syntax to advanced pitfalls, production patterns, and a thorough comparison with try-with-resources.
@@ -283,7 +294,17 @@ static void preserveException() {
 | JDK 7 | Try-with-resources introduced as preferred alternative for AutoCloseable |
 | JDK 7 | Suppressed exceptions prevent finally from masking original exceptions |
 
-## Summary
+## Engineering Story
+
+### "The Connection Pool Leak"
+
+A mid-size e-commerce company ran a Java-based order processing service on six instances behind a load balancer. The service used HikariCP for database connection pooling, configured with a maximum of twenty connections per instance. Under normal load, the service held eight to ten connections and everything worked. During flash sales, load spiked and the service needed every connection it could get.
+
+The problem was a data export feature that ran nightly. It opened a JDBC connection, ran a complex query to aggregate sales data, and processed the results in batches. The code used try-catch but did not use finally to close the connection. The developer assumed the catch block would handle cleanup. But the catch block only logged the error. It did not close the connection. On the happy path, the connection was closed after the loop. If an exception occurred mid-query, the connection leaked.
+
+This went unnoticed for months because the export ran at 2 AM when traffic was low. The leaked connections were garbage collected eventually, or the service restarted during deployments. Then a schema migration added a new index that changed query plan behavior. The export started throwing a timeout exception on the third batch. The catch block logged it and returned. The connection was never returned to the pool. Every night, one connection leaked. Over three weeks, the available connections shrank from twenty to fifteen. Then to ten. On a Tuesday evening, a normal traffic spike pushed the service to need twelve connections. The pool was exhausted. Threads blocked waiting for a connection. The health check endpoint timed out. The load balancer removed the instance from rotation. Then a second instance hit the same state. Then a third. Within forty minutes, all six instances were down. The entire site went offline for four hours while engineers scrambled to identify the leak, restart instances, and add connection pool monitoring.
+
+The fix was adding a finally block that closed the connection in a try-finally pattern. The real fix was adding connection pool metrics to the monitoring dashboard so leak rates would alert before exhaustion. But the engineering lesson was simpler: finally is not optional. Every resource that must be released needs a finally block or try-with-resources. The JVM does not clean up your database connections. The garbage collector does not close sockets. If you open it, you close it, and finally is how you guarantee that happens.
 
 | Concept | Key Point |
 |---------|-----------|
