@@ -1,4 +1,4 @@
-# 03 - Runtime Exception (Part 2)
+# 04 - Runtime Exception (Part 2)
 **Previous:** [Part 1](README.md)
 
 ## Production Patterns

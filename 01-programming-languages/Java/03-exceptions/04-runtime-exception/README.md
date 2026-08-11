@@ -1,4 +1,12 @@
-# 03 - RuntimeException
+# 04 - RuntimeException
+
+## How This Differs from 06-Unchecked Exception
+
+| 04-runtime-exception (this topic) | 06-unchecked-exception |
+|-----------------------------------|----------------------|
+| The `RuntimeException` **class** | The unchecked exception **category** |
+| Inheritance, API, common subclasses | Compiler behavior, design philosophy |
+| "What is this class?" | "When and why should I use this?" |
 
 ## Scope
 

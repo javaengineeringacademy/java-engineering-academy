@@ -1,4 +1,4 @@
-# 06 - Exception Hierarchy in Java
+# 03 - Exception Hierarchy
 
 ## 1. Scope
 

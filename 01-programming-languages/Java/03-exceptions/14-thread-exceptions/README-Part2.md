@@ -1,4 +1,4 @@
-# 15 - Thread Exceptions (Part 2)
+# 14 - Thread Exceptions (Part 2)
 **Previous:** [Part 1](README.md)
 
 ## Virtual Threads and Exception Propagation (Java 21)

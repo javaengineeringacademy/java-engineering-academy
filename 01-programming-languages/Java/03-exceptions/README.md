@@ -25,8 +25,6 @@ Java's exception hierarchy splits errors into three categories:
 
 ## Student → CTO Learning Path
 
-This module is designed for four levels of engineering maturity. Each level builds on the previous.
-
 ### Level 1: Student (Topics 00–07)
 
 **Goal:** Understand what exceptions are and how to use them.
@@ -36,15 +34,15 @@ This module is designed for four levels of engineering maturity. Each level buil
 | 00-throwable | Root class, message/cause/stackTrace |
 | 01-exception | Checked vs unchecked, catch-or-specify |
 | 02-error | JVM failures, when not to catch |
-| 03-runtime-exception | Programming bugs, common subtypes |
-| 04-checked-exception | Recoverable conditions, API contracts |
-| 05-unchecked-exception | When to use RuntimeException |
-| 06-exception-hierarchy | Full class tree, JVM dispatch |
+| 03-exception-hierarchy | Full class tree, how JVM dispatches exceptions |
+| 04-runtime-exception | RuntimeException class, inheritance, common subclasses |
+| 05-checked-exception | Recoverable conditions, API contracts, compiler enforcement |
+| 06-unchecked-exception | Language category, design philosophy, when to use |
 | 07-custom-exception | Creating your own exception types |
 
 **After this level:** You can read stack traces, choose the right exception type, and create custom exceptions.
 
-### Level 2: Engineer (Topics 08–12)
+### Level 2: Engineer (Topics 08–11)
 
 **Goal:** Write production-quality exception handling code.
 
@@ -54,29 +52,28 @@ This module is designed for four levels of engineering maturity. Each level buil
 | 09-finally | Execution order, return override dangers |
 | 10-multi-catch | Java 7 multi-catch syntax |
 | 11-exception-chaining | Wrapping, cause preservation |
-| 12-best-practices | 10 core rules, common mistakes |
 
 **After this level:** You handle resources correctly, chain exceptions properly, and follow established coding guidelines.
 
-### Level 3: Senior Engineer (Topics 13–15)
+### Level 3: Senior Engineer (Topics 12–14)
 
 **Goal:** Debug complex failures and handle concurrency edge cases.
 
 | Topic | What You Learn |
 |-------|---------------|
-| 13-stack-trace | Reading, filtering, performance cost |
-| 14-suppressed-exceptions | TWR suppression, manual suppression |
-| 15-thread-exceptions | Uncaught handlers, ExecutorService, CompletableFuture |
+| 12-stack-trace | Reading, filtering, performance cost |
+| 13-suppressed-exceptions | TWR suppression, manual suppression |
+| 14-thread-exceptions | Uncaught handlers, ExecutorService, CompletableFuture |
 
 **After this level:** You can diagnose production issues from stack traces, understand JVM internals, and handle exceptions in multi-threaded code.
 
-### Level 4: Tech Lead / CTO (Topic 16)
+### Level 4: Principal Engineer / Java Architect (Topic 15)
 
 **Goal:** Design exception handling strategy for entire systems.
 
 | Topic | What You Learn |
 |-------|---------------|
-| 16-best-practices | Global handlers, error responses, monitoring, circuit breakers, retry patterns |
+| 15-production-patterns | Global handlers, error responses, monitoring, circuit breakers, retry patterns |
 
 **After this level:** You can architect error handling for microservices, set up monitoring and alerting, and make build-vs-buy decisions for resilience libraries.
 
@@ -87,20 +84,43 @@ This module is designed for four levels of engineering maturity. Each level buil
 | 00-throwable | Throwable root class | Student | Yes |
 | 01-exception | Exception base class | Student | Yes |
 | 02-error | Error base class | Student | Yes |
-| 03-runtime-exception | RuntimeException | Student | No |
-| 04-checked-exception | Checked exceptions | Student | No |
-| 05-unchecked-exception | Unchecked exceptions | Student | No |
-| 06-exception-hierarchy | Full class hierarchy | Student | No |
+| 03-exception-hierarchy | Full class hierarchy | Student | No |
+| 04-runtime-exception | RuntimeException class | Student | No |
+| 05-checked-exception | Checked exceptions | Student | No |
+| 06-unchecked-exception | Unchecked exception category | Student | No |
 | 07-custom-exception | Creating your own | Student | No |
 | 08-try-with-resources | AutoCloseable + TWR | Engineer | Yes |
 | 09-finally | finally block | Engineer | No |
 | 10-multi-catch | Multi-catch (Java 7) | Engineer | No |
 | 11-exception-chaining | Chained exceptions | Engineer | No |
-| 12-best-practices | Coding guidelines | Engineer | No |
-| 13-stack-trace | Stack trace analysis | Senior | Yes |
-| 14-suppressed-exceptions | Suppressed exceptions | Senior | Yes |
-| 15-thread-exceptions | Thread exception handling | Senior | Yes |
-| 16-best-practices | Production patterns | CTO | No |
+| 12-stack-trace | Stack trace analysis | Senior | Yes |
+| 13-suppressed-exceptions | Suppressed exceptions | Senior | Yes |
+| 14-thread-exceptions | Thread exception handling | Senior | Yes |
+| 15-production-patterns | Production patterns | Principal/Architect | No |
+
+## Implementation Depth Rule
+
+Not every topic needs internals and memory sub-folders. Here's the rule:
+
+| Topic Type | Includes | Example |
+|------------|----------|---------|
+| **Core Java class** (Throwable, Exception, Error) | README + Internals + Memory + Examples + Exercises + Solutions | 00-throwable |
+| **JVM behavior** (TWR bytecode, stack trace capture, suppressed exceptions) | README + Internals + Memory + Examples + Exercises + Solutions | 08-try-with-resources |
+| **Language keyword/concept** (finally, multi-catch, chaining) | README + Examples + Exercises + Solutions | 09-finally |
+| **Category/philosophy** (checked, unchecked, best practices) | README + Examples + Exercises + Solutions | 05-checked-exception |
+
+**Rule:** Internals and Memory are included when the topic involves JVM-level implementation details that affect performance or debugging. Language keywords and design categories don't have JVM internals to document.
+
+## RuntimeException vs Unchecked Exception
+
+These are two separate topics with distinct purposes:
+
+| Aspect | 04-runtime-exception | 06-unchecked-exception |
+|--------|---------------------|----------------------|
+| **Focus** | The `RuntimeException` class itself | The unchecked exception category |
+| **Content** | Inheritance, API, common subclasses (NPE, IAE,ISE) | Compiler behavior, design philosophy, when to use |
+| **Perspective** | "What is this class?" | "When and why should I use this?" |
+| **Overlap** | None — each covers different ground | None — each covers different ground |
 
 ## Quick Reference
 
@@ -145,7 +165,7 @@ Throwable
 | Level | Topics | Estimated Time |
 |-------|--------|---------------|
 | Student | 00–07 | 4–6 hours |
-| Engineer | 08–12 | 3–4 hours |
-| Senior | 13–15 | 2–3 hours |
-| CTO | 16 | 1–2 hours |
-| **Total** | **17 topics** | **10–15 hours** |
+| Engineer | 08–11 | 2–3 hours |
+| Senior | 12–14 | 2–3 hours |
+| Principal/Architect | 15 | 1–2 hours |
+| **Total** | **16 topics** | **9–14 hours** |

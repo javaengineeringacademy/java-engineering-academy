@@ -1,4 +1,4 @@
-# 06 - Exception Hierarchy (Part 2)
+# 03 - Exception Hierarchy (Part 2)
 **Previous:** [Part 1](README.md)
 
 ## 9. Custom Hierarchy Design Patterns

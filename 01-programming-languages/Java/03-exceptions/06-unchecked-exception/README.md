@@ -1,4 +1,12 @@
-# Unchecked Exceptions in Java
+# 06 - Unchecked Exceptions
+
+## How This Differs from 04-RuntimeException
+
+| 04-runtime-exception | 06-unchecked-exception (this topic) |
+|---------------------|--------------------------------------|
+| The `RuntimeException` **class** | The unchecked exception **category** |
+| Inheritance, API, common subclasses | Compiler behavior, design philosophy |
+| "What is this class?" | "When and why should I use this?" |
 
 ## 1. Scope
 
