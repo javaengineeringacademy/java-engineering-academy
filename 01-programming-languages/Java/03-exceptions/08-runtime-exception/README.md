@@ -209,6 +209,15 @@ try {
 
 If you catch an exception, at minimum log it. Ideally, either handle it properly or rethrow it.
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `RuntimeException` introduced as unchecked exception base |
+| JDK 1.2 | `ConcurrentModificationException` added for collection safety |
+| JDK 5 | `EnumConstantNotPresentException` added for reflection |
+| JDK 7 | `StringIndexOutOfBoundsException` refined from `IndexOutOfBoundsException` |
+
 ## Summary
 
 | Concept | Key Point |

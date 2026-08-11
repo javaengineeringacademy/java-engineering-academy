@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.throwstatement;
+
 /**
  * Demonstrates the throw keyword — raising exceptions, rethrowing,
  * exception chaining, and common pitfalls in Java.

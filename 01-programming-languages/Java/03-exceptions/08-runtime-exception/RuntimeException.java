@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.runtimeexception;
+
 /**
  * Demonstrates creating, throwing, and catching RuntimeExceptions.
  * Shows common subtypes including NullPointerException, IllegalArgumentException,

@@ -348,6 +348,15 @@ public class ValidationException extends RuntimeException {
 
 ---
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `printStackTrace()` introduced for basic stack trace output |
+| JDK 1.2 | `StackTraceElement` class added for programmatic stack trace access |
+| JDK 1.4 | `getStackTrace()` and `setStackTrace()` methods added |
+| JDK 9 | Enhanced stack trace performance and lazy initialization improvements |
+
 ## Summary
 
 - A stack trace is an array of `StackTraceElement` — one per stack frame.

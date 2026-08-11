@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.finallyblock;
+
 /**
  * Demonstrates the finally block — guaranteed execution, execution order,
  * return value override, exception masking, and resource cleanup patterns

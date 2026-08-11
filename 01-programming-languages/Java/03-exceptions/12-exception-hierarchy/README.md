@@ -5,7 +5,7 @@
 This topic explores the complete Java exception hierarchy — the class structure that
 underpins every `try-catch-finally` block, every `throws` declaration, and every
 runtime failure in the JVM. Understanding the hierarchy is essential for writing
-robust, maintainable Java applications.
+reliable, maintainable Java applications.
 
 ## 2. Why It Exists
 
@@ -277,6 +277,16 @@ Many modern Java developers argue that the checked exception boundary is a mista
 
 However, checked exceptions remain a useful safety mechanism in many codebases,
 especially when the recovery path is clear.
+
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Basic hierarchy: `Throwable` → `Exception` / `Error` |
+| JDK 1.2 | `RuntimeException` hierarchy expanded with more specific subtypes |
+| JDK 1.4 | Cause chaining added to `Throwable` |
+| JDK 7 | Suppressed exceptions added; `AutoCloseable` integrated |
+| JDK 7 | Multi-catch improved hierarchy-based exception handling |
 
 ## Summary
 

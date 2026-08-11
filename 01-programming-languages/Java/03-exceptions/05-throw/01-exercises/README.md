@@ -209,6 +209,48 @@ public class Exercise5 {
 
 ---
 
+## throw Statement Flow
+
+```
+┌────────────────────┐
+│  throw expression  │
+│  (Throwable obj)   │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  JVM searches      │
+│  exception table   │
+└─────────┬──────────┘
+          │
+     ┌────┴────┐
+     │ Match?  │
+     └────┬────┘
+    Yes   │   No
+  ┌───────┘   └───────┐
+  ▼                   ▼
+┌──────────┐    ┌──────────────┐
+│ Execute  │    │ Pop frame,   │
+│ handler  │    │ unwind stack │
+└──────────┘    └──────┬───────┘
+                       │
+                       ▼
+                 ┌──────────────┐
+                 │ Repeat in    │
+                 │ caller frame │
+                 └──────────────┘
+```
+
+## Summary
+
+| Exercise | Skill Practiced | Key Concept |
+|----------|----------------|-------------|
+| 1 | Throwing specific exceptions | `throw` statement with validation |
+| 2 | Custom exceptions | Extending `RuntimeException` |
+| 3 | Exception chaining | Preserving cause with `Throwable` |
+| 4 | Rethrowing exceptions | Preserving original exception identity |
+| 5 | Multi-catch wrapping | Combining validation with exception wrapping |
+
 ## Instructions
 
 - Implement each exercise in a single Java file

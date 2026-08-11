@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.throwstatement;
+
 /**
  * Complete solutions for the throw keyword exercises.
  *

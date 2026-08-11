@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.bestpractices;
+
 /**
  * Demonstrates good vs bad exception handling patterns.
  * <p>

@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.threadexception;
+
 /**
  * Demonstrates thread exception handling patterns including uncaught
  * exception handlers, execute vs submit differences, Future.get()

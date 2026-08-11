@@ -362,6 +362,15 @@ public class PipelineException extends Exception {
 
 ---
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 7 | Suppressed exceptions introduced (JSR 334) |
+| JDK 7 | `addSuppressed()` and `getSuppressed()` methods added to `Throwable` |
+| JDK 7 | Try-with-resources automatically manages suppressed exceptions |
+| JDK 7 | `Throwable.printStackTrace()` enhanced to display suppressed exceptions |
+
 ## Summary
 
 | Concept | Description |

@@ -338,6 +338,16 @@ public interface Repository<T> {
 
 ---
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Checked exceptions introduced with catch-or-specify requirement |
+| JDK 1.4 | Cause chaining added to checked exceptions |
+| JDK 7 | Try-with-resources simplified checked exception cleanup |
+| JDK 7 | Multi-catch reduced boilerplate for handling multiple checked types |
+| JDK 8 | Lambda expressions affected checked exception handling in functional interfaces |
+
 ## Summary
 
 | Concept | Key Point |

@@ -11,7 +11,7 @@ In single-threaded applications, exception handling is straightforward: exceptio
 - Exceptions can be silently lost if not properly handled
 - Thread pools may silently swallow exceptions
 - Debugging becomes harder when exceptions occur in background threads
-- Production systems need robust exception monitoring across all threads
+- Production systems need thorough exception monitoring across all threads
 
 ## Design Rationale
 
@@ -313,6 +313,16 @@ CompletableFuture.allOf(future1, future2, future3)
         return null;
     });
 ```
+
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `Thread.UncaughtExceptionHandler` interface introduced |
+| JDK 5 | `ExecutorService` and `Future` added with exception capture in `submit()` |
+| JDK 8 | `CompletableFuture` introduced with `exceptionally()`, `handle()`, `whenComplete()` |
+| JDK 19 | Virtual threads (Project Loom) affect exception propagation |
+| JDK 21 | Virtual threads generally available with refined exception handling |
 
 ## Summary
 

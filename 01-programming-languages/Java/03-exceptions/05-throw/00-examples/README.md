@@ -338,3 +338,37 @@ Caught: Processing failed
 ```
 
 **Explanation:** The `try-with-resources` block attempts to close both resources. When `database.close()` throws, that exception is suppressed because `ProcessingException` is still in flight. The suppressed exception is accessible via `getSuppressed()`.
+
+---
+
+## throw Statement Flow
+
+```
+┌────────────────────┐
+│  throw expression  │
+│  (Throwable obj)   │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  JVM searches      │
+│  exception table   │
+└─────────┬──────────┘
+          │
+     ┌────┴────┐
+     │ Match?  │
+     └────┬────┘
+    Yes   │   No
+  ┌───────┘   └───────┐
+  ▼                   ▼
+┌──────────┐    ┌──────────────┐
+│ Execute  │    │ Pop frame,   │
+│ handler  │    │ unwind stack │
+└──────────┘    └──────┬───────┘
+                       │
+                       ▼
+                 ┌──────────────┐
+                 │ Repeat in    │
+                 │ caller frame │
+                 └──────────────┘
+```

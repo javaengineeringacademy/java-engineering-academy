@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.stacktrace;
+
 /**
  * Demonstrates stack trace access, manipulation, and formatting
  * including current thread traces, exception stack traces, trace

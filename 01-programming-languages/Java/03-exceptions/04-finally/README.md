@@ -274,6 +274,15 @@ static void preserveException() {
 }
 ```
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `finally` block introduced for guaranteed cleanup |
+| JDK 1.4 | Exception chaining preserved cause through finally |
+| JDK 7 | Try-with-resources introduced as preferred alternative for AutoCloseable |
+| JDK 7 | Suppressed exceptions prevent finally from masking original exceptions |
+
 ## Summary
 
 | Concept | Key Point |

@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.throwsdeclaration;
+
 /**
  * Exercises for throws declaration patterns. Each method is a stub with a TODO
  * comment describing what to implement. Complete each exercise before checking

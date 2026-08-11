@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.trycatch;
+
 /**
  * Exercises for try-catch exception handling patterns.
  *

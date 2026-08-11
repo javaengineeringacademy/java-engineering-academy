@@ -292,6 +292,15 @@ static Socket createSocket(String host) throws IOException {
 }
 ```
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 7 | Try-with-resources introduced (JSR 334) |
+| JDK 7 | `AutoCloseable` interface added |
+| JDK 7 | Exception suppression for close() failures |
+| JDK 9 | Effectively final variables allowed in resource declaration |
+
 ## Summary
 
 Try-with-resources eliminates entire classes of resource-management bugs by making cleanup automatic, ordering correct, and exception handling transparent. It is the idiomatic way to manage any `AutoCloseable` in modern Java. Use it everywhere a resource has a finite lifecycle.

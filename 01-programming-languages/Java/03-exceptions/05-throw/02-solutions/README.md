@@ -302,6 +302,48 @@ Root cause: Transfer amount must be positive, got: -50.0
 
 ---
 
+## throw Statement Flow
+
+```
+┌────────────────────┐
+│  throw expression  │
+│  (Throwable obj)   │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  JVM searches      │
+│  exception table   │
+└─────────┬──────────┘
+          │
+     ┌────┴────┐
+     │ Match?  │
+     └────┬────┘
+    Yes   │   No
+  ┌───────┘   └───────┐
+  ▼                   ▼
+┌──────────┐    ┌──────────────┐
+│ Execute  │    │ Pop frame,   │
+│ handler  │    │ unwind stack │
+└──────────┘    └──────┬───────┘
+                       │
+                       ▼
+                 ┌──────────────┐
+                 │ Repeat in    │
+                 │ caller frame │
+                 └──────────────┘
+```
+
+## Summary
+
+| Solution | Technique | Exception Type | Key Takeaway |
+|----------|-----------|----------------|--------------|
+| 1 | Direct throw | `IllegalArgumentException` | Simple validation with descriptive messages |
+| 2 | Custom exception class | `InvalidUsernameException` | Domain-specific exceptions extend `RuntimeException` |
+| 3 | Exception chaining | `ProfileException` | Preserve cause with `Throwable` constructor |
+| 4 | Rethrow same exception | `IllegalArgumentException` | Use `throw e` to preserve identity |
+| 5 | Wrap-and-rethrow | `TransferException` | Catch, wrap, and add context |
+
 ## Instructions
 
 - Compare your solutions to these implementations

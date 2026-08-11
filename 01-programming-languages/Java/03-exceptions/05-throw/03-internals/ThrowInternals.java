@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.throwstatement;
+
 /**
  * Demonstrates JVM internals behind the throw keyword: bytecode behavior,
  * stack unwinding, and exception table lookup.

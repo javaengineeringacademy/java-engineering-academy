@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.trycatch;
+
 /**
  * Comprehensive demonstration of try-catch variations in Java.
  *

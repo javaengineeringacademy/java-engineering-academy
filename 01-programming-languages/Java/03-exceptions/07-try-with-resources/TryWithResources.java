@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.trywithresources;
+
 /**
  * Demonstrates try-with-resources (TWR) with various Closeable resources,
  * including exception suppression, multiple resources, nested TWR,

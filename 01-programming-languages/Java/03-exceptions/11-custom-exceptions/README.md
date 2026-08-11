@@ -300,6 +300,15 @@ public class InsufficientFundsException extends RuntimeException {
 
 ---
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Custom exceptions possible by extending `Exception` or `RuntimeException` |
+| JDK 1.4 | Cause chaining added (`initCause()`, constructors with cause) |
+| JDK 7 | Suppressed exceptions available for custom `AutoCloseable` implementations |
+| JDK 7 | `serialVersionUID` best practices for exception serialization |
+
 ## Summary
 
 | Concept | Key Point |

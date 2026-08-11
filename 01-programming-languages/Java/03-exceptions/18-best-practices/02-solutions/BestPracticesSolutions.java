@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.bestpractices;
+
 /**
  * Complete solutions for all 5 best practices exercises.
  * <p>

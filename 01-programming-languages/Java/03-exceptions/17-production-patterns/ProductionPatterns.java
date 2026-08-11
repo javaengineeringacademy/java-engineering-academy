@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.productionpatterns;
+
 /**
  * Demonstrates production exception handling patterns including custom
  * exception hierarchy, structured error responses, circuit breaker,

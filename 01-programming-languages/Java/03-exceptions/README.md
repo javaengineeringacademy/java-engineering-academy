@@ -184,6 +184,20 @@ Throwable
 | Principal/Architect | 17 | 1–2 hours |
 | **Total** | **18 topics** | **12–18 hours** |
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | Exception handling introduced: `try-catch-finally`, checked exceptions |
+| JDK 1.2 | Exception chaining added (`initCause()`, `getCause()`) |
+| JDK 5 | Enhanced for-loop and autoboxing reduced common exception causes |
+| JDK 7 | Try-with-resources, multi-catch, suppressed exceptions (JSR 334) |
+| JDK 8 | Lambda expressions affected checked exception handling in functional interfaces |
+| JDK 9 | Effectively final variables in try-with-resources |
+| JDK 14 | Switch expressions previewed with exception-like exhaustiveness |
+| JDK 17 | Sealed classes enabled more precise exception hierarchies |
+| JDK 21 | Pattern matching for switch improved exception type dispatch |
+
 ## Summary
 
 | Concept | Key Point |

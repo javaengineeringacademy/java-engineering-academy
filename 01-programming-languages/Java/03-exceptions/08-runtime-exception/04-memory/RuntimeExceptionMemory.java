@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.runtimeexception;
+
 /**
  * RuntimeExceptionMemory.java
  *

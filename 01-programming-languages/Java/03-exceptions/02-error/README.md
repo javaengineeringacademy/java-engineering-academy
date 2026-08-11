@@ -291,6 +291,15 @@ For `OutOfMemoryError`, enable heap dumps on OOM for later analysis:
 
 For `StackOverflowError`, capture thread dumps to identify the recursion pattern.
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `Error` introduced as base class for JVM-level failures |
+| JDK 1.2 | `StackOverflowError` and `OutOfMemoryError` refined |
+| JDK 8 | Metaspace replaced PermGen (affects `OutOfMemoryError` messages) |
+| JDK 9 | Module system affects `NoClassDefFoundError` behavior |
+
 ## Summary
 
 - `Error` represents unrecoverable JVM or system failures

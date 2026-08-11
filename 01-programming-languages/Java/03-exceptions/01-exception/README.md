@@ -274,6 +274,15 @@ try (var conn = dataSource.getConnection();
 } // automatically closed, even on exception
 ```
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `Exception` introduced as checked exception base class |
+| JDK 1.4 | Cause chaining support added |
+| JDK 7 | Suppressed exceptions for try-with-resources |
+| JDK 7 | Multi-catch and precise rethrow improved exception handling |
+
 ## Summary
 
 - `Exception` is the base class for all checked exceptions in Java.

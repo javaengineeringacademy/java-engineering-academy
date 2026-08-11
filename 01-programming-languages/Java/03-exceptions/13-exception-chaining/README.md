@@ -319,6 +319,15 @@ High-level:       ServiceException
 Presentation:     UserNotFoundException (user-facing message)
 ```
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.4 | Exception chaining introduced (`initCause()`, `getCause()`, constructors with cause) |
+| JDK 1.4 | `Throwable(String, Throwable)` constructor added |
+| JDK 7 | Suppressed exceptions added alongside cause chaining |
+| JDK 7 | `printStackTrace()` enhanced to show suppressed exceptions in chain |
+
 ## Summary
 
 | Concept | Key Point |

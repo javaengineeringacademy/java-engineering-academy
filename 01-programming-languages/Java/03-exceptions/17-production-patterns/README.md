@@ -358,6 +358,16 @@ try (Scope scope = tracer.activateSpan(span)) {
 
 ---
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.4 | Exception chaining enabled better production diagnostics |
+| JDK 7 | Try-with-resources reduced resource leak patterns in production |
+| JDK 8 | Lambda expressions changed exception handling in functional pipelines |
+| JDK 11 | HTTP Client API added structured exception handling for REST calls |
+| JDK 17 | Sealed classes enable more precise exception type hierarchies |
+
 ## Summary
 
 | Concept | Key Point |

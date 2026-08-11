@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.exceptionhierarchy;
+
 /**
  * Demonstrates the Java exception hierarchy including catching at different
  * levels, exception chaining, hierarchy traversal with instanceof, and

@@ -351,6 +351,15 @@ public class CloseableHelper implements Closeable {
 }
 ```
 
+## Version History
+
+| Version | Change |
+|---------|--------|
+| JDK 1.0 | `Throwable` introduced as root of exception hierarchy |
+| JDK 1.4 | Cause chaining added (`initCause()`, `getCause()`, constructor with cause) |
+| JDK 7 | Suppressed exceptions added (`addSuppressed()`, `getSuppressed()`) |
+| JDK 7 | `AutoCloseable` integration for try-with-resources |
+
 ## Summary
 
 | Concept | Key Takeaway |

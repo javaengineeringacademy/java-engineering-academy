@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.suppressedexception;
+
 /**
  * Demonstrates suppressed exception handling including try-with-resources
  * behavior, manual addSuppressed usage, multiple suppressed exceptions,

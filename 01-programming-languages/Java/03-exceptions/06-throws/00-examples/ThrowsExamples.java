@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.throwsdeclaration;
+
 /**
  * Demonstrates throws declaration patterns including checked exception contracts,
  * multiple exceptions in throws, exception translation, and method chaining.

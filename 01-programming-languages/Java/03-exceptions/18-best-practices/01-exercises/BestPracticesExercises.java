@@ -1,3 +1,5 @@
+package academy.javaengineering.exceptions.bestpractices;
+
 /**
  * Exercises for applying exception handling best practices.
  * <p>
