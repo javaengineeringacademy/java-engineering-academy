@@ -117,12 +117,12 @@ Not every topic needs internals and memory sub-folders. Here's the rule:
 
 | Topic Type | Includes | Example |
 |------------|----------|---------|
-| **Core Java class** (Throwable, Exception, Error) | README + Internals + Memory + Examples + Exercises + Solutions | 00-throwable |
-| **JVM behavior** (TWR bytecode, stack trace capture, suppressed exceptions) | README + Internals + Memory + Examples + Exercises + Solutions | 06-try-with-resources-internals |
-| **Language keyword/concept** (finally, multi-catch, chaining) | README + Examples + Exercises + Solutions | 04-finally |
-| **Category/philosophy** (checked, unchecked, best practices) | README + Examples + Exercises + Solutions | 09-checked-exceptions |
+| **Core Java class** (Throwable, Exception, Error) | README + Internals + Memory + Examples + Practices + Solutions | 00-throwable |
+| **JVM behavior** (TWR bytecode, stack trace capture, suppressed exceptions) | README + Internals + Memory + Examples + Practices + Solutions | 07-try-with-resources |
+| **Language keyword/concept** (throw, throws, finally, chaining) | README + Internals + Memory + Examples + Practices + Solutions | 05-throw |
+| **Category/philosophy** (checked, unchecked, custom, hierarchy) | README + Internals + Memory + Examples + Practices + Solutions | 09-checked-exceptions |
 
-**Rule:** Internals and Memory are included when the topic involves JVM-level implementation details that affect performance or debugging. Language keywords and design categories don't have JVM internals to document.
+**Every topic has:** `00-examples/`, `01-practices/`, `02-solutions/`, `03-internals/`, `04-memory/`
 
 ## RuntimeException vs Unchecked Exception
 
@@ -155,6 +155,27 @@ Throwable
     ├── NoClassDefFoundError
     └── ...
 ```
+
+## Practice Exercises
+
+10 standalone practices covering the entire exception hierarchy, with separate solutions:
+
+| # | File | Concept |
+|---|------|---------|
+| 01 | BasicTryCatch | try-catch with ArithmeticException |
+| 02 | MultipleCatch | Multiple catch blocks, different handling |
+| 03 | MultiCatchWithThrow | Multi-catch (\|) + throw |
+| 04 | FinallyCleanup | Finally for guaranteed cleanup |
+| 05 | TWRResources | Try-with-resources + IOException |
+| 06 | ExceptionChaining | Chaining with cause |
+| 07 | CustomCheckedException | Custom checked exception with deficit field |
+| 08 | CustomUncheckedException | Custom unchecked exception with fieldName |
+| 09 | RuntimeExceptionRecovery | Fallback on RuntimeException |
+| 10 | ThrowableHierarchy | Classifying Throwable subtypes |
+
+**Folders:**
+- `practices/` — 10 standalone practice files (fill in the TODO)
+- `solutions/` — 10 matching solution files
 
 ## When to Use What
 
@@ -202,11 +223,13 @@ Throwable
 
 | Concept | Key Point |
 |---------|-----------|
-| Module Structure | 18 topics organized in 5 levels: Student, Engineer, Senior, Staff, Principal |
+| Module Structure | 19 topics organized in 5 levels: Student, Engineer, Senior, Staff, Principal |
+| Folder Structure | Every topic: 00-examples, 01-practices, 02-solutions, 03-internals, 04-memory |
+| Top-Level Practice | 10 standalone practices + 10 solutions in practices/ and solutions/ |
 | Exception Hierarchy | Throwable → Exception (checked/unchecked) → Error; root of all Java exceptions |
 | Learning Path | Progressive: fundamentals → production quality → concurrency → architecture |
 | RuntimeException vs Unchecked | Two separate topics: class vs category; different perspectives |
-| Implementation Depth | Core Java classes include internals; language concepts don't |
+| Implementation Depth | Every topic includes internals and memory sub-folders |
 | When to Use What | Recoverable = checked; bugs = unchecked; JVM failures = Error |
-| Total Duration | 12–18 hours covering all 18 topics |
+| Total Duration | 12–18 hours covering all 19 topics |
 | Design Rationale | Java chose both checked and unchecked exceptions; ongoing debate |
