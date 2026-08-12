@@ -94,6 +94,65 @@ compare(1, 2);               // Integer is Comparable
 
 ---
 
+## Production Motivation
+
+Wildcards enable flexible APIs that work with different type arguments while maintaining type safety. They're essential for production code.
+
+### Java Collections Framework
+```java
+// Collections.copy() — PECS pattern (Producer Extends, Consumer Super)
+public static <T> void copy(List<? super T> dest, List<? extends T> src)
+
+// Collections.addAll() — consumer wildcard
+public static <T> boolean addAll(Collection<? super T> c, T... elements)
+
+// Collections.frequency() — unbounded wildcard
+public static int frequency(Collection<?> c, Object o)
+
+// Collections.disjoint() — two unbounded wildcards
+public static boolean disjoint(Collection<?> c1, Collection<?> c2)
+```
+
+### Streams API
+```java
+// Stream.flatMap() — wildcard in function parameter
+public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper)
+
+// Collectors.toMap() — flexible key/value types
+public static <T, K, U> Collector<T, ?, Map<K,U>> toMap(
+    Function<? super T, ? extends K> keyMapper,
+    Function<? super T, ? extends U> valueMapper)
+```
+
+### Spring Data JPA
+```java
+// Repository.saveAll() — accepts Iterable of any subtype
+<S extends T> Iterable<S> saveAll(Iterable<S> entities);
+
+// CrudRepository.findById() — Optional with wildcard
+Optional<T> findById(ID id);
+```
+
+### Guava (Google Core Libraries)
+```java
+// Lists.newArrayList() — generic varargs with wildcard
+public static <E> ArrayList<E> newArrayList(E... elements)
+
+// ImmutableMap.copyOf() — wildcard for any Map
+public static <K, V> ImmutableMap<K, V> copyOf(Map<? extends K, ? extends V> map)
+```
+
+### Apache Commons
+```java
+// StringUtils.join() — wildcard for any Iterable
+public static String join(final Iterable<?> iterable, final String separator)
+
+// CollectionUtils.isEmpty() — unbounded wildcard
+public static boolean isEmpty(final Collection<?> collection)
+```
+
+---
+
 ## Problem Statement
 
 Create generic code that:

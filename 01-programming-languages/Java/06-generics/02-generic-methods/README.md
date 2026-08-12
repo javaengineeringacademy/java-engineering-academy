@@ -112,6 +112,61 @@ GenericList<User> users = new GenericList<>();
 
 ---
 
+## Production Motivation
+
+Generic methods are everywhere in production Java code. You use them every day without thinking about it.
+
+### Java Collections Framework
+```java
+// Collections.emptyList() — generic method returning empty List
+List<String> empty = Collections.emptyList();
+
+// Collections.sort() — generic method with bounded type parameter
+public static <T extends Comparable<? super T>> void sort(List<T> list)
+
+// Arrays.asList() — generic method creating fixed-size List
+public static <T> List<T> asList(T... a)
+```
+
+### Streams API
+```java
+// Stream.of() — generic method
+public static <T> Stream<T> of(T... values)
+
+// Collectors.toList() — generic collector
+public static <T> Collector<T, ?, List<T>> toList()
+```
+
+### Spring Framework
+```java
+// SpringApplication.run() — generic method
+public static <T extends Application> T run(Class<T> primarySource, String... args)
+
+// BeanFactory.getBean() — generic method with Class parameter
+public <T> T getBean(Class<T> requiredType) throws BeansException
+```
+
+### Jackson (JSON Serialization)
+```java
+// ObjectMapper.readValue() — generic method
+public <T> T readValue(String content, Class<T> valueType)
+
+// TypeReference — generic class for complex types
+ObjectMapper mapper = new ObjectMapper();
+Map<String, List<Integer>> map = mapper.readValue(json, new TypeReference<Map<String, List<Integer>>>(){});
+```
+
+### JPA (Persistence)
+```java
+// EntityManager.find() — generic method
+public <T> T find(Class<T> entityClass, Object primaryKey)
+
+// CriteriaBuilder.createQuery() — generic method
+public <T> CriteriaQuery<T> createQuery(Class<T> resultClass)
+```
+
+---
+
 ## Problem Statement
 
 Build a data structure that can store and retrieve elements of any type while maintaining type safety.

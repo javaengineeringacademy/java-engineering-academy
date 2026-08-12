@@ -105,6 +105,67 @@ sum(numbers);  // OK!
 
 ---
 
+## Production Motivation
+
+Type erasure is the reason generics work at all in Java. Understanding it explains why certain patterns work and others don't.
+
+### Why Erasure Exists
+Java 5 introduced generics while maintaining backward compatibility with pre-generics code. The JVM needed to run both:
+```java
+// Pre-Java 5 code (raw types)
+List list = new ArrayList();
+list.add("hello");
+String s = (String) list.get(0);
+
+// Java 5+ code (generics)
+List<String> list = new ArrayList<>();
+list.add("hello");
+String s = list.get(0);  // No cast needed
+```
+
+Both compile to the same bytecode. That's erasure.
+
+### Where You See Erasure in Production
+
+#### Serialization (Jackson, Gson)
+```java
+// Type erasure loses generic info — need TypeToken/TypeReference
+Map<String, List<Integer>> map = objectMapper.readValue(json, 
+    new TypeReference<Map<String, List<Integer>>>(){});
+// Without TypeReference, Jackson sees Map (raw type)
+```
+
+#### Reflection-Based Frameworks (Spring, Hibernate)
+```java
+// Spring must inspect generic types at runtime for dependency injection
+// It reads the Signature attribute from bytecode, not erasure
+Field field = MyClass.class.getDeclaredField("repository");
+Type genericType = field.getGenericType();  // ParameterizedType
+ParameterizedType pt = (ParameterizedType) genericType;
+Class<?> actualType = (Class<?>) pt.getActualTypeArguments()[0];
+```
+
+#### Lombok
+```java
+// Lombok generates bridge methods automatically for generic classes
+@Data
+public class GenericRepository<T> {
+    private T entity;
+}
+// Lombok generates: public Object getEntity() + public T getEntity()
+```
+
+#### ORM Frameworks (Hibernate)
+```java
+// JPA must resolve generic types for entity mapping
+// TypeErasureLambdaMetaModel uses reflection to resolve types
+public class UserRepository extends JpaRepository<User, Long> {
+    // Hibernate resolves T → User, ID → Long at runtime
+}
+```
+
+---
+
 ## Problem Statement
 
 Create APIs that:

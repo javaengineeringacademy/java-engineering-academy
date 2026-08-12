@@ -1,97 +1,115 @@
 # Decision Guide: Type Erasure
 
-## Decision Tree
+## Key Engineering Decisions
+
+### Decision 1: Generic Class vs Generic Method
 
 ```
-Do you need to understand type erasure behavior?
-├── Are you doing runtime type checks on generics?
-│   ├── Yes → Use `instanceof` with raw type or Class<T> token
-│   └── No → Type erasure doesn't affect you
-├── Do you need the actual type at runtime?
-│   ├── Yes → Pass Class<T> as a type token
-│   └── No → Rely on compile-time safety
-└── Are you hitting erasure-related limitations?
-    ├── Yes → See limitations table below
-    └── No → Proceed normally
+Do you need type flexibility across multiple methods?
+│
+├─ YES → Use generic class: class Box<T> { ... }
+│
+└─ NO → Do you need type flexibility in ONE method only?
+   │
+   ├─ YES → Use generic method: <T> T method(T param)
+   │
+   └─ NO → Use concrete type: String method(String param)
 ```
 
-## Key Facts About Type Erasure
+| Scenario | Use | Example |
+|----------|-----|---------|
+| Container holding values | Generic class | `Box<T>`, `List<T>` |
+| Single method with type flexibility | Generic method | `<T> List<T> asList(T a, T b)` |
+| Method needs its own type param | Generic method | `<T extends Comparable<T>> T max(T a, T b)` |
+| Fixed type, no flexibility needed | Concrete type | `String capitalize(String s)` |
 
-| Aspect | Behavior |
-|---|---|
-| Generic type info at runtime | Erased — replaced with bounds or `Object` |
-| `<T>` becomes | `Object` (no bound) or first bound type |
-| `<T extends Comparable>` becomes | `Comparable` |
-| Type checks | Performed by compiler, not JVM |
-| Bridge methods | Generated to preserve polymorphism |
-| Overloading conflicts | Two methods differing only in generics can conflict |
+### Decision 2: Raw Types vs Parameterized Types
 
-## When Type Erasure Matters
+```
+Is this legacy code (pre-Java 5)?
+│
+├─ YES → Use raw types temporarily, plan migration
+│
+└─ NO → Use parameterized types: List<String> not List
+```
 
-- Writing code that inspects types at runtime (reflection, serialization)
-- Overloading methods that differ only by generic parameters
-- Understanding why `List<String>` and `List<Integer>` are the same at runtime
-- Serialization/deserialization of generic types
-- Debugging `ClassCastException` in generic code
+| Situation | Use | Why |
+|-----------|-----|-----|
+| New code | Parameterized | Type safety |
+| Legacy maintenance | Raw type temporarily | Don't break existing code |
+| Migration | Parameterized | Gradually add type safety |
+| Raw type + @SuppressWarnings | Only if unavoidable | Document why |
 
-## When It Doesn't Matter
+### Decision 3: Type Erasure Workarounds
 
-- Normal compile-time generic usage
-- Collections framework usage
-- Method type inference
-- Lambda expressions with generics
-- Most application code
+```
+Do you need runtime type information?
+│
+├─ YES → Use Class<T> parameter or TypeReference
+│
+└─ NO → Erasure is fine, no workarounds needed
+```
 
-## Decision Rules
+| Need | Workaround | Example |
+|------|------------|---------|
+| Create instances of T | Pass `Class<T>` | `T create(Class<T> clazz)` |
+| Serialize/deserialize | TypeReference/TypeToken | Jackson's `TypeReference<T>` |
+| Check type at runtime | `Class<T>.isInstance()` | `clazz.isInstance(obj)` |
+| Get generic type via reflection | `getGenericSuperclass()` | Spring's type resolution |
 
-1. **Never rely on generic type info at runtime** — it's erased
-2. **Use `Class<T>` tokens** when runtime type info is needed
-3. **Don't overload methods differing only in generic params** — erasure causes conflicts
-4. **`instanceof List<String>` is illegal** — use `List.class` or `List<?>`
-5. **Serialization of generic types needs extra care** — use `TypeToken` pattern (Gson) or `ParameterizedTypeReference` (Spring)
+### Decision 4: When Erasure Causes Problems
+
+```
+Does your code need to:
+- Use instanceof with generics?
+- Create generic arrays?
+- Have static type parameters?
+- Use type parameters in catch/throw?
+│
+├─ YES → You need a workaround (see table below)
+│
+└─ NO → Erasure is transparent
+```
+
+| Problem | Workaround |
+|---------|------------|
+| `instanceof List<String>` | Use `instanceof List<?>` |
+| `new T[]` | Use `Array.newInstance()` or `Object[]` |
+| `static T value` | Use `Class<T>` parameter |
+| `catch (T e)` | Use `catch (Exception e)` and cast |
+
+## Comparison Matrix
+
+| Factor | Generic Class | Generic Method | Raw Type |
+|--------|---------------|----------------|----------|
+| Type safety | Compile-time | Compile-time | None |
+| Scope | All methods | Single method | None |
+| Complexity | Medium | Low | Low |
+| Use case | Containers, APIs | Utility methods | Legacy code |
+
+## When to Use Each
+
+### Use Generic Class when:
+- Building a container (Box, Stack, Queue)
+- Creating an API that works with multiple types
+- Type parameter used across multiple methods
+
+### Use Generic Method when:
+- Single method needs type flexibility
+- Method is a utility (like `Collections.sort`)
+- Type parameter is method-specific
+
+### Use Raw Type when:
+- Maintaining legacy code (temporarily)
+- Interfacing with pre-generics APIs
+- Never in new code
 
 ## Engineering Trade-offs
 
-| Concern | Erasure Approach | Reified Approach (C#) |
-|---|---|---|
-| Runtime type info | Not available | Available |
-| Binary compatibility | Excellent | Complex |
-| Performance | No boxing overhead | Potential boxing |
-| Array creation | `new T[]` illegal | `new T[]` legal |
-| `instanceof` generics | Not supported | Supported |
-
-## Common Code Review Comments
-
-- "This won't work at runtime — type info is erased"
-- "Use a `Class<T>` token if you need the type at runtime"
-- "This overload conflicts with erasure — rename or refactor"
-- "Generic array creation is not allowed — use `List<T>` instead"
-- "Add `@SuppressWarnings(\"unchecked\")` with a comment explaining why"
-
-## Production Patterns
-
-```java
-// Pattern: Type token for runtime type info
-public class Repository<T> {
-    private final Class<T> type;
-    public Repository(Class<T> type) { this.type = type; }
-    public T create() { return type.getDeclaredConstructor().newInstance(); }
-}
-
-// Pattern: Safe generic array creation
-@SuppressWarnings("unchecked")
-T[] array = (T[]) new Object[size];
-
-// Pattern: Avoiding erasure conflicts via different names
-public void process(List<String> strings) { ... }
-public void processNumbers(List<Integer> numbers) { ... }
-```
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---|---|
-| `instanceof List<String>` | Use `instanceof List<?>` or `List.class` |
-| `new T[size]` | Use `Object[]` with cast, or `Array.newInstance` |
-| Overloading `process(List<String>)` / `process(List<Integer>)` | Rename methods |
-| Assuming `ClassCastException` on generic type failure | Understand erasure removes the check |
+| Decision | Gain | Loss |
+|----------|------|------|
+| Generic class | Type safety across methods | More complex class definition |
+| Generic method | Type safety for single method | Can't use type in other methods |
+| Raw type | Simplicity | Loses type safety |
+| TypeReference | Runtime type info | Extra class, more complexity |
+| Class<T> parameter | Runtime type creation | Verbose method signature |
