@@ -1,6 +1,15 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Demonstrates type erasure in Java generics and how generic types are handled at runtime.
+ *
+ * <p>Complexity: O(n) for findMax operation</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Shows type erasure, raw types, bridge methods, and Container interface</p>
+ */
 public class TypeErasureDemo {
 
     public static <T> void demonstrateTypeErasure() {

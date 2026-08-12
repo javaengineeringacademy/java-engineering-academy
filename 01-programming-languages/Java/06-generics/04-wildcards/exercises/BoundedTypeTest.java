@@ -1,9 +1,18 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for bounded type parameter exercises with wildcards.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests sum, findMax, findMaxValue, and filterGreaterThan with bounded types</p>
+ */
 class BoundedTypeTest {
 
     @Test

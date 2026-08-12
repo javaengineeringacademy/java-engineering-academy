@@ -1,49 +1,14 @@
+package academy.javaengineering.generics.examples;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
  * Java 26 - Lazy Constants (JEP 482)
- * 
- * Lazy initialization of constants with thread-safe, on-demand computation.
- * Provides a way to defer expensive constant initialization until first access.
- * 
- * Key features:
- * - Thread-safe lazy initialization
- * - Computed once, cached forever
- * - Works with generics
- * - Zero-overhead after initialization
- * - Replaces double-checked locking pattern
- * 
- * Status: Standard Feature in Java 26
- * 
- * Expected Output:
- * Lazy Constants Demo
- * ==================
- * 
- * 1. Basic Lazy Constant
- * Lazy value computed: [timestamp-1234567890]
- * Subsequent access: [timestamp-1234567890] (same value, no recomputation)
- * 
- * 2. Lazy Constant with Supplier
- * Computing expensive value...
- * Value: expensive-computation-result
- * Accessing again (cached): expensive-computation-result
- * 
- * 3. Lazy Constants in Collections
- * Config loaded: {db.host=localhost, db.port=5432}
- * Config access (cached): {db.host=localhost, db.port=5432}
- * 
- * 4. Thread-safe Lazy Initialization
- * Thread 1 value: thread-1-computation
- * Thread 2 value: thread-1-computation (same instance, computed once)
- * 
- * Production Use Cases:
- * - Configuration loading (database connections, API keys)
- * - Expensive resource initialization (file handles, network connections)
- * - Static singleton instances
- * - Database connection pools
- * - Cached computed values (checksums, hashes)
- * - Lazy-loaded reference data
+ *
+ * <p>Complexity: O(1) for access after initialization</p>
+ * <p>Thread-safety: Thread-safe with double-checked locking</p>
+ * <p>Key characteristics: Lazy initialization of constants with thread-safe, on-demand computation. Provides a way to defer expensive constant initialization until first access.</p>
  */
 public class LazyConstantsDemo {
 

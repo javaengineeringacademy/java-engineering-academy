@@ -1,3 +1,5 @@
+package academy.javaengineering.generics.solutions;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -6,6 +8,10 @@ import java.util.function.Function;
 
 /**
  * Solutions for Generic Class Practice Exercises
+ *
+ * <p>Complexity: O(1) for most operations, O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Complete implementations of Box, Pair, Stack, Result, and Repository generic classes</p>
  */
 public class GenericClassSolutions {
 

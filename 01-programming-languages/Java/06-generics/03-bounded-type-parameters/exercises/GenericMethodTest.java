@@ -1,9 +1,18 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for generic method exercises with bounded type parameters.
+ *
+ * <p>Complexity: O(n) for array operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests printArray, swap, findMax, findMin, asList, countOccurrences, and concatenate</p>
+ */
 class GenericMethodTest {
 
     @Test

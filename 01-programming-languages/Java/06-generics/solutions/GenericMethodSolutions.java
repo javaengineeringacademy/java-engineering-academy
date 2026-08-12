@@ -1,3 +1,5 @@
+package academy.javaengineering.generics.solutions;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
@@ -5,6 +7,10 @@ import java.util.function.Predicate;
 
 /**
  * Solutions for Generic Method Practice Exercises
+ *
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Complete implementations of identity, asList, swap, max, and filter generic methods</p>
  */
 public class GenericMethodSolutions {
 

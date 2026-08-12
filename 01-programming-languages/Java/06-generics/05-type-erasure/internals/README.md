@@ -234,34 +234,6 @@ public class Box<T> {
 }
 ```
 
-### 4. Exception Type Parameters
-
-```java
-// COMPILE ERROR: Cannot use type parameters in catch or throw
-public <T extends Exception> void method() throws T { }  // Error
-
-// WORKAROUND: Use Class<T> and rethrow
-public <T extends Exception> void method(Class<T> exceptionClass) throws T {
-    try {
-        // risky code
-    } catch (Exception e) {
-        throw exceptionClass.cast(e);
-    }
-}
-```
-
-## Performance Considerations
-
-Type erasure happens at compile time, so there is no runtime performance cost for generics. The bytecode is identical to what you would write without generics (plus casts). The JIT compiler can optimize away the casts in many cases.
-
-| Operation | Cost |
-|-----------|------|
-| Generic class instantiation | Same as raw class |
-| Method call with generics | Same as raw method + possible cast |
-| Cast insertion | Negligible (JIT optimizes) |
-| Bridge method dispatch | Same as normal method dispatch |
-| Reflection on generic types | Moderate (signature lookup) |
-
 ## Summary
 
 | Concept | Key Takeaway |
@@ -272,4 +244,3 @@ Type erasure happens at compile time, so there is no runtime performance cost fo
 | Cast insertion | Compiler adds casts after generic method calls |
 | Reflection | Generic signatures preserved in class file metadata |
 | Pitfalls | No `instanceof`, no generic arrays, no static type params |
-| Performance | No runtime cost (erasure happens at compile time) |

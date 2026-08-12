@@ -1,4 +1,4 @@
-package genericconstraints;
+package academy.javaengineering.generics.erasure-generic-methods.examples;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,9 +8,10 @@ import java.util.List;
 
 /**
  * Generic Constraints Demo - Complete Guide
- * 
- * Covers Comparable, Serializable, Cloneable constraints,
- * custom type bounds, and practical constraint patterns.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Covers Comparable, Serializable, Cloneable constraints, custom type bounds, and practical constraint patterns</p>
  */
 public class GenericConstraintsDemo {
 

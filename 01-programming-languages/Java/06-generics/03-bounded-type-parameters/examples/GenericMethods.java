@@ -1,6 +1,15 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Collection of generic utility methods with bounded type parameters.
+ *
+ * <p>Complexity: O(n) for array operations</p>
+ * <p>Thread-safety: Not thread-safe (utility class)</p>
+ * <p>Key characteristics: Provides printArray, swap, findMax, findMin, asList, countOccurrences, and concatenate</p>
+ */
 public class GenericMethods {
 
     public static <T> void printArray(T[] array) {

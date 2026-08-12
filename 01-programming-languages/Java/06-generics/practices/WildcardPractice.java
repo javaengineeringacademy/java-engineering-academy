@@ -1,10 +1,15 @@
+package academy.javaengineering.generics.practices;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * Wildcard Practice Exercises
- * Complete each exercise using the appropriate wildcard type.
+ *
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Practice exercises for sum, addAll, copy, min, and printAll methods using wildcards</p>
  */
 public class WildcardPractice {
 

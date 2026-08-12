@@ -1,6 +1,15 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Demonstrates wildcard types including upper bounded, lower bounded, and unbounded wildcards.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Shows PECS pattern, sumOfList, addNumbers, findMax, and copy operations</p>
+ */
 public class WildcardDemo {
 
     public static double sumOfList(List<? extends Number> list) {

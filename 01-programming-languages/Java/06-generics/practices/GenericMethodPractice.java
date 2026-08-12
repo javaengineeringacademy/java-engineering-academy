@@ -1,10 +1,15 @@
+package academy.javaengineering.generics.practices;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
  * Generic Method Practice Exercises
- * Complete each exercise by implementing the generic method as specified.
+ *
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Practice exercises for identity, asList, swap, max, and filter generic methods</p>
  */
 public class GenericMethodPractice {
 

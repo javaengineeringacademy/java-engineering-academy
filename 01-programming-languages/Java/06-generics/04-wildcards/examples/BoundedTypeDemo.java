@@ -1,6 +1,15 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Demonstrates bounded type parameters with upper and lower bounds.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Shows upper bounded wildcards, lower bounded wildcards, and multiple bounds</p>
+ */
 public class BoundedTypeDemo {
 
     public static void main(String[] args) {

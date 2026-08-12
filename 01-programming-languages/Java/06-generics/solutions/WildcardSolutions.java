@@ -1,9 +1,15 @@
+package academy.javaengineering.generics.solutions;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * Solutions for Wildcard Practice Exercises
+ *
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Complete implementations of sum, addAll, copy, min, and printAll methods using wildcards</p>
  */
 public class WildcardSolutions {
 

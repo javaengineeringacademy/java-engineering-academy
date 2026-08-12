@@ -1,4 +1,4 @@
-package academy.javaengineering.exercises;
+package academy.javaengineering.generics.practices;
 
 import java.util.*;
 import java.util.stream.*;
@@ -6,7 +6,9 @@ import java.util.stream.*;
 /**
  * Exercises: Generic Methods and Bounded Types
  *
- * Complete the TODO sections below.
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Practice exercises for findMax, filter, convert, safeCast, zip, and swap methods</p>
  */
 public class GenericMethodExercises {
 

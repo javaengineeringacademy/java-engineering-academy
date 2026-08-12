@@ -1,4 +1,4 @@
-package typeinference;
+package academy.javaengineering.generics.erasure-generic-types.examples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +8,10 @@ import java.util.function.Supplier;
 
 /**
  * Type Inference Demo - Complete Guide
- * 
- * Covers diamond operator, target type inference, method argument inference,
- * and how Java 7-10+ improved type inference.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Covers diamond operator, target type inference, method argument inference, and Java 7-10+ improvements</p>
  */
 public class TypeInferenceDemo {
 

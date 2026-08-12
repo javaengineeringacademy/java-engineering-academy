@@ -1,5 +1,14 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.Objects;
 
+/**
+ * A generic Box class that can hold any type of content.
+ *
+ * <p>Complexity: O(1) for all operations</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Generic container with equals, hashCode, and isEmpty support</p>
+ */
 public class Box<T> {
     private T content;
 

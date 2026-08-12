@@ -1,6 +1,11 @@
+package academy.javaengineering.generics.practices;
+
 /**
  * Generic Class Practice Exercises
- * Complete each exercise by implementing the generic class as specified.
+ *
+ * <p>Complexity: Varies by exercise</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Practice exercises for implementing Box, Pair, Stack, Result, and Repository generic classes</p>
  */
 public class GenericClassPractice {
 

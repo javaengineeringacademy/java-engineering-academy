@@ -1,3 +1,5 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,6 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests demonstrating type erasure and generics inheritance/subtypes.
+ *
+ * <p>Complexity: O(1) for most operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests type erasure, raw types, bridge methods, and generic class runtime types</p>
+ */
 class TypeErasureTest {
 
     @Test

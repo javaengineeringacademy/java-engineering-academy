@@ -1,7 +1,16 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for basic generic type introduction exercises.
+ *
+ * <p>Complexity: O(n) for most operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests generic methods for maximum, printArray, and countOccurrences</p>
+ */
 class GenericIntroTest {
 
     @Test

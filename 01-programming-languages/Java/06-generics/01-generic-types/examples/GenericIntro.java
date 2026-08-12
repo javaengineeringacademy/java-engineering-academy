@@ -1,3 +1,12 @@
+package academy.javaengineering.generics.generic-types.examples;
+
+/**
+ * Introduction to Java Generics demonstrating the basics of type safety and generic methods.
+ *
+ * <p>Complexity: O(n) for array operations</p>
+ * <p>Thread-safety: Not thread-safe (demo class)</p>
+ * <p>Key characteristics: Demonstrates raw types vs generic types, generic methods for maximum and array operations</p>
+ */
 public class GenericIntro {
 
     public static void main(String[] args) {

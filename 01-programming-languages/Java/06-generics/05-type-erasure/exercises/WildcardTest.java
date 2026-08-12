@@ -1,3 +1,5 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,6 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for wildcard exercises demonstrating type erasure concepts.
+ *
+ * <p>Complexity: O(n) for list operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests sumOfList, addNumbers, findMax, and copy with wildcards</p>
+ */
 class WildcardTest {
 
     @Test

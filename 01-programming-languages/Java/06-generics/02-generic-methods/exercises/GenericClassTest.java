@@ -1,7 +1,16 @@
+package academy.javaengineering.generics.generic-types.exercises;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for generic class exercises including Box and Pair implementations.
+ *
+ * <p>Complexity: O(1) for most operations</p>
+ * <p>Thread-safety: Not thread-safe (JUnit test class)</p>
+ * <p>Key characteristics: Tests Box and Pair generic classes with equals, hashCode, and content operations</p>
+ */
 class GenericClassTest {
 
     @Test

@@ -1,11 +1,13 @@
-package academy.javaengineering.exercises;
+package academy.javaengineering.generics.practices;
 
 import java.util.*;
 
 /**
  * Exercises: Generic Classes
  *
- * Complete the TODO sections below.
+ * <p>Complexity: Varies by exercise</p>
+ * <p>Thread-safety: Not thread-safe</p>
+ * <p>Key characteristics: Practice exercises for implementing generic Pair, Stack, Result, and Cache classes</p>
  */
 public class GenericClassExercises {
 

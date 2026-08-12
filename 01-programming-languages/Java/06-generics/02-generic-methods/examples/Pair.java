@@ -1,5 +1,14 @@
+package academy.javaengineering.generics.generic-types.examples;
+
 import java.util.Objects;
 
+/**
+ * A generic Pair class that holds two values of potentially different types.
+ *
+ * <p>Complexity: O(1) for all operations</p>
+ * <p>Thread-safety: Immutable and thread-safe</p>
+ * <p>Key characteristics: Immutable pair with factory method and type-safe key-value access</p>
+ */
 public class Pair<K, V> {
     private final K key;
     private final V value;
