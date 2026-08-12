@@ -1,250 +1,247 @@
+# Best Practices (Part 2)
+
+## When to Use Generics vs Alternatives
+
+| Situation | Use Generics | Use Alternative | Why |
+|-----------|--------------|-----------------|-----|
+| Container holding different types | ✅ Generic class | | Type safety |
+| Single method with type flexibility | ✅ Generic method | | Type safety |
+| Fixed type, simple logic | | Method overloading | Simplicity |
+| Only 2-3 types needed | | Method overloading | Simplicity |
+| Legacy code, can't change signature | | Object + casting | Backward compat |
+| Performance-critical, known types | | Concrete types | Zero overhead |
+
+### Alternative 1: Method Overloading
+
 ```java
-public interface SimpleList<E> extends Iterable<E> {
-    boolean add(E element);
-    E get(int index);
-    E set(int index, E element);
-    E remove(int index);
-    int size();
-    boolean isEmpty();
-    boolean contains(E element);
-    void clear();
-    SimpleIterator<E> iterator();
+// Instead of generic method:
+// <T> String stringify(T value) { return value.toString(); }
+
+// Use overloading when types are fixed and few:
+String stringify(int value) { return String.valueOf(value); }
+String stringify(String value) { return value; }
+String stringify(boolean value) { return String.valueOf(value); }
+```
+
+**When to use:** Few known types, simple logic, no type inference needed.
+
+### Alternative 2: Object + Casting
+
+```java
+// Instead of generic class:
+// Box<T> { T value; T get(); }
+
+// Use Object when:
+// 1. Interfacing with pre-generics API
+// 2. Type is truly unknown at compile time
+// 3. Can't change the class signature
+
+Object box = new Object();
+String s = (String) box;  // Unsafe cast
+```
+
+**When to use:** Legacy code only. Never in new code.
+
+### Alternative 3: Template Method Pattern
+
+```java
+// Instead of complex generic bounds:
+// <T extends Comparable<T> & Serializable & Cloneable>
+
+// Use template method when you need multiple behaviors:
+abstract class Processor<T> {
+    abstract T process(T input);
+    
+    void validate(T input) { ... }
+    void log(T input) { ... }
 }
 ```
 
-### Implementation
+**When to use:** Complex constraints, multiple behaviors, framework code.
+
+### Alternative 4: Functional Interface + Lambda
 
 ```java
-public class ArrayList<E> implements SimpleList<E> {
-    private Object[] elements;
-    private int size;
+// Instead of generic strategy pattern:
+// GenericStrategy<T> { T execute(T input); }
 
-    @Override
-    public boolean add(E element) {
-        ensureCapacity();
-        elements[size++] = element;
-        return true;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public E get(int index) {
-        checkIndex(index);
-        return (E) elements[index];
-    }
-}
+// Use functional interface:
+Function<String, String> strategy = input -> input.toUpperCase();
+UnaryOperator<String> strategy = String::toUpperCase;
 ```
 
----
+**When to use:** Simple single-method behavior.
 
-## Easy Example
+## Migration Playbook: Raw Types → Parameterized Types
 
-### SimpleList Interface
+### Step 1: Identify Raw Types
+
+```bash
+# Find raw type warnings
+javac -Xlint:unchecked MyClass.java
+```
+
+Look for:
+- `List` instead of `List<String>`
+- `Map` instead of `Map<String, Object>`
+- `Class` instead of `Class<?>`
+- `Comparator` instead of `Comparator<String>`
+
+### Step 2: Add Type Parameters
 
 ```java
-public interface SimpleList<E> extends Iterable<E> {
-    boolean add(E element);
-    E get(int index);
-    E set(int index, E element);
-    E remove(int index);
-    int size();
-    boolean isEmpty();
-    boolean contains(E element);
-    void clear();
-}
-
-// Basic usage
-SimpleList<String> list = new ArrayList<>();
+// Before
+List list = new ArrayList();
 list.add("hello");
-list.add("world");
-String first = list.get(0);  // Type-safe
+String s = (String) list.get(0);
+
+// After
+List<String> list = new ArrayList<>();
+list.add("hello");
+String s = list.get(0);  // No cast
 ```
 
----
-
-## Medium Example
-
-### ArrayList Implementation
+### Step 3: Fix Method Signatures
 
 ```java
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-public class ArrayList<E> implements SimpleList<E> {
-    private static final int DEFAULT_CAPACITY = 10;
-    private Object[] elements;
-    private int size;
-
-    public ArrayList() {
-        elements = new Object[DEFAULT_CAPACITY];
+// Before
+public void process(List items) {
+    for (Object item : items) {
+        String s = (String) item;
+        // ...
     }
+}
 
-    public ArrayList(int initialCapacity) {
-        if (initialCapacity < 0) {
-            throw new IllegalArgumentException("Capacity: " + initialCapacity);
-        }
-        elements = new Object[initialCapacity];
+// After
+public void process(List<String> items) {
+    for (String item : items) {
+        // No cast needed
     }
+}
+```
 
-    @Override
-    public boolean add(E element) {
-        ensureCapacity();
-        elements[size++] = element;
-        return true;
+### Step 4: Add Wildcards for Flexibility
+
+```java
+// Before (too restrictive)
+public void copy(List<String> dest, List<String> src) { ... }
+
+// After (flexible)
+public <T> void copy(List<? super T> dest, List<? extends T> src) { ... }
+```
+
+### Step 5: Verify
+
+```bash
+# Compile with warnings
+javac -Xlint:unchecked *.java
+
+# Run tests
+mvn test
+```
+
+## Generic API Design Patterns for Libraries
+
+### Pattern 1: Type-Safe Heterogeneous Container
+
+```java
+public class ServiceLocator {
+    private final Map<Class<?>, Object> services = new HashMap<>();
+    
+    public <T> void register(Class<T> type, T service) {
+        services.put(type, type.cast(service));
     }
+    
+    public <T> T getService(Class<T> type) {
+        return type.cast(services.get(type));
+    }
+}
+```
 
-    @Override
+**Use when:** You need to store different types in one container.
+
+### Pattern 2: Generic Builder
+
+```java
+public class ResponseBuilder<T> {
+    private T data;
+    private int status;
+    
+    public ResponseBuilder<T> data(T data) {
+        this.data = data;
+        return this;
+    }
+    
+    public ResponseBuilder<T> status(int status) {
+        this.status = status;
+        return this;
+    }
+    
+    public Response<T> build() {
+        return new Response<>(data, status);
+    }
+}
+```
+
+**Use when:** Building complex objects with fluent API.
+
+### Pattern 3: Generic Repository
+
+```java
+public interface Repository<T, ID> {
+    Optional<T> findById(ID id);
+    List<T> findAll();
+    T save(T entity);
+    void deleteById(ID id);
+}
+```
+
+**Use when:** CRUD operations across different entity types.
+
+### Pattern 4: Generic Event Handler
+
+```java
+public interface EventHandler<T extends Event> {
+    void handle(T event);
+}
+
+public class EventDispatcher {
+    private final Map<Class<?>, List<EventHandler<?>>> handlers = new HashMap<>();
+    
+    public <T extends Event> void register(Class<T> type, EventHandler<T> handler) {
+        handlers.computeIfAbsent(type, k -> new ArrayList<>()).add(handler);
+    }
+    
     @SuppressWarnings("unchecked")
-    public E get(int index) {
-        checkIndex(index);
-        return (E) elements[index];
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public E set(int index, E element) {
-        checkIndex(index);
-        E old = (E) elements[index];
-        elements[index] = element;
-        return old;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public E remove(int index) {
-        checkIndex(index);
-        E old = (E) elements[index];
-        int numMoved = size - index - 1;
-        if (numMoved > 0) {
-            System.arraycopy(elements, index + 1, elements, index, numMoved);
-        }
-        elements[--size] = null;
-        return old;
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    @Override
-    public boolean contains(E element) {
-        for (int i = 0; i < size; i++) {
-            if (java.util.Objects.equals(elements[i], element)) {
-                return true;
+    public <T extends Event> void dispatch(T event) {
+        List<EventHandler<?>> handlers = this.handlers.get(event.getClass());
+        if (handlers != null) {
+            for (EventHandler<?> handler : handlers) {
+                ((EventHandler<T>) handler).handle(event);
             }
         }
-        return false;
-    }
-
-    @Override
-    public void clear() {
-        for (int i = 0; i < size; i++) {
-            elements[i] = null;
-        }
-        size = 0;
-
----
-
-[📖 Continue to Part 2](README-part2.md)
-# 09 - Mini Project: Type-Safe Collection Framework (Part 2)
-
-[📖 Back to Part 1](README.md)
-
----
-
-
----
-
-[📖 Continue to Part 2](README-part2.md)
-# 09 - Mini Project: Type-Safe Collection Framework (Part 3)
-
-[📖 Back to Part 1](README.md) | [📖 Back to Part 2](README-part2.md)
-
----
-
-        for (int i = 0; i < list.size(); i++) {
-            if (i > 0) sb.append(", ");
-            sb.append(list.get(i));
-        }
-        sb.append("]");
-        return sb.toString();
     }
 }
 ```
 
----
+**Use when:** Type-safe event systems.
 
-## Performance
-
-### ArrayList vs LinkedList
-
-| Operation | ArrayList | LinkedList |
-|-----------|-----------|------------|
-| add(E) | O(1) amortized | O(1) |
-| get(int) | O(1) | O(n) |
-| set(int, E) | O(1) | O(n) |
-| remove(int) | O(n) | O(n) |
-| contains(E) | O(n) | O(n) |
-| Memory | Compact | Node overhead |
-
-### When to Use Each
-
-- **ArrayList**: Random access, large datasets, memory efficiency
-- **LinkedList**: Frequent insertions/deletions, no random access needed
-
----
-
-## Best Practices
-
-1. **Use `@SuppressWarnings("unchecked")`** — When casting from Object[]
-2. **Check array bounds** — Always validate index parameters
-3. **Null safety** — Use Objects.equals() for comparisons
-4. **Iterator consistency** — Throw ConcurrentModificationException when needed
-5. **Capacity management** — Grow arrays geometrically (2x)
-
----
-
-## Common Mistakes
-
-### 1. Forgetting to Check Bounds
+### Pattern 5: Generic Visitor
 
 ```java
-// BAD
-public E get(int index) {
-    return (E) elements[index];  // No bounds check
+public interface Visitor<T> {
+    void visit(T item);
 }
 
-// GOOD
-public E get(int index) {
-    checkIndex(index);
-    return (E) elements[index];
+public class Processor<T> {
+    private final List<T> items = new ArrayList<>();
+    
+    public void accept(Visitor<T> visitor) {
+        for (T item : items) {
+            visitor.visit(item);
+        }
+    }
 }
 ```
 
-### 2. Not Clearing References
-
-```java
-// BAD
-public E remove(int index) {
-    E old = (E) elements[index];
-    System.arraycopy(elements, index + 1, elements, index, size - index - 1);
-    size--;
-    return old;  // elements[size] still references removed element
-}
-
-// GOOD
-public E remove(int index) {
-    E old = (E) elements[index];
-    System.arraycopy(elements, index + 1, elements, index, size - index - 1);
-    elements[--size] = null;  // Clear reference for GC
-    return old;
-}
-```
-
+**Use when:** Processing collections with type-specific behavior.

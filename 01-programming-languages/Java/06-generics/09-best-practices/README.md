@@ -248,3 +248,35 @@ Node object:
 
 ### Interface Definition
 
+---
+
+## Code Review Guidelines for Generics
+
+### Must-Fix (Block Merge)
+
+| Rule | Example Wrong | Example Right |
+|------|---------------|---------------|
+| No raw types | `List list = new ArrayList()` | `List<String> list = new ArrayList<>()` |
+| No `new T()` or `new T[]` | `T obj = new T()` | `T obj = clazz.getDeclaredConstructor().newInstance()` |
+| No wildcards in return types | `List<?> getItems()` | `<T> List<T> getItems()` |
+| `@SuppressWarnings` needs justification | `@SuppressWarnings("unchecked")` | `@SuppressWarnings("unchecked") // reason: type-safe container` |
+| No `instanceof` with generic type | `if (obj instanceof List<String>)` | `if (obj instanceof List<?>)` |
+
+### Should-Fix (Recommend)
+
+| Rule | Why |
+|------|-----|
+| Use `? extends T` for producers | Methods that read from collections |
+| Use `? super T` for consumers | Methods that write to collections |
+| Bounded types when calling methods | `<T extends Comparable<T>>` not just `<T>` |
+| Prefer generic methods over raw Object | Type safety |
+| Use diamond operator `<>` | Cleaner code |
+
+### Nice-to-Have (Suggest)
+
+| Rule | Why |
+|------|-----|
+| Single-letter type params (T, E, K, V) | Convention |
+| Max 2-3 type params | Readability |
+| Document generic API contracts | Maintainability |
+
