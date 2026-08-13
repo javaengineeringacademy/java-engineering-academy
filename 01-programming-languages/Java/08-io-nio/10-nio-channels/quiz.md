@@ -1,73 +1,81 @@
-# Quiz
+# Quiz: NIO Channels (Continued)
 
 ## Multiple Choice Questions
 
-1. What does I/O stand for?
-   - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
-   - D) Index/Offset
+1. What is memory-mapped file I/O?
+   - A) File mapped to memory
+   - B) Memory mapped to file
+   - C) File in memory
+   - D) Memory in file
 
-2. Which stream is for character data?
-   - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
+2. Which method creates memory-mapped buffer?
+   - A) `map()`
+   - B) `mmap()`
+   - C) `mapFile()`
+   - D) `memoryMap()`
 
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
+3. What is MappedByteBuffer?
+   - A) Direct buffer for memory-mapped file
+   - B) Heap buffer for memory-mapped file
+   - C) Char buffer for memory-mapped file
+   - D) Int buffer for memory-mapped file
 
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
-   - D) All of the above
+4. What is the advantage of memory-mapped files?
+   - A) Faster I/O
+   - B) Less memory
+   - C) Simpler code
+   - D) Better security
 
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+5. When should you use memory-mapped files?
+   - A) Small files
+   - B) Large files
+   - C) Text files
+   - D) Binary files
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. Memory-mapped files use direct buffers.
    - True / False
 
-7. Buffered streams improve performance.
+7. Memory-mapped files are always faster.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. Memory-mapped files can be shared between processes.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
-System.out.println(br.readLine());
+try (FileChannel channel = FileChannel.open(Path.of("/tmp/test.txt"),
+        StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+    MappedByteBuffer buffer = channel.map(
+        FileChannel.MapMode.READ_WRITE, 0, channel.size());
+    System.out.println(buffer.isDirect());
+}
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+ByteBuffer buf = ByteBuffer.allocateDirect(1024);
+System.out.println(buf.isDirect());
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. A - Memory-mapped file is file mapped to memory
+2. A - map() creates memory-mapped buffer
+3. A - MappedByteBuffer is direct buffer
+4. A - Memory-mapped files are faster for I/O
+5. B - Use for large files
+6. True - Memory-mapped files use direct buffers
+7. False - Depends on access pattern
+8. True - Can be shared between processes
+9. Output:
+```
+true
+```
+10. Output:
+```
+true
+```

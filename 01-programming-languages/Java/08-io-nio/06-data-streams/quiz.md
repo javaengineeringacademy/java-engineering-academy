@@ -1,73 +1,80 @@
-# Quiz
+# Quiz: Data Streams
 
 ## Multiple Choice Questions
 
-1. What does I/O stand for?
-   - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
-   - D) Index/Offset
+1. What are data streams for?
+   - A) Reading/writing primitive types
+   - B) Reading/writing characters
+   - C) Reading/writing bytes
+   - D) Reading/writing strings
 
-2. Which stream is for character data?
-   - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
+2. Which class writes primitive types?
+   - A) DataOutputStream
+   - B) DataInputStream
+   - C) ObjectOutputStream
+   - D) FileOutputStream
 
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
+3. What does `writeInt()` write?
+   - A) 2 bytes
+   - B) 4 bytes
+   - C) 8 bytes
+   - D) Variable bytes
 
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
-   - D) All of the above
+4. What does `readDouble()` read?
+   - A) 4 bytes
+   - B) 8 bytes
+   - C) 16 bytes
+   - D) Variable bytes
 
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+5. What is the order of reading?
+   - A) Same as writing
+   - B) Reverse of writing
+   - C) Random order
+   - D) Any order
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. Data streams are for text data.
    - True / False
 
-7. Buffered streams improve performance.
+7. Data streams use binary format.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. You can read in any order.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
-System.out.println(br.readLine());
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+DataOutputStream dos = new DataOutputStream(baos);
+dos.writeInt(12345);
+dos.close();
+System.out.println(baos.size());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+double d = 3.14;
+System.out.println(Double.doubleToLongBits(d));
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. A - Data streams read/write primitive types
+2. A - DataOutputStream writes primitive types
+3. B - writeInt() writes 4 bytes
+4. B - readDouble() reads 8 bytes
+5. A - Must read in same order as writing
+6. False - Data streams are for primitive types
+7. True - Data streams use binary format
+8. False - Must read in same order as writing
+9. Output:
+```
+4
+```
+10. Output:
+```
+4614256656552042342
+```

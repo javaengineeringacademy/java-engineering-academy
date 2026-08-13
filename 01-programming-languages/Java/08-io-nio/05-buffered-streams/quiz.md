@@ -1,46 +1,46 @@
-# Quiz
+# Quiz: Buffered Streams
 
 ## Multiple Choice Questions
 
-1. What does I/O stand for?
-   - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
-   - D) Index/Offset
-
-2. Which stream is for character data?
-   - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
-
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
-
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
+1. What is the purpose of buffering?
+   - A) Reduce I/O operations
+   - B) Increase speed
+   - C) Save memory
    - D) All of the above
 
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+2. Which class provides buffered input?
+   - A) BufferedInputStream
+   - B) BufferedOutputStream
+   - C) BufferedReader
+   - D) BufferedWriter
+
+3. What is the default buffer size?
+   - A) 1024
+   - B) 2048
+   - C) 4096
+   - D) 8192
+
+4. Which method flushes the buffer?
+   - A) `flush()`
+   - B) `clear()`
+   - C) `reset()`
+   - D) `empty()`
+
+5. What happens when buffer is full?
+   - A) Exception thrown
+   - B) Buffer expands
+   - C) Data written to disk
+   - D) Data lost
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. Buffered streams are faster than unbuffered.
    - True / False
 
-7. Buffered streams improve performance.
+7. You should always flush after writing.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. Buffered streams are thread-safe.
    - True / False
 
 ## Code Output Questions
@@ -49,25 +49,31 @@
 ```java
 BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
 System.out.println(br.readLine());
+System.out.println(br.readLine());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+String s = "Hello";
+System.out.println(s.length());
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. D - Buffering reduces I/O, increases speed, saves memory
+2. A - BufferedInputStream provides buffered input
+3. D - Default buffer size is 8192 bytes
+4. A - flush() writes buffer to disk
+5. C - Data is written to disk when buffer is full
+6. True - Buffered streams are faster
+7. True - Always flush after writing
+8. False - Buffered streams are not thread-safe
+9. Output:
+```
+Hello
+World
+```
+10. Output:
+```
+5
+```

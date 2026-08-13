@@ -1,67 +1,81 @@
-# Collectors Quiz
+# Quiz: Collectors
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of Collectors?
-   - A) Object creation
-   - B) Memory management
-   - C) Code reusability and abstraction
-   - D) Thread synchronization
+1. What is a Collector?
+   - A) Stream terminal operation
+   - B) Stream intermediate operation
+   - C) Stream source
+   - D) Stream buffer
 
-2. Which of the following is true about Collectors?
-   - A) It only works with primitive types
-   - B) It supports functional programming paradigm
-   - C) It requires explicit type declarations
-   - D) It cannot be used with collections
+2. Which collector joins strings?
+   - A) `toList()`
+   - B) `joining()`
+   - C) `groupingBy()`
+   - D) `partitioningBy()`
 
-3. What is a key benefit of using Collectors?
-   - A) Reduced code readability
-   - B) Increased boilerplate code
-   - C) More concise and expressive code
-   - D) Slower execution time
+3. What does `groupingBy()` return?
+   - A) List
+   - B) Map
+   - C) Set
+   - D) Stream
 
-4. When should Collectors be preferred?
-   - A) Only for simple calculations
-   - B) When immutability is required
-   - C) When behavior needs to be passed as data
-   - D) Only in multithreaded environments
+4. Which collector counts elements?
+   - A) `summarizingInt()`
+   - B) `counting()`
+   - C) `summingInt()`
+   - D) `averagingInt()`
 
-5. Which Java version introduced Collectors?
-   - A) Java 7
-   - B) Java 8
-   - C) Java 9
-   - D) Java 11
+5. What does `partitioningBy()` return?
+   - A) List
+   - B) Map<Boolean, List>
+   - C) Map<String, List>
+   - D) Set
 
 ## True/False Questions
 
-1. Collectors can only be used with streams. (T/F)
-2. Collectors supports side effects by design. (T/F)
-3. Collectors promotes immutability. (T/F)
+6. Collectors are terminal operations.
+   - True / False
+
+7. `toList()` returns an unmodifiable list.
+   - True / False
+
+8. You can create custom collectors.
+   - True / False
 
 ## Code Output Questions
 
-1. What will the following code output?
-// Example code here
+9. What will this code print?
+```java
+List<String> list = List.of("a", "bb", "ccc", "dd");
+Map<Integer, List<String>> grouped = list.stream()
+    .collect(Collectors.groupingBy(String::length));
+System.out.println(grouped);
+```
 
-2. What will the following code output?
-// Example code here
-
----
+10. What will this code print?
+```java
+List<String> list = List.of("a", "b", "c");
+String result = list.stream()
+    .collect(Collectors.joining(", "));
+System.out.println(result);
+```
 
 ## Answers
 
-### Multiple Choice
-1. C
-2. B
-3. C
-4. C
-5. B
-
-### True/False
-1. False
-2. False
-3. True
-
-### Code Output
-1. Answer here
-2. Answer here
+1. A - Collector is a terminal operation
+2. B - joining() joins strings
+3. B - groupingBy() returns a Map
+4. B - counting() counts elements
+5. B - partitioningBy() returns Map<Boolean, List>
+6. True - Collectors are terminal operations
+7. False - toList() returns a modifiable list (pre-Java 10)
+8. True - Custom collectors can be created
+9. Output:
+```
+{1=[a], 2=[bb, dd], 3=[ccc]}
+```
+10. Output:
+```
+a, b, c
+```

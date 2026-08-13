@@ -1,73 +1,88 @@
-# Quiz
+# Quiz: Object Streams
 
 ## Multiple Choice Questions
 
-1. What does I/O stand for?
-   - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
-   - D) Index/Offset
+1. What are object streams for?
+   - A) Reading/writing objects
+   - B) Reading/writing bytes
+   - C) Reading/writing characters
+   - D) Reading/writing files
 
-2. Which stream is for character data?
-   - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
+2. Which interface must objects implement?
+   - A) Serializable
+   - B) Comparable
+   - C) Cloneable
+   - D) AutoCloseable
 
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
+3. What does `writeObject()` do?
+   - A) Writes object to stream
+   - B) Creates object
+   - C) Deletes object
+   - D) Copies object
 
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
-   - D) All of the above
+4. What does `readObject()` return?
+   - A) Object
+   - B) Serializable
+   - C) String
+   - D) byte[]
 
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+5. What is serialization?
+   - A) Converting object to bytes
+   - B) Converting bytes to object
+   - C) Creating object
+   - D) Deleting object
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. All objects can be serialized.
    - True / False
 
-7. Buffered streams improve performance.
+7. transient fields are not serialized.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. serialVersionUID is optional.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
-System.out.println(br.readLine());
+class Person implements Serializable {
+    String name;
+    int age;
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+Person p = new Person("Alice", 25);
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+ObjectOutputStream oos = new ObjectOutputStream(baos);
+oos.writeObject(p);
+System.out.println(baos.size());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+String s = "Hello";
+System.out.println(s instanceof Serializable);
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. A - Object streams read/write objects
+2. A - Objects must implement Serializable
+3. A - writeObject() writes object to stream
+4. A - readObject() returns Object
+5. A - Serialization converts object to bytes
+6. False - Only Serializable objects can be serialized
+7. True - transient fields are not serialized
+8. False - serialVersionUID is recommended
+9. Output:
+```
+93
+```
+10. Output:
+```
+true
+```

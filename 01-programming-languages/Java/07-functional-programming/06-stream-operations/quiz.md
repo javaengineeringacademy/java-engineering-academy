@@ -1,67 +1,84 @@
-# StreamOperations Quiz
+# Quiz: Stream Operations
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of StreamOperations?
-   - A) Object creation
-   - B) Memory management
-   - C) Code reusability and abstraction
-   - D) Thread synchronization
+1. Which is an intermediate operation?
+   - A) forEach
+   - B) collect
+   - C) map
+   - D) reduce
 
-2. Which of the following is true about StreamOperations?
-   - A) It only works with primitive types
-   - B) It supports functional programming paradigm
-   - C) It requires explicit type declarations
-   - D) It cannot be used with collections
+2. Which method transforms elements?
+   - A) filter
+   - B) map
+   - C) count
+   - D) sorted
 
-3. What is a key benefit of using StreamOperations?
-   - A) Reduced code readability
-   - B) Increased boilerplate code
-   - C) More concise and expressive code
-   - D) Slower execution time
+3. Which method filters elements?
+   - A) map
+   - B) filter
+   - C) reduce
+   - D) collect
 
-4. When should StreamOperations be preferred?
-   - A) Only for simple calculations
-   - B) When immutability is required
-   - C) When behavior needs to be passed as data
-   - D) Only in multithreaded environments
+4. What does `reduce()` do?
+   - A) Filters elements
+   - B) Combines elements
+   - C) Sorts elements
+   - D) Counts elements
 
-5. Which Java version introduced StreamOperations?
-   - A) Java 7
-   - B) Java 8
-   - C) Java 9
-   - D) Java 11
+5. Which method sorts elements?
+   - A) sort
+   - B) order
+   - C) sorted
+   - D) arrange
 
 ## True/False Questions
 
-1. StreamOperations can only be used with streams. (T/F)
-2. StreamOperations supports side effects by design. (T/F)
-3. StreamOperations promotes immutability. (T/F)
+6. `map()` can change element type.
+   - True / False
+
+7. `filter()` returns a new stream.
+   - True / False
+
+8. Intermediate operations are eager.
+   - True / False
 
 ## Code Output Questions
 
-1. What will the following code output?
-// Example code here
+9. What will this code print?
+```java
+List<Integer> list = List.of(1, 2, 3, 4, 5);
+List<Integer> result = list.stream()
+    .filter(n -> n % 2 == 0)
+    .map(n -> n * 10)
+    .collect(Collectors.toList());
+System.out.println(result);
+```
 
-2. What will the following code output?
-// Example code here
-
----
+10. What will this code print?
+```java
+List<String> list = List.of("a", "bb", "ccc");
+int totalLength = list.stream()
+    .map(String::length)
+    .reduce(0, Integer::sum);
+System.out.println(totalLength);
+```
 
 ## Answers
 
-### Multiple Choice
-1. C
-2. B
-3. C
-4. C
-5. B
-
-### True/False
-1. False
-2. False
-3. True
-
-### Code Output
-1. Answer here
-2. Answer here
+1. C - map is an intermediate operation
+2. B - map transforms elements
+3. B - filter filters elements
+4. B - reduce combines elements
+5. C - sorted sorts elements
+6. True - map can change element type
+7. True - filter returns a new stream
+8. False - Intermediate operations are lazy
+9. Output:
+```
+[20, 40]
+```
+10. Output:
+```
+6
+```

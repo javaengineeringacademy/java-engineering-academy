@@ -1,69 +1,80 @@
-# Quiz
+# Quiz: Charset
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
+1. What is a Charset in Java?
+   - A) A character set
+   - B) A mapping between bytes and characters
+   - C) A string encoding
+   - D) A file format
 
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
-   - D) All of the above
+2. What is the default charset in Java?
+   - A) UTF-8
+   - B) ASCII
+   - C) Platform-dependent
+   - D) ISO-8859-1
 
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. Which method returns the default charset?
+   - A) `Charset.defaultCharset()`
+   - B) `Charset.getDefault()`
+   - C) `System.charset()`
+   - D) `Charset.systemCharset()`
 
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. What does `StandardCharsets.UTF_8` provide?
+   - A) A string
+   - B) A charset constant
+   - C) A file
+   - D) A stream
 
-5. What is the default behavior?
-   - A) Mutable
-   - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+5. Which class is used to encode strings to bytes?
+   - A) StringEncoder
+   - B) ByteBuffer
+   - C) String.getBytes()
+   - D) CharsetEncoder
 
 ## True/False Questions
 
-6. This class is mutable.
+6. UTF-8 uses 1-4 bytes per character.
    - True / False
 
-7. This class is thread-safe.
+7. ASCII is a subset of UTF-8.
    - True / False
 
-8. This class can be used with streams.
+8. Platform default charset is always UTF-8.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+String s = "Hello";
+byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+System.out.println(bytes.length);
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+String s = "ABC";
+byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+String decoded = new String(bytes, StandardCharsets.UTF_8);
+System.out.println(decoded.equals(s));
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. B - Charset maps between bytes and characters
+2. C - Default charset is platform-dependent
+3. B - Charset.getDefault() returns default charset
+4. B - StandardCharsets provides charset constants
+5. C - String.getBytes() encodes to bytes
+6. True - UTF-8 uses variable length encoding
+7. True - ASCII is a subset of UTF-8
+8. False - Platform default depends on OS settings
+9. Output:
+```
+5
+```
+10. Output:
+```
+true
+```

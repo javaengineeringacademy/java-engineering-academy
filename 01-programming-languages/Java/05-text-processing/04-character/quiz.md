@@ -1,69 +1,83 @@
-# Quiz
+# Quiz: Character
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
+1. What is the size of a char in Java?
+   - A) 1 byte
+   - B) 2 bytes
+   - C) 4 bytes
+   - D) 8 bytes
 
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
-   - D) All of the above
+2. Which class wraps a char value?
+   - A) String
+   - B) Character
+   - C) Char
+   - D) CharacterWrapper
 
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. What does `Character.isDigit('5')` return?
+   - A) '5'
+   - B) true
+   - C) false
+   - D) 5
 
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. Which method converts char to uppercase?
+   - A) `toUpper()`
+   - B) `toUpperCase()`
+   - C) `upperCase()`
+   - D) `convertUpper()`
 
-5. What is the default behavior?
-   - A) Mutable
-   - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+5. What does `Character.isLetter('a')` return?
+   - A) 'a'
+   - B) true
+   - C) false
+   - D) 1
 
 ## True/False Questions
 
-6. This class is mutable.
+6. char in Java is signed.
    - True / False
 
-7. This class is thread-safe.
+7. Character class provides static utility methods.
    - True / False
 
-8. This class can be used with streams.
+8. Unicode characters can be stored in char.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+char c = 'A';
+System.out.println(Character.toLowerCase(c));
+System.out.println(Character.isLetter(c));
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+String s = "Hello123";
+for (char c : s.toCharArray()) {
+    if (Character.isDigit(c)) {
+        System.out.print(c + " ");
+    }
+}
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. B - char is 2 bytes (16 bits) in Java
+2. B - Character class wraps a char value
+3. B - isDigit() returns true for digit characters
+4. B - toUpperCase() converts to uppercase
+5. B - isLetter() returns true for letter characters
+6. False - char is unsigned in Java
+7. True - Character provides static utility methods
+8. True - Basic multilingual plane characters fit in char
+9. Output:
+```
+a
+true
+```
+10. Output:
+```
+1 2 3
+```

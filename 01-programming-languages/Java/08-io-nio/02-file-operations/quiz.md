@@ -1,73 +1,77 @@
-# Quiz
+# Quiz: File Operations
 
 ## Multiple Choice Questions
 
-1. What does I/O stand for?
-   - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
-   - D) Index/Offset
+1. Which class represents a file?
+   - A) File
+   - B) Path
+   - C) FileSystem
+   - D) Directory
 
-2. Which stream is for character data?
-   - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
+2. Which method checks if file exists?
+   - A) `exists()`
+   - B) `isFile()`
+   - C) `check()`
+   - D) `find()`
 
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
+3. What does `File.delete()` return?
+   - A) void
+   - B) boolean
+   - C) File
+   - D) String
 
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
-   - D) All of the above
+4. Which class is for NIO file operations?
+   - A) Files
+   - B) File
+   - C) Path
+   - D) FileSystem
 
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+5. What does `Files.copy()` do?
+   - A) Copies file
+   - B) Moves file
+   - C) Deletes file
+   - D) Creates file
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. File class is part of NIO.
    - True / False
 
-7. Buffered streams improve performance.
+7. Path is immutable.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. Files utility class provides convenience methods.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
-System.out.println(br.readLine());
+File file = new File("test.txt");
+System.out.println(file.exists());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+Path path = Path.of("/tmp", "test.txt");
+System.out.println(path.toString());
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. A - File class represents a file
+2. A - exists() checks if file exists
+3. B - delete() returns boolean
+4. A - Files utility class for NIO operations
+5. A - Files.copy() copies file
+6. False - File is part of java.io, not NIO
+7. True - Path objects are immutable
+8. True - Files provides convenience methods
+9. Output:
+```
+false
+```
+10. Output:
+```
+/tmp/test.txt
+```

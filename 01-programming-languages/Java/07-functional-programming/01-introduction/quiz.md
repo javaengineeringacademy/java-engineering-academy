@@ -1,67 +1,81 @@
-# Introduction Quiz
+# Quiz: Functional Programming Introduction
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of Introduction?
-   - A) Object creation
-   - B) Memory management
-   - C) Code reusability and abstraction
-   - D) Thread synchronization
+1. What is functional programming?
+   - A) Programming with functions
+   - B) Object-oriented programming
+   - C) Procedural programming
+   - D) Event-driven programming
 
-2. Which of the following is true about Introduction?
-   - A) It only works with primitive types
-   - B) It supports functional programming paradigm
-   - C) It requires explicit type declarations
-   - D) It cannot be used with collections
+2. What is a pure function?
+   - A) Function with no arguments
+   - B) Function with no side effects
+   - C) Function with no return value
+   - D) Function with no variables
 
-3. What is a key benefit of using Introduction?
-   - A) Reduced code readability
-   - B) Increased boilerplate code
-   - C) More concise and expressive code
-   - D) Slower execution time
+3. What is immutability?
+   - A) Variables can change
+   - B) Variables cannot change after creation
+   - C) Objects can change
+   - D) Methods can change state
 
-4. When should Introduction be preferred?
-   - A) Only for simple calculations
-   - B) When immutability is required
-   - C) When behavior needs to be passed as data
-   - D) Only in multithreaded environments
+4. What is a lambda expression?
+   - A) Anonymous function
+   - B) Named function
+   - C) Recursive function
+   - D) Static function
 
-5. Which Java version introduced Introduction?
-   - A) Java 7
-   - B) Java 8
-   - C) Java 9
-   - D) Java 11
+5. What is method reference?
+   - A) Pointer to a method
+   - B) Method name
+   - C) Method signature
+   - D) Method body
 
 ## True/False Questions
 
-1. Introduction can only be used with streams. (T/F)
-2. Introduction supports side effects by design. (T/F)
-3. Introduction promotes immutability. (T/F)
+6. Functional programming avoids mutable state.
+   - True / False
+
+7. Lambda expressions can have side effects.
+   - True / False
+
+8. Method references are syntactic sugar for lambdas.
+   - True / False
 
 ## Code Output Questions
 
-1. What will the following code output?
-// Example code here
+9. What will this code print?
+```java
+List<Integer> list = List.of(1, 2, 3, 4, 5);
+int sum = list.stream()
+    .filter(n -> n % 2 == 0)
+    .mapToInt(n -> n)
+    .sum();
+System.out.println(sum);
+```
 
-2. What will the following code output?
-// Example code here
-
----
+10. What will this code print?
+```java
+Function<Integer, Integer> doubleIt = n -> n * 2;
+System.out.println(doubleIt.apply(5));
+```
 
 ## Answers
 
-### Multiple Choice
-1. C
-2. B
-3. C
-4. C
-5. B
-
-### True/False
-1. False
-2. False
-3. True
-
-### Code Output
-1. Answer here
-2. Answer here
+1. A - Functional programming uses functions
+2. B - Pure functions have no side effects
+3. B - Immutability means variables cannot change
+4. A - Lambda is an anonymous function
+5. A - Method reference is a pointer to a method
+6. True - Functional programming avoids mutable state
+7. False - Lambdas should be pure (no side effects)
+8. True - Method references are syntactic sugar
+9. Output:
+```
+6
+```
+10. Output:
+```
+10
+```

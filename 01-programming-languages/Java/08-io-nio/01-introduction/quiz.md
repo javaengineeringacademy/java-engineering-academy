@@ -1,73 +1,78 @@
-# Quiz
+# Quiz: I/O Introduction
 
 ## Multiple Choice Questions
 
 1. What does I/O stand for?
    - A) Input/Output
-   - B) Internal/External
-   - C) Integer/Overflow
+   - B) Integer/Overflow
+   - C) Internal/External
    - D) Index/Offset
 
-2. Which stream is for character data?
+2. What are the two main types of streams?
+   - A) Byte and Character
+   - B) Input and Output
+   - C) Read and Write
+   - D) File and Network
+
+3. What is the difference between I/O and NIO?
+   - A) I/O is newer
+   - B) NIO is buffer-based
+   - C) I/O is non-blocking
+   - D) NIO is older
+
+4. Which class is for byte input?
    - A) InputStream
-   - B) OutputStream
-   - C) Reader
-   - D) DataInputStream
+   - B) Reader
+   - C) Writer
+   - D) OutputStream
 
-3. What is the default buffer size?
-   - A) 1024 bytes
-   - B) 4096 bytes
-   - C) 8192 bytes
-   - D) 16384 bytes
-
-4. What does NIO stand for?
-   - A) New I/O
-   - B) Network I/O
-   - C) Non-blocking I/O
-   - D) All of the above
-
-5. Which method reads a line of text?
-   - A) read()
-   - B) readLine()
-   - C) readUTF()
-   - D) readObject()
+5. What is a stream?
+   - A) Sequence of data
+   - B) File
+   - C) Directory
+   - D) Connection
 
 ## True/False Questions
 
-6. Byte streams are for text data.
+6. I/O operations can throw exceptions.
    - True / False
 
-7. Buffered streams improve performance.
+7. NIO stands for New I/O.
    - True / False
 
-8. NIO uses buffers for data transfer.
+8. Streams are always sequential.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-BufferedReader br = new BufferedReader(new StringReader("Hello\nWorld"));
-System.out.println(br.readLine());
+InputStream is = new ByteArrayInputStream("Hello".getBytes());
+System.out.println(is.read());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(10);
-buf.putInt(12345);
-buf.flip();
-System.out.println(buf.getInt());
+String s = "Hello World";
+byte[] bytes = s.getBytes();
+System.out.println(bytes.length);
 ```
 
 ## Answers
 
-1. A
-2. C
-3. C
-4. D
-5. B
-6. False
-7. True
-8. True
-9. Hello
-10. 12345
+1. A - Input/Output
+2. A - Byte and Character streams
+3. B - NIO is buffer-based
+4. A - InputStream is for byte input
+5. A - Stream is a sequence of data
+6. True - I/O operations throw IOException
+7. True - NIO stands for New I/O
+8. True - Streams are sequential
+9. Output:
+```
+72
+```
+10. Output:
+```
+11
+```

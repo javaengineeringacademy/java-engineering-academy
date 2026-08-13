@@ -1,67 +1,81 @@
-# Composition Quiz
+# Quiz: Function Composition
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of Composition?
-   - A) Object creation
-   - B) Memory management
-   - C) Code reusability and abstraction
-   - D) Thread synchronization
+1. What is function composition?
+   - A) Combining functions
+   - B) Creating functions
+   - C) Deleting functions
+   - D) Sorting functions
 
-2. Which of the following is true about Composition?
-   - A) It only works with primitive types
-   - B) It supports functional programming paradigm
-   - C) It requires explicit type declarations
-   - D) It cannot be used with collections
+2. Which method chains functions?
+   - A) `andThen()`
+   - B) `compose()`
+   - C) `chain()`
+   - D) Both A and B
 
-3. What is a key benefit of using Composition?
-   - A) Reduced code readability
-   - B) Increased boilerplate code
-   - C) More concise and expressive code
-   - D) Slower execution time
+3. What does `andThen()` do?
+   - A) Runs first function, then second
+   - B) Runs second function, then first
+   - C) Runs both in parallel
+   - D) Runs random function
 
-4. When should Composition be preferred?
-   - A) Only for simple calculations
-   - B) When immutability is required
-   - C) When behavior needs to be passed as data
-   - D) Only in multithreaded environments
+4. What does `compose()` do?
+   - A) Runs first function, then second
+   - B) Runs second function, then first
+   - C) Runs both in parallel
+   - D) Runs random function
 
-5. Which Java version introduced Composition?
-   - A) Java 7
-   - B) Java 8
-   - C) Java 9
-   - D) Java 11
+5. Which is a common use case?
+   - A) Data transformation
+   - B) Event handling
+   - C) Thread management
+   - D) File I/O
 
 ## True/False Questions
 
-1. Composition can only be used with streams. (T/F)
-2. Composition supports side effects by design. (T/F)
-3. Composition promotes immutability. (T/F)
+6. Composed functions are immutable.
+   - True / False
+
+7. You can chain multiple functions.
+   - True / False
+
+8. Function composition is only for Function type.
+   - True / False
 
 ## Code Output Questions
 
-1. What will the following code output?
-// Example code here
+9. What will this code print?
+```java
+Function<Integer, Integer> doubleIt = n -> n * 2;
+Function<Integer, Integer> addTen = n -> n + 10;
+Function<Integer, Integer> combined = doubleIt.andThen(addTen);
+System.out.println(combined.apply(5));
+```
 
-2. What will the following code output?
-// Example code here
-
----
+10. What will this code print?
+```java
+Function<Integer, Integer> doubleIt = n -> n * 2;
+Function<Integer, Integer> addTen = n -> n + 10;
+Function<Integer, Integer> combined = doubleIt.compose(addTen);
+System.out.println(combined.apply(5));
+```
 
 ## Answers
 
-### Multiple Choice
-1. C
-2. B
-3. C
-4. C
-5. B
-
-### True/False
-1. False
-2. False
-3. True
-
-### Code Output
-1. Answer here
-2. Answer here
+1. A - Function composition combines functions
+2. D - Both andThen() and compose() chain functions
+3. A - andThen() runs first, then second
+4. B - compose() runs second, then first
+5. A - Data transformation is common use case
+6. True - Composed functions are immutable
+7. True - You can chain multiple functions
+8. False - Predicate, Consumer also support composition
+9. Output:
+```
+20
+```
+10. Output:
+```
+30
+```

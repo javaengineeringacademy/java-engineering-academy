@@ -1,69 +1,82 @@
-# Quiz
+# Quiz: Regex
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
+1. What does regex stand for?
+   - A) Regular Expression
+   - B) Random Expression
+   - C) Reactive Expression
+   - D) Recursive Expression
 
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
-   - D) All of the above
+2. Which class is used to compile regex patterns?
+   - A) Regex
+   - B) Pattern
+   - C) Matcher
+   - D) Expression
 
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. What does `Pattern.compile()` return?
+   - A) A string
+   - B) A Pattern object
+   - C) A Matcher object
+   - D) A boolean
 
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. Which method finds matches in a string?
+   - A) `find()`
+   - B) `match()`
+   - C) `search()`
+   - D) `locate()`
 
-5. What is the default behavior?
-   - A) Mutable
-   - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+5. What does `\d` match in regex?
+   - A) Any character
+   - B) A digit
+   - C) A letter
+   - D) A whitespace
 
 ## True/False Questions
 
-6. This class is mutable.
+6. `.` in regex matches any single character.
    - True / False
 
-7. This class is thread-safe.
+7. `*` means zero or more occurrences.
    - True / False
 
-8. This class can be used with streams.
+8. Regex patterns are case-sensitive by default.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+Pattern p = Pattern.compile("\\d+");
+Matcher m = p.matcher("abc123def456");
+while (m.find()) {
+    System.out.print(m.group() + " ");
+}
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+String s = "Hello World";
+System.out.println(s.matches(".*World"));
+System.out.println(s.replaceAll("\\s", "_"));
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. A - Regular Expression
+2. B - Pattern.compile() compiles the pattern
+3. B - Returns a Pattern object
+4. A - find() finds next match
+5. B - \d matches a digit
+6. True - . matches any character
+7. True - * means zero or more
+8. True - Regex is case-sensitive by default
+9. Output:
+```
+123 456
+```
+10. Output:
+```
+true
+Hello_World
+```

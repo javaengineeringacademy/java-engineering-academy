@@ -1,69 +1,83 @@
-# Quiz
+# Quiz: Text Blocks
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
+1. When were text blocks introduced in Java?
+   - A) Java 11
+   - B) Java 12
+   - C) Java 13
+   - D) Java 15
 
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
+2. What is the syntax for text blocks?
+   - A) `"text"`
+   - B) `"""text"""`
+   - C) `'''text'''`
+   - D) `<<<text>>>`
+
+3. What does text block preserve?
+   - A) Line breaks
+   - B) Indentation
+   - C) Formatting
    - D) All of the above
 
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+4. What is the purpose of `\s` in text blocks?
+   - A) Space
+   - B) Escape
+   - C) Strip
+   - D) Split
 
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
-
-5. What is the default behavior?
-   - A) Mutable
-   - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+5. Can text blocks contain double quotes?
+   - A) Yes
+   - B) No
+   - C) Only with escaping
+   - D) Only single quotes
 
 ## True/False Questions
 
-6. This class is mutable.
+6. Text blocks are immutable.
    - True / False
 
-7. This class is thread-safe.
+7. Text blocks use `"""` as delimiter.
    - True / False
 
-8. This class can be used with streams.
+8. Text blocks automatically strip trailing whitespace.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+String s = """
+        Hello
+        World
+        """;
+System.out.println(s.strip());
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+String s = """
+        "Java"
+        """;
+System.out.println(s.strip());
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. D - Text blocks were finalized in Java 15
+2. B - Text blocks use triple quotes """
+3. D - Text blocks preserve all formatting
+4. C - \s strips trailing whitespace
+5. A - Yes, text blocks can contain double quotes
+6. True - Text blocks are immutable
+7. True - Text blocks use triple quotes
+8. True - Text blocks strip trailing whitespace
+9. Output:
+```
+Hello
+World
+```
+10. Output:
+```
+"Java"
+```

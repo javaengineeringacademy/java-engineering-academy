@@ -1,69 +1,86 @@
-# Quiz
+# Quiz: String
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
-
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
-   - D) All of the above
-
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
-
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
-
-5. What is the default behavior?
+1. What is the main characteristic of String in Java?
    - A) Mutable
    - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+   - C) Thread-unsafe
+   - D) Array-based
+
+2. Where are String literals stored?
+   - A) Stack
+   - B) Heap
+   - C) String Pool
+   - D) Method Area
+
+3. What does `String.intern()` do?
+   - A) Deletes the string
+   - B) Returns canonical representation
+   - C) Creates new string
+   - D) Converts to StringBuilder
+
+4. What is the output of `"hello".length()`?
+   - A) 4
+   - B) 5
+   - C) 6
+   - D) 10
+
+5. Which method compares string content?
+   - A) `==`
+   - B) `compareTo()`
+   - C) `equals()`
+   - D) Both B and C
 
 ## True/False Questions
 
-6. This class is mutable.
+6. String in Java is mutable.
    - True / False
 
-7. This class is thread-safe.
+7. `==` compares string content in Java.
    - True / False
 
-8. This class can be used with streams.
+8. String implements CharSequence interface.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+String s1 = "hello";
+String s2 = "hello";
+String s3 = new String("hello");
+System.out.println(s1 == s2);
+System.out.println(s1 == s3);
+System.out.println(s1.equals(s3));
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+String s = "Hello";
+System.out.println(s.toLowerCase());
+System.out.println(s);
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. B - String is immutable in Java
+2. C - String literals are stored in String Pool
+3. B - intern() returns canonical representation
+4. B - "hello" has 5 characters
+5. D - Both compareTo() and equals() compare content
+6. False - String is immutable
+7. False - == compares references, equals() compares content
+8. True - String implements CharSequence
+9. Output:
+```
+true
+false
+true
+```
+10. Output:
+```
+hello
+Hello
+```
+(Original string unchanged due to immutability)

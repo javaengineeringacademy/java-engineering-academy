@@ -1,67 +1,85 @@
-# BestPractices Quiz
+# Quiz: Functional Programming Best Practices
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of BestPractices?
-   - A) Object creation
-   - B) Memory management
-   - C) Code reusability and abstraction
-   - D) Thread synchronization
+1. What is the key principle of functional programming?
+   - A) Mutability
+   - B) Immutability
+   - C) Side effects
+   - D) Global state
 
-2. Which of the following is true about BestPractices?
-   - A) It only works with primitive types
-   - B) It supports functional programming paradigm
-   - C) It requires explicit type declarations
-   - D) It cannot be used with collections
+2. What should pure functions avoid?
+   - A) Arguments
+   - B) Return values
+   - C) Side effects
+   - D) Local variables
 
-3. What is a key benefit of using BestPractices?
-   - A) Reduced code readability
-   - B) Increased boilerplate code
-   - C) More concise and expressive code
-   - D) Slower execution time
+3. When should you use lambdas?
+   - A) Always
+   - B) For simple operations
+   - C) For complex logic
+   - D) Never
 
-4. When should BestPractices be preferred?
-   - A) Only for simple calculations
-   - B) When immutability is required
-   - C) When behavior needs to be passed as data
-   - D) Only in multithreaded environments
+4. What is the benefit of immutability?
+   - A) Better performance
+   - B) Thread safety
+   - C) Less code
+   - D) More flexibility
 
-5. Which Java version introduced BestPractices?
-   - A) Java 7
-   - B) Java 8
-   - C) Java 9
-   - D) Java 11
+5. Which is a functional programming anti-pattern?
+   - A) Pure functions
+   - B) Immutable data
+   - C) Mutable shared state
+   - D) Function composition
 
 ## True/False Questions
 
-1. BestPractices can only be used with streams. (T/F)
-2. BestPractices supports side effects by design. (T/F)
-3. BestPractices promotes immutability. (T/F)
+6. Functional programming is always better than OOP.
+   - True / False
+
+7. Side effects make code harder to test.
+   - True / False
+
+8. Immutability improves concurrent programming.
+   - True / False
 
 ## Code Output Questions
 
-1. What will the following code output?
-// Example code here
+9. What will this code print?
+```java
+List<Integer> list = List.of(1, 2, 3, 4, 5);
+int sum = list.stream()
+    .filter(n -> n > 2)
+    .mapToInt(n -> n)
+    .sum();
+System.out.println(sum);
+```
 
-2. What will the following code output?
-// Example code here
-
----
+10. What will this code print?
+```java
+List<String> list = List.of("Java", "Python", "Go");
+String result = list.stream()
+    .filter(s -> s.length() > 2)
+    .findFirst()
+    .orElse("None");
+System.out.println(result);
+```
 
 ## Answers
 
-### Multiple Choice
-1. C
-2. B
-3. C
-4. C
-5. B
-
-### True/False
-1. False
-2. False
-3. True
-
-### Code Output
-1. Answer here
-2. Answer here
+1. B - Immutability is key principle
+2. C - Pure functions avoid side effects
+3. B - Use lambdas for simple operations
+4. B - Immutability provides thread safety
+5. C - Mutable shared state is an anti-pattern
+6. False - Each paradigm has its place
+7. True - Side effects make testing harder
+8. True - Immutability helps with concurrency
+9. Output:
+```
+12
+```
+10. Output:
+```
+Java
+```

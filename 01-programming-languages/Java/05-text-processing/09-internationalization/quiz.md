@@ -1,69 +1,84 @@
-# Quiz
+# Quiz: Internationalization
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this class?
-   - A) To make code faster
-   - B) To process text
-   - C) To use less memory
-   - D) To compile faster
+1. What does i18n stand for?
+   - A) Internationalization
+   - B) Internet
+   - C) Interface
+   - D) Integration
 
-2. Which method is used for this operation?
-   - A) toString()
-   - B) length()
-   - C) substring()
-   - D) All of the above
+2. What does l10n stand for?
+   - A) Localization
+   - B) Language
+   - C) Library
+   - D) Layout
 
-3. What is the benefit of using this class?
-   - A) Better text processing
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. What class represents a locale?
+   - A) Language
+   - B) Locale
+   - C) Country
+   - D) Region
 
-4. When should you use this class?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. What is a Resource Bundle?
+   - A) A file with translations
+   - B) A collection of locale-specific resources
+   - C) A class file
+   - D) A configuration file
 
-5. What is the default behavior?
-   - A) Mutable
-   - B) Immutable
-   - C) Thread-safe
-   - D) None of the above
+5. Which method formats numbers for a locale?
+   - A) `NumberFormat.getInstance()`
+   - B) `String.format()`
+   - C) `Locale.format()`
+   - D) `Number.toLocaleString()`
 
 ## True/False Questions
 
-6. This class is mutable.
+6. Locale.US and Locale.UK have the same formatting.
    - True / False
 
-7. This class is thread-safe.
+7. Resource bundles are cached by the JVM.
    - True / False
 
-8. This class can be used with streams.
+8. DateFormat can format dates for different locales.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+Locale us = Locale.US;
+Locale france = Locale.FRANCE;
+System.out.println(us.getDisplayCountry());
+System.out.println(france.getDisplayCountry());
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+double num = 1234567.89;
+NumberFormat usFormat = NumberFormat.getNumberInstance(Locale.US);
+NumberFormat deFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
+System.out.println(usFormat.format(num));
+System.out.println(deFormat.format(num));
 ```
 
 ## Answers
 
-1. B
-2. D
-3. A
-4. C
-5. B
-6. False
-7. False
-8. True
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. A - Internationalization (18 letters between i and n)
+2. A - Localization (10 letters between l and n)
+3. B - Locale class represents a locale
+4. B - Resource bundle is a collection of locale-specific resources
+5. A - NumberFormat.getInstance() formats numbers
+6. False - US uses commas, UK uses periods for decimals
+7. True - Resource bundles are cached for performance
+8. True - DateFormat supports locale-specific formatting
+9. Output:
+```
+United States
+France
+```
+10. Output:
+```
+1,234,567.89
+1.234.567,89
+```
