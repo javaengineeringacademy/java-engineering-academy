@@ -1,69 +1,102 @@
-# Quiz
+# Quiz: Why Not (Common OOP Pitfalls)
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this concept?
-   - A) To make code faster
-   - B) To organize code better
-   - C) To use less memory
-   - D) To compile faster
+1. Why should you avoid god classes?
+   - A) They are too small
+   - B) They violate single responsibility principle and become hard to maintain
+   - C) They use too many interfaces
+   - D) They have too many constructors
 
-2. Which keyword is used for this concept?
-   - A) static
-   - B) final
-   - C) abstract
-   - D) None of the above
+2. What is the problem with using `==` to compare Strings?
+   - A) It's slower
+   - B) It compares references, not content
+   - C) It throws an exception
+   - D) It only works with literals
 
-3. What is the benefit of using this concept?
-   - A) Better code organization
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. Why is it bad to catch generic Exception?
+   - A) It's syntactically incorrect
+   - B) It masks specific errors and makes debugging harder
+   - C) It causes memory leaks
+   - D) It's not allowed in Java
 
-4. When should you use this concept?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. Why should you avoid deep inheritance hierarchies?
+   - A) They are faster
+   - B) They create tight coupling and fragile base class problems
+   - C) They use less memory
+   - D) They improve readability
 
-5. What is the default access modifier?
-   - A) public
-   - B) private
-   - C) protected
-   - D) package-private
+5. What is the problem with mutable shared state?
+   - A) It improves performance
+   - B) It causes unpredictable behavior in concurrent programs
+   - C) It simplifies code
+   - D) It reduces memory usage
 
 ## True/False Questions
 
-6. This concept is mandatory in Java programs.
+6. Premature optimization is considered a good practice in OOP.
    - True / False
 
-7. You can have multiple constructors in a class.
+7. Returning null from methods can lead to NullPointerException and should be avoided when possible.
    - True / False
 
-8. Static methods can access instance variables directly.
+8. God objects that do everything make code easier to test.
    - True / False
 
 ## Code Output Questions
 
-9. What will this code print?
+9. What is problematic about this code?
 ```java
-// Code example here
+class UserManager {
+    void createUser(String name) { /* ... */ }
+    void deleteUser(String name) { /* ... */ }
+    void sendEmail(String to, String msg) { /* ... */ }
+    void generateReport() { /* ... */ }
+    void connectDatabase() { /* ... */ }
+    void encryptData(byte[] data) { /* ... */ }
+}
 ```
+What OOP principle does this violate?
+- A) Open/Closed
+- B) Single Responsibility
+- Liskov Substitution
+- Interface Segregation
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+class Parent {
+    void show() { System.out.println("Parent"); }
+}
+class Child extends Parent {
+    @Override
+    void show() { System.out.println("Child"); }
+}
+class Test {
+    public static void main(String[] args) {
+        Parent p = new Parent();
+        Child c = new Child();
+        p = c;     // p now points to Child
+        c = (Child) p;  // Safe cast
+        System.out.println("Safe");
+        // Parent p2 = new Parent();
+        // Child c2 = (Child) p2;  // This would throw ClassCastException
+    }
+}
 ```
 
 ## Answers
 
 1. B
-2. C
-3. A
-4. C
-5. D
-6. False
-7. True
-8. False
-9. [Answer depends on code]
-10. [Answer depends on code]
+2. B
+3. B
+4. B
+5. B
+6. False - Premature optimization is a well-known anti-pattern
+7. True - Consider Optional or sentinel values
+8. False - Large classes are harder to test and maintain
+9. B - Single Responsibility Principle - this class handles users, emails, reports, database, and encryption
+10. Output:
+```
+Safe
+```
+The cast on line 6 is safe; the commented-out cast would throw ClassCastException.

@@ -1,69 +1,111 @@
-# Quiz
+# Quiz: Composition
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this concept?
-   - A) To make code faster
-   - B) To organize code better
-   - C) To use less memory
-   - D) To compile faster
+1. What is composition in Java?
+   - A) A "has-a" relationship where the child cannot exist without the parent
+   - B) A "is-a" relationship between classes
+   - C) Inheriting from multiple classes
+   - D) Defining methods in a class
 
-2. Which keyword is used for this concept?
-   - A) static
-   - B) final
-   - C) abstract
-   - D) None of the above
+2. In composition, what happens when the parent object is destroyed?
+   - A) Child objects are destroyed too
+   - B) Child objects continue to exist
+   - C) Child objects become null
+   - D) Nothing happens
 
-3. What is the benefit of using this concept?
-   - A) Better code organization
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. Which is an example of composition?
+   - A) Car has-a Engine
+   - B) Dog is-a Animal
+   - C) Circle is-a Shape
+   - D) Student is-a Person
 
-4. When should you use this concept?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. What is the main advantage of composition over inheritance?
+   - A) Faster execution
+   - B) Greater flexibility and loose coupling
+   - C) Less memory usage
+   - D) Simpler code
 
-5. What is the default access modifier?
-   - A) public
-   - B) private
-   - C) protected
-   - D) package-private
+5. How is composition typically implemented?
+   - A) Using the extends keyword
+   - B) Using instance variables of other classes
+   - C) Using the implements keyword
+   - D) Using static methods
 
 ## True/False Questions
 
-6. This concept is mandatory in Java programs.
+6. In composition, the lifecycle of the contained object is managed by the container.
    - True / False
 
-7. You can have multiple constructors in a class.
+7. Composition creates a tighter coupling than inheritance.
    - True / False
 
-8. Static methods can access instance variables directly.
+8. A car composed of an engine, wheels, and seats is a good example of composition.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+class Engine {
+    void start() { System.out.println("Engine started"); }
+}
+class Car {
+    private Engine engine = new Engine();
+    void start() {
+        engine.start();
+        System.out.println("Car ready");
+    }
+}
+class Test {
+    public static void main(String[] args) {
+        Car car = new Car();
+        car.start();
+    }
+}
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+class Room {
+    private String name;
+    Room(String name) { this.name = name; }
+    String getName() { return name; }
+}
+class House {
+    private Room[] rooms;
+    House() {
+        rooms = new Room[]{ new Room("Bedroom"), new Room("Kitchen") };
+    }
+    void listRooms() {
+        for (Room r : rooms)
+            System.out.println(r.getName());
+    }
+}
+class Demo {
+    public static void main(String[] args) {
+        new House().listRooms();
+    }
+}
 ```
 
 ## Answers
 
-1. B
-2. C
+1. A
+2. A - In true composition, contained objects are destroyed with the container
 3. A
-4. C
-5. D
-6. False
-7. True
-8. False
-9. [Answer depends on code]
-10. [Answer depends on code]
+4. B
+5. B
+6. True
+7. False - Composition creates looser coupling than inheritance
+8. True
+9. Output:
+```
+Engine started
+Car ready
+```
+10. Output:
+```
+Bedroom
+Kitchen
+```

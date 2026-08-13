@@ -1,69 +1,96 @@
-# Quiz
+# Quiz: Anonymous Classes
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this concept?
-   - A) To make code faster
-   - B) To organize code better
-   - C) To use less memory
-   - D) To compile faster
+1. What is an anonymous class?
+   - A) A class without a name defined and instantiated in a single expression
+   - B) A class declared as private
+   - C) A class without any methods
+   - D) A static class
 
-2. Which keyword is used for this concept?
-   - A) static
-   - B) final
-   - C) abstract
-   - D) None of the above
+2. What can an anonymous class extend or implement?
+   - A) Only interfaces
+   - B) Only abstract classes
+   - C) An interface or a class (abstract or concrete)
+   - D) Nothing
 
-3. What is the benefit of using this concept?
-   - A) Better code organization
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
-
-4. When should you use this concept?
-   - A) Always
-   - B) Never
-   - C) When appropriate
+3. Where can anonymous classes be defined?
+   - A) Only at class level
+   - B) Only inside methods
+   - C) At class level or inside methods
    - D) Only in main method
 
-5. What is the default access modifier?
-   - A) public
-   - B) private
-   - C) protected
-   - D) package-private
+4. What is a common use of anonymous classes?
+   - A) Creating reusable, named classes
+   - B) Implementing short, one-time-use event handlers
+   - C) Extending String class
+   - D) Defining package structure
+
+5. Can anonymous classes have constructors?
+   - A) Yes, named constructors
+   - B) No, they cannot define constructors
+   - C) Yes, using the class name
+   - D) Only if they extend a class
 
 ## True/False Questions
 
-6. This concept is mandatory in Java programs.
+6. Anonymous classes can access local variables of the enclosing method if they are final or effectively final.
    - True / False
 
-7. You can have multiple constructors in a class.
+7. An anonymous class can extend a class and implement an interface simultaneously.
    - True / False
 
-8. Static methods can access instance variables directly.
+8. Anonymous classes are compiled into separate .class files.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+interface Greeter {
+    void greet();
+}
+class Test {
+    public static void main(String[] args) {
+        Greeter g = new Greeter() {
+            public void greet() { System.out.println("Hello!"); }
+        };
+        g.greet();
+    }
+}
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+abstract class Animal {
+    abstract String sound();
+}
+class Test {
+    public static void main(String[] args) {
+        Animal dog = new Animal() { String sound() { return "Woof"; } };
+        Animal cat = new Animal() { String sound() { return "Meow"; } };
+        System.out.println(dog.sound());
+        System.out.println(cat.sound());
+    }
+}
 ```
 
 ## Answers
 
-1. B
+1. A
 2. C
-3. A
-4. C
-5. D
-6. False
-7. True
-8. False
-9. [Answer depends on code]
-10. [Answer depends on code]
+3. C
+4. B
+5. B - They cannot define constructors (use instance initializer instead)
+6. True
+7. False - It can extend a class OR implement an interface, not both
+8. True - Named like OuterClass$1.class
+9. Output:
+```
+Hello!
+```
+10. Output:
+```
+Woof
+Meow
+```

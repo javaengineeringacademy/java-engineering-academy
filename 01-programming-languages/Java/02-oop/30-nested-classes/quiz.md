@@ -1,69 +1,105 @@
-# Quiz
+# Quiz: Nested Classes
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this concept?
-   - A) To make code faster
-   - B) To organize code better
-   - C) To use less memory
-   - D) To compile faster
+1. How many types of nested classes are there in Java?
+   - A) 2
+   - B) 3
+   - C) 4
+   - D) 5
 
-2. Which keyword is used for this concept?
-   - A) static
-   - B) final
-   - C) abstract
-   - D) None of the above
+2. Which nested class does NOT have access to non-static members of the outer class?
+   - A) Static nested class
+   - B) Non-static inner class
+   - C) Both
+   - D) Neither
 
-3. What is the benefit of using this concept?
-   - A) Better code organization
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. Which syntax is correct for creating a static nested class instance?
+   - A) new Outer.Inner()
+   - B) new Outer.Inner()
+   - C) new Outer().new Inner()
+   - D) Outer.Inner.new()
 
-4. When should you use this concept?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. What is the main difference between a static nested class and an inner class?
+   - A) Static nested class has access to outer instance members
+   - B) Inner class does not need an outer instance
+   - C) Static nested class does not need an outer instance
+   - D) They are identical
 
-5. What is the default access modifier?
-   - A) public
-   - B) private
-   - C) protected
-   - D) package-private
+5. Where can you define a nested class?
+   - A) Only inside a method
+   - B) Only at class level
+   - C) Inside another class or inside a method
+   - D) Only in interfaces
 
 ## True/False Questions
 
-6. This concept is mandatory in Java programs.
+6. A static nested class can access private static members of the outer class.
    - True / False
 
-7. You can have multiple constructors in a class.
+7. You can have a nested class inside an interface.
    - True / False
 
-8. Static methods can access instance variables directly.
+8. Nested classes increase encapsulation by keeping related classes together.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+class Outer {
+    static int count = 0;
+    Outer() { count++; }
+    static class Nested {
+        int getCount() { return count; }
+    }
+}
+class Test {
+    public static void main(String[] args) {
+        new Outer();
+        new Outer();
+        Outer.Nested n = new Outer.Nested();
+        System.out.println("Count: " + n.getCount());
+    }
+}
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+class Factory {
+    static class Product {
+        private String name;
+        Product(String name) { this.name = name; }
+        String getName() { return name; }
+    }
+    static Product create(String name) { return new Product(name); }
+}
+class Test {
+    public static void main(String[] args) {
+        Factory.Product p1 = Factory.create("Widget");
+        Factory.Product p2 = new Factory.Product("Gadget");
+        System.out.println(p1.getName());
+        System.out.println(p2.getName());
+    }
+}
 ```
 
 ## Answers
 
-1. B
-2. C
-3. A
+1. C - Inner, static nested, local, anonymous
+2. A
+3. B
 4. C
-5. D
-6. False
-7. True
-8. False
-9. [Answer depends on code]
-10. [Answer depends on code]
+5. C
+6. True
+7. True - They are implicitly static
+8. True
+9. Output:
+```
+Count: 2
+```
+10. Output:
+```
+Widget
+Gadget
+```

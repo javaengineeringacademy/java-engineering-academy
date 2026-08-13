@@ -1,69 +1,99 @@
-# Quiz
+# Quiz: Method Overloading
 
 ## Multiple Choice Questions
 
-1. What is the primary purpose of this concept?
-   - A) To make code faster
-   - B) To organize code better
-   - C) To use less memory
-   - D) To compile faster
+1. What is method overloading in Java?
+   - A) Having multiple methods with the same name but different parameter lists
+   - B) Having multiple methods with the same name and same parameters
+   - C) Calling a method multiple times
+   - D) Overriding a parent class method
 
-2. Which keyword is used for this concept?
-   - A) static
-   - B) final
-   - C) abstract
-   - D) None of the above
+2. Which of the following is NOT a valid way to overload a method `add(int a, int b)`?
+   - A) `add(int a, int b, int c)`
+   - B) `add(double a, double b)`
+   - C) `add(int a, int b)` with different return type
+   - D) `add(String a, String b)`
 
-3. What is the benefit of using this concept?
-   - A) Better code organization
-   - B) Improved performance
-   - C) Reduced memory usage
-   - D) Faster compilation
+3. Can two methods have the same name but different return types in Java?
+   - A) Yes, it's called overloading
+   - B) Only if parameter lists are different
+   - C) No, it will cause a compilation error if parameter lists are also same
+   - D) Yes, always
 
-4. When should you use this concept?
-   - A) Always
-   - B) Never
-   - C) When appropriate
-   - D) Only in main method
+4. What does the compiler use to resolve overloaded methods?
+   - A) Method name only
+   - B) Method signature (name + parameter types)
+   - C) Return type
+   - D) Access modifier
 
-5. What is the default access modifier?
-   - A) public
-   - B) private
-   - C) protected
-   - D) package-private
+5. Which is an example of overloading via parameter order?
+   - A) `method(int a, String b)` and `method(String b, int a)`
+   - B) `method(int a)` and `method(int b)`
+   - C) `method(int a)` and `method(int a, int b)`
+   - D) Both A and C
 
 ## True/False Questions
 
-6. This concept is mandatory in Java programs.
+6. Method overloading is resolved at compile time.
    - True / False
 
-7. You can have multiple constructors in a class.
+7. You can overload a method by only changing the return type.
    - True / False
 
-8. Static methods can access instance variables directly.
+8. Varargs can be used to create additional overloaded versions of a method.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-// Code example here
+class Calculator {
+    static int add(int a, int b) { return a + b; }
+    static double add(double a, double b) { return a + b; }
+    static int add(int a, int b, int c) { return a + b + c; }
+
+    public static void main(String[] args) {
+        System.out.println(add(2, 3));
+        System.out.println(add(2.5, 3.5));
+        System.out.println(add(1, 2, 3));
+    }
+}
 ```
 
-10. What is wrong with this code?
+10. What will this code print?
 ```java
-// Code example here
+class Test {
+    static String display(int x) { return "int: " + x; }
+    static String display(double x) { return "double: " + x; }
+    static String display(String x) { return "String: " + x; }
+
+    public static void main(String[] args) {
+        System.out.println(display(5));
+        System.out.println(display(5.0));
+        System.out.println(display("5"));
+    }
+}
 ```
 
 ## Answers
 
-1. B
-2. C
-3. A
-4. C
-5. D
-6. False
-7. True
-8. False
-9. [Answer depends on code]
-10. [Answer depends on code]
+1. A
+2. C - Two methods cannot differ only by return type
+3. C - If parameter lists are the same, changing only return type causes compilation error
+4. B
+5. D - Both changing parameter order and adding parameters are valid overloading approaches
+6. True
+7. False - Must also differ in parameter list
+8. True
+9. Output:
+```
+5
+6.0
+6
+```
+10. Output:
+```
+int: 5
+double: 5.0
+String: 5
+```
