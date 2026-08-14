@@ -1,19 +1,21 @@
-# MiniProject Decision Guide
+# Decision Guide: 11-mini-project
 
 ## When to Use
-- When you need to pass behavior as data
-- When working with collections and streams
-- When you want more concise, readable code
-- When implementing functional interfaces
+- Use 11-mini-project for clean, composable code
+- Use for data transformation pipelines
+- Use when dealing with collections
 
 ## When NOT to Use
-- When simple imperative code is clearer
-- When debugging complex streams is difficult
-- When performance is critical and overhead matters
-- When team is unfamiliar with functional concepts
+- Avoid for simple imperative logic
+- Don't use when debugging is critical
+- Skip if team isn't familiar
 
-## Best Practices
-- Keep lambdas short and focused
-- Use method references when possible
-- Avoid side effects in functional operations
-- Prefer immutable data structures
+## Trade-offs
+| Aspect | With 11-mini-project | Without 11-mini-project |
+|--------|-------------|----------------|
+| Readability | Better | Simpler |
+| Performance | Slight overhead | Faster |
+| Composability | High | Low |
+
+## Expert Recommendation
+Use functional programming for data pipelines. Use imperative for simple operations.

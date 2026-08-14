@@ -1,21 +1,11 @@
 package academy.javaengineering.text.practices;
 
-/**
- * Practice exercises for 06-regex.
- * Try to solve these before looking at solutions.
- */
 public class Practices {
-
     public static void main(String[] args) {
-        System.out.println("=== Practice Exercises: 06-regex ===\n");
-        
-        // Practice 1: Basic exercise
-        System.out.println("Practice 1: Complete the TODO items in this file");
-        
-        // Practice 2: Intermediate exercise
-        System.out.println("Practice 2: Implement the missing methods");
-        
-        // Practice 3: Advanced exercise
-        System.out.println("Practice 3: Optimize the performance");
+        System.out.println("=== Practice: 06-regex ===\n");
+        System.out.println("1. Implement string manipulation using 06-regex");
+        System.out.println("2. Handle edge cases like null, empty strings");
+        System.out.println("3. Optimize for performance with large inputs");
+        System.out.println("\nImplement your solutions above.");
     }
 }

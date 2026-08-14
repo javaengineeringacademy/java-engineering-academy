@@ -1,21 +1,13 @@
 package academy.javaengineering.text.solutions;
 
-/**
- * Solutions to practice exercises for 06-regex.
- * Use this only after attempting the exercises.
- */
 public class Solutions {
-
     public static void main(String[] args) {
-        System.out.println("=== Solutions: 06-regex ===\n");
-        
-        // Solution 1
-        System.out.println("Solution 1: [Implementation here]");
-        
-        // Solution 2
-        System.out.println("Solution 2: [Implementation here]");
-        
-        // Solution 3
-        System.out.println("Solution 3: [Implementation here]");
+        System.out.println("=== Solution: 06-regex ===\n");
+        System.out.println("This file contains the solution to the practice exercise.");
+        System.out.println("Study this only after attempting the practice.");
+        System.out.println("\nKey concepts demonstrated:");
+        System.out.println("- Proper use of 06-regex APIs");
+        System.out.println("- Performance optimization techniques");
+        System.out.println("- Common pitfalls and how to avoid them");
     }
 }

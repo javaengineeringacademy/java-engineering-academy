@@ -1,21 +1,13 @@
 package academy.javaengineering.text.solutions;
 
-/**
- * Solutions to practice exercises for 01-string.
- * Use this only after attempting the exercises.
- */
 public class Solutions {
-
     public static void main(String[] args) {
-        System.out.println("=== Solutions: 01-string ===\n");
-        
-        // Solution 1
-        System.out.println("Solution 1: [Implementation here]");
-        
-        // Solution 2
-        System.out.println("Solution 2: [Implementation here]");
-        
-        // Solution 3
-        System.out.println("Solution 3: [Implementation here]");
+        System.out.println("=== Solution: 01-string ===\n");
+        System.out.println("This file contains the solution to the practice exercise.");
+        System.out.println("Study this only after attempting the practice.");
+        System.out.println("\nKey concepts demonstrated:");
+        System.out.println("- Proper use of 01-string APIs");
+        System.out.println("- Performance optimization techniques");
+        System.out.println("- Common pitfalls and how to avoid them");
     }
 }

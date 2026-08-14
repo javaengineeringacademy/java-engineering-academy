@@ -1,42 +1,21 @@
-# Decision Framework
+# Decision Guide: 07-object-streams
 
 ## When to Use
+- Use 07-object-streams for file I/O operations
+- Use when processing large files
+- Use for network communication
 
-### Use I/O When:
-- Simple file operations
-- Small to medium files
-- Sequential processing
-
-### Use NIO When:
-- Large files
-- Non-blocking I/O needed
-- Network programming
-- Memory-mapped files
-
-## Decision Matrix
-
-| Scenario | Recommended |
-|----------|-------------|
-| Small file | I/O |
-| Large file | NIO |
-| Network server | NIO |
-| Simple read/write | I/O |
-| High concurrency | NIO |
+## When NOT to Use
+- Avoid for simple text processing
+- Don't use when memory is limited
+- Skip if NIO isn't needed
 
 ## Trade-offs
+| Aspect | With 07-object-streams | Without 07-object-streams |
+|--------|-------------|----------------|
+| Performance | Optimized | Simpler |
+| Complexity | Higher | Lower |
+| Blocking | Depends | Blocking |
 
-### I/O Advantages
-- Simpler API
-- Easier to learn
-- Good for small files
-
-### NIO Advantages
-- Better performance
-- Non-blocking support
-- Memory-mapped files
-
-## Best Practices
-1. Use buffering for I/O
-2. Use try-with-resources
-3. Choose buffer size wisely
-4. Handle exceptions properly
+## Expert Recommendation
+Use traditional I/O for simple tasks. Use NIO for large files or non-blocking needs.

@@ -1,21 +1,37 @@
 package academy.javaengineering.oop.examples;
 
-/**
- * Examples for 35-mini-projects.
- * Demonstrates practical usage and engineering decisions.
- */
 public class Examples {
-
     public static void main(String[] args) {
-        System.out.println("=== 35-mini-projects Examples ===\n");
-        
-        // Example 1: Basic usage
-        System.out.println("Example 1: Basic usage of 35-mini-projects");
-        
-        // Example 2: Advanced usage
-        System.out.println("Example 2: Advanced usage");
-        
-        // Example 3: Best practices
-        System.out.println("Example 3: Best practices");
+        System.out.println("=== Mini Project: Simple Calculator ===\n");
+
+        // Combines: encapsulation, inheritance, polymorphism, interfaces
+        Calculator calc = new Calculator();
+        System.out.println("2 + 3 = " + calc.compute(new Add(), 2, 3));
+        System.out.println("10 - 4 = " + calc.compute(new Subtract(), 10, 4));
+        System.out.println("6 * 7 = " + calc.compute(new Multiply(), 6, 7));
+
+        // TRADE-OFF: Strategy pattern allows adding new operations without modifying Calculator
     }
+}
+
+class Calculator {
+    public double compute(Operation op, double a, double b) {
+        return op.apply(a, b);
+    }
+}
+
+interface Operation {
+    double apply(double a, double b);
+}
+
+class Add implements Operation {
+    @Override public double apply(double a, double b) { return a + b; }
+}
+
+class Subtract implements Operation {
+    @Override public double apply(double a, double b) { return a - b; }
+}
+
+class Multiply implements Operation {
+    @Override public double apply(double a, double b) { return a * b; }
 }

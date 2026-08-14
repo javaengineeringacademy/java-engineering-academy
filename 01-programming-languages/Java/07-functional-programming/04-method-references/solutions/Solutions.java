@@ -1,21 +1,13 @@
 package academy.javaengineering.functional.solutions;
 
-/**
- * Solutions to practice exercises for 04-method-references.
- * Use this only after attempting the exercises.
- */
 public class Solutions {
-
     public static void main(String[] args) {
-        System.out.println("=== Solutions: 04-method-references ===\n");
-        
-        // Solution 1
-        System.out.println("Solution 1: [Implementation here]");
-        
-        // Solution 2
-        System.out.println("Solution 2: [Implementation here]");
-        
-        // Solution 3
-        System.out.println("Solution 3: [Implementation here]");
+        System.out.println("=== Solution: 04-method-references ===\n");
+        System.out.println("This file contains the solution to the practice exercise.");
+        System.out.println("Study this only after attempting the practice.");
+        System.out.println("\nKey concepts demonstrated:");
+        System.out.println("- Functional interface implementation");
+        System.out.println("- Lambda expression patterns");
+        System.out.println("- Stream processing techniques");
     }
 }

@@ -1,22 +1,18 @@
-# References
+# References: 05-buffered-streams
 
 ## Official Documentation
-- [Oracle Java I/O Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
-- [Oracle Java NIO Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/nio.html)
+- [Java I/O API](https://docs.oracle.com/en/java/)
+- [NIO API](https://docs.oracle.com/javase/8/docs/api/java/nio/package-summary.html)
 
 ## Books
-- Java I/O by Elliotte Rusty Harold
-- Java NIO by Ron Hitchens
-- Effective Java by Joshua Bloch
+- **Effective Java** by Joshua Bloch
+- **Java I/O** by Elliotte Rusty Harold
+- **Java: The Complete Reference** by Herbert Schildt
 
 ## Online Resources
-- [Baeldung I/O](https://www.baeldung.com/java-io)
-- [Baeldung NIO](https://www.baeldung.com/java-nio)
-- [GeeksforGeeks I/O](https://www.geeksforgeeks.org/java-io/)
-
-## Video Tutorials
-- [Java I/O Tutorial](https://www.youtube.com/watch?v=V8WLB7Y7yRo)
-- [Java NIO Tutorial](https://www.youtube.com/watch?v=EJmjEnJbqS4)
+- [Baeldung I/O](https://www.baeldung.com/)
+- [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
+- [Jakob Jenkov Tutorials](https://jenkov.com/tutorials/java-nio/)
 
 ## Practice Platforms
 - [LeetCode](https://leetcode.com/)

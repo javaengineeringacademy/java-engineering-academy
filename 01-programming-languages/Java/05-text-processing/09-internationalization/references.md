@@ -1,27 +1,19 @@
-# References
+# References: 09-internationalization
 
 ## Official Documentation
-- [Oracle Java Documentation](https://docs.oracle.com/en/java/)
+- [Java 09-internationalization API](https://docs.oracle.com/en/java/)
 - [Java Language Specification](https://docs.oracle.com/javase/specs/)
 
 ## Books
-- Effective Java by Joshua Bloch
-- Java: The Complete Reference by Herbert Schildt
-- Java Performance by Scott Oaks
+- **Effective Java** by Joshua Bloch
+- **Head First Java** by Kathy Sierra
+- **Java: The Complete Reference** by Herbert Schildt
 
 ## Online Resources
-- [Baeldung](https://www.baeldung.com/)
-- [Java Official Tutorials](https://docs.oracle.com/javase/tutorial/)
-- [GeeksforGeeks Java](https://www.geeksforgeeks.org/java/)
-
-## Video Tutorials
-- [Java Tutorial for Beginners](https://www.youtube.com/watch?v=eIrMbAQSUl4)
-- [Java String Methods](https://www.youtube.com/watch?v=V2sBGsJkX-k)
+- [Baeldung 09-internationalization](https://www.baeldung.com/)
+- [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
+- [GeeksforGeeks 09-internationalization](https://www.geeksforgeeks.org/)
 
 ## Practice Platforms
 - [LeetCode](https://leetcode.com/)
 - [HackerRank](https://www.hackerrank.com/)
-- [Codecademy](https://www.codecademy.com/)
-
-## Related Topics
-- See other topics in this module for related concepts

@@ -1,46 +1,21 @@
-# Decision Framework
+# Decision Guide: 09-internationalization
 
-## When to Use This Class
+## When to Use
+- Use 09-internationalization for string manipulation tasks
+- Use when processing text data
+- Use for internationalization needs
 
-### Use When:
-- You need to process text
-- You need to manipulate strings
-- You need to format output
-- You need to parse text
-
-### Don't Use When:
-- Performance is critical
-- You need mutable strings
-- You need thread-safe operations
-- The project is very small
-
-## Decision Matrix
-
-| Scenario | Recommended Approach |
-|----------|---------------------|
-| Simple text | String |
-| Mutable text | StringBuilder |
-| Thread-safe | StringBuffer |
-| Character operations | Character class |
+## When NOT to Use
+- Avoid for simple concatenation
+- Don't use when performance is critical
+- Skip if alternatives are simpler
 
 ## Trade-offs
+| Aspect | With 09-internationalization | Without 09-internationalization |
+|--------|-------------|----------------|
+| Readability | Better | Simpler |
+| Performance | Varies | Varies |
+| Flexibility | More | Less |
 
-### Advantages
-- Better text processing
-- Improved readability
-- Enhanced functionality
-- Standard Java API
-
-### Disadvantages
-- May have performance overhead
-- String immutability
-- Memory usage
-
-## Best Practices
-1. Use StringBuilder for mutable strings
-2. Use StringBuffer for thread-safe operations
-3. Use String for immutable strings
-4. Consider performance implications
-
-## Related Decisions
-- See other topics for related decision frameworks
+## Expert Recommendation
+Choose 09-internationalization based on your specific use case and performance requirements.

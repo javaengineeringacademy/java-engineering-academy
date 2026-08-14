@@ -1,14 +1,19 @@
-# MethodReferences References
+# References: 04-method-references
 
 ## Official Documentation
-- [Oracle Java Documentation](https://docs.oracle.com/javase/8/docs/api/)
-- [Java Tutorials](https://docs.oracle.com/javase/tutorial/)
+- [Java Functional Programming](https://docs.oracle.com/en/java/)
+- [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
 
 ## Books
-- *Effective Java* by Joshua Bloch
-- *Java 8 in Action* by Raoul-Gabriel Urma
-- *Modern Java in Action* by Raoul-Gabriel Urma
+- **Effective Java** by Joshua Bloch
+- **Modern Java in Action** by Urma, Fusco, Mycroft
+- **Functional Programming in Java** by Venkat Subramaniam
 
-## Online Tutorials
-- [Baeldung](https://www.baeldung.com/)
-- [GeeksforGeeks](https://www.geeksforgeeks.org/)
+## Online Resources
+- [Baeldung Functional Programming](https://www.baeldung.com/)
+- [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
+- [Jakob Jenkov Tutorials](https://jenkov.com/)
+
+## Practice Platforms
+- [LeetCode](https://leetcode.com/)
+- [Exercism Java Track](https://exercism.org/tracks/java)

@@ -1,21 +1,11 @@
 package academy.javaengineering.functional.practices;
 
-/**
- * Practice exercises for 06-stream-operations.
- * Try to solve these before looking at solutions.
- */
 public class Practices {
-
     public static void main(String[] args) {
-        System.out.println("=== Practice Exercises: 06-stream-operations ===\n");
-        
-        // Practice 1: Basic exercise
-        System.out.println("Practice 1: Complete the TODO items in this file");
-        
-        // Practice 2: Intermediate exercise
-        System.out.println("Practice 2: Implement the missing methods");
-        
-        // Practice 3: Advanced exercise
-        System.out.println("Practice 3: Optimize the performance");
+        System.out.println("=== Practice: 06-stream-operations ===\n");
+        System.out.println("1. Implement functional interfaces for 06-stream-operations");
+        System.out.println("2. Use lambda expressions and method references");
+        System.out.println("3. Process collections using functional style");
+        System.out.println("\nImplement your solutions above.");
     }
 }
