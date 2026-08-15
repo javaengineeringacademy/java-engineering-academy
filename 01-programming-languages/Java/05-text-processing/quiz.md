@@ -48,6 +48,19 @@ What is the bug?
 
 ---
 
+## Question 4 (Production Scenario)
+Your application processes user-uploaded CSV files. Each file contains 50,000 rows with 20 columns. The code uses `String.split(",")` on each row, but the processing is extremely slow. A profile shows 80% of time spent in `split()`. What is the most likely cause?
+
+- A) The CSV files are too large for String.split()
+- B) `split()` compiles the regex pattern every call — use `split(",", -1)` or pre-compiled Pattern
+- C) The JVM is not optimized for string operations
+- D) The network is slow
+
+**Answer: B**
+**Explanation:** `String.split(String regex)` compiles the regex Pattern on every call. For 50K rows, this means 50K regex compilations. Use `split(",", -1)` for literal splits, or pre-compile `Pattern.compile(",")` and reuse it. This can improve performance by 10-50x for large files.
+
+---
+
 ## Question 5 (Code Output)
 What does this code print?
 

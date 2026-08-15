@@ -1,79 +1,82 @@
-# Quiz: NIO Channels
+# Quiz: NIO Buffers
 
 ## Multiple Choice Questions
 
-1. What is a Channel in NIO?
-   - A) Bidirectional data transfer
-   - B) Unidirectional data transfer
-   - C) Data buffer
-   - D) Data stream
+1. What is a Buffer in NIO?
+   - A) Container for data
+   - B) Data stream
+   - C) Channel
+   - D) Selector
 
-2. Which class is for file channels?
-   - A) FileChannel
-   - B) SocketChannel
-   - C) ServerSocketChannel
-   - D) DatagramChannel
+2. Which class is for byte buffers?
+   - A) ByteBuffer
+   - B) CharBuffer
+   - C) IntBuffer
+   - D) LongBuffer
 
-3. What is a Selector used for?
-   - A) Monitoring multiple channels
-   - B) Reading data
-   - C) Writing data
-   - D) Closing channels
+3. What does flip() do to a buffer?
+   - A) Prepares for reading
+   - B) Prepares for writing
+   - C) Clears the buffer
+   - D) Doubles capacity
 
-4. What is non-blocking I/O?
-   - A) I/O that doesn't block
-   - B) I/O that blocks
-   - C) Synchronous I/O
-   - D) Asynchronous I/O
+4. What is buffer capacity?
+   - A) Maximum size
+   - B) Current position
+   - C) Remaining data
+   - D) Data limit
 
-5. Which channel is for UDP?
-   - A) SocketChannel
-   - B) ServerSocketChannel
-   - C) DatagramChannel
-   - D) FileChannel
+5. Which method writes data to buffer?
+   - A) put()
+   - B) get()
+   - C) flip()
+   - D) clear()
 
 ## True/False Questions
 
-6. Channels are bidirectional.
+6. Buffers are mutable objects.
    - True / False
 
-7. FileChannel is for network I/O.
+7. ByteBuffer is the most commonly used buffer type.
    - True / False
 
-8. Selectors enable non-blocking I/O.
+8. clear() actually erases buffer data.
    - True / False
 
 ## Code Output Questions
 
 9. What will this code print?
 ```java
-FileChannel channel = FileChannel.open(Path.of("/tmp/test.txt"), 
-    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-System.out.println(channel.isOpen());
-channel.close();
+ByteBuffer buf = ByteBuffer.allocate(10);
+buf.put((byte)1);
+buf.put((byte)2);
+buf.flip();
+System.out.println(buf.get());
 ```
 
 10. What will this code print?
 ```java
-ByteBuffer buf = ByteBuffer.allocate(1024);
+ByteBuffer buf = ByteBuffer.allocate(5);
 System.out.println(buf.capacity());
+System.out.println(buf.position());
 ```
 
 ## Answers
 
-1. A - Channel is bidirectional data transfer
-2. A - FileChannel is for file channels
-3. A - Selector monitors multiple channels
-4. A - Non-blocking I/O doesn't block
-5. C - DatagramChannel is for UDP
-6. True - Channels are bidirectional
-7. False - FileChannel is for file I/O
-8. True - Selectors enable non-blocking I/O
+1. A - Buffer is a container for data
+2. A - ByteBuffer is for byte data
+3. A - flip() prepares buffer for reading
+4. A - Capacity is maximum buffer size
+5. A - put() writes data to buffer
+6. True - Buffers are mutable
+7. True - ByteBuffer is most common
+8. False - clear() doesn't erase data, just resets position
 9. Output:
 ```
-true
+1
 ```
 10. Output:
 ```
-1024
+5
+0
 ```
