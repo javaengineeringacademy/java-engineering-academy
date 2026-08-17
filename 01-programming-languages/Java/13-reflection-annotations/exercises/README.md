@@ -125,51 +125,149 @@ Implement a property change observer system using reflection. A `@Observable` an
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is Java Reflection and when should you use it?**
+   Reflection allows inspecting and modifying classes, methods, fields, and constructors at runtime. Use it for frameworks (Spring, Hibernate), dependency injection, serialization, and testing. Avoid it in application code when compile-time alternatives exist—it's slower, bypasses compile-time checks, and reduces IDE support.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is the difference between `Class.forName()` and `ClassName.class`?**
+   `Class.forName("com.example.MyClass")` loads the class by string name at runtime, requiring the full qualified name. `MyClass.class` is a compile-time reference that returns the `Class` object. `Class.forName()` is used when the class name is dynamic (e.g., from configuration). `MyClass.class` is type-safe and preferred when the class is known at compile time.
 
-2. **When would you use it?**
-   [Answer]
+3. **How do annotations work internally in Java?**
+   Annotations are metadata stored in the `.class` file's `RuntimeVisibleAnnotations` attribute. At runtime, `AnnotatedElement` methods (`getAnnotation()`, `getAnnotations()`) read this metadata via reflection. Annotation values are stored as constant pool entries. `@Retention(RUNTIME)` ensures annotations are available at runtime; `CLASS` retains them in bytecode only; `SOURCE` discards them after compilation.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What are the performance implications of using Reflection?**
+   Reflection is 10-50x slower than direct method calls due to: type checking at runtime, security checks, and dynamic dispatch. Mitigations: cache `Method`/`Field` objects, use `setAccessible(true)` to bypass access checks, consider bytecode generation (ByteBuddy) for performance-critical paths. For most applications, the overhead is negligible compared to I/O.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **What is `setAccessible(true)` and when should you use it?**
+   `setAccessible(true)` disables Java's access control checks on a `Field`, `Method`, or `Constructor`. Use it to access private members from outside the class (e.g., framework code injecting dependencies). It bypasses encapsulation, so use sparingly and document why. It may not work with Java module system without `--add-opens`.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What is the difference between compile-time and runtime annotations?**
+   Compile-time annotations (e.g., `@Override`, `@SuppressWarnings`) are processed by annotation processors during compilation and don't exist at runtime. Runtime annotations (e.g., `@Autowired`, `@Test`) are retained via `@Retention(RUNTIME)` and accessible via reflection. Frameworks use runtime annotations to configure behavior dynamically.
+
+7. **How do you create a custom annotation in Java?**
+   Define an `@interface` with `@Retention` (when it's available) and `@Target` (where it can be placed). Add annotation elements as abstract methods with default values: `@Retention(RUNTIME) @Target(FIELD) public @interface MyAnnotation { String value() default ""; int priority() default 0; }`. Access values via `element.getAnnotation(MyAnnotation.class).value()`.
+
+8. **What are annotation processors and how do they work?**
+   Annotation processors run during `javac` compilation, processing annotations in source code. They extend `AbstractProcessor`, override `process()`, and generate new Java source files or resources. They're used by Lombok (`@Data`), MapStruct (`@Mapper`), and Dagger (`@Inject`). Processors are registered via `META-INF/services/javax.annotation.processing.Processor`.
+
+9. **What are the risks of using Reflection?**
+   - Bypasses compile-time type checking, causing runtime `ClassCastException`
+   - Breaks encapsulation, violating object-oriented principles
+   - Performance overhead for method invocation
+   - Fragile code that breaks when internal APIs change
+   - Security concerns—can access private members
+   - Incompatible with Java modules without explicit `--add-opens`
+
+10. **What is the Java Module System's impact on Reflection?**
+    Java 9+ modules restrict reflective access to public APIs by default. Accessing private members requires `--add-opens module/package=target-module` JVM args. This breaks many frameworks (Spring, Hibernate) that rely on deep reflection. Solutions: add `--add-opens` flags, migrate to public APIs, or use Java agent modules.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+1. **Overusing Reflection** — Using reflection for simple operations like calling a known method. If you know the class at compile time, use direct invocation. Reserve reflection for genuinely dynamic scenarios.
+
+2. **Not Caching Method/Field Objects** — `Class.getDeclaredFields()` and `getDeclaredMethods()` are expensive. Call them once during initialization and cache the results in a `Map` or static fields.
+
+3. **Ignoring `setAccessible` Security Implications** — Using `setAccessible(true)` without documentation. This can break with Java modules and creates security vulnerabilities. Document the reason and consider alternatives.
+
+4. **Creating Annotations Without `@Retention`** — Forgetting `@Retention(RUNTIME)` means your annotation won't be available via reflection. Always specify retention unless you only need compile-time processing.
+
+5. **Not Handling `IllegalAccessException`** — Catching and ignoring access errors. Reflection should fail loudly when it can't access required members. Log the error and handle it appropriately.
+
+6. **Using Reflection for Serialization Instead of Dedicated Libraries** — Building custom JSON/XML serializers with reflection when Jackson/Gson already handle edge cases (circular references, custom adapters, date formats).
+
+7. **Annotation Hell** — Adding annotations to every class and method. Annotations should solve real problems (configuration, validation, documentation), not serve as comments. If an annotation doesn't affect runtime behavior, reconsider its necessity.
+
+8. **Not Considering `instanceof` Before Reflection** — Using reflection to check types when `instanceof` or pattern matching is simpler and faster. Only use reflection when the type isn't known at compile time.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+1. **Method Invocation Speed** — Direct method call: ~1ns. Reflective call: ~50ns. Cached reflective call with `setAccessible(true)`: ~10ns. For millions of calls, cache `Method` objects.
+
+2. **Field Access** — `Field.get()` is ~10x slower than direct field access. Cache `Field` objects and use `setAccessible(true)` to bypass access checks. Consider using `MethodHandle` for ~5x better performance than reflection.
+
+3. **Annotation Lookup** — `getAnnotation()` is O(n) in the number of annotations. Cache results during class scanning (e.g., at framework startup, not per-request).
+
+4. **Class Loading** — `Class.forName()` triggers class loading and initialization. Use `ClassLoader.loadClass()` when you want to load without initializing static blocks.
+
+5. **`getDeclaredFields()` vs `getFields()`** — `getDeclaredFields()` returns all fields including private (slower). `getFields()` returns only public fields including inherited. Use `getFields()` when you only need public API.
+
+6. **Annotation Processing at Compile-Time** — Annotation processors add ~10-20% to compile time. Use `@SupportedSourceVersion(SourceVersion.RELEASE_17)` and optimize `process()` to return quickly for irrelevant annotations.
+
+7. **MethodHandle Performance** — `MethodHandle.invoke()` is 2-5x faster than reflective `Method.invoke()` after warmup. Use `MethodHandles.Lookup` for performance-critical dynamic dispatch.
+
+8. **Proxy Creation Overhead** — `Proxy.newProxyInstance()` creates a new class each time. Cache proxy instances or use `Proxy.getProxyClass()` to reuse class definitions.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Reflection - Accessing Private Field
+Field nameField = User.class.getDeclaredField("name");
+nameField.setAccessible(true);
+String name = (String) nameField.get(userInstance);
+nameField.set(userInstance, "New Name");
+
+// Reflection - Invoking Method Dynamically
+Method method = calculatorClass.getMethod("add", int.class, int.class);
+int result = (int) method.invoke(calculatorInstance, 2, 3);
+
+// Custom Annotation
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface JsonProperty {
+    String value() default "";
+}
+
+// Reading Annotations
+for (Field field : clazz.getDeclaredFields()) {
+    JsonProperty prop = field.getAnnotation(JsonProperty.class);
+    if (prop != null) {
+        String jsonKey = prop.value().isEmpty() ? field.getName() : prop.value();
+        // serialize with jsonKey
+    }
+}
+
+// Annotation Processor (compile-time)
+@SupportedAnnotationTypes("com.example.AutoToString")
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
+public class AutoToStringProcessor extends AbstractProcessor {
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(AutoToString.class)) {
+            // Generate toString() method
+        }
+        return true;
+    }
+}
+
+// Dynamic Proxy with Reflection
+Object proxy = Proxy.newProxyInstance(
+    MyClass.class.getClassLoader(),
+    new Class[]{MyInterface.class},
+    (proxy1, method, args) -> {
+        System.out.println("Calling: " + method.getName());
+        return method.invoke(targetObject, args);
+    }
+);
+```
 
 ## Internal Working
 
-[How this works under the hood]
+Java Reflection accesses metadata stored in the `.class` file format (Classfile structure). Each class file contains a constant pool with method descriptors, field descriptors, and annotation data. When `getDeclaredMethods()` is called, the JVM parses the method_info table from the class file. Annotation values are stored in `RuntimeVisibleAnnotations` attribute and parsed into `Annotation` proxy instances. `Method.invoke()` uses the JVM's dynamic dispatch mechanism, performing type checks and boxing/unboxing of arguments at runtime.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Reflection exists to enable dynamic behavior in statically-typed languages. Frameworks like Spring need to discover and wire beans at runtime without compile-time knowledge of all classes. Testing frameworks need to invoke test methods and access private fields. Serialization libraries need to read arbitrary object fields. Without reflection, Java would require compile-time code generation or explicit configuration for every class interaction.
 
 ## Overview
 
-[Brief description of the topic]
+Java Reflection provides runtime introspection of classes, methods, fields, and annotations. Key APIs: `Class`, `Method`, `Field`, `Constructor`, and `AnnotatedElement`. Annotations (`@Retention`, `@Target`) control metadata availability and placement. Compile-time annotation processors generate code during `javac`. Reflection enables frameworks but has performance and encapsulation trade-offs. The Java Module System (Java 9+) restricts reflective access, requiring explicit `--add-opens` flags.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java Reflection Tutorial (Oracle)](https://docs.oracle.com/javase/tutorial/reflect/)
+- [Java Annotation Processing (Oracle)](https://docs.oracle.com/javase/8/docs/api/javax/annotation/processing/package-summary.html)
+- [Understanding Java Reflection](https://www.baeldung.com/java-reflection)
+- [Custom Annotations in Java](https://www.baeldung.com/java-custom-annotation)
+- [Java Module System and Reflection](https://blog.idrsolutions.com/java-9-module-system-and-reflection/)
+- [Related: Spring Dependency Injection](https://docs.spring.io/spring-framework/reference/core/core-container/beans.html)
+- [Related: Lombok Annotations](https://projectlombok.org/features/all)
+- [Related: ByteBuddy](https://bytebuddy.net/)

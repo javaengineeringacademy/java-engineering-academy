@@ -176,29 +176,56 @@ public int hashCode() {
 
 ---
 
-## Question 9 (Scenario-based)
-You are designing a system for different payment processors (CreditCard, PayPal, BankTransfer). Each processor has its own validation and processing logic. Which approach is best?
+## Question 9 (Constructor Chaining)
+A junior developer writes the following code and it fails to compile:
 
-- A) Create a single PaymentProcessor class with if-else for each type
-- B) Define a PaymentProcessor interface with process() method, implement separately for each type
-- C) Use an abstract class with all methods concrete
-- D) Store payment logic in a properties file
+```java
+class Animal {
+    private String name;
+    Animal(String name) { this.name = name; }
+    String getName() { return name; }
+}
+
+class Dog extends Animal {
+    private String breed;
+    Dog(String name, String breed) { this.breed = breed; }
+}
+```
+
+What is the bug and how do you fix it?
+
+- A) The `Dog` class needs a no-arg constructor
+- B) The `Dog` constructor must call `super(name)` as its first statement
+- C) The `Animal` class needs a default constructor
+- D) The `Dog` class cannot extend `Animal` because `Animal` has a parameterized constructor
 
 **Answer: B**
-**Explanation:** Using an interface allows each payment processor to implement its own logic independently. This follows the Open/Closed Principle — new payment types can be added without modifying existing code. It also enables dependency injection and testability.
+**Explanation:** When a subclass constructor does not explicitly call `super()` or `this()`, Java inserts an implicit `super()` (no-arg). Since `Animal` has no no-arg constructor, this fails. The fix: `Dog(String name, String breed) { super(name); this.breed = breed; }`. A parent constructor must always be called before the child can access `this`.
 
 ---
 
-## Question 10 (Architecture Decision)
-You need to design a notification system that sends alerts via Email, SMS, and Push. New notification channels may be added in the future. How should you architect this?
+## Question 10 (Interface Segregation)
+You are designing a file processing system. You create one interface:
 
-- A) Create a single `NotificationService` with methods `sendEmail()`, `sendSms()`, `sendPush()`
-- B) Define a `NotificationChannel` interface with `send()`, implement `EmailChannel`, `SmsChannel`, `PushChannel`
-- C) Create a `Notification` abstract class with concrete send methods
-- D) Use static methods for each channel type
+```java
+interface FileProcessor {
+    void read();
+    void write();
+    void compress();
+    void encrypt();
+    void delete();
+}
+```
+
+A `ReadOnlyReader` class must implement this interface but only needs `read()`. What problem does this violate and how do you fix it?
+
+- A) Single Responsibility Principle — split into separate classes
+- B) Interface Segregation Principle — split the fat interface into smaller, focused interfaces
+- C) Liskov Substitution Principle — use an abstract class instead
+- D) Dependency Inversion Principle — depend on a concrete class
 
 **Answer: B**
-**Explanation:** The Strategy pattern with an interface makes the system extensible. Adding a new channel (e.g., Slack) requires only implementing the interface. The main service depends on the abstraction, not concrete classes, following the Dependency Inversion Principle.
+**Explanation:** The Interface Segregation Principle (ISP) states that clients should not be forced to depend on methods they don't use. The `ReadOnlyReader` is forced to implement `write()`, `compress()`, `encrypt()`, and `delete()` it never uses. The fix: split into `Readable`, `Writable`, `Compressible`, `Encryptable`, `Deletable` interfaces. Classes implement only what they need.
 
 ---
 

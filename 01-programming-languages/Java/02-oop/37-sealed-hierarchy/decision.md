@@ -1,22 +1,27 @@
-# Decision Guide: 37-sealed-hierarchy
+# Decision Guide: Sealed Hierarchies
 
 ## When to Use
-- Use 37-sealed-hierarchy when you need clear code organization
-- Use when building reusable components
-- Use for complex business logic
+- Closed type hierarchies where all subtypes are known at compile time
+- Pattern matching with exhaustive switch expressions (Java 21+)
+- Domain modeling with fixed variants (AST nodes, payment types, result types)
+- API design where you want to control who can extend your types
+- State machines with defined states
 
 ## When NOT to Use
-- Avoid for simple, one-off operations
-- Don't use when performance is critical
-- Skip if the overhead isn't justified
+- Open hierarchies where new subtypes may be added by third parties
+- Plugin architectures requiring extensibility
+- When you need to allow arbitrary implementations (use interfaces)
+- Simple hierarchies where sealed adds unnecessary complexity
 
 ## Trade-offs
-| Aspect | With 37-sealed-hierarchy | Without 37-sealed-hierarchy |
-|--------|-------------|----------------|
-| Readability | Better | Simpler |
-| Performance | Overhead | Faster |
-| Flexibility | More | Less |
-| Testing | Easier | Harder |
+
+| Aspect | Sealed Class | Regular Interface | Abstract Class |
+|--------|-------------|-------------------|----------------|
+| Subtype control | Restricted | Open | Partially restricted |
+| Pattern matching | Exhaustive (21+) | Not exhaustive | Not exhaustive |
+| Implementation | Can have | No | Yes |
+| Extensibility | Controlled | Open | Partially open |
+| Module boundaries | Same module required | Any module | Any module |
 
 ## Expert Recommendation
-Use 37-sealed-hierarchy when building production systems. The initial overhead pays off in maintainability.
+Use sealed hierarchies when modeling closed domains with known variants. Combined with records and pattern matching (Java 21+), they enable exhaustive, type-safe data modeling. Reserve for situations where you genuinely need to restrict the type hierarchy — don't seal unnecessarily.

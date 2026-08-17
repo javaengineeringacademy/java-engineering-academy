@@ -1,22 +1,27 @@
-# Decision Guide: 34-value-objects
+# Decision Guide: Value Objects
 
 ## When to Use
-- Use 34-value-objects when you need clear code organization
-- Use when building reusable components
-- Use for complex business logic
+- Representing domain concepts like Money, Email, Address, Coordinate
+- DTOs and API request/response payloads
+- Map keys and collection elements that need value-based equality
+- Parameters where immutability prevents accidental mutation
+- Thread-safe sharing without synchronization
 
 ## When NOT to Use
-- Avoid for simple, one-off operations
-- Don't use when performance is critical
-- Skip if the overhead isn't justified
+- Entities with lifecycle and identity (e.g., User, Order with DB id)
+- Objects requiring mutable state after construction
+- JPA/Hibernate entities (need setters and no-arg constructors)
+- Objects with complex mutable graph relationships
 
 ## Trade-offs
-| Aspect | With 34-value-objects | Without 34-value-objects |
-|--------|-------------|----------------|
-| Readability | Better | Simpler |
-| Performance | Overhead | Faster |
-| Flexibility | More | Less |
-| Testing | Easier | Harder |
+
+| Aspect | Value Object (record) | Value Object (class) | Mutable Class |
+|--------|----------------------|---------------------|---------------|
+| Immutability | Enforced | Manual enforcement | No |
+| Boilerplate | Minimal | High (equals, hashCode, toString) | Medium |
+| Validation | Compact constructor | Constructor | Setters |
+| Thread safety | Inherently safe | Safe if immutable | Requires sync |
+| JPA support | No | No | Yes |
 
 ## Expert Recommendation
-Use 34-value-objects when building production systems. The initial overhead pays off in maintainability.
+Use records for simple value objects (Point, Money, Email). Use final classes with manual equals/hashCode when you need complex validation or behavior. Never use mutable classes as value objects — they defeat the purpose and introduce subtle bugs in collections and concurrent code.

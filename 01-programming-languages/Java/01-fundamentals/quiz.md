@@ -166,3 +166,16 @@ D) 2 2.5
 
 **Answer: B**
 **Explanation:** `a / b` performs integer division (5 / 2 = 2), then assigns to float `c` as 2.0. `(float) a / b` casts `a` to float first, so `5.0 / 2` performs floating-point division, resulting in 2.5. Output: `2.0 2.5`.
+
+---
+
+## Question 10 (Production Scenario)
+Your microservice receives a JSON payload with a `status` field that can be "ACTIVE", "INACTIVE", or "PENDING". The current implementation uses string comparison in a method that processes 10,000 requests per second. The code uses `status.equals("ACTIVE")` throughout. What performance issue might arise and how should you fix it?
+
+- A) No issue — `equals()` is already optimal
+- B) String allocation overhead — convert the status to an enum and use `==` comparison
+- C) Thread safety — add `synchronized` to the method
+- D) Use `switch` on the string — it is faster than `equals()`
+
+**Answer: B**
+**Explanation:** Each `status.equals("ACTIVE")` call performs a character-by-character comparison at O(n) time. With 10,000 req/s, this adds up. Converting the string to an enum (e.g., `Status.valueOf(status)`) once per request, then using `==` for comparisons, is O(1) and eliminates repeated string comparisons. Enums also provide type safety, prevent invalid values, and are serializable — making them ideal for fixed sets of constants in production APIs.

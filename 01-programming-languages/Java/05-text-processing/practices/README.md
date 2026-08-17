@@ -155,3 +155,102 @@ Benchmark and compare three approaches for building a large string from many sma
 - Run each test multiple times and average to reduce noise.
 - Use `String.format("%-12s %15d ns", ...)` for formatted output.
 - Warm up the JVM by running a few iterations before measuring.
+
+---
+
+## Exercise 9: Character Class Operations
+
+**Problem Statement:**
+Write utility methods using the `Character` class to classify characters, count digits in a string, create alternating-case strings, validate all-letter strings, get Roman numeral values, and count character frequency.
+
+**Expected Behavior:**
+- `isVowel('a')` and `isVowel('E')` return `true`, `isVowel('b')` returns `false`.
+- `countDigits("abc123def456")` returns `6`.
+- `alternatingCase("hello")` returns `"HeLlO"`.
+- `isAllLetters("Hello")` returns `true`, `isAllLetters("Hello123")` returns `false`.
+- `romanCharValue('V')` returns `5`, `romanCharValue('x')` returns `10`.
+- `charFrequency("Hello World", 'l')` returns `3`.
+
+**Hints:**
+- Use `Character.toLowerCase()` / `Character.toUpperCase()` for case operations.
+- Use `Character.isDigit()`, `Character.isLetter()` for classification.
+- Use `switch` with `Character.toUpperCase()` for Roman numeral mapping.
+
+---
+
+## Exercise 10: Text Blocks (Java 15+)
+
+**Problem Statement:**
+Use text blocks (`"""`) to build SQL queries, JSON objects, HTML templates, and demonstrate `stripIndent()`, `formatted()`, and escape sequences.
+
+**Expected Behavior:**
+- SQL queries are clean multi-line strings.
+- JSON is properly formatted with indentation.
+- HTML templates contain title and body content.
+- `stripIndent()` removes common leading whitespace.
+- `formatted()` replaces `%s` and `%d` placeholders.
+
+**Hints:**
+- Use `"""` for multi-line string literals.
+- Use `String.join()` for column lists.
+- Use `.stripIndent()` to normalize indentation.
+- Use `.formatted(args)` for placeholder substitution.
+
+---
+
+## Exercise 11: Charset and Encoding
+
+**Problem Statement:**
+Convert strings to and from byte arrays using different charsets, compare encoding equivalence, calculate byte lengths, safely decode malformed bytes, and detect UTF-8 BOM markers.
+
+**Expected Behavior:**
+- `toUtf8Bytes("Hello")` returns a 5-byte array starting with `72`.
+- `fromUtf8Bytes(bytes)` correctly decodes back to the original string.
+- ASCII and UTF-8 are equivalent for ASCII-only strings.
+- `byteLength("Hello", UTF_8)` returns `5`.
+- Malformed bytes are replaced with the replacement character.
+
+**Hints:**
+- Use `StandardCharsets.UTF_8` and `StandardCharsets.US_ASCII`.
+- Use `CharsetDecoder` with `CodingErrorAction.REPLACE` for safe decoding.
+- Check for UTF-8 BOM bytes: `0xEF, 0xBB, 0xBF`.
+
+---
+
+## Exercise 12: Unicode Operations
+
+**Problem Statement:**
+Work with Unicode code points, count code points in strings (including supplementary characters), detect supplementary characters, apply Unicode-aware uppercase, and identify emoji code points.
+
+**Expected Behavior:**
+- `getCodePoint('A')` returns `65`, `getCodePoint('\u00E9')` returns `233`.
+- `codePointToString(65)` returns `"A"`.
+- `countCodePoints` accounts for supplementary characters using `codePointCount()`.
+- `hasSupplementaryCharacters("\uD83D\uDE00")` returns `true` for emoji.
+- `unicodeUpperCase("\u00E9")` returns `"\u00C9"`.
+
+**Hints:**
+- Use `Character.codePointAt()` and `Character.toChars()`.
+- Use `String.codePointCount()` for accurate counting.
+- Supplementary characters have char values above `0xFFFF` (above BMP).
+- Check common emoji Unicode ranges: `0x1F600-0x1F64F`, `0x1F300-0x1F5FF`.
+
+---
+
+## Exercise 13: Internationalization (i18n)
+
+**Problem Statement:**
+Format numbers, currencies, dates, and percentages for different locales. Parse formatted numbers back to values and apply locale-specific case conversion rules.
+
+**Expected Behavior:**
+- US locale formats `1234567` with commas, German with dots.
+- Currency formatting includes the correct symbol (`$`, etc.).
+- Date formatting uses locale-appropriate patterns.
+- Percentage formatting: `0.756` becomes `"75.6%"`.
+- Turkish locale uppercases `"i"` to `"\u0130"` (capital I with dot).
+
+**Hints:**
+- Use `NumberFormat.getNumberInstance(locale)` for number formatting.
+- Use `NumberFormat.getCurrencyInstance(locale)` for currency.
+- Use `DateFormat.getDateInstance(DateFormat.LONG, locale)` for dates.
+- Use `String.toUpperCase(locale)` for locale-specific case conversion.

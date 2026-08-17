@@ -12,6 +12,6 @@ Complete solutions to the practice exercises.
 
 ## How to Use
 
-1. Try the exercises first in `14-practices/`
+1. Try the exercises first in `practices/`
 2. Check solutions here if stuck
 3. Compare approaches and learn

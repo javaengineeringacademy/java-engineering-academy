@@ -11,9 +11,9 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>06-strings</artifactId>
-    <name>06-strings</name>
-    <description>Java Engineering Academy - 06-strings</description>
+    <artifactId>05-text-processing</artifactId>
+    <name>05-text-processing</name>
+    <description>Java Engineering Academy - 05-text-processing</description>
 
     <dependencies>
         <dependency>

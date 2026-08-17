@@ -1,20 +1,21 @@
-# References: 36-records
+# References: Records
 
 ## Official Documentation
-- [Oracle Java Documentation](https://docs.oracle.com/en/java/)
-- [Java Language Specification - 36-records](https://docs.oracle.com/javase/specs/)
+- [JEP 395: Records and Sealed Classes](https://openjdk.org/jeps/395)
+- [Java Language Specification - Records](https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10)
+- [Oracle Tutorial - Records](https://docs.oracle.com/en/java/javase/21/language/records.html)
 
 ## Books
-- **Effective Java** by Joshua Bloch - Chapter on 36-records
-- **Head First Java** by Kathy Sierra - 36-records concepts
-- **Java: The Complete Reference** by Herbert Schildt
+- **Effective Java** by Joshua Bloch — Item 17: Minimize mutability
+- **Modern Java in Action** by Urma, Fusco, Mycroft — Records chapter
+- **Head First Java** by Kathy Sierra — Data carrier patterns
 
 ## Online Resources
-- [Baeldung 36-records Tutorial](https://www.baeldung.com/)
+- [Baeldung Java Records](https://www.baeldung.com/java-records)
+- [Baeldung Record Patterns](https://www.baeldung.com/java-record-patterns)
 - [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
-- [GeeksforGeeks 36-records](https://www.geeksforgeeks.org/)
 
 ## Practice Platforms
-- [LeetCode](https://leetcode.com/)
-- [HackerRank](https://www.hackerrank.com/)
-- [Codewars](https://www.codewars.com/)
+- [LeetCode](https://leetcode.com/) — Use records for problem solutions
+- [HackerRank Java](https://www.hackerrank.com/domains/java)
+- [Exercism Java Track](https://exercism.org/tracks/java)
