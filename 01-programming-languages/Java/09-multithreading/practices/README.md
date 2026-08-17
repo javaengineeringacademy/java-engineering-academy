@@ -1,8 +1,8 @@
-# Multithreading Exercises
+# Multithreading Practices
 
 Practice Java multithreading through hands-on exercises.
 
-## Exercise 1: Thread Creation
+## Practice 1: Thread Creation
 
 **Problem Statement:**
 Create a multi-threaded program using three different approaches: extending `Thread`, implementing `Runnable`, and implementing `Callable` with `FutureTask`. Each thread should compute a partial sum of a large array and return the result.
@@ -23,7 +23,7 @@ Create a multi-threaded program using three different approaches: extending `Thr
 
 ---
 
-## Exercise 2: Synchronization
+## Practice 2: Synchronization
 
 **Problem Statement:**
 Implement a thread-safe counter class using three synchronization strategies: `synchronized` methods, `synchronized` blocks, and `ReentrantLock`. Run 100 threads each incrementing the counter 10,000 times and verify the final count is correct for each approach.
@@ -43,7 +43,7 @@ Implement a thread-safe counter class using three synchronization strategies: `s
 
 ---
 
-## Exercise 3: Producer-Consumer
+## Practice 3: Producer-Consumer
 
 **Problem Statement:**
 Implement a producer-consumer system using a shared `BlockingQueue`. Producers generate random integers and put them in the queue. Consumers take integers and compute their square. Use multiple producers and multiple consumers.
@@ -63,7 +63,7 @@ Implement a producer-consumer system using a shared `BlockingQueue`. Producers g
 
 ---
 
-## Exercise 4: Thread Pool
+## Practice 4: Thread Pool
 
 **Problem Statement:**
 Create a web scraper simulator that downloads multiple URLs concurrently using `ExecutorService`. Implement fixed thread pool, cached thread pool, and scheduled thread pool approaches. Handle task failures gracefully.
@@ -83,7 +83,7 @@ Create a web scraper simulator that downloads multiple URLs concurrently using `
 
 ---
 
-## Exercise 5: CompletableFuture Pipeline
+## Practice 5: CompletableFuture Pipeline
 
 **Problem Statement:**
 Build an asynchronous data processing pipeline using `CompletableFuture`. Chain operations: fetch user data, then fetch their orders, then calculate order total, then send a notification. Each step simulates network latency.
@@ -105,7 +105,7 @@ Build an asynchronous data processing pipeline using `CompletableFuture`. Chain 
 
 ---
 
-## Exercise 6: Deadlock Detection
+## Practice 6: Deadlock Detection
 
 **Problem Statement:**
 Write a program that intentionally creates a deadlock between two threads. Then implement a deadlock detection mechanism using `ThreadMXBean` to identify and report the deadlocked threads.
@@ -125,7 +125,7 @@ Write a program that intentionally creates a deadlock between two threads. Then 
 
 ---
 
-## Exercise 7: Concurrent Collections
+## Practice 7: Concurrent Collections
 
 **Problem Statement:**
 Compare the performance and behavior of `HashMap`, `ConcurrentHashMap`, and `Collections.synchronizedMap()` under concurrent access. Run multiple threads performing simultaneous reads and writes on each map type.
@@ -145,7 +145,7 @@ Compare the performance and behavior of `HashMap`, `ConcurrentHashMap`, and `Col
 
 ---
 
-## Exercise 8: Atomic Variables
+## Practice 8: Atomic Variables
 
 **Problem Statement:**
 Implement a lock-free counter using `AtomicLong`, a concurrent accumulator using `LongAdder`, and a compare-and-swap based stack. Compare their performance and correctness under high contention.

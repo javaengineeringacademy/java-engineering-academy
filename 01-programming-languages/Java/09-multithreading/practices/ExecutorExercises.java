@@ -1,4 +1,4 @@
-package academy.javaengineering.exercises;
+package academy.javaengineering.concurrency.practices;
 
 import java.util.ArrayList;
 import java.util.List;
