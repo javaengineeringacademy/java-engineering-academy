@@ -1,19 +1,17 @@
-package academy.javaengineering.testing;
+package academy.javaengineering.testing.examples;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Testing Fundamentals Demo
- *
- * Covers:
- * - Arrange-Act-Assert (AAA) pattern
- * - FIRST principles (Fast, Independent, Repeatable, Self-validating, Timely)
- * - Test types: unit, integration, functional, regression
- * - Test naming conventions
- * - Boundary testing, equivalence partitioning
+ * Testing Fundamentals Demo - AAA Pattern & FIRST Principles
+ * 
+ * AAA Pattern: Arrange -> Act -> Assert
+ * FIRST Principles: Fast, Independent, Repeatable, Self-validating, Timely
  */
 public class TestingFundamentalsDemo {
 
-    // ---- Sample System Under Test (SUT) ----
-
+    // System under test
     static class Calculator {
         int add(int a, int b) {
             return a + b;
@@ -32,203 +30,214 @@ public class TestingFundamentalsDemo {
             return a / b;
         }
 
-        boolean isEven(int n) {
-            return n % 2 == 0;
+        boolean isEven(int number) {
+            return number % 2 == 0;
         }
     }
 
-    static class StringValidator {
-        boolean isValidEmail(String email) {
-            if (email == null || email.isBlank()) return false;
-            return email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
-        }
-
-        boolean isStrongPassword(String password) {
-            if (password == null || password.length() < 8) return false;
-            boolean hasUpper = password.chars().anyMatch(Character::isUpperCase);
-            boolean hasLower = password.chars().anyMatch(Character::isLowerCase);
-            boolean hasDigit = password.chars().anyMatch(Character::isDigit);
-            boolean hasSpecial = password.chars().anyMatch(c -> "!@#$%^&*()_+-=[]{}|;:,.<>?".indexOf(c) >= 0);
-            return hasUpper && hasLower && hasDigit && hasSpecial;
-        }
-    }
-
-    static class TemperatureConverter {
-        double celsiusToFahrenheit(double celsius) {
-            return celsius * 9.0 / 5.0 + 32;
-        }
-
-        double fahrenheitToCelsius(double fahrenheit) {
-            return (fahrenheit - 32) * 5.0 / 9.0;
-        }
-
-        double celsiusToKelvin(double celsius) {
-            return celsius + 273.15;
-        }
-    }
-
-    static class ArrayUtils {
-        int findMax(int[] arr) {
-            if (arr == null || arr.length == 0) throw new IllegalArgumentException("Array must not be empty");
-            int max = arr[0];
-            for (int i = 1; i < arr.length; i++) {
-                if (arr[i] > max) max = arr[i];
-            }
-            return max;
-        }
-
-        int[] reverse(int[] arr) {
-            if (arr == null || arr.length == 0) return arr;
-            int[] result = new int[arr.length];
-            for (int i = 0; i < arr.length; i++) {
-                result[i] = arr[arr.length - 1 - i];
-            }
-            return result;
-        }
-
-        boolean contains(int[] arr, int value) {
-            if (arr == null) return false;
-            for (int v : arr) {
-                if (v == value) return true;
-            }
-            return false;
-        }
-    }
-
-    // ---- Demo: AAA Pattern ----
-
-    /**
-     * AAA Pattern Explanation:
-     *
-     * ARRANGE: Set up test data, mock objects, expected values
-     * ACT:     Invoke the method under test
-     * ASSERT:  Verify the result matches expectations
-     *
-     * This pattern makes tests readable and maintainable.
-     */
+    // AAA Pattern Demo
     static class CalculatorTest {
 
-        void testAddPositiveNumbers() {
+        private final Calculator calculator = new Calculator();
+
+        // Arrange - Act - Assert
+        void testAdd() {
             // Arrange
-            Calculator calc = new Calculator();
-            int a = 5, b = 3;
+            int a = 2;
+            int b = 3;
 
             // Act
-            int result = calc.add(a, b);
+            int result = calculator.add(a, b);
 
             // Assert
-            assert result == 8 : "Expected 8 but got " + result;
+            assert result == 5 : "Expected 5 but got " + result;
+            System.out.println("testAdd PASSED");
         }
 
-        void testAddNegativeNumbers() {
-            Calculator calc = new Calculator();
-            int result = calc.add(-5, -3);
-            assert result == -8;
+        void testSubtract() {
+            // Arrange
+            int a = 10;
+            int b = 4;
+
+            // Act
+            int result = calculator.subtract(a, b);
+
+            // Assert
+            assert result == 6 : "Expected 6 but got " + result;
+            System.out.println("testSubtract PASSED");
         }
 
         void testDivideByZero() {
-            Calculator calc = new Calculator();
+            // Arrange
+            int a = 10;
+            int b = 0;
+
+            // Act & Assert
             try {
-                calc.divide(10, 0);
+                calculator.divide(a, b);
                 assert false : "Expected ArithmeticException";
             } catch (ArithmeticException e) {
                 assert "Division by zero".equals(e.getMessage());
             }
+            System.out.println("testDivideByZero PASSED");
+        }
+
+        void runAll() {
+            testAdd();
+            testSubtract();
+            testDivideByZero();
         }
     }
 
-    // ---- FIRST Principles ----
+    // FIRST Principles in action
+    static class StringProcessor {
 
-    /**
-     * F - Fast: Tests run in milliseconds
-     * I - Independent: Each test stands alone, no dependencies
-     * R - Repeatable: Same result every time, no flakiness
-     * S - Self-validating: Pass/fail without manual inspection
-     * T - Timely: Written alongside or before production code (TDD)
-     */
+        String reverse(String input) {
+            if (input == null) return null;
+            return new StringBuilder(input).reverse().toString();
+        }
 
-    // ---- Boundary Testing ----
+        boolean isPalindrome(String input) {
+            if (input == null) return false;
+            String cleaned = input.toLowerCase().replaceAll("[^a-z0-9]", "");
+            return cleaned.equals(reverse(cleaned));
+        }
 
-    static class BoundaryTestDemo {
+        int countVowels(String input) {
+            if (input == null) return 0;
+            int count = 0;
+            for (char c : input.toLowerCase().toCharArray()) {
+                if ("aeiou".indexOf(c) >= 0) count++;
+            }
+            return count;
+        }
 
+        String capitalize(String input) {
+            if (input == null || input.isEmpty()) return input;
+            return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+        }
+    }
+
+    static class StringProcessorTest {
+
+        private final StringProcessor processor = new StringProcessor();
+
+        // FAST - executes in microseconds
+        void testReverse() {
+            String input = "hello";
+            String result = processor.reverse(input);
+            assert "olleh".equals(result) : "Expected 'olleh' but got '" + result + "'";
+            System.out.println("testReverse PASSED");
+        }
+
+        // INDEPENDENT - no shared state between tests
+        void testIsPalindrome() {
+            assert processor.isPalindrome("racecar") : "racecar should be palindrome";
+            assert !processor.isPalindrome("hello") : "hello should not be palindrome";
+            System.out.println("testIsPalindrome PASSED");
+        }
+
+        // REPEATABLE - produces same result every time
+        void testCountVowels() {
+            assert processor.countVowels("hello") == 2 : "Expected 2 vowels";
+            assert processor.countVowels("xyz") == 0 : "Expected 0 vowels";
+            assert processor.countVowels("aeiou") == 5 : "Expected 5 vowels";
+            System.out.println("testCountVowels PASSED");
+        }
+
+        // SELF-VALIDATING - no manual inspection needed
+        void testCapitalize() {
+            assert "Hello".equals(processor.capitalize("hello"));
+            assert "Hello".equals(processor.capitalize("HELLO"));
+            assert null == processor.capitalize(null);
+            System.out.println("testCapitalize PASSED");
+        }
+
+        // TIMELY - tests written before or with production code
         void testEdgeCases() {
-            StringValidator validator = new StringValidator();
+            assert "".equals(processor.reverse(""));
+            assert null == processor.reverse(null);
+            assert !processor.isPalindrome(null);
+            assert processor.countVowels(null) == 0;
+            System.out.println("testEdgeCases PASSED");
+        }
 
-            // Null boundary
-            assert !validator.isValidEmail(null);
-
-            // Empty string boundary
-            assert !validator.isValidEmail("");
-
-            // Whitespace boundary
-            assert !validator.isValidEmail("   ");
-
-            // Valid email
-            assert validator.isValidEmail("user@example.com");
-
-            // Missing @
-            assert !validator.isValidEmail("userexample.com");
-
-            // Password length boundary
-            assert !validator.isStrongPassword("Ab1!abcd"); // exactly 8 chars with all required
-            assert !validator.isStrongPassword("Short1!");  // 8 chars but no lowercase? No, it has all
-            assert !validator.isStrongPassword("Ab1!");     // too short (4 chars)
+        void runAll() {
+            testReverse();
+            testIsPalindrome();
+            testCountVowels();
+            testCapitalize();
+            testEdgeCases();
         }
     }
 
-    // ---- Equivalence Partitioning ----
+    // Test isolation demonstration
+    static class UserRepository {
+        private final List<String> users = new ArrayList<>();
 
-    /**
-     * Divide input into partitions:
-     * - Valid partitions: inputs that should be handled the same way
-     * - Invalid partitions: inputs that should be rejected similarly
-     *
-     * Test one representative from each partition.
-     */
+        void addUser(String user) {
+            users.add(user);
+        }
 
-    // ---- Test Naming Conventions ----
+        List<String> getUsers() {
+            return new ArrayList<>(users); // Defensive copy for isolation
+        }
 
-    /**
-     * Convention 1: testMethodName ExpectedBehavior WhenCondition
-     *   testAdd_ThrowsException_WhenDivisorIsZero
-     *
-     * Convention 2: methodName_StateUnderTest_ExpectedBehavior
-     *   add_PositiveNumbers_ReturnsSum
-     *
-     * Convention 3: shouldExpectedBehaviorWhenCondition (BDD style)
-     *   shouldReturnSumWhenPositiveNumbersAreAdded
-     */
+        boolean containsUser(String user) {
+            return users.contains(user);
+        }
 
-    // ---- Running Demo ----
+        void clear() {
+            users.clear();
+        }
+    }
+
+    static class UserRepositoryTest {
+
+        // Each test method gets fresh state - INDEPENDENT
+        void testAddUser() {
+            UserRepository repo = new UserRepository();
+            repo.addUser("Alice");
+            assert repo.containsUser("Alice") : "Should contain Alice";
+            System.out.println("testAddUser PASSED");
+        }
+
+        void testGetUsersReturnsDefensiveCopy() {
+            UserRepository repo = new UserRepository();
+            repo.addUser("Bob");
+            List<String> users = repo.getUsers();
+            users.add("Charlie"); // Modify the copy
+            assert !repo.containsUser("Charlie") : "Original should not be affected";
+            System.out.println("testGetUsersReturnsDefensiveCopy PASSED");
+        }
+
+        void testClear() {
+            UserRepository repo = new UserRepository();
+            repo.addUser("Dave");
+            repo.clear();
+            assert repo.getUsers().isEmpty() : "Should be empty after clear";
+            System.out.println("testClear PASSED");
+        }
+
+        void runAll() {
+            testAddUser();
+            testGetUsersReturnsDefensiveCopy();
+            testClear();
+        }
+    }
 
     public static void main(String[] args) {
         System.out.println("=== Testing Fundamentals Demo ===\n");
 
-        CalculatorTest calculatorTest = new CalculatorTest();
-        BoundaryTestDemo boundaryTest = new BoundaryTestDemo();
+        System.out.println("--- Calculator Tests (AAA Pattern) ---");
+        new CalculatorTest().runAll();
 
-        System.out.println("--- AAA Pattern Tests ---");
-        calculatorTest.testAddPositiveNumbers();
-        System.out.println("PASS: testAddPositiveNumbers");
-        calculatorTest.testAddNegativeNumbers();
-        System.out.println("PASS: testAddNegativeNumbers");
-        calculatorTest.testDivideByZero();
-        System.out.println("PASS: testDivideByZero");
+        System.out.println("\n--- String Processor Tests (FIRST Principles) ---");
+        new StringProcessorTest().runAll();
 
-        System.out.println("\n--- Boundary Tests ---");
-        boundaryTest.testEdgeCases();
-        System.out.println("PASS: testEdgeCases");
+        System.out.println("\n--- User Repository Tests (Test Isolation) ---");
+        new UserRepositoryTest().runAll();
 
-        System.out.println("\n--- FIRST Principles Reminder ---");
-        System.out.println("Fast | Independent | Repeatable | Self-validating | Timely");
-
-        System.out.println("\n--- Temperature Conversion ---");
-        TemperatureConverter converter = new TemperatureConverter();
-        System.out.println("0°C = " + converter.celsiusToFahrenheit(0) + "°F");
-        System.out.println("100°C = " + converter.celsiusToFahrenheit(100) + "°F");
-        System.out.println("32°F = " + converter.fahrenheitToCelsius(32) + "°C");
-        System.out.println("0°C = " + converter.celsiusToKelvin(0) + "K");
-
-        System.out.println("\nAll tests passed!");
+        System.out.println("\n=== All tests completed ===");
     }
 }
