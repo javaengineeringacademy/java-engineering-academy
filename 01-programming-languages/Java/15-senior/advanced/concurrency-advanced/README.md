@@ -432,47 +432,129 @@ public class SafeClass {
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **Explain the difference between `CompletableFuture` and `Future`. Can you call `get()` on both?**
+   `Future` is a single-method interface (`get()`, `isDone()`) that blocks on result retrieval with no composition support. `CompletableFuture` extends `Future` with `CompletionStage`, enabling non-blocking chaining via `thenApply`, `thenCompose`, `thenCombine`. Both support `get()`, but `CompletableFuture` supports `join()` (unchecked exception) and functional chaining. `Future.get()` blocks; `CompletableFuture` callbacks run asynchronously without blocking.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is work-stealing and why does ForkJoinPool outperform ExecutorService for divide-and-conquer tasks?**
+   ForkJoinPool uses per-thread deques. Idle threads steal tasks from the heads of other threads' deques (FIFO steal, LIFO pop). This minimizes contention and maximizes CPU utilization. ExecutorService uses a shared queue with global lock contention. For recursive problems where task granularity varies, work-stealing ensures no thread sits idle while others have pending work.
 
-2. **When would you use it?**
-   [Answer]
+3. **How does `StampedLock` optimistic reading avoid blocking?**
+   `tryOptimisticRead()` returns a stamp without acquiring a lock. The thread reads shared state, then calls `validate(stamp)`. If no write occurred since the stamp was obtained, reads are valid. If a write happened (validate returns false), the thread falls back to a blocking read lock. This avoids read-write contention for short read sections where writes are rare.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **Explain the ABA problem with CAS. How do `AtomicStampedReference` and `AtomicMarkableReference` solve it?**
+   CAS compares values by reference equality. Thread 1 reads A, Thread 2 changes A→B→A, Thread 1's CAS succeeds thinking nothing changed. `AtomicStampedReference` adds an integer stamp (version number) incremented on each write—CAS must match both value AND stamp. `AtomicMarkableReference` uses a boolean flag instead of a version. Both detect intervening modifications.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **When should you prefer `LongAdder` over `AtomicLong`?**
+   `AtomicLong` uses a single memory location with CAS retry under contention. `LongAdder` maintains per-thread cells; writes go to a thread-local cell, and `sum()` aggregates all cells. For high-contention counters (stats, metrics), `LongAdder` has ~10x better throughput. For exact-value reads (e.g., sequence numbers), `AtomicLong` is preferred since `LongAdder.sum()` is not atomic.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **What is false sharing and how does `@Contended` fix it?**
+   False sharing occurs when independent variables share a cache line. Thread writes to variable A invalidate the entire cache line on other cores, even though Thread 2 writes to variable B on the same line. `@sun.misc.Contended` (JDK 8+) inserts padding to push fields onto separate cache lines. Requires `-XX:-RestrictContended` JVM flag. Manual padding works but is fragile across JVM versions.
+
+7. **Compare `ConcurrentHashMap` Java 7 vs Java 8+ internals.**
+   Java 7: Segment-based locking. The map is divided into segments (default 16), each a striped `ReentrantLock`. Concurrent access limited to one thread per segment. Java 8+: CAS + synchronized on individual `Node` buckets. No segment locking. `synchronized` only on the first node of a chain. `Node.val` uses `volatile` for visibility. Better concurrency because locking is per-bucket, not per-segment.
+
+8. **How do virtual threads achieve cheap blocking compared to platform threads?**
+   Virtual threads run on carrier (platform) threads. When a virtual thread blocks (I/O, sleep), the JVM unmounts it from its carrier thread, parking it. The carrier thread is freed to run other virtual threads. No OS thread is wasted. Platform threads map 1:1 to OS threads—blocking wastes an OS thread. Virtual threads use ~1KB memory vs ~1MB for platform threads.
+
+9. **What are scoped values and how do they differ from `ThreadLocal`?**
+   Scoped values are immutable bindings set within a lexical scope (`ScopedValue.where(...).run(...)`). They are automatically cleared when the scope exits—no memory leaks. `ThreadLocal` is mutable and persists until `remove()` is called; forgetting to remove leaks memory in thread pools. Scoped values don't propagate to child threads (use structured concurrency); `ThreadLocal` inheritance is controlled via `InheritableThreadLocal`.
+
+10. **Explain structured concurrency's `ShutdownOnFailure` vs `ShutdownOnSuccess`.**
+    `ShutdownOnFailure`: all tasks run; if any fails, all remaining tasks are cancelled and the first exception is thrown. Use when all results are needed (e.g., fetch user AND orders—both must succeed). `ShutdownOnSuccess`: returns the first successful result and cancels remaining tasks. Use for racing tasks (e.g., try multiple backup services—first success wins). Both guarantee cleanup via try-with-resources.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+- **Calling `get()` on `CompletableFuture` in an async callback** — blocks the thread pool, defeats async purpose. Use `thenCompose` chains instead.
+- **Using `synchronized` with virtual threads** — pins the virtual thread to its carrier, blocking the carrier thread. Use `ReentrantLock` instead.
+- **Forgetting `fork/join` symmetry** — every `fork()` must have a matching `join()`. Unjoined tasks can cause memory leaks and incomplete results.
+- **Using `AtomicLong` under high contention** — CAS retries waste CPU. Switch to `LongAdder` for counters where exact实时读取 isn't needed.
+- **Assuming `StampedLock` is reentrant** — it is NOT. Reentrant locking causes deadlock. Use `ReentrantReadWriteLock` if reentrancy is needed.
+- **Ignoring pinning in virtual threads** — run with `-Djdk.tracePinnedThreads=full` to detect `synchronized` and native method pinning.
+- **Not tuning ForkJoinPool threshold** — too-low thresholds cause excessive forking overhead; too-high thresholds underutilize parallelism.
+- **ThreadLocal leaks in thread pools** — always call `remove()` in finally blocks when using `ThreadLocal` with pooled threads.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+| Mechanism | Throughput | Latency | Contention |
+|-----------|-----------|---------|------------|
+| `synchronized` | Moderate | High under contention | Lock-based |
+| `ReentrantLock` | Moderate | Moderate | Lock-based |
+| `AtomicLong` CAS | High | Low (no lock) | CAS retry |
+| `LongAdder` | Very High | Medium (sum is slow) | Cell-based |
+| `StampedLock` optimistic | Very High for reads | Very Low | No lock |
+| Virtual threads | High (I/O) | Low | No OS thread blocking |
+
+**Benchmarks** (approximate, single-writer multiple-reader):
+- `StampedLock` optimistic read: ~200M ops/sec vs `ReentrantReadWriteLock` read lock: ~50M ops/sec
+- `LongAdder` increment under 16 threads: ~500M ops/sec vs `AtomicLong`: ~50M ops/sec
+- Virtual threads: 1M concurrent I/O tasks vs platform threads: ~2K concurrent I/O tasks
+
+**ForkJoinPool sizing**: Optimal parallelism = number of CPU cores. For I/O-bound: `cores * (1 + wait_time/service_time)`.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Advanced CompletableFuture: parallel fetch with timeout and fallback
+CompletableFuture<User> userFuture = CompletableFuture
+    .supplyAsync(() -> userService.getUser(id), executor)
+    .orTimeout(3, TimeUnit.SECONDS)
+    .exceptionallyCompose(ex -> fallbackUserService.getUser(id));
+
+CompletableFuture<List<Order>> ordersFuture = CompletableFuture
+    .supplyAsync(() -> orderService.getOrders(id), executor)
+    .orTimeout(3, TimeUnit.SECONDS)
+    .exceptionally(ex -> List.of());
+
+CompletableFuture<Dashboard> dashboard = userFuture
+    .thenCombine(ordersFuture, Dashboard::new)
+    .whenComplete((d, ex) -> {
+        if (ex != null) log.error("Dashboard failed", ex);
+    });
+
+// StampedLock: optimistic read for hot path
+public double distanceFromOrigin() {
+    long stamp = sl.tryOptimisticRead();
+    double x = this.x, y = this.y;
+    if (!sl.validate(stamp)) {
+        stamp = sl.readLock();
+        try { x = this.x; y = this.y; }
+        finally { sl.unlockRead(stamp); }
+    }
+    return Math.sqrt(x*x + y*y);
+}
+
+// ForkJoinPool: parallel array sort
+ForkJoinPool pool = new ForkJoinPool();
+pool.invoke(new ParallelMergeSort(array, 0, array.length));
+```
 
 ## Internal Working
 
-[How this works under the hood]
+- **CompletableFuture**: Uses `UniCompletion`/`BiCompletion` nodes linked in a stack. When a stage completes, it pops dependent completions and submits them to an `Executor`. The `ForkJoinPool.commonPool()` is the default executor. Completion is lock-free using `Unsafe.compareAndSwapObject` on the completion stack head.
+- **ForkJoinPool**: Each worker thread has a work-stealing deque (implemented as a `volatile` array with CAS operations). `signalWork()` wakes idle threads. `workStealing()` scans other deques from random starting points. The pool uses `ManagedBlocker` for blocking operations, dynamically adding threads if needed.
+- **StampedLock**: Uses 32-bit state word. Bits 0-7: read lock count. Bits 8-17: optimistic read bit. Bit 32: write lock. Stamps are sequence numbers incremented on each state change. Optimistic read reads state once; validate re-reads and checks no write bit set.
+- **Atomic variables**: Use `Unsafe.compareAndSwapInt/Long` (intrinsified to `cmpxchg` on x86). CAS is a single CPU instruction—atomic at hardware level. On failure, spin-retry (Java 9+ uses `VarHandle` with `acquire/release` semantics instead of `volatile` fences).
+- **ConcurrentHashMap**: Java 8+ uses `Node` array with `volatile` next pointers. `putVal` CAS-creates new nodes; `synchronized` only when traversing/resizing. `size()` uses `CounterCell[]` (similar to `LongAdder`) for accurate count without full locking.
+- **Virtual threads**: JVM maintains a `VirtualThread` object with a `Continuation`. When blocking, `Continuation.yield()` unmounts the virtual thread from its carrier, parking it. When unblocked, the scheduler mounts it on a free carrier. Carrier threads are platform threads from a `ForkJoinPool`.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Modern applications handle thousands of concurrent connections (web servers, microservices). Traditional `synchronized`/`wait`/`notify` create bottlenecks. Advanced concurrency exists to:
+
+1. **Maximize CPU utilization** — ForkJoinPool work-stealing ensures all cores stay busy even with uneven task sizes.
+2. **Eliminate blocking waste** — Virtual threads unmount on I/O, freeing carriers for other work.
+3. **Enable composition** — CompletableFuture chains complex async workflows without callback hell.
+4. **Reduce contention** — Atomics and StampedLock avoid locks entirely for read-heavy workloads.
+5. **Prevent bugs** — Structured concurrency ensures tasks complete or cancel together; scoped values prevent leaks.
+6. **Scale beyond OS limits** — Virtual threads allow millions of concurrent tasks vs thousands with platform threads.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Oracle: Java Concurrency (trail)](https://docs.oracle.com/javase/tutorial/essential/concurrency/)
+- [OpenJDK: Project Loom](https://openjdk.org/projects/loom/)
+- [JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
+- [JEP 453: Structured Concurrency](https://openjdk.org/jeps/453)
+- [JEP 446: Scoped Values](https://openjdk.org/jeps/446)
+- [Brian Goetz: Java Concurrency in Practice](https://jcip.net/)
+- [Doug Lea: ForkJoinPool paper](https://gee.cs.oswego.edu/dl/papers/fj.pdf)
+- [Inside Java: Virtual Threads](https://inside.java/2022/03/31/loom-and-serviceloom.html)

@@ -465,51 +465,162 @@ private void refreshAsync(long id) {
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What are the most common production incidents in Java applications and their root causes?**
+   Top 5: (1) GC pauses (improper tuning, large heap), (2) thread leaks (unclosed ExecutorService), (3) connection pool exhaustion (undersized pool), (4) serialization bugs (version mismatch), (5) cascade failures (no circuit breakers). Root causes: lack of monitoring, insufficient load testing, missing production patterns, and assumptions about failure modes.
 
-1. **What is this concept?**
-   [Answer]
+2. **How do you prevent GC pauses in latency-sensitive services?**
+   (1) Use ZGC or Shenandoah for sub-millisecond pauses, (2) keep heap ≤16GB, (3) monitor allocation rate, (4) use off-heap for large objects (>100MB), (5) separate batch jobs from user-facing services, (6) set GC pause alerts (>500ms warning, >2s critical), (7) tune G1GC `MaxGCPauseMillis=200` if stuck on G1.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is the singleflight pattern and when should you use it?**
+   Singleflight (request coalescing) ensures only one concurrent request per cache key hits the database. When 10K requests miss cache simultaneously, only 1 queries the database; the other 9,999 wait for the result. Use it for: hot cache keys, expensive database queries, and any scenario where multiple concurrent requests need the same data.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **How do you detect and prevent thread leaks in production?**
+   Detection: monitor `jvm_threads_current`, alert when >500 or growth rate >50/min. Use `jstack` to analyze thread dumps. Prevention: (1) never create ExecutorService per request, (2) use `@PreDestroy` for cleanup, (3) static analysis (SpotBugs, ErrorProne), (4) long-running integration tests (24+ hours), (5) ArchUnit rules.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **What is the connection pool sizing formula and why is it important?**
+   Formula: `pool_size = (2 × number_of_cores) + effective_spindle_count`. For SSDs: `2 × cores + 1`. Why: too few connections = request queuing, too many = database overload. Monitor `hikaricp_connections_pending` — if >0, increase. Monitor `hikaricp_connections_active` — if << max, decrease. Load test at 2x expected peak.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Using wrong database isolation level:**
+```java
+// BAD: READ_UNCOMMITTED for financial data
+@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+public Account getAccount(long id) {
+    return accountRepository.findById(id).orElseThrow();
+}
+// Can read uncommitted data that may be rolled back
+
+// GOOD: READ_COMMITTED minimum, REPEATABLE_READ for transactions
+@Transactional(isolation = Isolation.REPEATABLE_READ)
+public void transfer(long fromId, long toId, BigDecimal amount) {
+    Account from = accountRepository.findById(fromId).orElseThrow();
+    Account to = accountRepository.findById(toId).orElseThrow();
+    from.debit(amount);
+    to.credit(amount);
+    accountRepository.save(from);
+    accountRepository.save(to);
+}
+```
+
+**Single thread pool for all operations:**
+```java
+// BAD: One thread pool for fast and slow operations
+ExecutorService pool = Executors.newFixedThreadPool(200);
+// Slow requests (5-10s) consume all threads
+// Fast requests (10ms) starve
+
+// GOOD: Separate thread pools by latency
+ExecutorService fastPool = Executors.newFixedThreadPool(50);   // Health, auth, cache
+ExecutorService slowPool = Executors.newFixedThreadPool(100);  // External calls
+ExecutorService criticalPool = Executors.newFixedThreadPool(20); // Payment, orders
+```
+
+**Not using request coalescing for cache misses:**
+```java
+// BAD: 10K concurrent requests all hit database
+Product cached = cache.get("product:" + id);
+if (cached == null) {
+    Product product = productRepository.findById(id).orElseThrow(); // 10K queries!
+    cache.put("product:" + id, product, Duration.ofMinutes(5));
+    return product;
+}
+
+// GOOD: Singleflight pattern
+CompletableFuture<Product> future = inflight.computeIfAbsent(id,
+    key -> CompletableFuture.supplyAsync(() -> {
+        try {
+            Product product = productRepository.findById(key).orElseThrow();
+            cache.put("product:" + key, product, Duration.ofMinutes(5));
+            return product;
+        } finally {
+            inflight.remove(key);
+        }
+    })
+);
+return future.join(); // All 10K requests wait for 1 database query
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**War Story Impact Analysis:**
+```
+GC Pause: 10s latency spike, 12K transactions affected
+Thread Leak: Service crash every 3 days, 2h downtime per crash
+Connection Pool: 503 errors during flash sale, $45K lost orders
+Cache Stampede: Database CPU 100%, 35min downtime
+Cascade Failure: 3 services down, 45min total outage
 
-## Examples
+Cost of incidents:
+- GC Pause: $50K (lost transactions) + $10K (engineering time)
+- Thread Leak: $100K (3 crashes × $33K each)
+- Connection Pool: $45K (lost orders) + $20K (engineering time)
+- Cache Stampede: $200K (lost revenue) + $50K (engineering time)
+- Cascade Failure: $300K (lost revenue) + $100K (engineering time)
+```
 
-[Code examples demonstrating the concept]
+**Prevention ROI:**
+```
+GC tuning: $5K investment → prevents $50K incident
+Thread leak detection: $10K investment → prevents $100K incident
+Connection pool monitoring: $5K investment → prevents $65K incident
+Cache stampede prevention: $15K investment → prevents $250K incident
+Circuit breakers: $20K investment → prevents $400K incident
+
+Total investment: $55K → Total prevented: $865K
+ROI: 15.7x
+```
 
 ## Internal Working
 
-[How this works under the hood]
+**Incident Investigation Process:**
+1. **Alert fires**: Monitoring detects anomaly (latency spike, error rate, resource exhaustion)
+2. **Triage**: Determine severity, affected services, user impact
+3. **Diagnosis**: Check logs, metrics, traces, thread dumps, heap dumps
+4. **Root cause**: Identify the underlying issue (GC, thread leak, connection pool, etc.)
+5. **Mitigation**: Restart, rollback, scale up, or fix forward
+6. **Resolution**: Verify service is stable
+7. **Post-mortem**: Document timeline, root cause, impact, prevention
+
+**Thread Dump Analysis:**
+```
+jstack <pid> or jcmd <pid> Thread.print
+
+Key patterns:
+- WAITING (parking): Thread waiting for condition
+- TIMED_WAITING: Thread sleeping or waiting with timeout
+- BLOCKED: Thread waiting for monitor lock
+- RUNNABLE: Thread executing
+
+Analyze:
+- Count threads per state
+- Identify lock contention
+- Find blocked threads
+- Check for thread pool exhaustion
+```
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Production war stories exist because:
+
+1. **Real incidents are educational**: Theoretical knowledge doesn't prepare you for production failures
+2. **Patterns repeat**: The same issues (GC pauses, thread leaks, connection pool exhaustion) happen across organizations
+3. **Prevention is cheaper than cure**: A $5K monitoring investment prevents $50K incidents
+4. **Team knowledge sharing**: War stories spread institutional knowledge faster than documentation
+5. **Post-mortem culture**: Blameless post-mortems create a learning organization
+6. **Production readiness**: Teams that know war stories are better prepared for incidents
+
+These stories demonstrate that production failures are rarely exotic — they're the same 10 patterns recurring in different forms.
 
 ## Overview
 
-[Brief description of the topic]
+Production war stories are real-world incident reports covering GC pauses, thread leaks, connection pool exhaustion, serialization bugs, cascade failures, dirty reads, thread starvation, and cache stampede. Each story includes timeline, root cause, detection, fix, and prevention checklist. These patterns repeat across organizations and are preventable with proper monitoring, testing, and production patterns.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- "Release It!" by Michael Nygard — Production antipatterns
+- "Site Reliability Engineering" by Google — Incident management
+- "The Site Reliability Workbook" by Google — Practical SRE
+- Netflix Tech Blog — Production war stories: https://netflixtechblog.com/
+- Google SRE Book: https://sre.google/sre-book/table-of-contents/
+- PagerDuty Incident Response: https://response.pagerduty.com/

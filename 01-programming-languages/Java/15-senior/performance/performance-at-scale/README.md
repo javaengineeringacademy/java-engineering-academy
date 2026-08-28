@@ -303,51 +303,161 @@ public Object enforceBudget(ProceedingJoinPoint pjp) throws Throwable {
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **How do you calculate the hardware needed for 1M requests/second?**
+   Start with throughput math: 1M req/sec ÷ nodes = req/sec per node. With 50ms avg latency, each request holds a thread for 50ms. Concurrent requests = req/sec × latency = 10K × 0.05 = 500. With 4 threads per core, need 125 cores per node. Add 30% headroom. Database: if each query takes 5ms, a single DB handles 200 queries/sec, so need 5000 read replicas for 1M reads/sec.
 
-1. **What is this concept?**
-   [Answer]
+2. **When does GC pause time matter vs throughput?**
+   GC matters for latency-sensitive services (payments, real-time bidding, trading). A 200ms G1 pause on a p99 latency SLA of 100ms causes SLA breaches. For batch processing, throughput matters more — Parallel GC's multi-second pauses are acceptable if total throughput is highest. Decision matrix: latency SLA <10ms → ZGC/Shenandoah; throughput-focused → Parallel GC; balanced → G1.
 
-2. **When would you use it?**
-   [Answer]
+3. **How do you decide between optimizing code vs adding hardware?**
+   Formula: Optimization Cost = Dev Time × Rate. Hardware Cost = Monthly Cost × Months. If optimization cost < hardware cost over 6 months → optimize. If hardware is cheaper → add hardware. Exception: latency-sensitive systems require optimization regardless (GC pauses can't be fixed by adding servers). Also consider: optimization reduces future cloud bills permanently.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **Explain the cost of a millisecond for an e-commerce site.**
+   Amazon: 100ms delay = $160M/year revenue loss. For your service: Annual Revenue / Requests per Year = Value per Request. If $100M revenue / 10B requests = $0.01/request. With 0.1% conversion drop per 100ms = $1M/ms/year. Calculate: Revenue × (Conversion drop % / Latency sensitivity ms). This justifies performance engineering investment.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **What is a performance budget and how do you enforce it?**
+   A performance budget allocates time to each layer: 5ms auth + 20ms business logic + 15ms DB + 5ms serialization = 45ms total. Enforce via: (1) AOP timing annotations; (2) Circuit breakers that fail fast on slow calls; (3) Load testing in CI/CD; (4) Real-time dashboards with budget alerts. When budget exceeded, alert team before production impact.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **How do you handle 10TB of data that must be in memory?**
+   Options: (1) Off-heap memory via `ByteBuffer.allocateDirect()` or `Unsafe` — bypasses GC; (2) Memory-mapped files (`FileChannel.map()`) — OS handles paging; (3) External storage (Redis cluster) — distributed memory; (4) Chunked streaming — process 10K records at a time. Trade-off: off-heap avoids GC but requires manual memory management; memory-mapped may cause page faults under pressure.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+```java
+// PITFALL 1: Over-provisioning application nodes without load testing
+// Assuming 1 node = 10K req/sec without measuring actual throughput
+
+// PITFALL 2: Synchronous calls in request path
+// Each external API call adds 50-200ms latency
+// Fix: Use CompletableFuture.allOf() for parallel calls
+
+// PITFALL 3: Ignoring connection pool sizing
+// Too few connections → request queuing; too many → DB overload
+
+// PITFALL 4: Not setting timeouts
+// One slow backend service degrades entire system
+// Fix: Set connect timeout (5s), read timeout (30s), circuit breaker
+
+// PITFALL 5: Logging every request at DEBUG level
+// 1M req/sec × 1KB log = 1GB/sec disk I/O
+
+// PITFALL 6: Not monitoring GC in production
+// A single Full GC can pause all threads for 5+ seconds
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+### Latency Budget Example
+```
+Total SLA: 100ms
+├── Network (client → server):    10ms
+├── Auth + Rate limiting:          5ms
+├── Business logic:               20ms
+├── Database query (cached):       1ms
+├── Database query (uncached):    15ms
+├── Serialization:                 5ms
+├── Network (server → client):    10ms
+└── Buffer (headroom):            34ms
+```
+
+### Throughput Capacity Planning
+```
+1M req/sec across 100 nodes:
+├── Each node: 10K req/sec
+├── CPU per core: 3-5K req/sec (typical)
+├── Cores per node needed: 2-3 cores (plus headroom)
+├── Recommended: 8 cores per node (50% utilization target)
+├── Memory per node: 4-8GB heap
+└── Total: 800 cores, 400-800GB RAM
+```
+
+### Cloud Cost Comparison (AWS us-east-1)
+```
+Optimized application (100 nodes, c6i.2xlarge):
+  100 × $0.34/hr × 730hr = $24,820/month
+
+Unoptimized (200 nodes, c6i.2xlarge):
+  200 × $0.34/hr × 730hr = $49,640/month
+
+Savings from optimization: $24,820/month
+```
 
 ## Examples
 
-[Code examples demonstrating the concept]
+```java
+// Performance budget enforcement with AOP
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Timed {
+    long budgetMs() default 50;
+}
+
+@Aspect
+@Component
+public class PerformanceBudgetAspect {
+    @Around("@annotation(timed)")
+    public Object enforceBudget(ProceedingJoinPoint pjp, Timed timed) throws Throwable {
+        long start = System.nanoTime();
+        Object result = pjp.proceed();
+        long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+        if (elapsed > timed.budgetMs()) {
+            log.warn("Budget exceeded: {}ms (limit: {}ms) in {}",
+                elapsed, timed.budgetMs(), pjp.getSignature().toShortString());
+            metrics.record("budget.exceeded", 1);
+        }
+        return result;
+    }
+}
+
+// Parallel external calls for throughput
+CompletableFuture<User> userFuture = CompletableFuture.supplyAsync(() -> userService.getUser(id));
+CompletableFuture<List<Order>> ordersFuture = CompletableFuture.supplyAsync(() -> orderService.getOrders(id));
+CompletableFuture.allOf(userFuture, ordersFuture).join();
+// Both calls run in parallel — total time = max(t1, t2) not t1 + t2
+
+// Off-heap memory for large caches
+ByteBuffer cache = ByteBuffer.allocateDirect(10 * 1024 * 1024 * 1024L); // 10GB
+cache.putInt(0, 42); // Write at offset 0
+int value = cache.getInt(0); // Read from offset 0
+// Not subject to GC — must manage manually
+```
 
 ## Internal Working
 
-[How this works under the hood]
+### Request Processing Pipeline
+```
+Client Request
+    ↓
+Load Balancer (L7) → health check, routing
+    ↓
+Application Server
+    ├── Thread Pool (virtual or platform threads)
+    ├── Request parsing + auth
+    ├── Business logic execution
+    ├── Database query (or cache hit)
+    └── Response serialization
+    ↓
+Network → Client Response
+```
+
+### Memory Management at Scale
+1. **Heap sizing**: `-Xmx4g` for most workloads; >32GB uses compressed oops
+2. **Off-heap**: Bypass GC for large caches, manual memory management
+3. **Memory-mapped files**: OS page cache handles paging, virtual address space
+4. **Object pooling**: Reuse expensive objects (connections, buffers)
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Performance at scale exists because modern applications serve millions of users simultaneously. At scale: (1) Small inefficiencies multiply into massive costs (1ms × 1M req = 1000 seconds of CPU per day); (2) Latency directly impacts revenue (Amazon's $160M/ms); (3) Hardware costs scale linearly with poor optimization; (4) User experience degrades non-linearly with latency. The discipline combines profiling, benchmarking, architecture design, and cost analysis to build systems that perform efficiently at any scale.
 
 ## Overview
 
-[Brief description of the topic]
+Performance at scale is the discipline of building and operating systems that handle millions of requests per second while maintaining acceptable latency, reliability, and cost efficiency. It encompasses capacity planning (how many nodes do you need), GC tuning (minimizing pause times), profiling (finding bottlenecks), load testing (validating assumptions), and cost optimization (balancing performance vs infrastructure spend). Key principle: measure, don't guess — use JMH for microbenchmarks and async-profiler for production profiling.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java Performance by Scott Oaks](https://www.oreilly.com/library/view/java-performance/9781492056102/)
+- [Google SRE Book](https://sre.google/sre-book/table-of-contents/)
+- [The Art of Capacity Planning by John Allspaw](https://www.oreilly.com/library/view/the-art-of/9780596518578/)
+- [async-profiler](https://github.com/async-profiler/async-profiler)
+- [JMH Documentation](https://openjdk.org/projects/code-tools/jmh/)

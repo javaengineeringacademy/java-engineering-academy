@@ -327,60 +327,286 @@ for (String s : list) {
 String result = joiner.toString();
 ```
 
-## Interview Questions
+## Overview
 
-[5-10 interview questions with answers]
-
-1. **What is this concept?**
-   [Answer]
-
-2. **When would you use it?**
-   [Answer]
-
-3. **What are the alternatives?**
-   [Answer]
-
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
-
-## Performance
-
-[Performance considerations and benchmarks]
-
-## Examples
-
-[Code examples demonstrating the concept]
-
-## Internal Working
-
-[How this works under the hood]
+String immutability means once a `String` object is created, its content cannot be changed. Every operation (`concat`, `substring`, `replace`) creates a new `String` object. This is a fundamental design decision in Java driven by security (class loading, network connections), performance (string pooling, hash code caching), and thread safety. The trade-off is concatenation overhead, which `StringBuilder` mitigates.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+String immutability exists because strings are the most security-sensitive data type in Java. They're used in class loading (`Class.forName()`), network connections (URLs), file paths, and database queries. If strings were mutable, an attacker could modify a class name after validation, redirect a URL after authentication, or corrupt a SQL query after parameterization. Immutability also enables the string pool (deduplication), hash code caching (fast `HashMap` lookups), and inherent thread safety.
 
-## Overview
+## Internal Working
 
-[Brief description of the topic]
+### String Pool (Intern Pool)
 
-## Resources
+```java
+// String pool is a hash table in native memory (Metaspace)
+String s1 = "Hello"; // Creates in pool, returns reference
+String s2 = "Hello"; // Returns existing reference from pool
 
-- **Java Language Specification**: String class
-- **Effective Java** by Joshua Bloch
-- **Java Performance** by Scott Oaks
-- **OpenJDK Source Code**: String.java
+// Pool implementation (simplified):
+// - Located in Metaspace (not heap) since Java 7
+// - Managed by StringTable (fixed-size hash table)
+// - Default size: 60013 buckets (Java 8)
+// - Use -XX:StringTableSize=N to tune
+
+// Interning
+String s3 = new String("Hello").intern(); // Forces into pool
+// s3 == s1 → true (same reference)
+```
+
+### String Internal Representation
+
+```java
+// Java 8: char[] based
+public final class String {
+    private final char[] value; // UTF-16 encoded
+    private final int hash;    // Cached hash code
+}
+
+// Java 9+: Compact strings (byte[] + coder)
+public final class String {
+    private final byte[] value;  // Latin1 or UTF-16
+    private final byte coder;    // LATIN1=0, UTF16=1
+    private final int hash;
+}
+
+// Compact strings save memory for ASCII-only strings
+// Latin1: 1 byte per char (vs 2 bytes for UTF-16)
+```
+
+### Immutability Enforcement
+
+```java
+// String is final — cannot be extended
+public final class String { ... }
+
+// All fields are final — set once in constructor
+private final char[] value;
+private final int hash;
+
+// No setter methods — no way to modify content
+// All "modification" methods return new String objects
+public String concat(String str) {
+    // Creates and returns new String
+    char[] result = ...;
+    return new String(result, true);
+}
+```
+
+## Examples
+
+### String Pool Verification
+
+```java
+public class StringPoolDemo {
+    public static void main(String[] args) {
+        // Compile-time constants: pooled
+        String s1 = "Hello";
+        String s2 = "Hello";
+        System.out.println(s1 == s2); // true (same reference)
+
+        // Runtime concatenation: NOT pooled
+        String s3 = "Hel" + "lo";  // Pooled (compiler optimizes)
+        String s4 = "Hel";
+        String s5 = s4 + "lo";     // NOT pooled (runtime concat)
+        System.out.println(s3 == s5); // false
+
+        // intern() forces pooling
+        String s6 = s5.intern();
+        System.out.println(s1 == s6); // true
+
+        // new String always creates new object
+        String s7 = new String("Hello");
+        System.out.println(s1 == s7); // false
+        System.out.println(s1.equals(s7)); // true
+    }
+}
+```
+
+### Performance: StringBuilder vs String Concatenation
+
+```java
+// BAD: O(n²) string concatenation in loop
+String result = "";
+for (int i = 0; i < 100_000; i++) {
+    result += i; // Creates new String each iteration
+}
+// Time: ~5000ms for 100K iterations
+
+// GOOD: O(n) with StringBuilder
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 100_000; i++) {
+    sb.append(i); // Modifies same buffer
+}
+String result = sb.toString();
+// Time: ~5ms for 100K iterations
+
+// BETTER: String.join for simple cases
+String result = IntStream.range(0, 100_000)
+    .mapToObj(String::valueOf)
+    .collect(Collectors.joining());
+```
+
+### Hash Code Caching Demo
+
+```java
+// String hash code is computed once and cached
+// This makes HashMap<String, ?> very fast
+
+Map<String, Integer> map = new HashMap<>();
+for (int i = 0; i < 1_000_000; i++) {
+    map.put("user_" + i, i); // Hash computed once per key
+}
+
+// Lookup: hash code already cached
+long start = System.nanoTime();
+for (int i = 0; i < 1_000_000; i++) {
+    map.get("user_" + i);
+}
+long time = System.nanoTime() - start;
+// ~50ms for 1M lookups (hash code cached)
+```
+
+### Thread Safety Demonstration
+
+```java
+// Immutable String is inherently thread-safe
+// No synchronization needed for sharing
+
+public class Config {
+    private final String host;  // Immutable, safe to share
+    private final int port;
+
+    public Config(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    // No defensive copies needed
+    public String getHost() {
+        return host; // Caller can't modify internal state
+    }
+}
+
+// Contrast with mutable StringBuilder (NOT thread-safe)
+StringBuilder sb = new StringBuilder("Hello");
+// Multiple threads modifying sb = data race
+// Must use synchronized or StringBuffer
+```
+
+## Performance
+
+### Memory Comparison
+
+| Operation | String | StringBuilder | Savings |
+|-----------|--------|---------------|---------|
+| 100 concatenations | ~100 objects, 20KB | 1 object, ~1KB | 98% |
+| 1000 concatenations | ~1000 objects, 200KB | 1 object, ~10KB | 95% |
+| 10000 concatenations | ~10000 objects, 2MB | 1 object, ~100KB | 95% |
+
+### String Pool Memory Savings
+
+```java
+// Typical application with 100K strings
+// Without pooling: 100K * 40 bytes = 4MB
+// With pooling: 10K unique * 40 bytes = 400KB (90% savings)
+
+// JVM tuning
+-XX:StringTableSize=1000003  // Increase bucket count
+-XX:CompactStrings           // Enable compact strings (default: true)
+```
+
+### Concatenation Performance
+
+| Scenario | Time (100K items) | GC Pressure |
+|----------|-------------------|-------------|
+| String += | 5000ms | High (100K objects) |
+| StringBuilder | 5ms | Low (1 object) |
+| String.join | 8ms | Low |
+| StringJoiner | 8ms | Low |
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+### 1. String Concatenation in Loops
+
+```java
+// BAD: O(n²) — creates n intermediate String objects
+String csv = "";
+for (String item : items) {
+    csv += item + ","; // Each += creates new String
+}
+
+// GOOD: O(n) — single buffer
+String csv = items.stream().collect(Collectors.joining(","));
+
+// BETTER: StringBuilder with initial capacity
+StringBuilder sb = new StringBuilder(items.size() * 10);
+for (String item : items) {
+    sb.append(item).append(",");
+}
+String csv = sb.toString();
+```
+
+### 2. Misusing String.intern()
+
+```java
+// BAD: Interning user input (memory leak)
+String userInput = scanner.nextLine();
+String interned = userInput.intern(); // Leaks into pool forever
+
+// GOOD: Only intern known, limited sets
+private static final Map<String, String> STATUS_POOL = Map.of(
+    "ACTIVE", "ACTIVE",
+    "INACTIVE", "INACTIVE",
+    "PENDING", "PENDING"
+);
+String status = STATUS_POOL.getOrDefault(rawStatus, rawStatus);
+```
+
+### 3. Comparing Strings with ==
+
+```java
+// BAD: Reference comparison
+if (status == "ACTIVE") { ... } // Unreliable
+
+// GOOD: Content comparison
+if ("ACTIVE".equals(status)) { ... }
+
+// BETTER: Use enum for fixed sets
+enum Status { ACTIVE, INACTIVE, PENDING }
+```
+
+### 4. Substring Performance Myths
+
+```java
+// Java 7u6+: substring() creates new String (no shared buffer)
+String sub = longString.substring(10, 20); // New String object
+
+// Pre-Java 7u6: substring shared buffer (memory leak risk)
+// The old behavior was removed for safety
+```
+
+### 5. Ignoring Compact Strings
+
+```java
+// Java 9+ uses compact strings by default
+// Latin1 strings: 1 byte per char
+// UTF-16 strings: 2 bytes per char
+
+// Check which encoding is used
+String s = "Hello";
+// In Java 9+: byte[] with LATIN1 coder
+// In Java 8: char[] (always 2 bytes per char)
+
+// Disable compact strings (not recommended)
+// -XX:-CompactStrings
+```
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java Language Specification: String](https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html#jls-3.10.5)
+- [OpenJDK Source: String.java](https://github.com/openjdk/jdk/blob/master/src/java.base/java/lang/String.java)
+- *Effective Java* by Joshua Bloch — Item 17: Minimize mutability
+- *Java Performance* by Scott Oaks — Chapter on Strings
+- [Oracle: Compact Strings](https://openjdk.org/jeps/254)

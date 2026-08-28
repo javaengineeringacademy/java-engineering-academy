@@ -402,51 +402,134 @@ The Java ecosystem offers numerous choices for build tools, frameworks, JDK dist
 
 ---
 
-**Continue to Part 2**: README-part2.md
-
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **When should you choose Gradle over Maven?**
+   Choose Gradle when: building Android applications, need custom build logic, multi-module projects requiring incremental builds, or performance optimization is critical. Maven is better for standard Java projects, team is new to build tools, or long-term stability is priority. Gradle's build cache and daemon provide 2-10x faster builds for large projects.
 
-1. **What is this concept?**
-   [Answer]
+2. **What are the trade-offs between Spring Boot and Quarkus?**
+   Spring Boot: larger ecosystem, more developers know it, better enterprise support, but slower startup and higher memory. Quarkus: faster startup (50ms vs 3s), lower memory (50MB vs 512MB), excellent GraalVM support, but smaller community and less enterprise adoption. Choose Spring Boot for long-running services, Quarkus for serverless/Kubernetes.
 
-2. **When would you use it?**
-   [Answer]
+3. **Why choose Eclipse Temurin over Oracle JDK for production?**
+   Eclipse Temurin is free for all uses (no licensing fees), community-supported, and compatible with standard Java. Oracle JDK requires paid subscription for production use ($25-50/processor/month). Temurin is the safest choice for most organizations. Choose Oracle JDK only when you need commercial support or Oracle Database integration.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What is the difference between Hibernate, MyBatis, and jOOQ?**
+   Hibernate: high-level ORM, automatic SQL generation, good for CRUD. MyBatis: SQL-centric, manual mapping, good for complex queries. jOOQ: type-safe SQL, compile-time validation, good for database-first approach. Hibernate is 30-50% faster for simple CRUD, jOOQ/MyBatis are 20-40% faster for complex queries.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **When should you use Protocol Buffers over Jackson for serialization?**
+   Use Protobuf when: performance is critical (2-10x faster than JSON), schema evolution is needed, multi-language support is required, or network bandwidth is constrained. Use Jackson when: human-readable format is needed, REST APIs are required, or team is more familiar with JSON. Protobuf reduces payload size by 60-80% compared to JSON.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Choosing framework based on popularity instead of fit:**
+```java
+// BAD: Choosing Spring Boot because "everyone uses it"
+// Building a simple health check proxy
+@SpringBootApplication
+@RestController
+public class HealthProxy {
+    @GetMapping("/health")
+    public Health check() {
+        return restTemplate.getForObject("http://backend/health", Health.class);
+    }
+}
+// 500MB image, 512MB RAM, 3s startup
+
+// GOOD: Choosing Quarkus for cloud-native services
+@Path("/health")
+public class HealthProxy {
+    @GET
+    public Health check() {
+        return client.target("http://backend/health")
+            .request().get(Health.class);
+    }
+}
+// 50MB image, 50MB RAM, 50ms startup
+```
+
+**Not considering team expertise:**
+```java
+// BAD: Choosing jOOQ when team knows Hibernate
+// 3 months lost learning jOOQ patterns
+
+// GOOD: Choosing Hibernate because team knows it
+// 2 weeks to implement, team is productive immediately
+// Only switch if Hibernate can't meet performance requirements
+```
+
+**Ignoring migration cost:**
+```java
+// BAD: "Let's switch from Hibernate to jOOQ for better performance"
+// Migration cost: 3-6 months × 5 developers = $150K-$300K
+// Performance gain: 20% for complex queries only
+// ROI: Negative for most applications
+
+// GOOD: Optimize Hibernate first
+// Add second-level cache, tune queries, add indexes
+// Only migrate if optimization can't meet requirements
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**Build Tool Performance:**
+| Metric | Maven | Gradle | Bazel |
+|--------|-------|--------|-------|
+| Clean build (100 modules) | 45 min | 15 min | 5 min |
+| Incremental build | 5 min | 30 sec | 10 sec |
+| Build cache hit | N/A | 80% | 95% |
+| Memory usage | 2GB | 4GB | 8GB |
 
-## Examples
+**Framework Performance:**
+| Metric | Spring Boot | Quarkus | Micronaut |
+|--------|-------------|---------|-----------|
+| Startup time | 3.2s | 50ms | 80ms |
+| Memory (idle) | 512MB | 50MB | 60MB |
+| Throughput (ops/s) | 125K | 140K | 135K |
+| P99 latency | 15ms | 8ms | 10ms |
+| Native image startup | 0.8s | 30ms | 40ms |
 
-[Code examples demonstrating the concept]
+**Serialization Performance:**
+| Format | Throughput | Size | Latency |
+|--------|------------|------|---------|
+| Jackson JSON | 100K ops/s | 1KB | 10μs |
+| Gson JSON | 80K ops/s | 1KB | 12μs |
+| Protobuf | 500K ops/s | 200B | 2μs |
+| Avro | 400K ops/s | 250B | 3μs |
 
 ## Internal Working
 
-[How this works under the hood]
+**Maven vs Gradle Build Process:**
+- Maven: XML-based, convention over configuration, lifecycle-based (compile → test → package → install)
+- Gradle: DSL-based, task-oriented, incremental builds, build cache, daemon for faster subsequent builds
+- Bazel: Hermetic builds, remote caching, distributed builds, Starlark configuration
+
+**Framework Auto-Configuration:**
+- Spring Boot: Runtime classpath scanning, dynamic proxy generation, conditional bean registration
+- Quarkus: Build-time processing, bytecode generation, dead code elimination for native images
+- Micronaut: Compile-time annotation processing, AOT compilation, no reflection
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+The Java ecosystem has accumulated hundreds of tools and frameworks over 25+ years. This creates decision paralysis because:
+
+1. **Too many choices**: Build tools (Maven/Gradle/Bazel), frameworks (Spring/Quarkus/Micronaut), JDKs (Oracle/Corretto/Temurin), ORMs (Hibernate/MyBatis/jOOQ), testing (JUnit/TestNG), logging (Log4j2/Logback), serialization (Jackson/Gson/Protobuf)
+2. **Trade-offs are non-obvious**: The "best" choice depends on team size, application type, deployment model, and long-term strategy
+3. **Migration costs are high**: Switching frameworks costs 3-12 months and $100K-$500K
+4. **Ecosystem lock-in**: Once you choose Spring Boot, switching to Quarkus requires rewriting 30-50% of code
+
+The decision framework exists to make these choices systematic, defensible, and reversible when possible.
+
+## Overview
+
+Java ecosystem decisions cover build tools (Maven vs Gradle vs Bazel), frameworks (Spring Boot vs Quarkus vs Micronaut), JDK distributions (Oracle vs OpenJDK vs Corretto), ORMs (Hibernate vs MyBatis vs jOOQ), testing (JUnit 4 vs 5 vs TestNG), logging (Log4j2 vs Logback), and serialization (Jackson vs Gson vs Protobuf). Each decision is evaluated against weighted criteria to produce a data-driven recommendation.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- Maven documentation: https://maven.apache.org/guides/
+- Gradle documentation: https://docs.gradle.org/
+- Spring Boot documentation: https://spring.io/projects/spring-boot
+- Quarkus documentation: https://quarkus.io/guides/
+- Micronaut documentation: https://docs.micronaut.io/
+- Hibernate documentation: https://hibernate.org/orm/documentation/
+- jOOQ documentation: https://www.jooq.org/doc/
+- "Maven: The Complete Reference" by Sonatype

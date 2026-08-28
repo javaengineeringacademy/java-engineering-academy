@@ -202,51 +202,119 @@ Java remains a strategic technology choice for enterprise applications, particul
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **When is Java the wrong choice for a new project?**
+   Java is wrong for: startup MVPs (slow iteration), data science/ML (Python dominates), scripting/automation (overhead too high), mobile-first consumer apps (Swift/Kotlin preferred), real-time gaming (GC pauses), edge computing/IoT (JVM footprint too large), and serverless with <100ms cold starts (GraalVM helps but still overhead vs Go).
 
-1. **What is this concept?**
-   [Answer]
+2. **How does Java's performance compare to Go for microservices?**
+   Java: 125K ops/s throughput, 15ms P99 latency, 512MB memory, 3s startup. Go: 150K ops/s throughput, 5ms P99 latency, 50MB memory, 50ms startup. Java wins on ecosystem maturity and complex business logic. Go wins on startup time, memory efficiency, and simple high-throughput services.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is the recommended Java version strategy for enterprises?**
+   For greenfield: start with latest LTS (Java 21+). For existing: stay on current LTS until critical need arises, plan migration 12-18 months before EOL, test against new LTS for 3-6 months. Use OpenJDK distributions to avoid licensing costs. Next LTS: Java 25 (2025).
 
-3. **What are the alternatives?**
-   [Answer]
+4. **How do you justify Java's infrastructure cost premium to stakeholders?**
+   Frame as total cost: Java's mature ecosystem reduces development time 30-50%, better tooling reduces debugging time 20-30%, and larger talent pool reduces hiring costs 10-20%. For complex enterprise applications, Java's TCO is often lower than Go despite higher infrastructure costs.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **What are the key trends affecting Java's future?**
+   Virtual threads (simplified concurrency), GraalVM native images (competitive startup time), Project Panama (foreign function interface), Project Valhalla (value types for performance), and polyglot JVM (multi-language support). Java is evolving to address its weaknesses while maintaining its strengths.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Choosing Java for everything:**
+```java
+// BAD: Using Spring Boot for a simple CLI tool
+@SpringBootApplication
+public class CliTool {
+    public static void main(String[] args) {
+        SpringApplication.run(CliTool.class, args);
+    }
+}
+// 500MB image, 3s startup, 512MB RAM for a simple tool
+
+// GOOD: Using Java for complex enterprise, Go for simple services
+// Java: Payment processing, complex business logic, regulatory compliance
+// Go: Health checks, API proxies, simple microservices
+```
+
+**Ignoring virtual threads:**
+```java
+// BAD: Using platform threads for I/O-bound work
+ExecutorService pool = Executors.newFixedThreadPool(200);
+// 200 concurrent HTTP calls max
+
+// GOOD: Using virtual threads (Java 21+)
+ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor();
+// 100,000+ concurrent HTTP calls with same memory
+// 10-50x throughput improvement for I/O-bound workloads
+```
+
+**Not considering GraalVM for microservices:**
+```java
+// BAD: Default JVM deployment for all services
+// 512MB memory, 3s startup
+
+// GOOD: GraalVM native image for simple microservices
+// 50MB memory, 50ms startup
+// Trade-off: longer build time, some reflection limitations
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**Java vs Alternatives Performance:**
+| Metric | Java 21 | Go 1.21 | Python 3.11 | Rust 1.75 |
+|--------|---------|---------|-------------|-----------|
+| Throughput (ops/s) | 125K | 150K | 5K | 200K |
+| P99 latency | 15ms | 5ms | 100ms | 2ms |
+| Memory (idle) | 180MB | 10MB | 50MB | 5MB |
+| Startup time | 1.8s | 50ms | 500ms | 10ms |
+| Concurrency | Virtual threads | Goroutines | GIL-limited | async/await |
 
-## Examples
-
-[Code examples demonstrating the concept]
+**GraalVM Native Image Performance:**
+| Metric | JVM | Native Image | Improvement |
+|--------|-----|--------------|-------------|
+| Startup time | 3.2s | 50ms | 64x faster |
+| Memory | 512MB | 50MB | 10x less |
+| Throughput | 125K ops/s | 100K ops/s | 20% lower |
+| Build time | 30s | 5 min | 10x slower |
 
 ## Internal Working
 
-[How this works under the hood]
+**JVM Optimization Mechanisms:**
+1. **JIT compilation**: HotSpot compiles hot paths to native code at runtime
+2. **Virtual threads**: Lightweight threads managed by JVM, not OS
+3. **ZGC**: Sub-millisecond pause times regardless of heap size
+4. **GraalVM**: Ahead-of-time compilation for native images
+5. **Project Loom**: Virtual threads, structured concurrency, scoped values
+
+**Java Ecosystem Maturity:**
+- 25+ years of production use
+- 3M+ active developers
+- 90% of Fortune 500 companies
+- Thousands of libraries and frameworks
+- Enterprise-grade tooling (IDE, profiling, debugging)
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Java technology strategy exists because:
+
+1. **Market position**: Java is dominant but facing competition from Go, Rust, and Python
+2. **Ecosystem lock-in**: Switching from Java costs $1-10M and 1-3 years
+3. **Talent availability**: Java developers are abundant but aging
+4. **Performance gap**: Java's startup time and memory overhead are disadvantages in cloud-native
+5. **Innovation pace**: Java evolves slower than newer languages
+6. **Regulatory requirements**: Enterprise compliance favors mature, well-supported technologies
+
+The strategy framework exists to help organizations make informed decisions about when to use Java, when to consider alternatives, and how to plan for the future.
 
 ## Overview
 
-[Brief description of the topic]
+Java technology strategy covers market position, when to choose Java vs alternatives, version strategy (LTS adoption timeline), licensing considerations, and strategic recommendations for short/medium/long-term. Java remains the dominant enterprise language but faces competition from Go (cloud-native), Python (ML/AI), and Rust (performance-critical). The key is matching Java's strengths (maturity, ecosystem, type safety) to appropriate use cases.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- TIOBE Index: https://www.tiobe.com/tiobe-index/
+- Stack Overflow Developer Survey: https://survey.stackoverflow.co/
+- Java documentation: https://docs.oracle.com/en/java/
+- GraalVM documentation: https://www.graalvm.org/
+- Project Loom: https://openjdk.org/projects/loom/
+- "Java Performance" by Scott Oaks (O'Reilly)
+- "Modern Java in Action" by Urma, Fusco, Mycroft

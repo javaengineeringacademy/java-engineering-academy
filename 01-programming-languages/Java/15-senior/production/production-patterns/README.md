@@ -483,47 +483,161 @@ String result = Try.ofSupplier(decoratedSupplier)
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is the difference between a liveness and readiness health check?**
+   Liveness: "Is the application alive?" — checks if the process is running and critical components are functional. If it fails, the container is restarted. Readiness: "Is the application ready to serve traffic?" — checks if the application can handle requests (dependencies available, warmed up). If it fails, the pod is removed from load balancer.
 
-1. **What is this concept?**
-   [Answer]
+2. **How does a circuit breaker prevent cascade failures?**
+   A circuit breaker monitors failures and trips (opens) when failure rate exceeds threshold (e.g., 50%). When open, all requests fail fast without calling the downstream service. After a wait duration, it enters half-open state and allows a test request. If it succeeds, the circuit closes; if it fails, it stays open. This prevents one failing service from consuming all resources.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is the thundering herd problem and how do you prevent it?**
+   Thundering herd occurs when many requests hit a resource simultaneously after it becomes available (e.g., cache expiry, service recovery). Prevention: request coalescing (singleflight), staggered TTLs for caches, exponential backoff with jitter, and rate limiting. Without prevention, 10K cache misses can overwhelm the database.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **How do you size a database connection pool?**
+   Formula: `pool_size = (2 × number_of_cores) + effective_spindle_count`. For most applications: (2 × 8) + 1 = 17 connections. Monitor `hikaricp_connections_pending` — if > 0, increase pool size. Set `connectionTimeout` to fail fast (5-10 seconds). Never set pool size > database `max_connections`.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **What is the difference between rate limiting algorithms?**
+   Token Bucket: allows bursts up to bucket capacity, best for APIs. Fixed Window: simple count per window, boundary issues (2x burst). Sliding Window Log: most accurate, memory-intensive. Sliding Window Counter: weighted average, best balance of accuracy and efficiency. Token Bucket is the most common for API rate limiting.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Forgetting to close resources in shutdown hooks:**
+```java
+// BAD: Resources not closed in shutdown hook
+Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+    server.stop();
+    // Database connection pool not closed
+    // Message consumer not stopped
+    // Cache not flushed
+}));
+
+// GOOD: Close all resources in order
+Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+    try { server.stop(); } catch (Exception e) { log.error("Server stop failed", e); }
+    try { messageConsumer.stop(); } catch (Exception e) { log.error("Consumer stop failed", e); }
+    try { connectionPool.close(); } catch (Exception e) { log.error("Pool close failed", e); }
+    try { cache.flush(); } catch (Exception e) { log.error("Cache flush failed", e); }
+}));
+```
+
+**Checking database in liveness probe:**
+```java
+// BAD: Liveness probe checks database
+@Component
+public class LivenessHealthIndicator implements HealthIndicator {
+    @Override
+    public Health health() {
+        database.ping(); // If DB is down, restart won't fix it
+        return Health.up().build();
+    }
+}
+
+// GOOD: Liveness checks only internal state
+@Component
+public class LivenessHealthIndicator implements HealthIndicator {
+    @Override
+    public Health health() {
+        // Only check things that restart CAN fix
+        if (isDeadlocked()) return Health.down().build();
+        if (isOutOfMemory()) return Health.down().build();
+        return Health.up().build();
+    }
+}
+```
+
+**Not using circuit breaker with retry:**
+```java
+// BAD: Retrying without circuit breaker
+// If service is down, all retries hit it, consuming resources
+for (int i = 0; i < 3; i++) {
+    try {
+        return callService(); // 3 requests hit failing service
+    } catch (Exception e) {
+        Thread.sleep(1000);
+    }
+}
+
+// GOOD: Circuit breaker + retry
+Supplier<String> decorated = Decorators.ofSupplier(this::callService)
+    .withCircuitBreaker(circuitBreaker) // Fast-fail when service is down
+    .withRetry(retry) // Retry when circuit is closed
+    .decorate();
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**Production Pattern Performance Overhead:**
 
-## Examples
+| Pattern | Latency Overhead | Memory Overhead | CPU Overhead |
+|---------|------------------|-----------------|--------------|
+| Health Check | 0.1-1ms | 1MB | <1% |
+| Circuit Breaker | 0.01ms | 10KB | <0.1% |
+| Rate Limiter | 0.05ms | 1KB | <0.1% |
+| Retry (with backoff) | 500ms-5s (delay) | 1KB | <0.1% |
+| Connection Pool | 0.5-1ms | 50-200MB | 1-2% |
+| Graceful Shutdown | 10-30s (drain) | None | 0% |
 
-[Code examples demonstrating the concept]
+**Resilience4j Performance:**
+```
+Circuit Breaker:
+- State transition: <1ms
+- Call decoration: 0.01ms overhead
+- Memory per instance: 10KB
+
+Rate Limiter:
+- Token check: 0.05ms
+- Throughput: 1M+ checks/second
+- Memory per instance: 1KB
+```
 
 ## Internal Working
 
-[How this works under the hood]
+**Circuit Breaker State Machine:**
+1. **CLOSED**: Normal operation. Requests pass through. Failures are counted.
+2. **OPEN**: Failure threshold exceeded. All requests fail fast immediately.
+3. **HALF_OPEN**: Wait duration elapsed. Limited requests allowed to test recovery.
+4. **Transition**: If test request succeeds → CLOSED. If fails → OPEN.
+
+**HikariCP Connection Lifecycle:**
+1. Application requests connection from pool
+2. Pool checks for idle connection (ready to use)
+3. If no idle, pool creates new connection (if below max)
+4. If at max, pool waits for connection (connectionTimeout)
+5. Connection is assigned to application
+6. Application uses connection for queries
+7. Connection returned to pool (not closed)
+8. Idle connections closed after idleTimeout
+
+**Graceful Shutdown Sequence:**
+1. SIGTERM received
+2. Application stops accepting new connections/requests
+3. In-flight requests continue processing
+4. Health check returns NOT_READY (removed from load balancer)
+5. Pending tasks complete or timeout expires
+6. Resources closed (connections, caches, consumers)
+7. JVM exits
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Production patterns exist because:
+
+1. **Networks are unreliable**: HTTP calls fail, databases timeout, caches expire
+2. **Services fail**: Bugs, memory leaks, resource exhaustion happen
+3. **Traffic is unpredictable**: Flash sales, viral events, DDoS attacks
+4. **Dependencies fail**: Third-party services, databases, message queues go down
+5. **Users expect reliability**: 99.9% uptime = 8.76 hours downtime/year
+6. **Cost of failure**: Lost revenue, damaged reputation, SLA penalties
+
+The patterns (circuit breaker, rate limiter, health check, retry, connection pool, graceful shutdown) provide battle-tested solutions to these production challenges.
+
+## Overview
+
+Production patterns are battle-tested solutions for building resilient distributed systems in Java. They cover graceful shutdown (clean termination), health checks (liveness/readiness), circuit breakers (failure isolation), rate limiting (traffic control), connection pooling (resource management), and retry with backoff (transient failure handling). These patterns are implemented using Resilience4j, HikariCP, and Spring Boot Actuator.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- Resilience4j documentation: https://resilience4j.readme.io/
+- HikariCP GitHub: https://github.com/brettwooldridge/HikariCP
+- Spring Boot Actuator: https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
+- "Release It!" by Michael Nygard — Production patterns
+- "Building Microservices" by Sam Newman — Chapter on resilience
+- Kubernetes health probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/

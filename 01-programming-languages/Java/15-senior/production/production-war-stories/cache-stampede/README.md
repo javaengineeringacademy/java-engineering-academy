@@ -121,51 +121,178 @@ public void refreshCatalog() {
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is cache stampede and what causes it?**
+   Cache stampede (thundering herd) occurs when many concurrent requests miss the cache simultaneously and hit the database. Caused by: synchronized TTL expiration, hot key expiry, cache failure, or deployment. When 100K cache entries expire at the same instant, 100K database queries fire simultaneously, overwhelming the database.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is request coalescing (singleflight) and how does it prevent stampede?**
+   Request coalescing ensures only one concurrent request per cache key queries the database. Others wait for the result. Implementation: `ConcurrentHashMap<Long, CompletableFuture<Product>> inflight`. `computeIfAbsent` ensures only one future per key. All requests join the same future. Result: 1 database query instead of 10K.
 
-2. **When would you use it?**
-   [Answer]
+3. **How do you add jitter to cache TTLs and why?**
+   Add random offset (±10-20%) to prevent synchronized expiration: `ttl = baseTtl.plus(Duration.ofMinutes(ThreadLocalRandom.current().nextInt(120)))`. Without jitter, all entries expire at the same time (cache stampede). With jitter, entries expire gradually, spreading database load across time.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What is cache warming and when should you implement it?**
+   Cache warming pre-populates cache before expiration using background refresh. Implement when: cache hit rate drops below 95%, cache has >10K entries, or TTL-based expiry causes predictable load spikes. Two approaches: proactive (refresh before expiry) and reactive (refresh on first miss after expiry).
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **What monitoring prevents cache stampede?**
+   (1) Cache hit rate alert: <95% = warning, <90% = critical. (2) Cache miss rate alert: >5% = warning, >10% = critical. (3) Database query rate alert: >2x normal = warning. (4) Cache expiration pattern monitoring. (5) Dashboard for cache operations vs database load correlation.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Identical TTLs for all cache entries:**
+```java
+// BAD: All entries expire at the same time
+for (Product product : products) {
+    cache.put("product:" + product.getId(), product, Duration.ofHours(24));
+}
+// 100K entries all expire tomorrow at 09:00
+
+// GOOD: Jittered TTLs
+for (Product product : products) {
+    Duration ttl = Duration.ofHours(24)
+        .plus(Duration.ofMinutes(ThreadLocalRandom.current().nextInt(120)));
+    cache.put("product:" + product.getId(), product, ttl);
+}
+// Entries expire gradually over 2 hours
+```
+
+**No request coalescing:**
+```java
+// BAD: 10K concurrent requests all hit database
+Product cached = cache.get("product:" + id);
+if (cached == null) {
+    Product product = productRepository.findById(id).orElseThrow(); // 10K queries!
+    cache.put("product:" + id, product, Duration.ofMinutes(5));
+    return product;
+}
+
+// GOOD: Singleflight
+private final ConcurrentHashMap<Long, CompletableFuture<Product>> inflight = new ConcurrentHashMap<>();
+
+public Product getProduct(long id) {
+    Product cached = cache.get("product:" + id);
+    if (cached != null) return cached;
+
+    CompletableFuture<Product> future = inflight.computeIfAbsent(id,
+        key -> CompletableFuture.supplyAsync(() -> {
+            try {
+                Product product = productRepository.findById(key).orElseThrow();
+                cache.put("product:" + key, product, Duration.ofMinutes(5));
+                return product;
+            } finally {
+                inflight.remove(key);
+            }
+        })
+    );
+    return future.join();
+}
+```
+
+**No cache warming strategy:**
+```java
+// BAD: Cache cold after invalidation
+cache.invalidateAll(); // All entries gone
+// Users experience slow responses until cache repopulates
+
+// GOOD: Cache warming on startup and after invalidation
+@EventListener(ApplicationReadyEvent.class)
+public void warmCache() {
+    List<Product> products = productRepository.findAll();
+    for (Product product : products) {
+        Duration ttl = Duration.ofHours(24)
+            .plus(Duration.ofMinutes(ThreadLocalRandom.current().nextInt(120)));
+        cache.put("product:" + product.getId(), product, ttl);
+    }
+    log.info("Cache warmed with {} products", products.size());
+}
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**Cache Stampede Impact:**
+```
+Normal operation:
+- Cache hit rate: 99.5%
+- Database queries: 50/sec (0.5% of 10K req/s)
+- Response time: 5ms (cached), 50ms (database)
 
-## Examples
+Cache stampede:
+- Cache hit rate: 0%
+- Database queries: 10,000/sec (200x normal)
+- Response time: 5,000ms (database overloaded)
+- Database CPU: 100%
+- Service availability: 0%
 
-[Code examples demonstrating the concept]
+Duration: 35 minutes
+Lost revenue: $200K
+Engineering cost: $50K (incident response)
+```
+
+**Request Coalescing Performance:**
+```
+Without coalescing:
+- 10K concurrent requests
+- 10K database queries
+- Database latency: 5,000ms (overloaded)
+- Total: 10K × 5,000ms = 50,000 seconds of DB time
+
+With coalescing:
+- 10K concurrent requests
+- 1 database query
+- Database latency: 50ms (normal)
+- Total: 50ms of DB time
+- Improvement: 1,000,000x
+```
 
 ## Internal Working
 
-[How this works under the hood]
+**Cache Stampede Mechanism:**
+```
+1. Cache entries created at t=0 with TTL=24h
+2. All entries expire at t=24h (simultaneous)
+3. First request at t=24h+1s: cache miss → database query
+4. Concurrent requests at t=24h+1s: all miss cache → all hit database
+5. Database overwhelmed: CPU 100%, connections exhausted
+6. Service becomes unresponsive
+7. Cache repopulates gradually as database recovers
+8. Total downtime: 35 minutes
+```
+
+**Request Coalescing Implementation:**
+```
+1. Request arrives for product:123
+2. Check cache: miss
+3. Check inflight map: no entry for product:123
+4. Create CompletableFuture, put in inflight map
+5. Start async database query
+6. Other requests for product:123 arrive
+7. Check cache: still miss
+8. Check inflight map: entry exists
+9. Join existing CompletableFuture (no new query)
+10. Database query completes, result returned to all waiters
+11. Remove from inflight map, put in cache
+```
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Cache stampede prevention exists because:
+
+1. **Cache invalidation is hard**: The "two hard things in CS" — cache invalidation and naming things
+2. **Synchronized expiration is dangerous**: All entries expiring at once creates massive load spikes
+3. **Database is the bottleneck**: Databases can't handle 100x normal query load
+4. **User experience degrades**: Slow responses cause timeouts and user frustration
+5. **Cascading failures**: Database overload causes dependent services to fail
+6. **Prevention is cheap**: Jitter + coalescing costs $5K to implement, prevents $200K incidents
+
+The pattern exists because cache stampede is a predictable, preventable failure mode that many teams learn the hard way.
 
 ## Overview
 
-[Brief description of the topic]
+Cache stampede (thundering herd) occurs when many concurrent requests miss the cache simultaneously, overwhelming the database. Prevention: jittered TTLs (random offset ±10-20%), request coalescing (singleflight pattern), cache warming (background refresh), and monitoring (cache hit rate alerts). This war story demonstrates a real incident where 100K cache entries expired simultaneously, causing 35 minutes of downtime.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- Redis documentation — Cache stampede: https://redis.io/docs/manual/patterns/
+- "High Performance MySQL" by Baron Schwartz — Cache stampede prevention
+- Singleflight pattern: https://pkg.go.dev/golang.org/x/sync/singleflight
+- Cache invalidation patterns: https://docs.microsoft.com/en-us/azure/architecture/patterns/cache-aside
+- "Release It!" by Michael Nygard — Cascading failure prevention

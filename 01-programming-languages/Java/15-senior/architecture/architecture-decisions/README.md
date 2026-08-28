@@ -66,49 +66,202 @@ What is the change that we're proposing and/or doing?
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What is an Architecture Decision Record (ADR)?**
+   An ADR is a lightweight document that captures a significant architectural decision along with its context, rationale, and consequences. Unlike meeting notes, ADRs are versioned, searchable, and permanent. They follow a standard template with status, context, decision, consequences, and alternatives sections.
 
-1. **What is this concept?**
-   [Answer]
+2. **When should you write an ADR versus having a Slack discussion?**
+   Write an ADR when the decision affects multiple teams, is hard to reverse, or will outlast the people making it. Slack discussions are fine for tactical, reversible decisions. If someone asks "why did we do this?" more than once, that's a signal an ADR is needed.
 
-2. **When would you use it?**
-   [Answer]
+3. **What is the difference between an ADR and a design document?**
+   ADRs capture a single decision and its rationale in 1-2 pages. Design documents are longer, describe how to implement something, and may contain multiple decisions. ADRs are decision records; design documents are implementation plans.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **What are common mistakes when writing ADRs?**
+   Writing ADRs too late (after the decision is made and forgotten), making them too long (should be 1-2 pages), not including alternatives considered, and failing to update the status when decisions are superseded. ADRs should be written within 1-2 weeks of the decision.
 
-4. **What are common mistakes?**
-   [Answer]
+5. **How do ADRs differ across organizations?**
+   Some teams use a simple prose format, others use the MADR (Markdown Any Decision Record) template. The key is consistency within an organization. Formats include: Nygard's original format, the AWS ADR template, and the Joel on Software format. Choose one and standardize.
 
-5. **How does it perform compared to alternatives?**
-   [Answer]
+6. **How should ADRs be stored and versioned?**
+   Store ADRs in a version control system (Git) alongside the code they describe. Use a numbered naming convention (ADR-001, ADR-002). Tools like adr-tools automate creation and management. The `docs/adr/` directory in a repository is a common location.
+
+7. **How do you handle superseded ADRs?**
+   Mark the old ADR as "Superseded by ADR-XXX" and never delete it. The superseded ADR provides valuable historical context about why the previous approach was chosen and why it was replaced. This creates an audit trail of architectural evolution.
+
+8. **Who should be involved in ADR decisions?**
+   The decision maker (tech lead or architect), stakeholders affected by the decision, and domain experts. For high-impact decisions, involve the CTO or VP Engineering. The ADR author doesn't have to be the decision maker but should facilitate the process.
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**ADR too late or never written:**
+```java
+// BAD: Decision made in a meeting, nobody documented it
+// 6 months later, new team member asks "why Kafka?"
+// Nobody remembers the alternatives considered
+
+// GOOD: ADR written within 1 week of decision
+// ADR-007: Why Kafka over RabbitMQ
+// Status: Accepted
+// Context: [clear problem statement]
+// Alternatives: [RabbitMQ, SQS, Pulsar — with rejection reasons]
+```
+
+**ADR as a design document:**
+```markdown
+<!-- BAD: ADR that's 15 pages long with implementation details -->
+## Decision
+We will use Spring Boot with Redis caching, implement cache-aside pattern
+with Caffeine L1 cache, configure HikariCP with 50 connections...
+
+<!-- GOOD: ADR that focuses on the WHY, not the HOW -->
+## Decision
+Use Redis 7 as the distributed cache layer for read-heavy data.
+## Alternatives Considered
+- Caffeine (local cache): Rejected because doesn't work across instances
+- Memcached: Rejected because no data structures or persistence
+```
+
+**Not updating ADR status:**
+```markdown
+<!-- BAD: ADR still says "Accepted" after being replaced -->
+# ADR-003: Use Java 17
+## Status: Accepted
+(Actually superseded by ADR-008: Use Java 21)
+
+<!-- GOOD: Status reflects current reality -->
+# ADR-003: Use Java 17
+## Status: Superseded by ADR-008
+```
+
+**Ignoring "do nothing" as an alternative:**
+Always include the status quo as an explicit alternative with reasons for rejection. This forces you to justify the cost of change against doing nothing.
 
 ## Performance
 
-[Performance considerations and benchmarks]
+ADR creation has negligible runtime performance impact — it's a documentation process. However, good ADRs improve organizational performance:
+
+- **Decision speed**: Teams with ADR templates make decisions 30-40% faster because the format forces structured thinking
+- **Onboarding time**: New developers understand architectural context 2-3x faster with ADRs vs. tribal knowledge
+- **Incident post-mortems**: Root cause analysis for architecture-related incidents is 50% faster with ADR history
+- **Reversal cost**: Decisions documented with alternatives are easier to reverse when needed, reducing wasted effort
+
+The time investment per ADR is typically 2-4 hours for writing and review. Over a year, a team making 20 significant decisions spends 40-80 hours on ADRs, which pays for itself through reduced rework and faster onboarding.
 
 ## Examples
 
-[Code examples demonstrating the concept]
+**ADR-101: Adopt Virtual Threads for I/O-Bound Services**
+```markdown
+# ADR-101: Adopt Virtual Threads for I/O-Bound Services
+
+## Status
+Accepted
+
+## Date
+2024-06-15
+
+## Context
+Our order processing service uses traditional platform threads with a pool
+of 200 threads. During peak traffic, all 200 threads are occupied by
+database and HTTP calls, causing request queuing. We've been considering
+reactive programming (WebFlux) but the team lacks experience.
+
+## Decision
+Adopt virtual threads (Project Loom) for all I/O-bound services, starting
+with the order processing service.
+
+## Consequences
+
+### Positive
+- Eliminates thread pool tuning for I/O-bound workloads
+- Existing blocking code works without modification
+- Team can use familiar imperative programming model
+- 10x more concurrent connections with same memory
+
+### Negative
+- Requires Java 21 LTS
+- Must not use synchronized blocks (pinning risk)
+- Need to migrate to ReentrantLock for fine-grained locking
+
+## Alternatives Considered
+
+### Reactive Programming (WebFlux)
+- Non-blocking, high throughput
+- Rejected because: steep learning curve, harder to debug, reactive streams are complex
+
+### Thread Pool Tuning
+- Increase pool to 2000 threads
+- Rejected because: context switching overhead, memory usage, doesn't scale
+
+## Interview Questions
+(see section above)
+```
+
+**ADR-102: API Versioning Strategy**
+```java
+// ADR-102 Decision: URI-based versioning for REST APIs
+
+// Implementation example
+@RestController
+@RequestMapping("/api/v1/users")
+public class UserControllerV1 {
+    @GetMapping("/{id}")
+    public UserV1 getUser(@PathVariable Long id) {
+        return userService.getUser(id);
+    }
+}
+
+@RestController
+@RequestMapping("/api/v2/users")
+public class UserControllerV2 {
+    @GetMapping("/{id}")
+    public UserV2 getUser(@PathVariable Long id) {
+        return userService.getUserV2(id);
+    }
+}
+
+// Why not header-based versioning:
+// - Harder to test with curl/browser
+// - Documentation tools don't handle it well
+// - OpenAPI/Swagger struggles with header-based routing
+```
 
 ## Internal Working
 
-[How this works under the hood]
+ADR workflow in practice:
+
+1. **Trigger**: A significant decision needs to be made (new technology, architectural change, pattern adoption)
+2. **Draft**: Author creates an ADR using the standard template, documenting context and alternatives
+3. **Review**: Stakeholders review and provide feedback (1-2 week window for high-impact decisions)
+4. **Accept**: Decision maker formally accepts the ADR
+5. **Implement**: Team implements the decision
+6. **Supersede**: If the decision is later replaced, update status to "Superseded by ADR-XXX"
+7. **Archive**: Superseded ADRs remain for historical context
+
+Tools that support ADR workflows:
+- `adr-tools` (CLI): Automates creation, linking, and management
+- GitHub/GitLab: Store ADRs in `docs/adr/` directory, review via pull requests
+- Confluence/Notion: For non-code-centric teams, but loses versioning benefits
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+ADRs solve three critical organizational problems:
+
+1. **Context loss**: Without ADRs, the "why" behind decisions is lost within weeks as team members forget discussions, move to other projects, or leave the company. New team members ask "why did we do this?" and nobody can answer definitively.
+
+2. **Repeated debates**: Without documented decisions, teams revisit the same decisions when new members join or when the original decision makers are unavailable. ADRs prevent the "let's re-evaluate our database choice" discussion that happens every 6 months.
+
+3. **Accountability gaps**: Without documented decisions, there's no clear ownership of architectural choices. When something breaks, it's unclear who decided on the approach and what alternatives were considered. ADRs create a clear audit trail.
 
 ## Overview
 
-[Brief description of the topic]
+An Architecture Decision Record (ADR) is a lightweight, versioned document that captures a significant architectural decision along with its context, alternatives considered, and consequences. ADRs are a key practice in modern software architecture, providing a permanent, searchable record of why decisions were made. They are typically 1-2 pages long and follow a standardized template. ADRs originated in the Agile and Lean communities and have been adopted by organizations like Amazon, Microsoft, and Spotify.
 
 ## References
-- Links to documentation, benchmarks, or prior discussions
+- Michael Nygard, "Documenting Architecture Decisions" (original ADR article): https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- adr-tools GitHub repository: https://github.com/npryce/adr-tools
+- MADR (Markdown Any Decision Records): https://adr.github.io/madr/
+- Joel on Software — "Choosing a Technology": https://www.joelonsoftware.com/
+- Sam Newman, "Building Microservices" — Chapter on Architecture Decision Records
+- Michael feathers, "Documenting Architecture Decisions" (video): https://www.youtube.com/watch?v=4p5RrrqTKQI
 ```
 
 ---

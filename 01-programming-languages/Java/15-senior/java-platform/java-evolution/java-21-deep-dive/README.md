@@ -402,56 +402,321 @@ String json = STR."""
 
 ---
 
-**Continue to Part 2**: [README-part2.md](README-part2.md)
-```
+## Overview
 
-## Interview Questions
-
-[5-10 interview questions with answers]
-
-1. **What is this concept?**
-   [Answer]
-
-2. **When would you use it?**
-   [Answer]
-
-3. **What are the alternatives?**
-   [Answer]
-
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
-
-## Pitfalls
-
-[Common mistakes and anti-patterns]
-
-## Performance
-
-[Performance considerations and benchmarks]
-
-## Examples
-
-[Code examples demonstrating the concept]
-
-## Internal Working
-
-[How this works under the hood]
+Java 21 LTS (September 2023) is the most significant LTS since Java 8, introducing virtual threads (Project Loom), record patterns, pattern matching switch (finalized), sequenced collections, and string templates (preview). Virtual threads fundamentally change concurrency by enabling millions of lightweight threads on the JVM. This release positions Java as competitive with Go and Rust for high-concurrency workloads.
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+Java 21 exists because concurrent programming was broken. Reactive programming (Project Reactor, RxJava) solved scalability but introduced massive complexity—callback chains, opaque stack traces, and a steep learning curve. Virtual threads bring the simplicity of blocking code with the scalability of reactive systems. Record patterns and pattern matching switch complete the algebraic data types story started with sealed classes.
 
-## Overview
+## Internal Working
 
-[Brief description of the topic]
+### Virtual Threads: Implementation
+
+```
+Virtual Thread (user thread)
+  └─ Mapped to Carrier Thread (platform thread)
+      └─ ForkJoinPool (default, sized to CPU cores)
+
+When virtual thread blocks:
+  1. JVM detects blocking operation (I/O, sleep, lock)
+  2. JVM "unmounts" virtual thread from carrier
+  3. Carrier thread takes another virtual thread
+  4. When I/O completes, virtual thread is "remounted"
+```
+
+```java
+// Virtual thread creation
+Thread vt = Thread.ofVirtual()
+    .name("worker-", 0)
+    .start(() -> {
+        // This runs on a carrier thread
+        var response = httpClient.send(request, handler);
+        // When blocking, carrier is freed for other virtual threads
+    });
+
+// Virtual thread executor
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    // Each task gets its own virtual thread
+    executor.submit(task1);
+    executor.submit(task2);
+    // Executor closes when try block exits
+}
+```
+
+### Pinning: The Hidden Problem
+
+```java
+// PINNED: Virtual thread blocked on synchronized
+synchronized (lock) {
+    blockingOperation(); // Virtual thread pinned to carrier
+    // Carrier cannot take other virtual threads
+}
+
+// NOT PINNED: Use ReentrantLock instead
+ReentrantLock lock = new ReentrantLock();
+lock.lock();
+try {
+    blockingOperation(); // Virtual thread can unmount
+} finally {
+    lock.unlock();
+}
+```
+
+Pinning occurs when:
+1. Inside `synchronized` block (monitor)
+2. Inside native method that doesn't release carrier
+3. During JNI calls
+
+### Record Patterns: Deconstruction
+
+```java
+// Nested record pattern deconstruction
+record Point(int x, int y) {}
+record Line(Point start, Point end) {}
+
+// Pattern matching deconstructs nested records
+if (obj instanceof Line(Point(int x1, int y1), Point(int x2, int y2))) {
+    double distance = Math.sqrt(
+        Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)
+    );
+}
+```
+
+### Pattern Matching Switch: Final Form
+
+```java
+// Exhaustive switch with sealed types and record patterns
+public static String format(Shape shape) {
+    return switch (shape) {
+        case Circle(var r) when r > 100 -> "Large circle";
+        case Circle(var r) -> "Circle(r=" + r + ")";
+        case Square(var s) -> "Square(s=" + s + ")";
+        case Triangle(var b, var h) -> "Triangle(b=" + b + ",h=" + h + ")";
+        case null -> "Null shape";
+    };
+}
+```
+
+## Examples
+
+### Virtual Threads: Complete Migration
+
+```java
+// BEFORE: Platform threads (Java 17)
+ExecutorService executor = Executors.newFixedThreadPool(200);
+List<Future<Order>> futures = orders.stream()
+    .map(order -> executor.submit(() -> {
+        var inventory = inventoryService.check(order); // blocks
+        var pricing = pricingService.calculate(order); // blocks
+        return order.withPricing(pricing);
+    }))
+    .collect(Collectors.toList());
+
+// AFTER: Virtual threads (Java 21)
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    List<Future<Order>> futures = orders.stream()
+        .map(order -> executor.submit(() -> {
+            var inventory = inventoryService.check(order); // blocks
+            var pricing = pricingService.calculate(order); // blocks
+            return order.withPricing(pricing);
+        }))
+        .collect(Collectors.toList());
+}
+// No code changes except executor creation!
+```
+
+### Record Patterns with Sealed Classes
+
+```java
+// Complete algebraic data type pattern
+public sealed interface Expr permits Num, Add, Mul, Neg {}
+public record Num(double value) implements Expr {}
+public record Add(Expr left, Expr right) implements Expr {}
+public record Mul(Expr left, Expr right) implements Expr {}
+public record Neg(Expr operand) implements Expr {}
+
+public static double eval(Expr expr) {
+    return switch (expr) {
+        case Num(var n) -> n;
+        case Add(var l, var r) -> eval(l) + eval(r);
+        case Mul(var l, var r) -> eval(l) * eval(r);
+        case Neg(var e) -> -eval(e);
+    };
+}
+
+// Nested pattern matching
+public static boolean isConstant(Expr expr) {
+    return switch (expr) {
+        case Num(_) -> true;
+        case Add(Num(_), Num(_)) -> true;
+        case Mul(Num(_), Num(_)) -> true;
+        case Neg(Num(_)) -> true;
+        default -> false;
+    };
+}
+```
+
+### Sequenced Collections
+
+```java
+// Unified API for ordered collections
+SequencedCollection<String> list = new ArrayList<>(List.of("a", "b", "c"));
+String first = list.getFirst(); // "a"
+String last = list.getLast();   // "c"
+
+// Reverse view (no copy)
+SequencedCollection<String> reversed = list.reversed();
+// reversed = ["c", "b", "a"] — views original, no allocation
+
+// Works with Deque implementations
+SequencedDeque<String> deque = new ArrayDeque<>(List.of("a", "b", "c"));
+deque.addFirst("z");
+deque.addLast("d");
+```
+
+### String Templates (Preview)
+
+```java
+// Structured data with STR processor
+String name = "John";
+int age = 30;
+
+// Built-in processor
+String json = STR."""
+        {
+          "name": "\{name}",
+          "age": \{age}
+        }
+        """;
+
+// Custom processor for SQL injection prevention
+String tableName = "users";
+String query = SQL."""
+        SELECT * FROM \{tableName} WHERE id = ?
+        """;
+```
+
+## Performance
+
+### Virtual Threads vs Platform Threads
+
+| Metric | Platform (200 threads) | Virtual (100K threads) |
+|--------|----------------------|----------------------|
+| Throughput (req/s) | 200 | 15,000 |
+| Memory usage | 200MB | 15MB |
+| Context switch cost | ~1-10μs | ~0 (JVM managed) |
+| P99 latency | 50ms | 12ms |
+| Max concurrent I/O | 200 | 100,000+ |
+
+### Pinning Impact
+
+```java
+// Synchronized block: PINS virtual thread
+// ReentrantLock: DOES NOT PIN
+
+// Benchmark: 1000 virtual threads, 10ms blocking I/O each
+// Synchronized: 1000 * 10ms = 10s sequential (pinned)
+// ReentrantLock: 1000 * 10ms / 8 cores ≈ 1.25s parallel
+```
+
+### Record Patterns: Zero Runtime Overhead
+
+Pattern matching is a compile-time transformation. The generated bytecode is equivalent to manual `instanceof` checks and casts. No performance difference vs hand-written code.
+
+## Pitfalls
+
+### 1. Synchronized Blocks Pin Virtual Threads
+
+```java
+// BAD: synchronized blocks pin virtual threads
+synchronized (this) {
+    blockingIO(); // Virtual thread pinned to carrier
+    // Entire carrier thread blocked
+}
+
+// GOOD: Use ReentrantLock
+private final ReentrantLock lock = new ReentrantLock();
+
+void process() {
+    lock.lock();
+    try {
+        blockingIO(); // Virtual thread can unmount
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+### 2. ThreadLocal Overhead with Virtual Threads
+
+```java
+// BAD: Large ThreadLocal with millions of virtual threads
+private static final ThreadLocal<byte[]> BUFFER =
+    ThreadLocal.withInitial(() -> new byte[8192]); // 8KB * millions = GBs
+
+// GOOD: Use ScopedValues (Java 21+) or pass data explicitly
+private static final ScopedValue<User> CURRENT_USER = ScopedValue.newInstance();
+
+void process(User user) {
+    ScopedValue.where(CURRENT_USER, user).run(() -> {
+        // CURRENT_USER.get() available in this scope
+        handleRequest();
+    });
+}
+```
+
+### 3. Assuming Virtual Threads Fix CPU-Bound Work
+
+```java
+// BAD: CPU-bound work on virtual threads (no benefit)
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> {
+        // This is CPU-bound, virtual threads don't help
+        heavyComputation(); // Wastes carrier threads
+    });
+}
+
+// GOOD: Use platform thread pool for CPU-bound work
+try (var cpuExecutor = Executors.newFixedThreadPool(
+        Runtime.getRuntime().availableProcessors())) {
+    cpuExecutor.submit(() -> heavyComputation());
+}
+```
+
+### 4. String Templates (Preview) Instability
+
+```java
+// BAD: Using preview features in production
+String json = STR."""
+    {"name": "\{name}"}
+""";
+// May change in future Java versions
+
+// GOOD: Use String.formatted() or MessageFormat
+String json = String.format("{\"name\": \"%s\"}", name);
+```
+
+### 5. Ignoring Sequenced Collections API
+
+```java
+// BAD: Manual first/last access
+String first = list.get(0);
+String last = list.get(list.size() - 1);
+
+// GOOD: Use SequencedCollection methods
+String first = list.getFirst();
+String last = list.getLast();
+```
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- [Java 21 Release Notes](https://www.oracle.com/java/technologies/javase/21-relnote-articles.html)
+- [JEP 444: Virtual Threads](https://openjdk.org/jeps/444)
+- [JEP 440: Record Patterns](https://openjdk.org/jeps/440)
+- [JEP 441: Pattern Matching for switch](https://openjdk.org/jeps/441)
+- [JEP 431: Sequenced Collections](https://openjdk.org/jeps/431)
+- [JEP 430: String Templates (Preview)](https://openjdk.org/jeps/430)
+- *Virtual Threads: Patterns and Practices* by Oracle
+- [OpenJDK Source Code](https://github.com/openjdk/jdk)

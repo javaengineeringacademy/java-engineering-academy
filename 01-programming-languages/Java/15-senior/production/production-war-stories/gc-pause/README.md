@@ -92,51 +92,146 @@ Key factors:
 
 ## Interview Questions
 
-[5-10 interview questions with answers]
+1. **What causes long GC pauses and how do you prevent them?**
+   Causes: (1) Large heap with G1GC (pause scales with live objects), (2) high allocation rate creating many short-lived objects, (3) large objects (>50% of region) spanning multiple regions, (4) Full GC triggered by old gen at 85%+. Prevention: use ZGC for sub-ms pauses, keep heap ≤16GB, monitor allocation rate, use off-heap for large objects.
 
-1. **What is this concept?**
-   [Answer]
+2. **What is the difference between G1GC, ZGC, and Shenandoah?**
+   G1GC: default since Java 9, pause times 10-200ms depending on heap size, good throughput. ZGC: sub-millisecond pauses regardless of heap size, slightly lower throughput. Shenandoah: similar to ZGC, pause times <10ms, good for large heaps. For latency-sensitive services: ZGC or Shenandoah. For throughput-sensitive: G1GC with tuning.
 
-2. **When would you use it?**
-   [Answer]
+3. **How do you tune G1GC for predictable pause times?**
+   Set `-XX:MaxGCPauseMillis=200` (target 200ms max). Set `-XX:InitiatingHeapOccupancyPercent=45` (start concurrent GC earlier). Set `-XX:G1HeapRegionSize=16m` (larger regions for large objects). Set `-XX:G1MixedGCCountTarget=8` (spread mixed GC over more cycles). Monitor with `-Xlog:gc*`.
 
-3. **What are the alternatives?**
-   [Answer]
+4. **When should you move large objects off-heap?**
+   When objects exceed 100MB (PDF generation, large JSON serialization, image processing). Off-heap avoids GC overhead: `java.nio.ByteBuffer.allocateDirect()`. Trade-off: manual memory management, no GC scanning, but allocation is slower. Use for: batch processing, streaming, temporary buffers.
 
-4. **What are common mistakes?**
-   [Answer]
-
-5. **How does it perform compared to alternatives?**
-   [Answer]
+5. **How do you monitor GC behavior in production?**
+   Metrics: `jvm_gc_pause_seconds_max` (max pause time), `jvm_gc_pause_seconds_sum` (total pause time), `jvm_gc_memory_promoted_bytes_total` (objects promoted to old gen). Alerts: GC pause >500ms (warning), >2s (critical). Tools: Grafana + Prometheus, JConsole, VisualVM, GC logs (`-Xlog:gc*`).
 
 ## Pitfalls
 
-[Common mistakes and anti-patterns]
+**Using G1GC with 32GB heap for latency-sensitive services:**
+```bash
+# BAD: Default G1GC with large heap
+-XX:+UseG1GC
+-Xmx32g
+# Pause time: 1-10 seconds (scales with live objects)
+
+# GOOD: ZGC for latency-sensitive services
+-XX:+UseZGC -XX:+ZGenerational
+-Xmx16g
+# Pause time: <1ms regardless of heap size
+```
+
+**Not monitoring allocation rate:**
+```java
+// BAD: No allocation rate monitoring
+// Silent allocation of large objects → GC pause
+
+// GOOD: Monitor allocation rate
+// Enable GC logging
+// -Xlog:gc*:file=gc.log:time,uptime,level,tags
+
+// Monitor with Prometheus
+// jvm_buffer_memory_used (direct buffer allocation)
+// jvm_memory_pool_allocated_bytes_used (heap allocation)
+```
+
+**Large objects on-heap:**
+```java
+// BAD: Large JSON serialization on heap
+String json = objectMapper.writeValueAsString(hugeOrderHistory); // 500MB in memory!
+// GC must scan and compact 500MB → long pause
+
+// GOOD: Streaming serialization off-heap
+JsonGenerator generator = jsonFactory.createGenerator(outputStream);
+generator.writeStartArray();
+for (Order order : orderHistory) {
+    generator.writeObject(order); // Stream directly to output
+}
+generator.writeEndArray();
+generator.flush(); // No full serialization in memory
+```
 
 ## Performance
 
-[Performance considerations and benchmarks]
+**GC Pause Comparison:**
+```
+G1GC (32GB heap):
+- Full GC pause: 5-10 seconds
+- Mixed GC pause: 100-500ms
+- Young GC pause: 10-50ms
+- Throughput: 99.9%
 
-## Examples
+ZGC (32GB heap):
+- GC pause: <1ms (all types)
+- Throughput: 99.5%
+- Memory overhead: 15% (metadata)
 
-[Code examples demonstrating the concept]
+Shenandoah (32GB heap):
+- GC pause: <10ms
+- Throughput: 99.7%
+- Memory overhead: 10%
+```
+
+**Allocation Rate Impact:**
+```
+Allocation rate: 1GB/sec → GC every 10 seconds (10GB heap)
+Allocation rate: 5GB/sec → GC every 2 seconds (10GB heap)
+Allocation rate: 10GB/sec → GC every 1 second (10GB heap)
+
+Each GC: pause time proportional to live objects
+10GB heap with 8GB live: 1-2 second pause (G1GC)
+10GB heap with 8GB live: <1ms pause (ZGC)
+```
 
 ## Internal Working
 
-[How this works under the hood]
+**G1GC Mechanism:**
+```
+1. Heap divided into equal regions (1-32MB each)
+2. Young GC: copy surviving objects to new regions
+3. Mixed GC: select old regions with most garbage
+4. Concurrent marking: scan old gen without pausing
+5. Full GC: last resort, pauses all threads
+
+Pause time = time to copy surviving objects
+More live objects = longer pause
+```
+
+**ZGC Mechanism:**
+```
+1. Load barriers intercept all object accesses
+2. Concurrent marking: scan heap without pausing
+3. Concurrent compaction: move objects without pausing
+4. Pause: only root scanning and reference processing
+5. Pause time: <1ms regardless of heap size
+
+Key innovation: colored pointers and load barriers
+Enable concurrent heap operations
+```
 
 ## Why This Concept Exists
 
-[Problem this concept solves and motivation behind it]
+GC pause prevention exists because:
+
+1. **User experience**: 10-second pauses cause transaction timeouts and user frustration
+2. **SLA violations**: 99.9% availability requires predictable latency
+3. **Financial impact**: Payment processing failures lose revenue
+4. **Scalability**: Large heaps make G1GC pauses worse, limiting vertical scaling
+5. **Modern hardware**: Multi-GB heaps are common, but GC doesn't scale linearly
+6. **ZGC/Shenandoah**: New GC algorithms provide sub-ms pauses, making Java competitive with Go/Rust
+
+The evolution from Serial → Parallel → CMS → G1 → ZGC reflects the industry's demand for lower pause times.
 
 ## Overview
 
-[Brief description of the topic]
+GC pause war story: a payment processing service experienced 10-second latency spikes caused by G1GC with 32GB heap. Root cause: large temporary objects (PDF generation) accumulated in old generation, causing Full GC. Fix: switched to ZGC with 16GB heap, moved PDF generation off-heap. Prevention: use ZGC for latency-sensitive services, monitor allocation rate, use off-heap for large objects.
 
 ## References
 
-[Links to official docs, tutorials, and related topics]
-
-- [Official Documentation](#)
-- [Related: topic1](#)
-- [Related: topic2](#)
+- ZGC documentation: https://docs.oracle.com/en/java/javase/21/gctuning/z-garbage-collector.html
+- G1GC tuning: https://docs.oracle.com/en/java/javase/21/gctuning/garbage-first-g1-garbage-collector.html
+- Shenandoah documentation: https://wiki.openjdk.org/display/shenandoah
+- "Java Performance" by Scott Oaks — GC tuning
+- GC logging: https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html
+- JEP 439: Generational ZGC: https://openjdk.org/jeps/439
