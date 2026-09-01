@@ -1,11 +1,43 @@
 # Module 06: Generics
 
 > **Difficulty:** ⭐⭐⭐ Intermediate  
-> **Reading:** 30 min | **Practice:** 45 min | **Total:** 75 min
+> **Reading:** 35 min | **Practice:** 45 min | **Total:** 80 min
 
 ## Overview
 
 Without generics, every collection stores Objects and requires manual casting at retrieval — a source of runtime ClassCastException bugs that compilers can't catch. Generics let you write a single class or method that works with any type while catching type mismatches at compile time. Introduced in Java 5, they eliminated explicit casting and made APIs like the Collections Framework type-safe.
+
+## Learning Objectives
+
+- [ ] Write generic classes and methods that work with any type
+- [ ] Restrict type parameters using bounded types (`extends`, `super`)
+- [ ] Apply the PECS principle (Producer Extends, Consumer Super)
+- [ ] Understand type erasure and its implications
+- [ ] Design type-safe APIs that eliminate explicit casting
+- [ ] Avoid common generic pitfalls (raw types, unchecked casts)
+
+## Prerequisites
+
+- Solid understanding of OOP (inheritance, polymorphism)
+- Familiarity with collections framework (Module 04)
+- Basic understanding of interfaces and abstract classes
+
+## History
+
+- **1995** — Java 1.0 used raw collections (no type safety) because generics were not yet available
+- **1998** — Java 1.2 introduced Collections Framework with `Object`-based types
+- **2004** — Java 5 introduced generics for compile-time type safety, eliminating explicit casting
+- **2011** — Java 7 added diamond operator (`<>`) to reduce boilerplate
+- **2014** — Java 8 improved type inference in lambdas and method references
+- **2017** — Java 9 added `var` for local variable type inference
+- **2023** — Java 21 continued type system refinements
+
+## Production Notes
+
+- **Where is it used?** In every Java application that uses collections, APIs, or type-safe code
+- **Why is it useful?** Provides compile-time type safety, eliminates casting, enables code reuse
+- **When should it be avoided?** Not applicable; generics are fundamental to modern Java
+- **Alternative?** Raw types (legacy), `Object` casting (unsafe)
 
 ## Why This Concept Exists
 
@@ -20,80 +52,6 @@ With generics:
 - Compile-time type safety
 - No casting required
 - Better code readability
-
-## Learning Objectives
-
-By the end of this module, you will be able to:
-
-- Write generic classes and methods that work with any type while catching errors at compile time
-- Restrict type parameters using bounded types to call specific methods on generic arguments
-- Apply the PECS principle (Producer Extends, Consumer Super) to design flexible APIs
-- Avoid common type erasure pitfalls that cause runtime surprises
-- Design type-safe APIs that eliminate explicit casting in client code
-
-## Topics
-
-| # | Topic | Duration | Difficulty | Description |
-|---|-------|----------|------------|-------------|
-| 01 | [Generic Types](01-generic-types/) | 1 hour | Beginner | What generics are and why they matter |
-| 02 | [Generic Methods](02-generic-methods/) | 2 hours | Beginner | Creating type-parameterized methods |
-| 03 | [Bounded Type Parameters](03-bounded-type-parameters/) | 2 hours | Intermediate | Restricting types with `extends` and `super` |
-| 04 | [Wildcards](04-wildcards/) | 2 hours | Intermediate | Unknown type parameters with `?` |
-| 05 | [Type Erasure](05-type-erasure/) | 2 hours | Advanced | How generics are implemented at the JVM level |
-| 06 | [Generics and Inheritance](06-generics-inheritance-subtypes/) | 1.5 hours | Intermediate | Subtyping rules with generics |
-| 07 | [Type Inference](07-type-inference/) | 1.5 hours | Intermediate | Diamond operator and var |
-| 08 | [Restrictions on Generics](08-restrictions-generics/) | 1 hour | Intermediate | Limitations and workarounds |
-| 09 | [Best Practices](09-best-practices/) | 1.5 hours | Intermediate | Guidelines for effective generic code |
-| 10 | [Raw Types](10-raw-types/) | 1 hour | Beginner | Legacy code and backward compatibility |
-| 11 | [Erasure of Generic Types](11-erasure-generic-types/) | 2 hours | Advanced | Bytecode transformation details |
-| 12 | [Erasure of Generic Methods](12-erasure-generic-methods/) | 2 hours | Advanced | Bridge methods and runtime behavior |
-
-**Total Estimated Time: 18-20 hours**
-
-## Prerequisites
-
-- Solid understanding of OOP (inheritance, polymorphism)
-- Familiarity with collections framework
-- Basic understanding of interfaces and abstract classes
-
-## History
-
-- **1995** — Java 1.0 used raw collections (no type safety) because generics were not yet available, leading to runtime ClassCastException risks
-- **1998** — Java 1.2 introduced Collections Framework with `Object`-based types to provide a unified collections architecture, but lacked compile-time type safety
-- **2004** — Java 5 introduced generics to enable compile-time type safety, eliminating explicit casting and catching type errors at compile time
-- **2004** — Java 5 added generic interfaces, methods, and bounded types to provide flexible, type-safe code reuse across different data types
-- **2011** — Java 7 added diamond operator (`<>`) to reduce boilerplate by inferring generic type arguments from context
-- **2014** — Java 8 improved type inference in lambdas and method references to simplify functional programming with generics
-- **2016** — Java 9 added `var` for local variable type inference to reduce verbosity while maintaining type safety (indirectly related to generics)
-- **2021** — Java 17 continued type system refinements to improve developer experience and catch more errors at compile time
-
-## Learning Path
-
-```
-Generic Types → Generic Methods → Bounded Type Parameters
-      ↓                                    ↓
- Type Erasure ← Wildcards ←────────────────┘
-      ↓
-Best Practices → Restrictions → Raw Types → Erasure Details
-```
-
-## Difficulty Progression
-
-- **Beginner** (Topics 01-02, 10): Basic concepts and syntax
-- **Intermediate** (Topics 03-04, 06-09): Advanced features and patterns
-- **Advanced** (Topics 05, 11-12): JVM internals and bytecode transformation
-
-## Quick Reference
-
-| Feature | Syntax | Example |
-|---------|--------|---------|
-| Generic Class | `class Name<T>` | `class Box<T>` |
-| Generic Method | `<T> T method(T param)` | `<T> List<T> asList(T a)` |
-| Bounded Type | `<T extends Upper>` | `<T extends Comparable<T>>` |
-| Wildcard | `<?>` | `List<?>` |
-| Upper Bounded | `<? extends T>` | `List<? extends Number>` |
-| Lower Bounded | `<? super T>` | `List<? super Integer>` |
-| Type Erasure | Removed at compile time | `List<String>` → `List` |
 
 ## Core Concepts
 
@@ -128,17 +86,17 @@ public <T extends Comparable<T> & Serializable> T max(T a, T b) {
 }
 ```
 
-### Wildcards
+### Wildcards (PECS Principle)
 
 ```java
-// Upper bounded - read-only
+// Producer Extends - read-only
 public double sum(List<? extends Number> list) {
     return list.stream()
         .mapToDouble(Number::doubleValue)
         .sum();
 }
 
-// Lower bounded - write-only
+// Consumer Super - write-only
 public void addNumbers(List<? super Integer> list) {
     list.add(1);
     list.add(2);
@@ -161,6 +119,266 @@ List<Integer> integers = new ArrayList<>();
 System.out.println(strings.getClass() == integers.getClass()); // true
 ```
 
+## Internal Working
+
+### Type Erasure Process
+
+1. **Remove type parameters** — Replace all `T` with bounds or `Object`
+2. **Add casts** — Insert casts where type information is lost
+3. **Bridge methods** — Generate methods to maintain polymorphism
+
+```
+// Before erasure
+public class Box<T> {
+    private T value;
+    public T getValue() { return value; }
+    public void setValue(T value) { this.value = value; }
+}
+
+// After erasure
+public class Box {
+    private Object value;
+    public Object getValue() { return value; }
+    public void setValue(Object value) { this.value = value; }
+    // Bridge method for covariance
+    public void setValue(String value) { setValue((Object) value); }
+}
+```
+
+### Runtime Type Information
+
+```java
+// Type erasure means you cannot do:
+// if (obj instanceof List<String>) // Compile error
+// new T() // Compile error
+// new T[10] // Compile error
+
+// But you can:
+List<String> list = new ArrayList<>();
+Class<?> clazz = list.getClass(); // Works - runtime type
+ParameterizedType pt = (ParameterizedType) clazz.getGenericSuperclass();
+Type[] types = pt.getActualTypeArguments(); // String.class
+```
+
+## Syntax
+
+```java
+// Generic class
+class Box<T> {
+    private T value;
+    public T getValue() { return value; }
+    public void setValue(T value) { this.value = value; }
+}
+
+// Generic method
+public <T> List<T> asList(T a, T b) {
+    return List.of(a, b);
+}
+
+// Bounded type parameter
+public <T extends Comparable<T>> T max(T a, T b) {
+    return a.compareTo(b) >= 0 ? a : b;
+}
+
+// Wildcard with upper bound
+public void printNumbers(List<? extends Number> list) {
+    list.forEach(System.out::println);
+}
+
+// Wildcard with lower bound
+public void addIntegers(List<? super Integer> list) {
+    list.add(1);
+    list.add(2);
+}
+
+// Diamond operator (Java 7+)
+Box<String> box = new Box<>();
+
+// Type inference (Java 8+)
+List<String> list = List.of("a", "b", "c");
+```
+
+## Examples
+
+### Easy: Generic Box
+```java
+public class Box<T> {
+    private T value;
+    
+    public Box(T value) {
+        this.value = value;
+    }
+    
+    public T getValue() { return value; }
+    public void setValue(T value) { this.value = value; }
+    
+    @Override
+    public String toString() {
+        return "Box[" + value + "]";
+    }
+}
+
+public class BoxDemo {
+    public static void main(String[] args) {
+        Box<String> stringBox = new Box<>("Hello");
+        Box<Integer> intBox = new Box<>(42);
+        
+        System.out.println(stringBox); // Box[Hello]
+        System.out.println(intBox);    // Box[42]
+        
+        // stringBox.setValue(42); // Compile error!
+    }
+}
+```
+
+### Medium: Bounded Type Parameters
+```java
+public class MathUtils {
+    public static <T extends Number & Comparable<T>> T max(List<T> list) {
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("List is empty");
+        }
+        
+        T max = list.get(0);
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i).compareTo(max) > 0) {
+                max = list.get(i);
+            }
+        }
+        return max;
+    }
+    
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(3, 1, 4, 1, 5, 9);
+        System.out.println("Max: " + max(numbers)); // 9
+        
+        List<Double> doubles = List.of(3.14, 2.71, 1.41);
+        System.out.println("Max: " + max(doubles)); // 3.14
+    }
+}
+```
+
+### Hard: Wildcards and PECS
+```java
+import java.util.*;
+
+public class PecsDemo {
+    // Producer extends - can read, not write
+    public static double sum(List<? extends Number> list) {
+        return list.stream()
+            .mapToDouble(Number::doubleValue)
+            .sum();
+    }
+    
+    // Consumer super - can write, not read (as specific type)
+    public static void addIntegers(List<? super Integer> list) {
+        for (int i = 1; i <= 5; i++) {
+            list.add(i);
+        }
+    }
+    
+    // Unbounded - read-only Object access
+    public static void printAll(List<?> list) {
+        list.forEach(System.out::println);
+    }
+    
+    public static void main(String[] args) {
+        List<Integer> integers = List.of(1, 2, 3, 4, 5);
+        List<Double> doubles = List.of(1.1, 2.2, 3.3);
+        
+        System.out.println("Sum integers: " + sum(integers)); // 15.0
+        System.out.println("Sum doubles: " + sum(doubles));   // 6.6
+        
+        List<Number> numbers = new ArrayList<>();
+        addIntegers(numbers); // Can add Integer to List<Number>
+        System.out.println("Numbers: " + numbers); // [1, 2, 3, 4, 5]
+        
+        printAll(integers);
+        printAll(doubles);
+    }
+}
+```
+
+### Enterprise: Generic Repository Pattern
+```java
+import java.util.*;
+import java.util.concurrent.*;
+
+public class GenericRepository<T, ID> {
+    private final Map<ID, T> store = new ConcurrentHashMap<>();
+    
+    public void save(ID id, T entity) {
+        Objects.requireNonNull(id, "ID cannot be null");
+        Objects.requireNonNull(entity, "Entity cannot be null");
+        store.put(id, entity);
+    }
+    
+    public Optional<T> findById(ID id) {
+        return Optional.ofNullable(store.get(id));
+    }
+    
+    public List<T> findAll() {
+        return List.copyOf(store.values());
+    }
+    
+    public void delete(ID id) {
+        store.remove(id);
+    }
+    
+    public boolean exists(ID id) {
+        return store.containsKey(id);
+    }
+}
+
+// Usage
+public class UserRepository extends GenericRepository<User, Long> {
+    // Inherits all CRUD operations for User entities
+}
+
+class User {
+    private final Long id;
+    private final String name;
+    
+    public User(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    
+    public Long getId() { return id; }
+    public String getName() { return name; }
+}
+```
+
+## Performance Considerations
+
+| Operation | Cost | Notes |
+|-----------|------|-------|
+| Type checking | Compile-time | No runtime cost |
+| Type erasure | Compile-time | No runtime cost |
+| Boxed types | +16 bytes | Integer vs int |
+| Casting | ~100ns | When erasure requires casts |
+| Bridge methods | Minimal | Generated per generic class |
+
+- **Generics have zero runtime cost** — all checking is compile-time
+- **Boxed types add overhead** — use primitive streams when possible
+- **Type erasure means no `new T()`** — pass `Class<T>` and use reflection
+
+## Best Practices
+
+**Do's:**
+- Always use parameterized types (`List<String>` not `List`)
+- Use bounded types when you need to call methods on type parameters
+- Follow PECS: Producer Extends, Consumer Super
+- Use `Class<T>` to pass type information at runtime
+- Use `@SuppressWarnings("unchecked")` only when you can prove safety
+
+**Don'ts:**
+- Don't use raw types (loses type safety)
+- Don't create `new T()` (type erasure prevents this)
+- Don't use `instanceof List<String>` (type erasure prevents this)
+- Don't use `List<String>` and `List<Integer>` interchangeably (generics are invariant)
+- Don't ignore unchecked cast warnings
+
 ## Common Mistakes
 
 | Mistake | Problem | Fix |
@@ -171,6 +389,38 @@ System.out.println(strings.getClass() == integers.getClass()); // true
 | Unchecked cast warning | Potential `ClassCastException` | Use `@SuppressWarnings("unchecked")` only when safe |
 | `instanceof List<String>` | Compile error — type erasure | Use `instanceof List<?>` |
 
+## Interview Questions
+
+### Q1: What is type erasure in generics?
+**Answer:** Type erasure is the compile-time process where all generic type parameters are removed. `List<String>` becomes `List` at runtime. This maintains backward compatibility with pre-generics code but means you cannot use type parameters at runtime (no `new T()`, no `instanceof T`).
+
+### Q2: What is the PECS principle?
+**Answer:** Producer Extends, Consumer Super. When a generic type produces data for you to read, use `? extends T`. When you need to write data to a generic type, use `? super T`. This ensures type safety while allowing flexibility.
+
+### Q3: What is the difference between `<T extends Comparable<T>>` and `<T extends Comparable>`?
+**Answer:** The first is a bounded type parameter — T must be Comparable to itself. The second is a raw type — loses type safety. Always use the parameterized form.
+
+### Q4: Can you create an array of generic type?
+**Answer:** No, because of type erasure. `new T[10]` is illegal. Workaround: `Array.newInstance(clazz, 10)` or use `ArrayList<T>` instead.
+
+### Q5: What is a wildcard capture?
+**Answer:** When the compiler captures the unknown type of a wildcard to perform operations. Example: `public static void swap(List<?> list, int i, int j)` uses a helper method with wildcard capture to swap elements.
+
+### Q6: What is the difference between `List<?>` and `List<Object>`?
+**Answer:** `List<?>` can hold any type (unknown type). `List<Object>` can only hold `Object` subtypes. `List<String>` is not assignable to `List<Object>` but is assignable to `List<?>`.
+
+### Q7: Why can't you use `new T()`?
+**Answer:** Type erasure means the JVM doesn't know what `T` is at runtime. You must pass `Class<T>` and use reflection: `clazz.getDeclaredConstructor().newInstance()`.
+
+### Q8: What are bridge methods?
+**Answer:** Synthetic methods generated by the compiler to maintain polymorphism after type erasure. When a subclass overrides a generic method, bridge methods ensure the correct method is called at runtime.
+
+### Q9: What is reified type?
+**Answer:** A type that is fully available at runtime. Primitive types and non-generic reference types are reified. Generic types are not reified due to type erasure. `Class<T>` is reified — you can use it to access type information at runtime.
+
+### Q10: What is the difference between `<T extends Comparable<T>>` and `<T extends Comparable<?>>`?
+**Answer:** The first requires T to be Comparable to itself (natural ordering). The second requires T to be Comparable to some unknown type. The first is more type-safe and commonly used.
+
 ## Cross-References
 
 - **Previous Module:** [05 - Text Processing](../05-text-processing/)
@@ -179,8 +429,139 @@ System.out.println(strings.getClass() == integers.getClass()); // true
 - **Related:** [04 - Collections](../04-collections/) — parameterized collection types
 - **Related:** [07 - Functional Programming](../07-functional-programming/) — generic functional interfaces
 
-## Resources
+## Debugging Tips
 
-- [Oracle Generics Tutorial](https://docs.oracle.com/en/java/javase/21/java/generics/)
-- [Effective Java - Chapter on Generics](https://learning.oreilly.com/library/view/effective-java/9780134686097/)
-- [Java Language Specification - Generics](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html)
+| Problem | Tool/Technique | How |
+|---------|---------------|-----|
+| Unchecked cast warning | IntelliJ inspection | Use `@SuppressWarnings("unchecked")` with proof of safety |
+| Type inference failure | Explicit type parameter | Use `Collections.<String>emptyList()` when compiler can't infer |
+| Wildcard capture failure | Helper method | Extract wildcard capture to a separate method |
+| Generic array creation error | ArrayList workaround | Use `ArrayList<T>` instead of `T[]` |
+| ClassCastException at runtime | Check for raw types | Verify all generic types are parameterized |
+
+## Code Review Checklist
+
+- [ ] No raw types used
+- [ ] Wildcards used correctly (PECS)
+- [ ] Bounded types used when calling methods on type parameters
+- [ ] Unchecked cast warnings justified
+- [ ] `Class<T>` passed for runtime type operations
+- [ ] Generic types parameterized correctly
+
+## Architecture Considerations
+
+Generics enable type-safe, reusable code that scales across teams. At scale, generic APIs become the contract that distributed systems depend on. For library authors, generic design determines API usability and evolution. For microservices, generic DTOs and repositories reduce boilerplate across services.
+
+| Pattern | Use Case | Trade-offs |
+|---------|----------|------------|
+| Generic repository | Data access layer | Pros: Type-safe CRUD, code reuse; Cons: Complex queries |
+| Generic factory | Object creation | Pros: Type-safe creation; Cons: Requires Class<T> parameter |
+| Generic builder | Builder pattern | Pros: Fluent API, type safety; Cons: Verbosity |
+| Wildcard API | Flexible APIs | Pros: Accepts more types; Cons: More complex signatures |
+
+## Security Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Type confusion via raw types | ClassCastException, data corruption | Use parameterized types everywhere |
+| Unchecked cast bypassing type safety | Runtime ClassCastException | Minimize unchecked casts; use `@SuppressWarnings` |
+| Generic type injection | Security bypass | Validate generic type parameters |
+| Reflection bypassing generics | Unsafe operations | Restrict reflection access |
+
+## Evolution & Modernization
+
+| Version | Change | Migration Path |
+|---------|--------|----------------|
+| Java 1.0–1.4 | Raw types | Migrate to parameterized types |
+| Java 5 | Generics introduced | Replace raw types with generics |
+| Java 7 | Diamond operator | Use `new ArrayList<>()` |
+| Java 8 | Type inference in lambdas | Use lambdas with generic types |
+| Java 9 | `var` for local variables | Use `var` for obvious types |
+| Java 21 | Type system refinements | Use latest features |
+
+## Version Validation
+
+| Feature | Java Version | Status |
+|---------|-------------|--------|
+| Generics | Java 5 | Stable |
+| Diamond operator | Java 7 | Stable |
+| Type inference | Java 8 | Stable |
+| `var` | Java 10 | Stable |
+
+## Production Incidents
+
+### Incident 1: Raw Type Causing ClassCastException
+
+**Problem:** A legacy system threw `ClassCastException` intermittently when processing orders, causing 5% of transactions to fail.
+**Cause:** Code used raw `List` instead of `List<Order>`, allowing wrong types to be inserted.
+**Impact:** 5% transaction failure rate; customer complaints; manual data correction required.
+**Detection:** Exception logs showed ClassCastException in order processing.
+**Solution:** Replaced raw types with parameterized types; added compile-time type checking.
+**Prevention:** Use static analysis to flag raw types; enforce parameterized types in code review.
+
+### Incident 2: Type Erasure Hiding Bug
+
+**Problem:** A generic utility class failed to detect null values at compile time, causing NPEs in production.
+**Cause:** Developer assumed `T` would be checked at runtime; type erasure prevented null checking.
+**Impact:** NPEs in production; 2% of requests failed.
+**Solution:** Added explicit null checks; used `Objects.requireNonNull()` for generic parameters.
+**Prevention:** Understand type erasure; add null checks for generic parameters.
+
+### Incident 3: Unchecked Cast Warning Ignored
+
+**Problem:** A caching system returned wrong types due to ignored unchecked cast warning.
+**Cause:** Developer suppressed warning without proving safety; cache stored mixed types.
+**Impact:** Type mismatch in downstream code; 10% of requests returned incorrect data.
+**Solution:** Fixed type safety; removed unchecked cast; used proper generic types.
+**Prevention:** Never ignore unchecked cast warnings; prove safety before suppressing.
+
+## Production Checklist
+
+- [ ] No raw types used
+- [ ] Wildcards used correctly (PECS)
+- [ ] Bounded types used when calling methods on type parameters
+- [ ] Unchecked cast warnings justified
+- [ ] `Class<T>` passed for runtime type operations
+- [ ] Generic types parameterized correctly
+- [ ] Null checks added for generic parameters
+- [ ] Type erasure understood and accounted for
+
+## Maturity Levels
+
+| Level | Description |
+|-------|-------------|
+| Beginner | Uses raw types; doesn't understand generics; casts everywhere |
+| Intermediate | Uses parameterized types; understands basic wildcards; avoids raw types |
+| Advanced | Uses PECS; understands type erasure; designs generic APIs |
+| Expert | Designs generic libraries; contributes to type system; teaches generics |
+
+## Common Myths
+
+1. **Myth**: Generics add runtime overhead
+   **Truth**: Generics are compile-time only. Type erasure removes all generic information, so there's zero runtime cost.
+
+2. **Myth**: `List<String>` is a subtype of `List<Object>`
+   **Truth**: Generics are invariant. `List<String>` is NOT assignable to `List<Object>`. Use `List<?>` for unknown types.
+
+3. **Myth**: You can use `instanceof` with generic types
+   **Truth**: Type erasure prevents `instanceof List<String>`. Use `instanceof List<?>` instead.
+
+4. **Myth**: Wildcards make APIs more complex unnecessarily
+   **Truth**: Wildcards enable flexible, type-safe APIs. Without them, you'd need to duplicate methods for different types.
+
+5. **Myth**: Type erasure means generics are useless at runtime
+   **Truth**: `Class<T>` preserves type information at runtime. Use it for reflection, deserialization, and type-safe factories.
+
+## One-Minute Revision
+
+| Aspect | Value |
+|--------|-------|
+| Purpose | Compile-time type safety, code reuse |
+| Key feature | Type parameters (`<T>`) |
+| Bounded types | `<T extends Number>` — restrict T to Number subtypes |
+| Wildcards | `? extends T` (read), `? super T` (write) |
+| PECS | Producer Extends, Consumer Super |
+| Type erasure | Removed at compile time — no runtime cost |
+| Common mistake | Raw types, `new T()`, `instanceof List<String>` |
+| When to use | Collections, APIs, type-safe code |
+| When to avoid | Never — generics are fundamental |

@@ -398,9 +398,35 @@ Both are build tools. Here's how they compare:
 // build.gradle
 plugins {
     id 'java'
+}
 
+group = 'com.example'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:31.1-jre'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+```
+
+### Maven vs Gradle Summary
+
+| Feature | Maven | Gradle |
+|---------|-------|--------|
+| Configuration | XML (`pom.xml`) | Groovy/Kotlin DSL |
+| Build Speed | Slower | Faster (incremental) |
+| Flexibility | Convention over configuration | Highly configurable |
+| IDE Support | Excellent | Excellent |
+| Learning Curve | Easier | Steeper |
 
 ---
 
 **Continue to Part 2**: [README-part2.md](README-part2.md)
-```

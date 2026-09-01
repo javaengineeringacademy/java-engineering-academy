@@ -457,7 +457,7 @@ public class StreamEnterpriseExample {
 - **Next Module:** [08 - I/O and NIO](../08-io-nio/)
 - **Related:** [04 - Collections](../04-collections/) — stream source collections
 - **Related:** [02 - OOP](../02-oop/) — functional interfaces as contracts
-- **Related:** [09 - Multithreading](../09-multithreading/) — parallel streams and ForkJoinPool
+- **Related:** [09 - Multithreading](../09-multithreading-&-concurrency/) — parallel streams and ForkJoinPool
 - **External:** [Oracle Stream API Tutorial](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html)
 - **External:** [Baeldung Java Streams Guide](https://www.baeldung.com/java-streams)
 
@@ -608,7 +608,7 @@ In reactive and event-driven architectures, stream concepts (lazy evaluation, co
 ## Next
 
 - [I/O and NIO](../08-io-nio/README.md)
-- [Multithreading](../09-multithreading/README.md)
+- [Multithreading](../09-multithreading-&-concurrency/README.md)
 
 ## One-Minute Revision
 

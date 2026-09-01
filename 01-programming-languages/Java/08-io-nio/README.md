@@ -354,10 +354,10 @@ Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern
 ## Cross-References
 
 - **Previous Module:** [07 - Functional Programming](../07-functional-programming/)
-- **Next Module:** [09 - Multithreading](../09-multithreading/)
+- **Next Module:** [09 - Multithreading](../09-multithreading-&-concurrency/)
 - **Related:** [05 - Text Processing](../05-text-processing/) — character encoding and text manipulation
 - **Related:** [10 - JVM Internals](../10-jvm-internals/) — file descriptors, memory mapping
-- **Related:** [09 - Multithreading](../09-multithreading/) — async I/O and NIO selectors
+- **Related:** [09 - Multithreading](../09-multithreading-&-concurrency/) — async I/O and NIO selectors
 - **External:** [Oracle Java I/O Tutorial](https://docs.oracle.com/javase/tutorial/essential/io/)
 - **External:** [Java NIO Tutorial - Baeldung](https://www.baeldung.com/java-nio)
 
@@ -500,11 +500,11 @@ In microservices, file I/O architecture affects service boundaries — shared fi
 
 ## Related Topics
 
-- [Multithreading](../09-multithreading/README.md)
+- [Multithreading](../09-multithreading-&-concurrency/README.md)
 
 ## Next
 
-- [Multithreading](../09-multithreading/README.md)
+- [Multithreading](../09-multithreading-&-concurrency/README.md)
 
 ## One-Minute Revision
 

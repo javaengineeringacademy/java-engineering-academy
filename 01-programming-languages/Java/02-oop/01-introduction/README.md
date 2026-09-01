@@ -399,10 +399,38 @@ public class FictionBook extends Book {
     }
     
     @Override
+    public String getBookType() { return "Fiction (" + genre + ")"; }
+}
+
+public class NonFictionBook extends Book {
+    private String subject;
+    
+    public NonFictionBook(String isbn, String title, String author, String subject) {
+        super(isbn, title, author);
+        this.subject = subject;
+    }
+    
+    @Override
+    public String getBookType() { return "Non-Fiction (" + subject + ")"; }
+}
+
+// Usage
+Book fiction = new FictionBook("978-0-13-468599-1", "Effective Java", "Joshua Bloch", "Programming");
+Book nonFiction = new NonFictionBook("978-0-13-468599-2", "Clean Code", "Robert Martin", "Software Engineering");
+
+System.out.println(fiction);       // Fiction (Programming) - Effective Java by Joshua Bloch
+System.out.println(nonFiction);    // Non-Fiction (Software Engineering) - Clean Code by Robert Martin
+```
+
+**Key Points:**
+- Abstract classes cannot be instantiated directly
+- Subclasses must implement all abstract methods
+- Abstract classes can have constructors, fields, and concrete methods
+- Use abstract classes when you need shared code across related classes
 
 ---
 
 ## Continue Reading
 
-- Part 2
-- Part 3
+- [Part 2: OOP Principles](02-oop-principles/README.md)
+- [Part 3: Advanced OOP](03-advanced-oop/README.md)

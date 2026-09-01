@@ -37,7 +37,7 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 ### Core (Build Your Skills)
 | # | Module | What You'll Learn |
 |---|--------|-------------------|
-| 03 | [Exception Handling](03-exception-handling/) | Try-catch, custom exceptions, best practices |
+| 03 | [Exception Handling](03-exceptions/) | Try-catch, custom exceptions, best practices |
 | 04 | [Collections](04-collections/) | List, Set, Map, Queue — internals, when to use which |
 | 05 | [Text Processing](05-text-processing/) | String pool, immutability, StringBuilder |
 | 06 | [Generics](06-generics/) | Type safety, wildcards, type erasure |
@@ -47,7 +47,7 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 ### Advanced (Level Up)
 | # | Module | What You'll Learn |
 |---|--------|-------------------|
-| 09 | [Multithreading](09-multithreading/) | Threads, synchronization, ExecutorService |
+| 09 | [Multithreading](09-multithreading-&-concurrency/) | Threads, synchronization, ExecutorService |
 | 10 | [JVM Internals](10-jvm-internals/) | Class loading, memory, GC, JIT |
 | 11 | [Design Patterns](11-design-patterns/) | 23 GoF patterns with Java implementations |
 | 12 | [Testing](12-testing/) | JUnit 5, Mockito |
@@ -92,7 +92,7 @@ graph TD
 ## For Students
 
 **Start here:** [01-Fundamentals](01-fundamentals/)
-**Then:** [02-OOP](02-oop/) → [03-Exception Handling](03-exception-handling/)
+**Then:** [02-OOP](02-oop/) → [03-Exception Handling](03-exceptions/)
 **Goal:** Write your first Java programs, understand OOP
 
 **Time:** 2-3 months
@@ -111,7 +111,7 @@ graph TD
 
 ## For Mid-Level Engineers
 
-**Start here:** [09-Multithreading](09-multithreading/)
+**Start here:** [09-Multithreading](09-multithreading-&-concurrency/)
 **Then:** [10-JVM Internals](10-jvm-internals/) → [11-Design Patterns](11-design-patterns/)
 **Goal:** Understand how Java works under the hood
 

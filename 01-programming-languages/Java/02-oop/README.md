@@ -551,10 +551,10 @@ OOP is fundamental to Java development. Master the four pillars and apply design
 ## Cross-References
 
 - **Previous Module:** [01 - Java Fundamentals](../01-fundamentals/)
-- **Next Module:** [03 - Exception Handling](../03-exception-handling/)
+- **Next Module:** [03 - Exception Handling](../03-exceptions/)
 - **Related:** [06 - Generics](../06-generics/) — type-safe parameterized classes and interfaces
 - **Related:** [07 - Functional Programming](../07-functional-programming/) — lambdas and functional interfaces
-- **Related:** [09 - Multithreading](../09-multithreading/) — synchronized objects and thread safety
+- **Related:** [09 - Multithreading](../09-multithreading-&-concurrency/) — synchronized objects and thread safety
 - **External:** [Oracle Java Documentation: OOP](https://docs.oracle.com/javase/tutorial/java/concepts/)
 - **External:** [Effective Java by Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - **External:** [Head First Design Patterns](https://www.oreilly.com/library/view/head-first-design/9781492077992/)
@@ -704,7 +704,7 @@ For enterprise systems, SOLID principles at the class level translate to archite
 
 ## Next
 
-- [Exception Handling](../03-exception-handling/README.md)
+- [Exception Handling](../03-exceptions/README.md)
 - [Collections](../04-collections/README.md)
 
 ## One-Minute Revision

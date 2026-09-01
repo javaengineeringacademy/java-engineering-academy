@@ -713,7 +713,7 @@ The JMM is not just theoretical — it directly impacts the correctness of every
 
 ## Related Topics
 - [Garbage Collection](../garbage-collection/) — How GC manages memory
-- [Volatile & Synchronized](../../09-multithreading/) — Memory visibility and locking
+- [Volatile & Synchronized](../../09-multithreading-&-concurrency/) — Memory visibility and locking
 - [Happens-Before Order](#4-happens-before-order) — Core ordering guarantee (this document)
 - [JVM Internals](../../10-jvm-internals/) — JVM memory architecture
 - Performance — Memory performance

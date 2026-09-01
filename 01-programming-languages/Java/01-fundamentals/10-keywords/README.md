@@ -162,5 +162,5 @@ Java has 67 reserved keywords that cannot be used as identifiers (variable names
 - See `01-variables/` for variable declarations
 - See `02-oop/` for class/interface/enum keywords
 - See `06-generics/` for type parameters
-- See `09-multithreading/` for synchronized/volatile
+- See `09-multithreading-&-concurrency/` for synchronized/volatile
 - See `10-jvm-internals/` for class loading and bytecode
