@@ -28,6 +28,13 @@ Applications need to read and write files, handle network requests, and serializ
 - **2017** — Java 9 added `InputStream.transferTo()`, `Files.readString()`, `Files.writeString()`
 - **2021** — Java 17 added `Files.mismatch()`
 
+## Production Notes
+
+- **Where is it used?** In every Java application that reads/writes files, processes network data, or handles streams
+- **Why is it useful?** Provides efficient data handling with proper resource management
+- **When should it be avoided?** Not applicable; I/O is fundamental to most applications
+- **Alternative?** Third-party libraries (Apache Commons IO, Guava), but core I/O is standard
+
 ## Why This Concept Exists
 File and network operations require:
 - Data reading/writing
@@ -171,7 +178,9 @@ Files.writeString(path, "Hello");
 Files.copy(source, target);
 ```
 
-## Easy Example
+## Examples
+
+### Easy Example
 ```java
 import java.nio.file.*;
 import java.io.*;

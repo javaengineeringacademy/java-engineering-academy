@@ -6,6 +6,17 @@
 ## Overview
 Every application needs to store data, make decisions, repeat tasks, and organize code. Java fundamentals provide these building blocks — data types, operators, control flow, methods, arrays, strings, packages, and build tools — in a strongly-typed, platform-independent manner. Without them, you cannot write reliable, maintainable Java programs.
 
+## Learning Objectives
+
+- [ ] Declare and use all 8 primitive data types
+- [ ] Apply arithmetic, relational, and logical operators
+- [ ] Implement if/else, switch, for, while, and do-while control flow
+- [ ] Write methods with overloading and varargs
+- [ ] Create and manipulate arrays
+- [ ] Use String, StringBuilder, and StringBuffer appropriately
+- [ ] Organize code with packages and imports
+- [ ] Build projects with Maven or Gradle
+
 ## Why This Concept Exists
 Every programming language needs a way to store data, make decisions, repeat tasks, and organize code. Java fundamentals provide these building blocks in a strongly-typed, platform-independent manner. Without understanding these concepts, you cannot write reliable, maintainable Java programs.
 
@@ -104,6 +115,58 @@ Class Loading → Bytecode Verification → Interpretation → JIT Compilation �
 - **Heap** — Objects and instance variables
 - **String Pool** — Interned string literals
 - **Constant Pool** — Compile-time constants
+
+## Syntax
+
+```java
+// Variable declaration
+int age = 25;
+double salary = 75000.50;
+char grade = 'A';
+boolean active = true;
+String name = "Java";
+
+// Operators
+int sum = a + b;
+boolean result = (a > b) && (c < d);
+int modulo = 10 % 3;
+
+// Control flow
+if (score >= 90) {
+    System.out.println("A");
+} else if (score >= 80) {
+    System.out.println("B");
+} else {
+    System.out.println("C");
+}
+
+// Switch
+switch (day) {
+    case MONDAY: System.out.println("Monday"); break;
+    case TUESDAY: System.out.println("Tuesday"); break;
+    default: System.out.println("Other");
+}
+
+// Loops
+for (int i = 0; i < 10; i++) { }
+while (condition) { }
+do { } while (condition);
+
+// Methods
+public static int add(int a, int b) { return a + b; }
+public static void printAll(String... items) { }
+
+// Arrays
+int[] nums = {1, 2, 3};
+String[] names = new String[5];
+int length = nums.length;
+
+// Strings
+String s = "Hello";
+String upper = s.toUpperCase();
+int len = s.length();
+char c = s.charAt(0);
+```
 
 ## Examples
 

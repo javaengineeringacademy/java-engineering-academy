@@ -288,7 +288,9 @@ public class Rectangle implements Drawable, Resizable {
 }
 ```
 
-## Easy Example
+## Examples
+
+### Easy Example
 ```java
 public class Car {
     private String brand;

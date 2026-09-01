@@ -30,6 +30,17 @@ Java knowledge atoms are fundamental building blocks that every Java developer m
 | 06 | [Pass by Value](pass-by-value/) | 30 min | Beginner | How Java passes arguments to methods |
 | 07 | [Type Safety](type-safety/) | 30 min | Beginner | Compile-time type checking and generics |
 
+## History
+
+- **1996** — Java 1.0 introduced pass-by-value semantics and basic type system
+- **1998** — Java 1.2 added Collections Framework, introducing equals/hashCode contract importance
+- **2004** — Java 5 introduced autoboxing, generics, and improved type safety
+- **2011** — Java 7 introduced G1 garbage collector for better pause time management
+- **2014** — Java 8 added lambdas, affecting immutable object patterns
+- **2017** — Java 9 module system restricted reflective access to internals
+- **2021** — Java 17 records auto-generate equals/hashCode, simplifying immutability
+- **2023** — Java 21 virtual threads changed memory model considerations
+
 ## Production Notes
 - **Where is it used?** In every Java application as foundational concepts
 - **Why is it useful?** Prevents common bugs, improves performance, ensures correctness
@@ -48,6 +59,285 @@ Java knowledge atoms are fundamental building blocks that every Java developer m
 | Memory Model | Thread visibility rules | Missing volatile/synchronization |
 | Pass by Value | Copies of references, not references to references | Confusing with C++ pointers |
 | Type Safety | Compile-time type checking | Using raw types |
+
+## Internal Working
+
+### Autoboxing Internals
+
+```
+int i = 42;
+Integer boxed = i;        // Integer.valueOf(i) — cached for -128 to 127
+int unboxed = boxed;       // boxed.intValue() — unboxing
+```
+
+- Integer cache: -128 to 127 (default, configurable with `-XX:AutoBoxCacheMax`)
+- Each autoboxing creates a new object outside cache range
+- JIT can optimize some autoboxing away
+
+### Object Header Layout
+
+```
+┌─────────────────────────────────────┐
+│         Object Header               │
+├─────────────────────────────────────┤
+│  Mark Word (64-bit)                 │
+│  ┌─────────────────────────────┐    │
+│  │ Hash code, GC age, lock     │    │
+│  └─────────────────────────────┘    │
+│  Klass Pointer                     │
+│  ┌─────────────────────────────┐    │
+│  │ Pointer to class metadata   │    │
+│  └─────────────────────────────┘    │
+│  [Padding for alignment]           │
+└─────────────────────────────────────┘
+```
+
+### Pass-by-Value Mechanism
+
+```
+Primitive: value is copied
+  int x = 10;
+  modify(x);  // copy of 10 passed
+
+Object: reference is copied
+  List<String> list = new ArrayList<>();
+  modify(list);  // copy of reference passed
+```
+
+## Syntax
+
+```java
+// Autoboxing
+int primitive = 42;
+Integer boxed = primitive;        // autoboxing
+int unboxed = boxed;              // unboxing
+
+// equals/hashCode
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    User user = (User) o;
+    return age == user.age && Objects.equals(name, user.name);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(name, age);
+}
+
+// Immutability
+public final class User {
+    private final String name;
+    private final int age;
+    
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    public String getName() { return name; }
+    public int getAge() { return age; }
+}
+
+// Thread-safe singleton
+public class Singleton {
+    private static volatile Singleton instance;
+    private Singleton() {}
+    
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+## Examples
+
+### Easy: Autoboxing Performance
+```java
+public class AutoboxingDemo {
+    public static void main(String[] args) {
+        // Autoboxing in loop — creates 10 million Integer objects!
+        long start = System.currentTimeMillis();
+        Long sum = 0L;  // boxed — BAD
+        for (int i = 0; i < 10_000_000; i++) {
+            sum += i;  // autoboxing per iteration
+        }
+        System.out.println("Boxed: " + (System.currentTimeMillis() - start) + "ms");
+        
+        // Using primitive — no object creation
+        start = System.currentTimeMillis();
+        long sum2 = 0L;  // primitive — GOOD
+        for (int i = 0; i < 10_000_000; i++) {
+            sum2 += i;
+        }
+        System.out.println("Primitive: " + (System.currentTimeMillis() - start) + "ms");
+    }
+}
+```
+
+### Medium: Immutable Object
+```java
+import java.util.Objects;
+
+public final class Money {
+    private final String currency;
+    private final long amount;  // use long for cents, not double
+    
+    public Money(String currency, long amount) {
+        this.currency = Objects.requireNonNull(currency);
+        this.amount = amount;
+    }
+    
+    public String getCurrency() { return currency; }
+    public long getAmount() { return amount; }
+    
+    public Money add(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Different currencies");
+        }
+        return new Money(currency, this.amount + other.amount);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Money)) return false;
+        Money money = (Money) o;
+        return amount == money.amount && currency.equals(money.currency);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(currency, amount);
+    }
+}
+```
+
+### Hard: Memory Model Visibility
+```java
+public class VisibilityDemo {
+    private static volatile boolean running = true;  // volatile ensures visibility
+    
+    public static void main(String[] args) throws InterruptedException {
+        Thread worker = new Thread(() -> {
+            int count = 0;
+            while (running) {  // without volatile, may loop forever
+                count++;
+            }
+            System.out.println("Count: " + count);
+        });
+        
+        worker.start();
+        Thread.sleep(1000);
+        running = false;  // without volatile, worker may never see this
+        worker.join();
+    }
+}
+```
+
+### Enterprise: Record for Immutability
+```java
+public record User(String name, int age, String email) {
+    // Records are automatically:
+    // - final (cannot be extended)
+    // - immutable (all fields final)
+    // - equipped with equals(), hashCode(), toString()
+    
+    public User {
+        if (age < 0) throw new IllegalArgumentException("Age cannot be negative");
+    }
+    
+    // Custom method
+    public String summary() {
+        return name + " (" + age + ")";
+    }
+}
+```
+
+## Performance Considerations
+
+| Operation | Cost | Notes |
+|-----------|------|-------|
+| Autoboxing (cached) | ~1ns | Integer.valueOf() for -128 to 127 |
+| Autoboxing (uncached) | ~10ns | New object creation |
+| Object header | 16 bytes | Mark word + klass pointer |
+| equals() comparison | ~100ns | Depends on field count |
+| hashCode() calculation | ~50ns | Depends on field count |
+| Immutability copy | O(n) | New object for each change |
+
+## Best Practices
+
+**Do's:**
+- Use primitives for performance-critical code
+- Override both equals() and hashCode() together
+- Make immutable objects truly immutable (all fields final)
+- Use volatile for flags shared across threads
+- Use Records for immutable data classes (Java 16+)
+
+**Don'ts:**
+- Don't use autoboxing in hot loops
+- Don't override equals() without hashCode()
+- Don't expose mutable internal state
+- Don't assume thread safety without synchronization
+- Don't use String.intern() excessively
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Autoboxing in loop | Performance degradation | Use primitives |
+| Override equals() only | Broken HashMap/HashSet | Always override hashCode() too |
+| Mutable fields in immutable class | Thread safety issues | Make all fields final |
+| Missing volatile | Thread visibility issues | Add volatile for shared flags |
+| Using == for Integer comparison | Reference comparison | Use .equals() or intValue() |
+
+## Interview Questions
+
+### Q1: What is autoboxing and when is it a problem?
+**Answer:** Autoboxing is automatic conversion between primitives and wrapper classes. It's a problem in loops where it creates millions of objects, increasing GC pressure. Use primitives for performance-critical code.
+
+### Q2: What is the equals/hashCode contract?
+**Answer:** If two objects are equal (equals() returns true), they must have the same hashCode(). Breaking this contract causes HashSet/HashMap to malfunction. Always override both together.
+
+### Q3: How do you create an immutable class?
+**Answer:** Make class final, all fields final and private, no setters, deep copy mutable fields in constructor and getters, override equals/hashCode. Records (Java 16+) are automatically immutable.
+
+### Q4: What is pass-by-value in Java?
+**Answer:** Java is always pass-by-value. For primitives, the value is copied. For objects, the reference is copied (not the object). You can modify the object through the reference but not reassign the original reference.
+
+### Q5: What is the difference between == and .equals()?
+**Answer:** == compares references (memory addresses). .equals() compares values. For wrapper classes, == compares references (may fail for values outside cache range).
+
+### Q6: Why is String immutable?
+**Answer:** Strings are stored in the string pool. Immutability enables string interning, security, thread safety, and class loading safety. It also allows strings to be used as HashMap keys safely.
+
+### Q7: What is the Integer cache?
+**Answer:** Java caches Integer objects for values -128 to 127. Autoboxing within this range returns the same object. Outside this range, new objects are created.
+
+### Q8: What is the difference between immutable and final?
+**Answer:** Final means the reference cannot be reassigned. Immutable means the object's state cannot be changed. A final reference to a mutable object can still have its state changed.
+
+### Q9: What is the Memory Model and why does it matter?
+**Answer:** The Java Memory Model defines how threads interact through memory. Without it, threads may see stale values from CPU caches. volatile and synchronized establish happens-before relationships.
+
+### Q10: What is a record and when should you use it?
+**Answer:** A record is a compact class for immutable data. Use for DTOs, value objects, and data carriers. It auto-generates constructor, accessors, equals, hashCode, toString.
+
+## Cross-References
+
+- **Next Module:** [01 - Fundamentals](../01-fundamentals/)
+- **Related:** [04 - Collections](../04-collections/) — equals/hashCode in HashMap
+- **Related:** [09 - Multithreading](../09-multithreading-&-concurrency/) — memory model, volatile
+- **Related:** [10 - JVM Internals](../10-jvm-internals/) — GC internals, object layout
+- **Related:** [16 - Modern Java](../16-modern-java/) — records, pattern matching
 
 ## Debugging Tips
 

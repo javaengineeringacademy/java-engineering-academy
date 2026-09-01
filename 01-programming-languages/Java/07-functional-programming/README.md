@@ -246,7 +246,9 @@ stream.forEach(System.out::println);
 Integer[] arr = stream.toArray(Integer[]::new);
 ```
 
-## Easy Example
+## Examples
+
+### Easy Example
 ```java
 import java.util.*;
 import java.util.stream.*;

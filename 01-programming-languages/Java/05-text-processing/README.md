@@ -6,6 +6,15 @@
 ## Overview
 Applications constantly handle text — user input, file content, network data, configuration, and output display. Java's text processing APIs let you manipulate, validate, and transform text without worrying about encoding, memory management, or immutability pitfalls. This module covers String, StringBuilder, regular expressions, text blocks, and internationalization.
 
+## Learning Objectives
+
+- [ ] Understand String immutability and its performance implications
+- [ ] Choose between String, StringBuilder, and StringBuffer
+- [ ] Use regular expressions for pattern matching
+- [ ] Apply Text Blocks for multi-line strings (Java 15+)
+- [ ] Handle Unicode and character encoding correctly
+- [ ] Implement internationalization (i18n) in applications
+
 ## Why This Concept Exists
 Applications constantly handle text — user input, file content, network data, configuration, and output display. Java's text processing APIs provide:
 - Efficient string manipulation without manual memory management
@@ -251,6 +260,55 @@ if (str1.equals(str2)) { ... }
 - Java uses UTF-16 internally for `char`
 - `Charset` handles encoding/decoding between bytes and characters
 - UTF-8 is the default for file I/O (Java 18+)
+
+## Syntax
+
+```java
+// String operations
+String s = "Hello, World!";
+s.length();                    // 13
+s.substring(0, 5);            // Hello
+s.toUpperCase();               // HELLO, WORLD!
+s.replace('l', 'L');          // HeLLo, WorLd!
+s.contains("World");          // true
+s.split(", ");                // ["Hello", "World!"]
+s.indexOf("World");           // 7
+s.trim();                     // removes whitespace
+s.isEmpty();                  // false
+s.isBlank();                  // false (Java 11+)
+
+// StringBuilder (mutable)
+StringBuilder sb = new StringBuilder();
+sb.append("Hello");
+sb.append(" ");
+sb.append("World");
+sb.insert(5, ",");
+sb.replace(0, 5, "Hi");
+sb.delete(2, 4);
+String result = sb.toString();
+
+// Regular expressions
+String pattern = "\\d{3}-\\d{4}";
+boolean matches = "123-4567".matches(pattern);
+
+Pattern p = Pattern.compile("\\d+");
+Matcher m = p.matcher("abc123def456");
+while (m.find()) {
+    System.out.println(m.group());  // 123, 456
+}
+
+// Text blocks (Java 15+)
+String json = """
+    {
+        "name": "Alice",
+        "age": 30
+    }
+    """;
+
+// String formatting
+String formatted = String.format("Name: %s, Age: %d", "Alice", 30);
+String interpolated = "Name: %s, Age: %d".formatted("Alice", 30);
+```
 
 ## Examples
 
