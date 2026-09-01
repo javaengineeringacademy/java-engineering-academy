@@ -515,6 +515,24 @@ Generics enable type-safe, reusable code that scales across teams. At scale, gen
 **Solution:** Fixed type safety; removed unchecked cast; used proper generic types.
 **Prevention:** Never ignore unchecked cast warnings; prove safety before suppressing.
 
+### Incident 4: Wildcard Misuse Causing API Incompatibility
+
+**Problem:** A library upgrade broke all consumer code due to wildcard changes in method signatures.
+**Cause:** Library changed `List<String>` to `List<?>` in public API, breaking downstream code.
+**Impact:** 50+ consumer applications failed to compile; 2-day emergency fix.
+**Detection:** Compilation errors across multiple projects after library upgrade.
+**Solution:** Maintained backward compatibility; added new methods with wildcards; kept old signatures.
+**Prevention:** Follow semantic versioning; avoid breaking API changes; use bounded wildcards carefully.
+
+### Incident 5: Type Erasure Hiding Runtime Type Information
+
+**Problem:** A serialization library failed to deserialize generic types correctly at runtime.
+**Cause:** Type erasure removed generic type information; code assumed `List<String>` was available at runtime.
+**Impact:** 30% of deserialization requests failed; data corruption in some cases.
+**Detection:** `ClassCastException` at runtime when accessing deserialized collections.
+**Solution:** Used `TypeToken` pattern to preserve type information; passed `Class<T>` parameters.
+**Prevention:** Use `TypeReference` or `Class<T>` for generic type preservation; understand type erasure limitations.
+
 ## Production Checklist
 
 - [ ] No raw types used

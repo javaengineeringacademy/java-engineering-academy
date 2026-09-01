@@ -280,6 +280,27 @@ public class ControlFlow {
 ### Q8: What is the `var` keyword in Java 10+?
 **Answer:** Local variable type inference. The compiler infers the type from the initializer: `var list = new ArrayList<String>();`.
 
+### Q9: What are wrapper classes and when to use them?
+**Answer:** Wrapper classes (Integer, Double, etc.) wrap primitives as objects. Use for generics, collections, and null values. Autoboxing converts between them automatically.
+
+### Q10: What is the difference between `StringBuilder` and `StringBuffer`?
+**Answer:** StringBuilder is not thread-safe but faster. StringBuffer is synchronized. Use StringBuilder for single-threaded scenarios; StringBuffer for multi-threaded.
+
+### Q11: What happens when you use `null` in a switch statement?
+**Answer:** A NullPointerException is thrown at runtime if the switch expression is null (Java 21+ pattern matching may handle differently).
+
+### Q12: What is the diamond operator (`<>`)?
+**Answer:** Introduced in Java 7, it allows the compiler to infer type arguments: `List<String> list = new ArrayList<>();`.
+
+### Q13: What are the 8 primitive data types in Java?
+**Answer:** byte (8-bit), short (16-bit), int (32-bit), long (64-bit), float (32-bit), double (64-bit), boolean (1-bit), char (16-bit Unicode).
+
+### Q14: What is the difference between `finalize()` and `try-with-resources`?
+**Answer:** finalize() is unreliable and deprecated. Try-with-resources automatically closes AutoCloseable resources and is the preferred approach.
+
+### Q15: What is the difference between `==` and `.equals()` for objects?
+**Answer:** == compares references (memory addresses). .equals() compares values. For String, .equals() checks content. For other objects, defaults to reference comparison unless overridden.
+
 ## Cross-References
 
 - **Next Module:** [02 - Object-Oriented Programming](../02-oop/)
@@ -386,6 +407,24 @@ When building large-scale systems, fundamental patterns like defensive copying, 
 **Detection:** Stack trace showed NPE in configuration loader class.
 **Solution:** Added null checks and used `Optional` for configuration values with sensible defaults.
 **Prevention:** Use `Optional` for potentially missing values; validate configuration at startup.
+
+### Incident 4: Autoboxing Causing Performance Degradation
+
+**Problem:** A real-time data processing system had 10x slower performance after a code refactor.
+**Cause:** Developer replaced `int` loop counters with `Integer`, causing autoboxing in hot loops.
+**Impact:** System couldn't meet 100ms latency requirements, causing SLA violations.
+**Detection:** Profiler showed 60% of CPU time in `Integer.valueOf()` autoboxing calls.
+**Solution:** Replaced `Integer` with `int` for loop counters and performance-critical code.
+**Prevention:** Avoid autoboxing in hot loops; use primitive types for performance-critical code.
+
+### Incident 5: String Concatenation in Log Statements
+
+**Problem:** A logging-heavy application experienced high GC overhead and CPU usage.
+**Cause:** String concatenation with `+` in log statements created millions of temporary String objects.
+**Impact:** Application throughput dropped 40% during peak hours due to GC pressure.
+**Detection:** GC logs showed frequent young generation collections; profiler identified string concatenation.
+**Solution:** Used lazy evaluation with `if (logger.isInfoEnabled())` before concatenation.
+**Prevention:** Use parameterized logging (`logger.info("msg {}", param)`) instead of string concatenation.
 
 ## Production Checklist
 

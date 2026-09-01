@@ -433,6 +433,24 @@ When designing large-scale systems, immutability should be the default for value
 **Solution:** Switched to ZGC with `-XX:+UseZGC -Xmx32g -Xms32g`, reducing max pause times to under 10ms.
 **Prevention:** Profile GC behavior under production-like load; choose GC algorithm based on latency requirements.
 
+### Incident 4: String.intern() Causing Memory Leak in Cache
+
+**Problem:** A caching system using `String.intern()` for metadata strings experienced a memory leak, with the String Pool growing to 8GB over 3 days.
+**Cause:** High-cardinality metadata strings were interned without limits, exhausting PermGen/Metaspace.
+**Impact:** Application crashed with `OutOfMemoryError: Metaspace` every 3 days, requiring restarts.
+**Detection:** Heap dumps showed millions of interned strings in the String Pool.
+**Solution:** Replaced `String.intern()` with a `ConcurrentHashMap<String, String>` cache with eviction policy.
+**Prevention:** Avoid `String.intern()` in application code; use explicit caches (Guava, Caffeine) with size limits.
+
+### Incident 5: Pass-by-Value Misunderstanding in Serialization
+
+**Problem:** A deep-copy utility using serialization was silently sharing mutable state between objects, causing race conditions.
+**Cause:** Developer assumed Java was pass-by-reference and misunderstood how object references work.
+**Impact:** 3 production race conditions in 2 weeks, including one that corrupted user data.
+**Detection:** Thread dump analysis showed threads accessing the same object instance unexpectedly.
+**Solution:** Implemented proper deep copy using `Cloneable` interface with recursive cloning.
+**Prevention:** Train developers on Java's pass-by-value semantics; use immutable objects to avoid deep copy needs.
+
 ## Production Checklist
 
 - [ ] Override both equals() and hashCode() together when needed

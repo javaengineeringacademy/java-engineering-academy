@@ -415,6 +415,24 @@ public class RegexExample {
 ### Q7: What is the difference between `contains()` and `matches()`?
 **Answer:** `contains()` checks if a substring exists. `matches()` checks if the entire string matches a regex pattern.
 
+### Q8: Why is String immutable in Java?
+**Answer:** Strings are stored in the string pool. Immutability enables string interning, security, thread safety, and allows strings to be used as HashMap keys safely.
+
+### Q9: What is the difference between `String`, `StringBuilder`, and `StringBuffer`?
+**Answer:** String is immutable. StringBuilder is mutable and not thread-safe. StringBuffer is mutable and thread-safe (synchronized). Use StringBuilder for single-threaded, StringBuffer for multi-threaded.
+
+### Q10: How do you handle Unicode characters in Java?
+**Answer:** Java uses UTF-16 internally. Use `Character.isLetter()`, `Character.getType()` for Unicode-aware operations. For supplementary characters, use `codePointAt()` and `Character.toString()`.
+
+### Q11: What is the `StringJoiner` class?
+**Answer:** A utility class for joining strings with delimiter, prefix, and suffix. More efficient than `String.join()` for complex joining scenarios.
+
+### Q12: What is the performance impact of string concatenation in loops?
+**Answer:** Each concatenation creates a new String object, resulting in O(n²) time complexity. Use StringBuilder for O(n) performance.
+
+### Q13: What is the `Formatter` class used for?
+**Answer:** Provides formatted printing similar to C's `printf()`. Used with `String.format()` and `System.out.printf()` for creating formatted output.
+
 ## Cross-References
 
 - **Previous Module:** [04 - Collections Framework](../04-collections/)
@@ -522,6 +540,24 @@ In distributed systems, text encoding mismatches between services cause silent d
 **Detection:** Heap dumps showed millions of `Pattern` objects; GC logs showed constant full GC cycles.
 **Solution:** Moved `Pattern.compile()` outside the loop; reused compiled pattern for all log entries.
 **Prevention:** Compile regex patterns once and reuse; cache patterns in static fields; profile regex operations.
+
+### Incident 4: StringBuilder Capacity Causing Performance Issue
+
+**Problem:** A report generation system was 5x slower than expected when building large HTML reports.
+**Cause:** `StringBuilder` was created with default capacity (16) and had to resize多次 for large reports.
+**Impact:** Report generation took 30 seconds instead of 6 seconds; user complaints about slow reports.
+**Detection:** Profiler showed 40% of time in `StringBuilder.append()` due to array copying.
+**Solution:** Pre-calculated capacity: `new StringBuilder(estimatedSize * 2)`; avoided resizing.
+**Prevention:** Estimate StringBuilder capacity when possible; use `new StringBuilder(capacity)` for large strings.
+
+### Incident 5: Text Block Indentation Causing SQL Errors
+
+**Problem:** A database migration script failed with SQL syntax errors when using Java text blocks.
+**Cause:** Text block indentation included leading spaces in SQL statements, violating SQL syntax.
+**Impact:** Database migration failed; 2-hour delay in production deployment.
+**Detection:** SQL parser error logs showed unexpected leading whitespace in statements.
+**Solution:** Used `\s` escape or aligned text block content to column 0; validated SQL before execution.
+**Prevention:** Test text blocks thoroughly; use IDE preview; validate generated SQL before execution.
 
 ## Production Checklist
 

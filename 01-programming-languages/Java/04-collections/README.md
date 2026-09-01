@@ -467,6 +467,24 @@ Collections are the foundation of data processing in Java applications. At scale
 **Solution:** Changed to `HashSet` for O(1) membership testing; reduced latency to 3ms.
 **Prevention:** Choose the right collection for the access pattern; profile before optimizing.
 
+### Incident 4: HashMap Incompatibility Between Java Versions
+
+**Problem:** A service experienced random `ConcurrentModificationException` after upgrading from Java 8 to Java 11.
+**Cause:** Java 9 changed HashMap's internal implementation (tree-ification); code relied on undocumented iteration order.
+**Impact:** 10% of requests failed randomly; 3-day investigation; rollback to Java 8.
+**Detection:** Exceptions occurred only in production with specific data patterns.
+**Solution:** Used `LinkedHashMap` for ordered iteration; added tests for iteration behavior.
+**Prevention:** Never rely on HashMap iteration order; use `LinkedHashMap` or `TreeMap` when order matters.
+
+### Incident 5: WeakReference Cache Causing Premature Eviction
+
+**Problem:** A caching system using `WeakHashMap` was evicting entries immediately after insertion.
+**Cause:** Cache keys were string literals that were garbage collected due to class loading behavior.
+**Impact:** Cache hit rate dropped to 5%; database load increased 10x; application timeout.
+**Detection:** Cache monitoring showed 0% hit rate; heap dumps showed empty WeakHashMap.
+**Solution:** Replaced `WeakHashMap` with `Caffeine` cache with explicit size and time-based eviction.
+**Prevention:** Use proper caching libraries (Caffeine, Guava) instead of `WeakHashMap` for caches.
+
 ## Production Checklist
 
 - [ ] Program to interfaces (`List` not `ArrayList`)

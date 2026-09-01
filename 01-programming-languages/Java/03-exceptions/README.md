@@ -461,6 +461,24 @@ Exception handling is a cross-cutting concern that affects every layer of an app
 **Solution:** Changed error handler to return generic messages; stack traces logged server-side only.
 **Prevention:** Never return exception details in API responses; use generic error messages for clients.
 
+### Incident 4: Exception in Finally Block Overwriting Original Exception
+
+**Problem:** A file processing system lost the original exception when trying to close a resource in a finally block.
+**Cause:** Finally block threw an `IOException` when closing a stream, overwriting the original business logic exception.
+**Impact:** Developers couldn't diagnose the root cause for 3 days; 10,000+ records were lost.
+**Detection:** Logs showed only `IOException` from resource closing, not the original parsing error.
+**Solution:** Used try-with-resources to auto-close; wrapped finally block operations in try-catch.
+**Prevention:** Use try-with-resources; never let finally block exceptions overwrite original exceptions.
+
+### Incident 5: Catching Exception Hiding Specific Error Types
+
+**Problem:** A payment system silently ignored `FileNotFoundException`, treating it as a successful transaction.
+**Cause:** Code caught generic `Exception` instead of specific `FileNotFoundException`.
+**Impact:** 200+ payments marked as successful but never processed; regulatory violations.
+**Detection:** Customer complaints about unpaid invoices; reconciliation showed missing payment files.
+**Solution:** Changed to catch specific exceptions; added explicit handling for each error type.
+**Prevention:** Catch specific exceptions; use multiple catch blocks for different error types.
+
 ## Production Checklist
 
 - [ ] Specific exception types caught (not generic `Exception`)

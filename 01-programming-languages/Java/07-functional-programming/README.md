@@ -453,6 +453,21 @@ public class StreamEnterpriseExample {
 ### Q9: What is the difference between `findFirst()` and `findAny()`?
 **Answer:** `findFirst()` returns the first element (deterministic, ordered). `findAny()` returns any element (faster in parallel streams).
 
+### Q10: What is a functional interface?
+**Answer:** An interface with exactly one abstract method (SAM). Examples: Predicate<T>, Function<T,R>, Consumer<T>, Supplier<T>. Used with lambdas.
+
+### Q11: What is the difference between `reduce()` and `collect()`?
+**Answer:** `reduce()` combines elements into a single value using a BinaryOperator. `collect()` uses a mutable accumulator (Collector) to build a result container like a List or Map.
+
+### Q12: When should you use parallel streams?
+**Answer:** For large datasets with CPU-bound operations. Avoid for small datasets, I/O-bound work, or when ordering matters. Always benchmark first.
+
+### Q13: What is method reference and when to use it?
+**Answer:** A shorthand for lambdas that call a method: `String::toUpperCase`. Use when the lambda simply calls an existing method. More readable than lambdas.
+
+### Q14: What is the `Collectors.groupingBy()` used for?
+**Answer:** Groups stream elements by a classifier function into a Map. Example: `Collectors.groupingBy(User::getAge)` creates a Map<Integer, List<User>>.
+
 ## Cross-References
 
 - **Previous Module:** [06 - Generics](../06-generics/)
@@ -563,6 +578,24 @@ In reactive and event-driven architectures, stream concepts (lazy evaluation, co
 **Detection:** Different results on each run; unit tests revealed non-deterministic behavior.
 **Solution:** Used `reduce()` with immutable accumulator; avoided shared mutable state in parallel streams.
 **Prevention:** Never modify shared state in parallel streams; use immutable objects; prefer pure functions.
+
+### Incident 4: Stream Memory Leak from Unbounded Operations
+
+**Problem:** A data processing pipeline consumed 16GB of memory and crashed when processing large datasets.
+**Cause:** `Stream.peek()` was used for debugging and left in production; created unbounded intermediate list.
+**Impact:** Application crashed every 2 hours; required restart; affected 10,000+ users.
+**Detection:** Heap dumps showed stream pipeline holding references to all processed elements.
+**Solution:** Removed `peek()` operation; used logging at collection boundaries instead.
+**Prevention:** Remove debugging stream operations before production; avoid `peek()` in production code.
+
+### Incident 5: Collector Performance Degradation with Large Datasets
+
+**Problem:** A reporting system took 5 minutes to generate reports instead of 30 seconds.
+**Cause:** `Collectors.toList()` created new list on every aggregation; poor performance with 1M+ elements.
+**Impact:** Report generation timeout; user complaints; SLA violations.
+**Detection:** Profiler showed 80% of time in list creation and copying.
+**Solution:** Used `Collectors.toUnmodifiableList()`; pre-sized collections when possible.
+**Prevention:** Choose efficient collectors; benchmark with production data sizes; use primitive streams.
 
 ## Production Checklist
 

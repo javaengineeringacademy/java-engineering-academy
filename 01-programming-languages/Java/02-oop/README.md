@@ -660,6 +660,24 @@ For enterprise systems, SOLID principles at the class level translate to archite
 **Solution:** Used `ConcurrentHashMap` and atomic operations; added synchronization for critical sections.
 **Prevention:** Use concurrent collections for shared state; document thread-safety guarantees; add concurrency tests.
 
+### Incident 4: Violation of Liskov Substitution Principle
+
+**Problem:** A payment processing system crashed when processing refunds for a specific payment type.
+**Cause:** `RefundPayment` subclass threw `UnsupportedOperationException` for `process()` method, violating LSP.
+**Impact:** 2-hour outage for refund processing; 1000+ pending refunds; customer complaints.
+**Detection:** Error monitoring showed `UnsupportedOperationException` spikes during refund processing.
+**Solution:** Refactored hierarchy: created separate `RefundablePayment` interface; only implemented where applicable.
+**Prevention:** Follow LSP: subclasses must be substitutable for base classes; use interfaces for behavioral contracts.
+
+### Incident 5: Encapsulation Violation Causing Data Corruption
+
+**Problem:** A financial system showed incorrect balance calculations after specific transaction sequences.
+**Cause:** External code directly modified internal `List<Transaction>` instead of using provided methods.
+**Impact:** 50 incorrect balance calculations; regulatory reporting errors; 1-week manual reconciliation.
+**Detection:** Balance discrepancy alerts; audit trail showed unexpected direct list modifications.
+**Solution:** Returned defensive copies from getter methods; made internal collections unmodifiable.
+**Prevention:** Return unmodifiable views from getters; use defensive copying; document API contracts.
+
 ## Production Checklist
 
 - [ ] Follow Single Responsibility Principle — one class, one purpose

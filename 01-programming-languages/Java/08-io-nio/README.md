@@ -357,6 +357,24 @@ public class EnterpriseExample {
 ### Q5: What is NIO?
 **Answer:** New I/O with channels, buffers, and selectors.
 
+### Q6: What is the difference between `FileInputStream` and `Files.newInputStream()`?
+**Answer:** `Files.newInputStream()` returns a buffered stream, handles path resolution, and supports try-with-resources better. Use `Files.newInputStream()` for modern code.
+
+### Q7: What is memory-mapped I/O and when to use it?
+**Answer:** Maps a file directly into memory using `FileChannel.map()`. Use for large files where random access is needed. Avoid for small files or sequential reads.
+
+### Q8: What is a `Buffer` in NIO?
+**Answer:** A container for data with position, limit, and capacity. Supports reading/writing through flip(), clear(), and compact() operations. Core types: ByteBuffer, CharBuffer.
+
+### Q9: What is `Charset` and why is it important?
+**Answer:** Represents a character encoding (UTF-8, ISO-8859-1). Always specify charset explicitly when reading/writing text files to avoid platform-dependent encoding issues.
+
+### Q10: What is try-with-resources?
+**Answer:** Automatically closes resources implementing AutoCloseable. Reduces boilerplate and ensures resources are closed even on exceptions.
+
+### Q11: What is the `Scanner` class used for?
+**Answer:** Reads and parses input from various sources (files, stdin, strings). Supports nextInt(), nextLine(), etc. for token-based reading.
+
 ## Summary
 Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern applications.
 
@@ -467,6 +485,24 @@ In microservices, file I/O architecture affects service boundaries — shared fi
 **Detection:** `java.io.IOException: The process cannot access the file because it is being used by another process`
 **Solution:** Used `FileChannel` with explicit closing; invoked `Cleaner` via reflection for immediate cleanup.
 **Prevention:** Avoid memory-mapped files for temporary data; use `FileChannel` with explicit close; monitor disk usage.
+
+### Incident 4: Charset Encoding Causing Data Corruption
+
+**Problem:** A file processing system corrupted international characters when reading CSV files.
+**Cause:** Code used default platform charset instead of explicit UTF-8; different environments had different defaults.
+**Impact:** 10% of customer records had corrupted names; customer complaints; manual data correction.
+**Detection:** Customer complaints about garbled characters in names and addresses.
+**Solution:** Explicitly specified `StandardCharsets.UTF_8` in all file reading/writing operations.
+**Prevention:** Always specify charset explicitly; never rely on platform default; use `StandardCharsets.UTF_8`.
+
+### Incident 5: Buffered Stream Flush Missing in Critical Writes
+
+**Problem:** A logging system lost critical audit entries during application crashes.
+**Cause:** `BufferedOutputStream` wasn't flushed before shutdown; buffered data was lost.
+**Impact:** Missing audit trail for regulatory compliance; 3-day investigation to reconstruct logs.
+**Detection:** Audit system showed gaps during crash periods; no log entries for affected timeframe.
+**Solution:** Added explicit `flush()` in shutdown hooks; used `BufferedWriter` with auto-flush policies.
+**Prevention:** Flush critical data explicitly; use try-with-resources for auto-flush; implement shutdown hooks.
 
 ## Production Checklist
 

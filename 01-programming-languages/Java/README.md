@@ -58,6 +58,8 @@ Shared concepts explained ONCE, linked from everywhere. These are the building b
 | # | Module | What You'll Learn |
 |---|--------|-------------------|
 | 15 | [Senior Topics](15-senior/) | CompletableFuture, virtual threads, JVM tuning, OpenJDK |
+| 16 | [Modern Java Features](16-modern-java/) | Records, sealed classes, pattern matching, virtual threads |
+| 17 | [Capstone Project](17-capstone-project/) | Integrate all 17 modules into a production-grade application |
 
 ---
 
