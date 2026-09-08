@@ -337,6 +337,115 @@ int classify(Packet *p) {
 }
 ```
 
+### Incident 3: False Sharing in Multi-Threaded Counter
+
+**Problem**: A multi-threaded counter runs 10x slower than expected on a multi-core system.
+
+```c
+typedef struct {
+    int count;
+} Counter;
+
+Counter counters[NUM_THREADS];  // Each thread uses its own counter
+
+void *increment(void *arg) {
+    int id = *(int *)arg;
+    for (int i = 0; i < 1000000; i++) {
+        counters[id].count++;  // False sharing: counters are on same cache line
+    }
+    return NULL;
+}
+```
+
+**Cause**: Adjacent `Counter` structs share the same cache line (64 bytes). When different cores write to different counters on the same cache line, the cache coherence protocol bounces the cache line between cores.
+
+**Impact**: 10x performance degradation due to cache line bouncing.
+
+**Solution**: Pad structures to cache line boundaries:
+
+```c
+#define CACHE_LINE_SIZE 64
+
+typedef struct {
+    int count;
+    char padding[CACHE_LINE_SIZE - sizeof(int)];
+} Counter __attribute__((aligned(CACHE_LINE_SIZE)));
+
+Counter counters[NUM_THREADS];
+```
+
+**Prevention**: Use `__attribute__((aligned(64)))` for frequently written data; monitor with `perf stat -e cache-misses`; use per-CPU counters.
+
+---
+
+### Incident 4: Memory Allocation in Hot Loop
+
+**Problem**: A network packet processor drops from 1M to 100K packets/sec due to frequent malloc/free.
+
+```c
+void process_packet(const char *packet, size_t len) {
+    char *buffer = malloc(len);  // Allocation in hot loop
+    memcpy(buffer, packet, len);
+    // Process packet...
+    free(buffer);  // Free in hot loop
+}
+```
+
+**Cause**: `malloc`/`free` are expensive (~100ns each). In a hot loop processing millions of packets, this dominates execution time.
+
+**Impact**: 10x throughput degradation.
+
+**Solution**: Use a memory pool or stack allocation:
+
+```c
+#define MAX_PACKET_SIZE 1500
+
+void process_packet(const char *packet, size_t len) {
+    if (len > MAX_PACKET_SIZE) return;
+    char buffer[MAX_PACKET_SIZE];  // Stack allocation: ~0ns
+    memcpy(buffer, packet, len);
+    // Process packet...
+}
+```
+
+**Prevention**: Use stack allocation for small, fixed-size objects; use memory pools for frequently allocated objects; avoid malloc/free in hot loops.
+
+---
+
+### Incident 5: SIMD Intrinsic Performance Regression
+
+**Problem**: Hand-written SIMD code runs slower than scalar code after compiler upgrade.
+
+```c
+// Hand-written SSE2 code
+void add_arrays(float *a, float *b, float *result, int n) {
+    for (int i = 0; i < n; i += 4) {
+        __m128 va = _mm_loadu_ps(&a[i]);
+        __m128 vb = _mm_loadu_ps(&b[i]);
+        __m128 vr = _mm_add_ps(va, vb);
+        _mm_storeu_ps(&result[i], vr);
+    }
+}
+```
+
+**Cause**: The newer compiler auto-vectorizes the scalar code better than the hand-written SIMD, and the hand-written code prevents further optimization.
+
+**Impact**: Performance regression (slower than before).
+
+**Solution**: Let the compiler auto-vectorize, or use intrinsics only when proven faster:
+
+```c
+// Let the compiler auto-vectorize
+void add_arrays(float *a, float *b, float *result, int n) {
+    for (int i = 0; i < n; i++) {
+        result[i] = a[i] + b[i];
+    }
+}
+// Compile with: -O3 -march=native -ftree-vectorize
+```
+
+**Prevention**: Profile before using SIMD intrinsics; benchmark with and without intrinsics; prefer compiler auto-vectorization; use intrinsics only for critical paths.
+
 ## Production Checklist
 
 - [ ] Profile before optimizing — find the real bottleneck

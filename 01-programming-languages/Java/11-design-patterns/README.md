@@ -439,6 +439,21 @@ public class UserRepository implements Repository<User, Long> {
 ### Q10: What is the difference between Command and Strategy?
 **Answer:** Command encapsulates a request as an object (undo/redo). Strategy encapsulates an algorithm as an object (interchangeable algorithms). Command is about actions; Strategy is about behavior.
 
+### Q11: What is the Proxy pattern and when should you use it?
+**Answer:** Proxy provides a surrogate for another object to control access. Use for: lazy loading (virtual proxy), logging (logging proxy), security (protection proxy), caching (caching proxy).
+
+### Q12: What is the Facade pattern?
+**Answer:** Facade provides a simplified interface to a complex subsystem. Use when you want to hide complexity, provide a unified interface, or decouple clients from subsystem implementation details.
+
+### Q13: What is the difference between State and Strategy?
+**Answer:** State: behavior changes based on internal state (object appears to change its class). Strategy: behavior is selected externally (algorithm is interchangeable). State is self-modifying; Strategy is externally selected.
+
+### Q14: What is the Chain of Responsibility pattern?
+**Answer:** Passes a request along a chain of handlers. Each handler decides to process the request or pass it to the next handler. Use for: middleware, logging chains, validation pipelines.
+
+### Q15: What is the difference between Memento and Command?
+**Answer:** Memento: captures and restores internal state (undo). Command: encapsulates an action as an object (undo/redo). Memento is about state snapshots; Command is about action encapsulation.
+
 ## Cross-References
 
 - **Previous Module:** [10 - JVM Internals](../10-jvm-internals/)

@@ -433,6 +433,12 @@ public class RegexExample {
 ### Q13: What is the `Formatter` class used for?
 **Answer:** Provides formatted printing similar to C's `printf()`. Used with `String.format()` and `System.out.printf()` for creating formatted output.
 
+### Q14: What is the difference between `String.format()` and `StringBuilder.append()`?
+**Answer:** `String.format()`: creates formatted string (slower, more readable). `StringBuilder.append()`: builds string incrementally (faster, less readable). Use `format()` for complex formatting; `append()` for simple concatenation.
+
+### Q15: What is the `MessageFormat` class?
+**Answer:** A class for formatting messages with argument placeholders. More powerful than `String.format()` — supports pluralization, choice patterns, and locale-aware formatting. Used for internationalization (i18n).
+
 ## Cross-References
 
 - **Previous Module:** [04 - Collections Framework](../04-collections/)

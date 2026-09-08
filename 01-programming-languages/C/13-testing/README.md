@@ -357,6 +357,133 @@ void test_parse(void) {
 }
 ```
 
+### Incident 3: Non-Deterministic Test Failure
+
+**Problem**: A unit test fails intermittently, passing 99% of the time but failing occasionally in CI.
+
+```c
+void test_thread_counter(void) {
+    int counter = 0;
+    pthread_t threads[4];
+    for (int i = 0; i < 4; i++)
+        pthread_create(&threads[i], NULL, increment, &counter);
+    for (int i = 0; i < 4; i++)
+        pthread_join(threads[i], NULL);
+    assert(counter == 4000000);  // Fails intermittently due to race condition
+}
+```
+
+**Cause**: Race condition in test code — shared counter without synchronization.
+
+**Impact**: Flaky tests erode confidence in test suite; developers ignore test failures.
+
+**Solution**: Fix the race condition in the test:
+
+```c
+atomic_int counter = 0;
+
+void *increment(void *arg) {
+    for (int i = 0; i < 1000000; i++)
+        atomic_fetch_add(&counter, 1);
+    return NULL;
+}
+
+void test_thread_counter(void) {
+    counter = 0;
+    pthread_t threads[4];
+    for (int i = 0; i < 4; i++)
+        pthread_create(&threads[i], NULL, increment, NULL);
+    for (int i = 0; i < 4; i++)
+        pthread_join(threads[i], NULL);
+    assert(atomic_load(&counter) == 4000000);
+}
+```
+
+**Prevention**: Use ThreadSanitizer (`-fsanitize=thread`) to detect races; fix all data races in tests; make tests deterministic.
+
+---
+
+### Incident 4: Test Contamination Between Test Cases
+
+**Problem**: Tests pass individually but fail when run together, indicating shared state between tests.
+
+```c
+static Database *db = NULL;
+
+void setup(void) {
+    if (db == NULL) db = db_open(":memory:");
+    db_reset(db);  // Reset doesn't clear all state
+}
+
+void test_insert(void) {
+    setup();
+    db_insert(db, "user1", "Alice");
+    assert(db_count(db) == 1);
+}
+
+void test_delete(void) {
+    setup();
+    db_insert(db, "user1", "Alice");
+    db_delete(db, "user1");
+    assert(db_count(db) == 0);  // Fails when run after test_insert
+}
+```
+
+**Cause**: `db_reset` doesn't clear all state; previous test's data leaks into next test.
+
+**Impact**: Tests are unreliable; order-dependent failures are hard to debug.
+
+**Solution**: Create a fresh database for each test:
+
+```c
+void setup(void) {
+    if (db) db_close(db);
+    db = db_open(":memory:");  // Fresh database each time
+}
+
+void teardown(void) {
+    if (db) { db_close(db); db = NULL; }
+}
+```
+
+**Prevention**: Each test should be independent; create fresh resources in setup; clean up in teardown; run tests in random order.
+
+---
+
+### Incident 5: Missing Assert in Test
+
+**Problem**: A test function runs but doesn't actually verify anything, giving false confidence.
+
+```c
+void test_parse_email(void) {
+    char *result = parse_email("user@example.com");
+    // No assert — test always passes
+    printf("Result: %s\n", result);
+}
+```
+
+**Cause**: Test function has no assertions; it runs without verifying the result.
+
+**Impact**: Bug in `parse_email` goes undetected; test coverage numbers are inflated.
+
+**Solution**: Add assertions to verify the result:
+
+```c
+void test_parse_email(void) {
+    char *result = parse_email("user@example.com");
+    assert(result != NULL);
+    assert(strcmp(result, "user@example.com") == 0);
+    free(result);
+    
+    // Test edge cases
+    assert(parse_email(NULL) == NULL);
+    assert(parse_email("") == NULL);
+    assert(parse_email("invalid") == NULL);
+}
+```
+
+**Prevention**: Every test must have at least one assertion; use static analysis to detect empty test functions; review test code in code review.
+
 ## Production Checklist
 
 - [ ] Write tests for all public functions

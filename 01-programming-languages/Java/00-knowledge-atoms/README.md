@@ -331,6 +331,21 @@ public record User(String name, int age, String email) {
 ### Q10: What is a record and when should you use it?
 **Answer:** A record is a compact class for immutable data. Use for DTOs, value objects, and data carriers. It auto-generates constructor, accessors, equals, hashCode, toString.
 
+### Q11: What is the difference between `StringBuilder` and `StringBuffer`?
+**Answer:** `StringBuilder` is not thread-safe but faster. `StringBuffer` is synchronized. Use `StringBuilder` in single-threaded contexts (most cases). Both provide mutable string operations.
+
+### Q12: What is the `finalize()` method and why was it deprecated?
+**Answer:** `finalize()` was called by GC before reclaiming objects. Deprecated in Java 9 because it's unpredictable, causes performance issues, and can lead to resurrection of objects. Use `try-with-resources` and `Cleaner` instead.
+
+### Q13: What is the difference between `WeakReference` and `SoftReference`?
+**Answer:** `WeakReference`: cleared by GC at next cycle (used in `WeakHashMap`). `SoftReference`: cleared only when memory is low (used for caches). Both allow GC to reclaim referenced objects.
+
+### Q14: What is the `transient` keyword?
+**Answer:** `transient` marks fields to be excluded from serialization. When an object is serialized, transient fields are not persisted. Useful for sensitive data (passwords) or derived data.
+
+### Q15: What is the difference between `Comparable` and `Comparator`?
+**Answer:** `Comparable`: natural ordering, implemented by the class itself (`compareTo`). `Comparator`: external ordering, separate class (`compare`). Use `Comparator` for multiple sorting strategies.
+
 ## Cross-References
 
 - **Next Module:** [01 - Fundamentals](../01-fundamentals/)

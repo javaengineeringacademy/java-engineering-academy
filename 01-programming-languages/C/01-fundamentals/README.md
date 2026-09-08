@@ -727,6 +727,97 @@ void get_value(int *out) {
 }
 ```
 
+### Incident 3: Buffer Overflow via Unchecked String Copy
+
+**Problem**: A configuration parser uses `strcpy` to copy user-supplied values, causing a stack buffer overflow.
+
+```c
+void parse_config(const char *value) {
+    char buffer[64];
+    strcpy(buffer, value);  // No bounds checking
+}
+```
+
+**Cause**: `strcpy` does not check if the source string exceeds the destination buffer. If `value` is longer than 63 characters, it overflows `buffer`.
+
+**Impact**: Stack corruption, potential remote code execution. CVSS 8.1.
+
+**Solution**: Use `strncpy` or `strlcpy` with explicit bounds:
+
+```c
+#include <string.h>
+
+void parse_config(const char *value) {
+    char buffer[64];
+    strncpy(buffer, value, sizeof(buffer) - 1);
+    buffer[sizeof(buffer) - 1] = '\0';  // Ensure null termination
+}
+```
+
+**Prevention**: Never use `strcpy`; always use bounded string copy functions. Enable `-Wstringop-overflow` compiler warning.
+
+---
+
+### Incident 4: Format String Vulnerability
+
+**Problem**: A logging function passes user input directly as the format string to `printf`, allowing an attacker to read/write arbitrary memory.
+
+```c
+void log_message(const char *user_input) {
+    printf(user_input);  // Format string vulnerability
+}
+```
+
+**Cause**: If `user_input` contains format specifiers like `%x` or `%n`, `printf` reads/writes memory according to the format string.
+
+**Impact**: Information disclosure (stack values) or arbitrary write (via `%n`). CVSS 9.8.
+
+**Solution**: Always use a format string literal:
+
+```c
+void log_message(const char *user_input) {
+    printf("%s", user_input);  // Safe: user_input is data, not format
+}
+```
+
+**Prevention**: Enable `-Wformat-security`; never pass user input as format string; use `%s` for user data.
+
+---
+
+### Incident 5: Signed Integer Overflow in Loop Counter
+
+**Problem**: A loop counter uses `int` and wraps from `INT_MAX` to `INT_MIN`, causing an infinite loop.
+
+```c
+void process_large_array(int count) {
+    for (int i = 0; i < count; i++) {
+        // If count = INT_MAX, i overflows to INT_MIN
+        // Loop becomes infinite
+    }
+}
+```
+
+**Cause**: Signed integer overflow is undefined behavior in C. The compiler may optimize based on the assumption that overflow never occurs.
+
+**Impact**: Infinite loop, denial of service. CPU usage spikes to 100%.
+
+**Solution**: Use `size_t` for unsigned counts, or check for overflow:
+
+```c
+#include <limits.h>
+
+void process_large_array(int count) {
+    if (count < 0 || count > INT_MAX - 1) {
+        return;  // Invalid count
+    }
+    for (int i = 0; i < count; i++) {
+        // Safe
+    }
+}
+```
+
+**Prevention**: Use `size_t` for sizes and counts; enable `-fsanitize=undefined`; check arithmetic for overflow before use.
+
 ## Production Checklist
 
 - [ ] All variables initialized before first use

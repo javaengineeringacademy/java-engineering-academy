@@ -370,6 +370,126 @@ int process_data(const char *input);
 int process_data(const char *input);
 ```
 
+### Incident 3: Global Variable Naming Collision
+
+**Problem**: A library and application both define a global variable with the same name, causing linker errors or silent data corruption.
+
+```c
+// library.h
+int counter = 0;  // Global variable in header
+
+// app.c
+#include "library.h"
+int counter = 100;  // Linker error: multiple definition
+```
+
+**Cause**: Defining global variables in headers causes multiple definition errors when included in multiple translation units.
+
+**Impact**: Build failure, or worse: silent data corruption if one definition shadows the other.
+
+**Solution**: Use `extern` in headers, define in implementation:
+
+```c
+// library.h
+extern int counter;  // Declaration
+
+// library.c
+#include "library.h"
+int counter = 0;  // Definition
+```
+
+**Prevention**: Never define global variables in headers; use `extern` declarations; prefer `static` for file-scoped globals; use access functions.
+
+---
+
+### Incident 4: Ignored Return Value Causing Silent Failure
+
+**Problem**: A program silently fails to write data because the `fwrite` return value is not checked.
+
+```c
+void save_data(const char *data, size_t len) {
+    FILE *fp = fopen("output.dat", "wb");
+    fwrite(data, 1, len, fp);  // Return value not checked
+    fclose(fp);
+}
+```
+
+**Cause**: `fwrite` may write fewer bytes than requested (disk full, I/O error). The return value is not checked.
+
+**Impact**: Silent data loss, corrupted output files.
+
+**Solution**: Check return values and handle errors:
+
+```c
+bool save_data(const char *data, size_t len) {
+    FILE *fp = fopen("output.dat", "wb");
+    if (!fp) return false;
+    
+    size_t written = fwrite(data, 1, len, fp);
+    fclose(fp);
+    
+    if (written != len) {
+        fprintf(stderr, "Write failed: wrote %zu of %zu bytes\n", written, len);
+        return false;
+    }
+    return true;
+}
+```
+
+**Prevention**: Always check return values of I/O functions; enable `-Wmaybe-uninitialized`; use compiler warnings to catch unused return values.
+
+---
+
+### Incident 5: Magic Numbers Making Code Unmaintainable
+
+**Problem**: A configuration file parser uses hardcoded values, making it impossible to update without recompiling.
+
+```c
+void process_config(const char *line) {
+    if (line[0] == '1') {  // Magic number: what does '1' mean?
+        timeout = 30;      // Magic number: why 30?
+    } else if (line[0] == '2') {
+        timeout = 60;      // Magic number: why 60?
+    }
+    max_connections = 100;  // Magic number: why 100?
+}
+```
+
+**Cause**: Hardcoded values without named constants or documentation.
+
+**Impact**: Code is unreadable, error-prone to modify, and violates DRY principle.
+
+**Solution**: Use named constants and enum:
+
+```c
+#define DEFAULT_TIMEOUT 30
+#define EXTENDED_TIMEOUT 60
+#define MAX_CONNECTIONS 100
+
+typedef enum {
+    CONFIG_MODE_STANDARD = '1',
+    CONFIG_MODE_EXTENDED = '2'
+} ConfigMode;
+
+void process_config(const char *line) {
+    ConfigMode mode = (ConfigMode)line[0];
+    switch (mode) {
+        case CONFIG_MODE_STANDARD:
+            timeout = DEFAULT_TIMEOUT;
+            break;
+        case CONFIG_MODE_EXTENDED:
+            timeout = EXTENDED_TIMEOUT;
+            break;
+        default:
+            fprintf(stderr, "Unknown config mode: %c\n", line[0]);
+            break;
+    }
+    max_connections = MAX_CONNECTIONS;
+}
+```
+
+**Prevention**: Use named constants for all magic numbers; use enums for mode values; document constants; enable `-Wshadow` to catch naming conflicts.
+
 ## Production Checklist
 
 - [ ] Follow consistent naming conventions

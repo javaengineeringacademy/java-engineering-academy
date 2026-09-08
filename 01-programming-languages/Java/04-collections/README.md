@@ -364,6 +364,21 @@ public class ConcurrentCollectionExample {
 ### Q10: What is `SequencedCollection` in Java 21?
 **Answer:** New interface that provides uniform access to the first/last elements and reverse iteration for all ordered collections (List, Deque, SortedSet, etc.). Adds `getFirst()`, `getLast()`, `addFirst()`, `addLast()`, `reversed()`.
 
+### Q11: What is the difference between `Iterator` and `ListIterator`?
+**Answer:** `Iterator`: forward-only iteration, works on any `Collection`. `ListIterator`: bidirectional, works only on `List`, can add/remove/set elements, get index.
+
+### Q12: What is the `EnumSet` and when should you use it?
+**Answer:** A specialized `Set` for enum types. Uses a bit vector internally — extremely fast and memory-efficient. Use when your set elements are all from a single enum.
+
+### Q13: What is the difference between `WeakHashMap` and `HashMap`?
+**Answer:** `WeakHashMap`: keys are weakly referenced — entries are GC'd when key has no other references. Useful for caches. `HashMap`: strong references — entries persist until explicitly removed.
+
+### Q14: What is `CopyOnWriteArrayList` and when should you use it?
+**Answer:** A thread-safe `List` where all writes create a new copy of the underlying array. Use for read-heavy, write-rarely scenarios (e.g., listener lists). Writes are expensive; reads are lock-free.
+
+### Q15: How do you create an unmodifiable view of a collection?
+**Answer:** Use `Collections.unmodifiableList()`, `Collections.unmodifiableMap()`, etc. (pre-Java 9). In Java 9+: `List.copyOf()`, `Map.copyOf()`, `Set.copyOf()`. The view throws `UnsupportedOperationException` on modification attempts.
+
 ## Cross-References
 
 - **Previous Module:** [03 - Exceptions](../03-exceptions/)

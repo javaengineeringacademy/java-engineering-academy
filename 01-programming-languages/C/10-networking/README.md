@@ -381,6 +381,150 @@ if (pid == 0) {
 close(client_fd);  // Parent closes client fd
 ```
 
+### Incident 3: Socket File Descriptor Leak in select() Loop
+
+**Problem**: A server using `select()` leaks file descriptors when clients disconnect abruptly.
+
+```c
+while (true) {
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(server_fd, &read_fds);
+    for (int i = 0; i < max_clients; i++) {
+        if (client_fds[i] >= 0) FD_SET(client_fds[i], &read_fds);
+    }
+    select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+    
+    if (FD_ISSET(server_fd, &read_fds)) {
+        int new_fd = accept(server_fd, NULL, NULL);
+        add_client(new_fd);  // May fail if array is full
+    }
+    for (int i = 0; i < max_clients; i++) {
+        if (client_fds[i] >= 0 && FD_ISSET(client_fds[i], &read_fds)) {
+            char buf[1024];
+            ssize_t n = recv(client_fds[i], buf, sizeof(buf), 0);
+            if (n <= 0) {
+                close(client_fds[i]);
+                client_fds[i] = -1;
+                // But new_fd from accept may have been leaked
+            }
+        }
+    }
+}
+```
+
+**Cause**: If `accept()` succeeds but `add_client()` fails, the new file descriptor is leaked.
+
+**Impact**: File descriptor exhaustion, service failure.
+
+**Solution**: Close the new fd immediately if add_client fails:
+
+```c
+if (FD_ISSET(server_fd, &read_fds)) {
+    int new_fd = accept(server_fd, NULL, NULL);
+    if (new_fd >= 0) {
+        if (add_client(new_fd) < 0) {
+            close(new_fd);  // Close immediately on failure
+        }
+    }
+}
+```
+
+**Prevention**: Always close file descriptors on error paths; track max fd for select(); use epoll/kqueue for scalability.
+
+---
+
+### Incident 4: SIGPIPE Crash in Network Server
+
+**Problem**: A server crashes when a client disconnects during a write operation.
+
+```c
+void handle_client(int client_fd) {
+    char response[] = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+    write(client_fd, response, sizeof(response) - 1);  // May generate SIGPIPE
+}
+```
+
+**Cause**: Writing to a broken connection generates SIGPIPE, which terminates the process by default.
+
+**Impact**: Server crash, service unavailability.
+
+**Solution**: Ignore SIGPIPE or use MSG_NOSIGNAL:
+
+```c
+// Option 1: Ignore SIGPIPE globally
+signal(SIGPIPE, SIG_IGN);
+
+// Option 2: Use MSG_NOSIGNAL flag
+send(client_fd, response, len, MSG_NOSIGNAL);
+
+// Option 3: Handle SIGPIPE with sigaction
+struct sigaction sa;
+sa.sa_handler = SIG_IGN;
+sigemptyset(&sa.sa_mask);
+sa.sa_flags = 0;
+sigaction(SIGPIPE, &sa, NULL);
+```
+
+**Prevention**: Always handle SIGPIPE; use MSG_NOSIGNAL; install signal handler before creating threads.
+
+---
+
+### Incident 5: Buffer Overflow in HTTP Header Parsing
+
+**Problem**: A malformed HTTP request causes a buffer overflow in the header parser.
+
+```c
+void parse_headers(int client_fd) {
+    char buffer[4096];
+    ssize_t n = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+    buffer[n] = '\0';
+    
+    char *line = strtok(buffer, "\r\n");
+    while (line) {
+        char *colon = strchr(line, ':');
+        if (colon) {
+            *colon = '\0';
+            char *value = colon + 1;
+            // No bounds checking on value
+            strcpy(header_value, value);  // Overflow if value > buffer size
+        }
+        line = strtok(NULL, "\r\n");
+    }
+}
+```
+
+**Cause**: No bounds checking on header values; attacker can send oversized headers.
+
+**Impact**: Stack buffer overflow, remote code execution.
+
+**Solution**: Use bounded string functions and validate header size:
+
+```c
+void parse_headers(int client_fd) {
+    char buffer[4096];
+    ssize_t n = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+    if (n <= 0) return;
+    buffer[n] = '\0';
+    
+    char *line = strtok(buffer, "\r\n");
+    while (line) {
+        char *colon = strchr(line, ':');
+        if (colon) {
+            *colon = '\0';
+            char *value = colon + 1;
+            // Skip leading whitespace
+            while (*value == ' ') value++;
+            strncpy(header_value, value, sizeof(header_value) - 1);
+            header_value[sizeof(header_value) - 1] = '\0';
+        }
+        line = strtok(NULL, "\r\n");
+    }
+}
+```
+
+**Prevention**: Always use bounded string functions; validate input size; enable stack protector (`-fstack-protector-strong`).
+
 ## Production Checklist
 
 - [ ] Set `SO_REUSEADDR` on server sockets

@@ -335,6 +335,21 @@ public class TechnologyAnalysis {
 ### Q10: What is your approach to performance engineering?
 **Answer:** Set performance budgets, profile regularly, use JMH for microbenchmarks, monitor in production, optimize hot paths, consider architectural changes for scale.
 
+### Q11: How do you approach system design interviews?
+**Answer:** Clarify requirements → Estimate scale → Design high-level → Deep dive → Discuss trade-offs. Focus on: availability, scalability, maintainability. Use diagrams to communicate.
+
+### Q12: What is the difference between horizontal and vertical scaling?
+**Answer:** Vertical: add more resources to a single machine (scale up). Horizontal: add more machines (scale out). Vertical is simpler; horizontal is more fault-tolerant and scalable.
+
+### Q13: How do you ensure code quality across a team?
+**Answer:** Enforce coding standards, automated linting, code reviews, CI/CD with quality gates, pair programming, knowledge sharing, technical debt tracking.
+
+### Q14: What is the role of a tech lead?
+**Answer:** Technical decisions, code quality, mentoring, architecture design, stakeholder communication, risk management. Balance hands-on coding with strategic thinking.
+
+### Q15: How do you handle disagreements with other engineers?
+**Answer:** Listen actively, present data and reasoning, focus on technical merits not personalities, seek compromise, escalate if necessary, document decisions.
+
 ## Cross-References
 
 - **Previous Module:** [14 - Logging](../14-logging/)

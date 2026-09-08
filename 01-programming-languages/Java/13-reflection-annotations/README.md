@@ -367,6 +367,21 @@ public class BuilderProcessor extends AbstractProcessor {
 ### Q10: What are type annotations (Java 8+)?
 **Answer:** Annotations on types (not just declarations). Example: `List<@NonNull String>`. Used for nullability checking, type validation, and static analysis tools.
 
+### Q11: What is the difference between `@Target` and `@Retention`?
+**Answer:** `@Target`: specifies where an annotation can be applied (METHOD, FIELD, TYPE, etc.). `@Retention`: specifies when an annotation is available (SOURCE, CLASS, RUNTIME).
+
+### Q12: What is a meta-annotation?
+**Answer:** An annotation that annotates other annotations. Examples: `@Target`, `@Retention`, `@Documented`, `@Inherited`, `@Repeatable`. Used to define custom annotations.
+
+### Q13: What is the difference between `@Inherited` and `@Repeatable`?
+**Answer:** `@Inherited`: annotation is inherited by subclasses. `@Repeatable`: annotation can be applied multiple times to the same element. Both are meta-annotations.
+
+### Q14: What is the `Optional` class and when should you use it?
+**Answer:** A container that may or may not hold a non-null value. Use for return types to signal "no value" without null. Avoid for fields, parameters, or collections.
+
+### Q15: What is the difference between `Class.forName()` and `ClassLoader.loadClass()`?
+**Answer:** `Class.forName()`: initializes the class (runs static block). `ClassLoader.loadClass()`: does not initialize the class. Use `Class.forName()` when you need static initialization.
+
 ## Cross-References
 
 - **Previous Module:** [12 - Testing](../12-testing/)

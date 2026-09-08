@@ -375,6 +375,18 @@ public class EnterpriseExample {
 ### Q11: What is the `Scanner` class used for?
 **Answer:** Reads and parses input from various sources (files, stdin, strings). Supports nextInt(), nextLine(), etc. for token-based reading.
 
+### Q12: What is the difference between `BufferedReader` and `Scanner`?
+**Answer:** `BufferedReader`: faster, reads lines, lower-level. `Scanner`: slower, parses tokens, higher-level. Use `BufferedReader` for line-by-line reading; `Scanner` for token parsing.
+
+### Q13: What is `Files.lines()` and when should you use it?
+**Answer:** Returns a `Stream<String>` of lines from a file. Use for processing large files without loading entire content into memory. Must be used in try-with-resources to close the file handle.
+
+### Q14: What is the `FileChannel` used for?
+**Answer:** Provides high-performance file I/O with buffering, locking, and memory mapping. Use for large file operations, random access, or when you need file locking. Part of NIO (non-blocking I/O).
+
+### Q15: What is the difference between `Files.readAllBytes()` and `Files.lines()`?
+**Answer:** `readAllBytes()`: loads entire file into memory (good for small files). `lines()`: streams lines lazily (good for large files). Use `lines()` for files > 100MB to avoid memory issues.
+
 ## Summary
 Java I/O and NIO provide detailed data handling capabilities. Use NIO for modern applications.
 

@@ -337,6 +337,125 @@ fread(buffer, 1, size, fp);         // \r\n → \n transformation
 FILE *fp = fopen("data.bin", "rb");  // Binary mode — no transformation
 ```
 
+### Incident 3: TOCTOU Race Condition in File Access
+
+**Problem**: A program checks file permissions before opening, but the file is replaced between check and open, leading to unauthorized access.
+
+```c
+// TOCTOU race condition
+if (access("/tmp/config", W_OK) == 0) {  // Check
+    // Attacker replaces /tmp/config with symlink to /etc/passwd
+    FILE *fp = fopen("/tmp/config", "r");  // Open — opens /etc/passwd instead
+}
+```
+
+**Cause**: Time-of-check to time-of-use (TOCTOU) race condition. The file state changes between the check and the use.
+
+**Impact**: Unauthorized file access, privilege escalation.
+
+**Solution**: Open the file first, then check permissions using the file descriptor:
+
+```c
+int fd = open("/tmp/config", O_RDWR | O_CREAT | O_EXCL, 0600);
+if (fd == -1) {
+    // Handle error
+    return;
+}
+// Now check permissions on the opened file
+struct stat st;
+fstat(fd, &st);
+if (!(st.st_mode & S_IWUSR)) {
+    close(fd);
+    return;
+}
+FILE *fp = fdopen(fd, "r+");  // Use the already-opened fd
+```
+
+**Prevention**: Use atomic operations (open with `O_CREAT|O_EXCL`); avoid separate check-then-act on files; use file descriptors instead of paths.
+
+---
+
+### Incident 4: Partial Write Causing Corrupted Output
+
+**Problem**: A program writes to a file but doesn't handle partial writes, resulting in truncated output.
+
+```c
+void write_data(const char *data, size_t len) {
+    FILE *fp = fopen("output.bin", "wb");
+    fwrite(data, 1, len, fp);  // May write fewer bytes than len
+    fclose(fp);
+}
+```
+
+**Cause**: `fwrite` may write fewer bytes than requested (interrupted by signal, disk full). The return value is not checked.
+
+**Impact**: Truncated output files, data corruption.
+
+**Solution**: Loop until all bytes are written:
+
+```c
+void write_data(const char *data, size_t len) {
+    FILE *fp = fopen("output.bin", "wb");
+    if (!fp) return;
+    size_t written = 0;
+    while (written < len) {
+        size_t n = fwrite(data + written, 1, len - written, fp);
+        if (n == 0) break;  // Error or EOF
+        written += n;
+    }
+    fclose(fp);
+}
+```
+
+**Prevention**: Always check `fwrite`/`fread` return values; loop until all bytes are processed; handle partial reads/writes.
+
+---
+
+### Incident 5: File Descriptor Leak in Error Path
+
+**Problem**: A function opens a file but doesn't close it on an error path, leaking file descriptors.
+
+```c
+int process_file(const char *path) {
+    FILE *fp = fopen(path, "r");
+    if (!fp) return -1;
+    
+    char buffer[1024];
+    if (fgets(buffer, sizeof(buffer), fp) == NULL) {
+        return -1;  // File descriptor leaked!
+    }
+    
+    // Process data...
+    fclose(fp);
+    return 0;
+}
+```
+
+**Cause**: The error path returns without closing the file.
+
+**Impact**: File descriptor exhaustion. After enough leaks, `fopen` fails with "too many open files".
+
+**Solution**: Use a single exit point with cleanup:
+
+```c
+int process_file(const char *path) {
+    int result = -1;
+    FILE *fp = fopen(path, "r");
+    if (!fp) return -1;
+    
+    char buffer[1024];
+    if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        // Process data...
+        result = 0;
+    }
+    
+    fclose(fp);  // Always close, regardless of success/failure
+    return result;
+}
+```
+
+**Prevention**: Use `goto cleanup` pattern for error handling; ensure all resources are freed on all paths; use RAII-style patterns in C.
+
 ## Production Checklist
 
 - [ ] Always check if file opened successfully (`fp == NULL`)

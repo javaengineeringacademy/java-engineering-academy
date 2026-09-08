@@ -372,6 +372,123 @@ int grow(int **arr, int size) {
 }
 ```
 
+### Incident 3: Null Function Pointer Dereference
+
+**Problem**: A callback function pointer is NULL when invoked, causing a crash.
+
+```c
+typedef void (*EventCallback)(int event_id);
+
+typedef struct {
+    EventCallback on_event;
+} Handler;
+
+void trigger_event(Handler *h, int event_id) {
+    h->on_event(event_id);  // Crash if on_event is NULL
+}
+```
+
+**Cause**: The handler was initialized without setting the callback.
+
+**Impact**: Segmentation fault, crash.
+
+**Solution**: Always check function pointers before calling:
+
+```c
+void trigger_event(Handler *h, int event_id) {
+    if (h && h->on_event) {
+        h->on_event(event_id);
+    }
+}
+```
+
+**Prevention**: Initialize all function pointers; check before calling; use a default handler as fallback.
+
+---
+
+### Incident 4: Pointer Arithmetic Beyond Array Bounds
+
+**Problem**: Pointer arithmetic goes beyond the allocated array, causing heap overflow.
+
+```c
+int *allocate_array(size_t n) {
+    int *arr = malloc(n * sizeof(int));
+    return arr;
+}
+
+void fill_array(int *arr, size_t n) {
+    for (size_t i = 0; i <= n; i++) {  // Off-by-one: i <= n should be i < n
+        arr[i] = i;  // Writes beyond allocated memory
+    }
+}
+```
+
+**Cause**: Off-by-one error in loop bound.
+
+**Impact**: Heap buffer overflow, crash, potential code execution.
+
+**Solution**: Use correct bounds and defensive checks:
+
+```c
+void fill_array(int *arr, size_t n) {
+    if (arr == NULL) return;
+    for (size_t i = 0; i < n; i++) {
+        arr[i] = i;
+    }
+}
+```
+
+**Prevention**: Always use `< n` not `<= n` for zero-based indexing; use AddressSanitizer; add bounds checking.
+
+---
+
+### Incident 5: Casting Between Incompatible Function Pointer Types
+
+**Problem**: A function pointer is cast to an incompatible type and called, causing undefined behavior.
+
+```c
+void callback_int(int value) {
+    printf("Value: %d\n", value);
+}
+
+typedef void (*GenericCallback)(void *);
+
+void invoke(GenericCallback cb, void *arg) {
+    cb(arg);  // Undefined behavior: arg is int*, not int
+}
+
+int main(void) {
+    int value = 42;
+    invoke((GenericCallback)callback_int, &value);  // Unsafe cast
+    return 0;
+}
+```
+
+**Cause**: Casting between incompatible function pointer types violates the C standard.
+
+**Impact**: Undefined behavior, crash, incorrect results.
+
+**Solution**: Use a compatible function signature:
+
+```c
+void callback_generic(void *arg) {
+    int value = *(int *)arg;
+    printf("Value: %d\n", value);
+}
+
+void invoke(GenericCallback cb, void *arg) {
+    cb(arg);  // Safe: compatible types
+}
+
+int main(void) {
+    int value = 42;
+    invoke(callback_generic, &value);
+    return 0;
+}
+```
+
+**Prevention**: Never cast between incompatible function pointer types; use `void *` callbacks with compatible signatures.
+
 ## Production Checklist
 
 - [ ] Validate all pointers before dereferencing

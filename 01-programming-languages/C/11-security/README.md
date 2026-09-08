@@ -308,6 +308,120 @@ void log_message(const char *user_msg) {
 }
 ```
 
+### Incident 3: Integer Overflow Leading to Heap Overflow
+
+**Problem**: An attacker sends a crafted packet that causes an integer overflow, resulting in a small buffer allocation and heap overflow.
+
+```c
+void process_packet(const char *packet) {
+    uint32_t length;
+    memcpy(&length, packet, sizeof(length));
+    
+    // Attacker sends length = 0xFFFFFFFF
+    char *buffer = malloc(length + 1);  // Overflow: 0xFFFFFFFF + 1 = 0
+    strcpy(buffer, packet + 4);  // Heap overflow
+}
+```
+
+**Cause**: Integer overflow in size calculation leads to allocating 0 bytes, then writing beyond the allocation.
+
+**Impact**: Heap overflow, remote code execution. CVSS 9.8.
+
+**Solution**: Check for overflow before allocation:
+
+```c
+void process_packet(const char *packet) {
+    uint32_t length;
+    memcpy(&length, packet, sizeof(length));
+    
+    if (length > MAX_PACKET_SIZE) return;  // Validate
+    if (length + 1 < length) return;  // Overflow check
+    
+    char *buffer = malloc(length + 1);
+    if (!buffer) return;
+    memcpy(buffer, packet + 4, length);
+    buffer[length] = '\0';
+    free(buffer);
+}
+```
+
+**Prevention**: Validate all input sizes; check for integer overflow before allocation; use `size_t` for sizes; enable `-fsanitize=undefined`.
+
+---
+
+### Incident 4: Command Injection via System Call
+
+**Problem**: A web application executes shell commands with user input, allowing command injection.
+
+```c
+void ping_host(const char *hostname) {
+    char command[256];
+    snprintf(command, sizeof(command), "ping -c 1 %s", hostname);
+    system(command);  // Attacker sends: "google.com; rm -rf /"
+}
+```
+
+**Cause**: User input is concatenated directly into a shell command without sanitization.
+
+**Impact**: Full system compromise, data destruction.
+
+**Solution**: Use `execve` instead of `system`, or validate input strictly:
+
+```c
+void ping_host(const char *hostname) {
+    // Validate hostname: only alphanumeric, dots, hyphens
+    for (const char *p = hostname; *p; p++) {
+        if (!isalnum(*p) && *p != '.' && *p != '-') {
+            return;  // Invalid character
+        }
+    }
+    
+    pid_t pid = fork();
+    if (pid == 0) {
+        execlp("ping", "ping", "-c", "1", hostname, NULL);
+        exit(1);
+    }
+    waitpid(pid, NULL, 0);
+}
+```
+
+**Prevention**: Never use `system()` with user input; use `execve` with argument arrays; validate all input strictly; use allowlists for permitted characters.
+
+---
+
+### Incident 5: Time-of-Check to Time-of-Use (TOCTOU) in File Access
+
+**Problem**: A setuid program checks file permissions but the file is replaced between check and open, allowing unauthorized access.
+
+```c
+// Setuid program running as root
+if (access(user_file, R_OK) == 0) {
+    // Attacker replaces user_file with symlink to /etc/shadow
+    FILE *fp = fopen(user_file, "r");  // Opens /etc/shadow
+    // Read sensitive data...
+}
+```
+
+**Cause**: TOCTOU race condition between `access()` and `fopen()`.
+
+**Impact**: Unauthorized access to sensitive files, privilege escalation.
+
+**Solution**: Open the file first, then check permissions:
+
+```c
+int fd = open(user_file, O_RDONLY);
+if (fd < 0) return;
+struct stat st;
+fstat(fd, &st);
+if (st.st_uid != getuid()) {
+    close(fd);
+    return;  // Not owned by user
+}
+FILE *fp = fdopen(fd, "r");
+```
+
+**Prevention**: Avoid `access()` for security checks; use file descriptors and `fstat`; check permissions on the already-opened file.
+
 ## Production Checklist
 
 - [ ] Always validate input before processing

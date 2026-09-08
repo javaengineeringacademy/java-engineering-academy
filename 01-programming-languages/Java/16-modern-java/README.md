@@ -415,6 +415,21 @@ public class ApiClient {
 ### Q10: What is the difference between sealed and non-sealed classes?
 **Answer:** Sealed restricts inheritance to listed classes. Non-sealed allows any class to extend (for flexibility in sealed hierarchies).
 
+### Q11: What are virtual threads (Java 21)?
+**Answer:** Lightweight threads managed by the JVM (not OS). Use for I/O-bound work. Millions can be created. They use ~1KB memory vs ~1MB for platform threads. Use `Thread.ofVirtual().start(() -> ...)`.
+
+### Q12: What is the difference between `Optional` and nullable types?
+**Answer:** `Optional`: explicit container, monadic operations (map, flatMap, orElse). Nullable: implicit, easy to forget null check. `Optional` is safer but has overhead.
+
+### Q13: What is a `SequencedCollection` (Java 21)?
+**Answer:** New interface for collections with a defined encounter order. Provides `getFirst()`, `getLast()`, `addFirst()`, `addLast()`, `reversed()`. Implemented by List, Deque, SortedSet.
+
+### Q14: What is the `String.indent()` method?
+**Answer:** Transforms each line of a string using a function. Useful for text processing: `text.indent(n -> "  " + n)` adds indentation. Java 12+.
+
+### Q15: What is the `teeing` collector (Java 12+)?
+**Answer:** A collector that applies two downstream collectors and combines their results. Example: `Collectors.teeing(Collectors.summingInt(...), Collectors.counting(), (sum, count) -> sum / count)` calculates average.
+
 ## Cross-References
 
 - **Previous Module:** [15 - Senior](../15-senior/)

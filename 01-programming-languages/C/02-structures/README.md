@@ -393,6 +393,131 @@ void print_var(const Var *v) {
 }
 ```
 
+### Incident 3: Struct Assignment Shallow Copy Bug
+
+**Problem**: A structure containing a pointer is assigned, and both copies are freed, causing a double-free.
+
+```c
+typedef struct {
+    char *name;
+    int id;
+} User;
+
+User create_user(void) {
+    User u;
+    u.name = malloc(64);
+    strcpy(u.name, "Alice");
+    u.id = 1;
+    return u;
+}
+
+int main(void) {
+    User a = create_user();
+    User b = a;  // Shallow copy: b.name == a.name
+    free(a.name);
+    free(b.name);  // Double free!
+    return 0;
+}
+```
+
+**Cause**: Struct assignment copies the pointer value, not the pointed-to memory. Both `a.name` and `b.name` point to the same allocation.
+
+**Impact**: Heap corruption, crash, potential code execution.
+
+**Solution**: Implement a deep copy function:
+
+```c
+User user_copy(const User *src) {
+    User dst;
+    dst.id = src->id;
+    dst.name = malloc(strlen(src->name) + 1);
+    strcpy(dst.name, src->name);
+    return dst;
+}
+
+void user_free(User *u) {
+    free(u->name);
+    u->name = NULL;
+}
+```
+
+**Prevention**: Never rely on struct assignment for types containing pointers; always implement deep copy functions.
+
+---
+
+### Incident 4: Bit Field Portability Issue
+
+**Problem**: A bit field structure has different layouts on different compilers, causing data corruption across platforms.
+
+```c
+struct Flags {
+    unsigned int active  : 1;
+    unsigned int mode    : 3;
+    unsigned int count   : 4;
+};
+```
+
+**Cause**: The C standard does not define how bit fields are packed. Compilers may pack from left to right or right to left, and may cross storage unit boundaries differently.
+
+**Impact**: Data corruption when structs are sent between platforms or stored in files.
+
+**Solution**: Use bitmask operations instead of bit fields for portable code:
+
+```c
+#define FLAG_ACTIVE  (1u << 0)
+#define FLAG_MODE_MASK  (0x7u << 1)
+#define FLAG_MODE(n) (((n) & 0x7u) << 1)
+#define FLAG_COUNT_MASK  (0xFu << 4)
+#define FLAG_COUNT(n) (((n) & 0xFu) << 4)
+
+void set_flags(unsigned int *flags, int active, int mode, int count) {
+    *flags = 0;
+    if (active) *flags |= FLAG_ACTIVE;
+    *flags |= FLAG_MODE(mode);
+    *flags |= FLAG_COUNT(count);
+}
+```
+
+**Prevention**: Avoid bit fields for ABI-stable or cross-platform interfaces; use explicit bitmask operations.
+
+---
+
+### Incident 5: Flexible Array Member Misuse
+
+**Problem**: A structure with a flexible array member is allocated incorrectly, causing heap overflow.
+
+```c
+struct Buffer {
+    size_t len;
+    char data[];  // Flexible array member
+};
+
+Buffer *buffer_create(size_t len) {
+    Buffer *b = malloc(sizeof(Buffer));  // Too small!
+    b->len = len;
+    strcpy(b->data, "hello");  // Overflow: no space for data
+    return b;
+}
+```
+
+**Cause**: `sizeof(Buffer)` does not include space for the flexible array. The allocation must account for the actual data.
+
+**Impact**: Heap buffer overflow, crash, code execution.
+
+**Solution**: Allocate with extra space for the flexible array:
+
+```c
+Buffer *buffer_create(size_t len) {
+    Buffer *b = malloc(sizeof(Buffer) + len + 1);  // Include space for data
+    if (!b) return NULL;
+    b->len = len;
+    b->data[0] = '\0';  // Initialize
+    return b;
+}
+```
+
+**Prevention**: Always allocate `sizeof(struct) + flexible_array_size` for structures with flexible array members.
+
 ## Production Checklist
 
 - [ ] Use `typedef` for cleaner syntax

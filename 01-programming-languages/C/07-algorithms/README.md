@@ -408,6 +408,133 @@ int mid = (low + high) / 2;  // overflow when low + high > INT_MAX
 int mid = low + (high - low) / 2;  // No overflow
 ```
 
+### Incident 3: Stack Overflow from Deep Recursion in DFS
+
+**Problem**: A depth-first search on a deep graph (100,000+ nodes) crashes with stack overflow.
+
+```c
+void dfs(Graph *g, int node, bool *visited) {
+    visited[node] = true;
+    process(node);
+    for (int i = 0; i < g->adj_count[node]; i++) {
+        int neighbor = g->adj[node][i];
+        if (!visited[neighbor]) {
+            dfs(g, neighbor, visited);  // Recursive: stack grows with depth
+        }
+    }
+}
+```
+
+**Cause**: Each recursive call adds a stack frame. For a graph with depth 100,000, the stack overflows.
+
+**Impact**: Segmentation fault, crash.
+
+**Solution**: Convert to iterative DFS using an explicit stack:
+
+```c
+void dfs_iterative(Graph *g, int start) {
+    bool *visited = calloc(g->num_vertices, sizeof(bool));
+    Stack *stack = stack_create(g->num_vertices);
+    
+    stack_push(stack, start);
+    while (!stack_empty(stack)) {
+        int node = stack_pop(stack);
+        if (visited[node]) continue;
+        visited[node] = true;
+        process(node);
+        for (int i = g->adj_count[node] - 1; i >= 0; i--) {
+            int neighbor = g->adj[node][i];
+            if (!visited[neighbor]) {
+                stack_push(stack, neighbor);
+            }
+        }
+    }
+    stack_destroy(stack);
+    free(visited);
+}
+```
+
+**Prevention**: Use iterative algorithms for deep graphs; set stack size with `-Wl,--stack,size` on Windows or `ulimit -s` on Linux.
+
+---
+
+### Incident 4: Hash Function Distribution Causing Hotspot
+
+**Problem**: A hash function produces poor distribution, causing one bucket to receive 80% of entries.
+
+```c
+size_t bad_hash(int key) {
+    return key % 10;  // Only 10 buckets, poor distribution
+}
+```
+
+**Cause**: Simple modulo hash with small table size and non-random key patterns.
+
+**Impact**: Degraded performance (O(n) lookups), load imbalance.
+
+**Solution**: Use better hash functions and table sizing:
+
+```c
+size_t better_hash(int key, size_t table_size) {
+    // Multiplication method
+    double A = 0.6180339887;  // (sqrt(5) - 1) / 2
+    double val = key * A;
+    val = val - (long long)val;  // Fractional part
+    return (size_t)(table_size * val);
+}
+```
+
+**Prevention**: Use established hash functions (FNV-1a, MurmurHash); size tables as prime numbers; monitor bucket distribution.
+
+---
+
+### Incident 5: Dijkstra's Algorithm with Negative Weights
+
+**Problem**: Dijkstra's algorithm produces incorrect shortest paths when the graph contains negative edge weights.
+
+```c
+// Dijkstra's assumes all edges are non-negative
+// With negative edges, it may return suboptimal paths
+```
+
+**Cause**: Dijkstra's greedy approach doesn't reconsider nodes once finalized. Negative edges can create shorter paths through previously finalized nodes.
+
+**Impact**: Incorrect shortest path calculation, wrong routing decisions.
+
+**Solution**: Use Bellman-Ford or detect negative cycles:
+
+```c
+bool bellman_ford(Graph *g, int source, int *dist) {
+    // Initialize distances
+    for (int i = 0; i < g->num_vertices; i++)
+        dist[i] = INT_MAX;
+    dist[source] = 0;
+    
+    // Relax edges V-1 times
+    for (int i = 0; i < g->num_vertices - 1; i++) {
+        for (int j = 0; j < g->num_edges; j++) {
+            int u = g->edges[j].u;
+            int v = g->edges[j].v;
+            int w = g->edges[j].weight;
+            if (dist[u] != INT_MAX && dist[u] + w < dist[v])
+                dist[v] = dist[u] + w;
+        }
+    }
+    
+    // Check for negative cycles
+    for (int j = 0; j < g->num_edges; j++) {
+        int u = g->edges[j].u;
+        int v = g->edges[j].v;
+        int w = g->edges[j].weight;
+        if (dist[u] != INT_MAX && dist[u] + w < dist[v])
+            return true;  // Negative cycle detected
+    }
+    return false;
+}
+```
+
+**Prevention**: Detect negative edges before using Dijkstra; use Bellman-Ford for graphs with negative weights; validate graph properties.
+
 ## Production Checklist
 
 - [ ] Choose algorithm based on data size and characteristics

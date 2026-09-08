@@ -421,6 +421,21 @@ class User {
 ### Q10: What is the difference between `<T extends Comparable<T>>` and `<T extends Comparable<?>>`?
 **Answer:** The first requires T to be Comparable to itself (natural ordering). The second requires T to be Comparable to some unknown type. The first is more type-safe and commonly used.
 
+### Q11: What is a type token?
+**Answer:** Passing `Class<T>` to preserve type information at runtime. Example: `public <T> T deserialize(String json, Class<T> clazz)`. The `Class<T>` object is the "type token" that bridges compile-time and runtime types.
+
+### Q12: What is the difference between `Supplier<T>` and `Callable<T>`?
+**Answer:** `Supplier<T>`: functional interface, no checked exceptions (`T get()`). `Callable<T>`: can throw checked exceptions (`T call()`). Use `Callable` with `ExecutorService`; `Supplier` with Streams.
+
+### Q13: What is generic type inference?
+**Answer:** The compiler's ability to infer type parameters from context. Java 8 expanded this to method calls, lambdas, and diamond operator. Example: `List.of(1, 2, 3)` infers `List<Integer>`.
+
+### Q14: What is the `Optional<T>` type?
+**Answer:** A container that may or may not hold a non-null value. Provides monadic operations (`map`, `flatMap`, `orElse`). Avoids null checks and NullPointerException. Use for return types, not fields or parameters.
+
+### Q15: What is the difference between `List<Integer>` and `int[]`?
+**Answer:** `List<Integer>`: boxed objects, autoboxing overhead, GC pressure, null elements allowed. `int[]`: primitive array, no boxing, no GC, contiguous memory. Use arrays for performance-critical numeric code.
+
 ## Cross-References
 
 - **Previous Module:** [05 - Text Processing](../05-text-processing/)

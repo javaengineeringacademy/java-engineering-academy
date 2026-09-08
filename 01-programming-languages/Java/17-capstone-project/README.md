@@ -310,6 +310,281 @@ class ProductServiceTest {
 - **External:** [Spring Boot Reference](https://docs.spring.io/spring-boot/docs/current/reference/html/)
 - **External:** [Baeldung Tutorials](https://www.baeldung.com/)
 
+## Examples
+
+### Easy Example: Domain Model (Module 02-OOP)
+
+```java
+// Product.java — Record (Module 16-Modern Java)
+public record Product(
+    Long id,
+    String name,
+    BigDecimal price,
+    ProductCategory category,
+    LocalDateTime createdAt
+) {
+    public Product {
+        if (id == null || id <= 0) throw new IllegalArgumentException("Invalid ID");
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Name required");
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Price must be positive");
+        }
+    }
+}
+
+// ProductCategory.java — Enum
+public enum ProductCategory {
+    ELECTRONICS, CLOTHING, FOOD, BOOKS
+}
+```
+
+### Medium Example: Repository Pattern (Module 04-Collections + 06-Generics)
+
+```java
+@Repository
+public class ProductRepository {
+    private final Map<Long, Product> products = new ConcurrentHashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong();
+    
+    public Optional<Product> findById(Long id) {
+        return Optional.ofNullable(products.get(id));
+    }
+    
+    public List<Product> findByCategory(ProductCategory category) {
+        return products.values().stream()
+            .filter(p -> p.category() == category)
+            .collect(Collectors.toList());
+    }
+    
+    public Product save(Product product) {
+        if (product.id() == null) {
+            product = new Product(idGenerator.incrementAndGet(), 
+                product.name(), product.price(), product.category(), 
+                LocalDateTime.now());
+        }
+        products.put(product.id(), product);
+        return product;
+    }
+}
+```
+
+### Hard Example: Service Layer with Strategy Pattern (Module 11-Patterns + 07-Functional)
+
+```java
+@Service
+@Slf4j
+public class ProductService {
+    private final ProductRepository repository;
+    private final PricingStrategy pricingStrategy;
+    
+    public ProductService(ProductRepository repository, PricingStrategy pricingStrategy) {
+        this.repository = repository;
+        this.pricingStrategy = pricingStrategy;
+    }
+    
+    public List<Product> getDiscountedProducts() {
+        return repository.findAll().stream()
+            .map(p -> new Product(p.id(), p.name(), 
+                pricingStrategy.calculatePrice(p.price()), 
+                p.category(), p.createdAt()))
+            .collect(Collectors.toList());
+    }
+}
+
+// Strategy interface
+@FunctionalInterface
+public interface PricingStrategy {
+    BigDecimal calculatePrice(BigDecimal basePrice);
+}
+
+// Concrete strategy
+@Component
+public class SeasonalDiscountStrategy implements PricingStrategy {
+    @Override
+    public BigDecimal calculatePrice(BigDecimal basePrice) {
+        return basePrice.multiply(BigDecimal.valueOf(0.9)); // 10% off
+    }
+}
+```
+
+### Enterprise Example: Complete Request Flow
+
+```java
+// Controller → Service → Repository → Database
+@RestController
+@RequestMapping("/api/products")
+@Slf4j
+public class ProductController {
+    private final ProductService service;
+    
+    public ProductController(ProductService service) {
+        this.service = service;
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id) {
+        return service.findById(id)
+            .map(ProductDTO::from)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @PostMapping
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody @Valid CreateProductRequest request) {
+        Product product = service.createProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ProductDTO.from(product));
+    }
+}
+```
+
+## Debugging Tips
+
+| Tool | Purpose | Usage |
+|------|---------|-------|
+| IntelliJ Debugger | Step through code | Set breakpoints, evaluate expressions |
+| JFR (Java Flight Recorder) | Production profiling | `-XX:StartFlightRecording=duration=60s` |
+| async-profiler | CPU/memory profiling | `./profiler.sh -d 30 -f profile.html <pid>` |
+| VisualVM | Heap analysis | Connect to running JVM, take heap dump |
+| Arthas | Online diagnostics | `trace`, `watch`, `stack` commands |
+| Maven Debug | Build debugging | `mvnDebug compile` |
+| Logging | Runtime inspection | SLF4J with Logback, structured JSON output |
+
+### Common Debugging Scenarios
+
+```java
+// 1. Thread dump analysis
+jstack <pid>  // Show all thread stacks
+
+// 2. Heap dump
+jmap -dump:live,format=b,file=heap.hprof <pid>
+
+// 3. CPU profiling
+jcmd <pid> JFR.record duration=60s filename=recording.jfr
+
+// 4. Memory leak detection
+java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/heap.hprof -jar app.jar
+
+// 5. Remote debugging
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar app.jar
+```
+
+## Code Review Checklist
+
+### Module Integration Checks
+
+- [ ] **00-Knowledge Atoms**: Immutability enforced, equals/hashCode consistent
+- [ ] **01-Fundamentals**: No raw types, proper String handling
+- [ ] **02-OOP**: SOLID principles followed, proper inheritance hierarchy
+- [ ] **03-Exceptions**: Custom exceptions used, no swallowed exceptions
+- [ ] **04-Collections**: Appropriate data structure chosen, thread-safe collections used
+- [ ] **05-Text Processing**: Proper encoding, no regex in loops
+- [ ] **06-Generics**: Type parameters used correctly, no raw types
+- [ ] **07-Functional**: Streams used appropriately, no side effects in lambdas
+- [ ] **08-I/O**: Try-with-resources used, proper buffering
+- [ ] **09-Multithreading**: Thread safety verified, no race conditions
+- [ ] **10-JVM**: GC tuning considered, memory limits set
+- [ ] **11-Patterns**: Patterns applied correctly, not over-engineered
+- [ ] **12-Testing**: Unit tests present, integration tests for key flows
+- [ ] **13-Reflection**: Used sparingly, security implications considered
+- [ ] **14-Logging**: Structured logging, appropriate log levels
+- [ ] **15-Senior**: Architecture documented, ADRs for major decisions
+- [ ] **16-Modern Java**: Records for DTOs, sealed classes where appropriate
+
+### General Code Quality
+
+- [ ] No compiler warnings (`-Xlint:all`)
+- [ ] No `System.out.println` (use logger)
+- [ ] No magic numbers (use constants)
+- [ ] No commented-out code
+- [ ] Method length < 30 lines
+- [ ] Class length < 500 lines
+- [ ] No cyclic dependencies
+
+## Architecture Considerations
+
+### Layered Architecture
+
+```
+┌─────────────────────────────────────┐
+│         Presentation Layer          │
+│    (REST Controllers, DTOs)         │
+├─────────────────────────────────────┤
+│         Business Logic Layer        │
+│    (Services, Domain Objects)       │
+├─────────────────────────────────────┤
+│         Data Access Layer           │
+│    (Repositories, JPA Entities)     │
+├─────────────────────────────────────┤
+│         Infrastructure Layer        │
+│    (Config, Logging, Security)      │
+└─────────────────────────────────────┘
+```
+
+### Key Architectural Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| DTO Pattern | Record-based DTOs | Immutability, concise code |
+| Repository | Interface + Implementation | Testability, abstraction |
+| Service Layer | Constructor injection | Dependency inversion, testability |
+| Configuration | `@ConfigurationProperties` | Type-safe, externalized |
+| Exception Handling | `@ControllerAdvice` | Centralized, consistent responses |
+| Logging | SLF4J + Logback | Structured, performant |
+
+## Security Considerations
+
+| Concern | Mitigation | Implementation |
+|---------|------------|----------------|
+| Input Validation | Bean Validation | `@Valid`, `@Size`, `@Pattern` |
+| SQL Injection | Parameterized queries | JPA/Hibernate, no string concatenation |
+| XSS | Output encoding | Jackson serialization, Content-Type headers |
+| CSRF | Token-based protection | Spring Security CSRF filter |
+| Authentication | JWT/OAuth2 | Spring Security, stateless sessions |
+| Authorization | Role-based access | `@PreAuthorize`, method security |
+| Secrets | Externalized config | Environment variables, Vault |
+| Dependencies | Vulnerability scanning | OWASP Dependency Check, Snyk |
+
+### Security Checklist
+
+```java
+// 1. Input validation
+@PostMapping("/api/users")
+public ResponseEntity<User> createUser(@RequestBody @Valid CreateUserRequest request) {
+    // Validation happens automatically
+    return ResponseEntity.ok(service.createUser(request));
+}
+
+// 2. SQL injection prevention
+@Query("SELECT u FROM User u WHERE u.email = :email")
+Optional<User> findByEmail(@Param("email") String email);
+
+// 3. XSS prevention
+@RestControllerAdvice
+public class SecurityHeaders {
+    @PostConstruct
+    public void init() {
+        // Configure Content-Security-Policy headers
+    }
+}
+
+// 4. Authentication filter
+@Component
+public class JwtAuthFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) {
+        String token = extractToken(request);
+        if (token != null && jwtService.validate(token)) {
+            Authentication auth = jwtService.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+        chain.doFilter(request, response);
+    }
+}
+```
+
 ## Production Incidents
 
 ### Incident 1: N+1 Query Problem in Production

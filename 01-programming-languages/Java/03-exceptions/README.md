@@ -361,6 +361,21 @@ public class GlobalExceptionHandler {
 ### Q10: What are suppressed exceptions?
 **Answer:** Exceptions thrown during resource close in try-with-resources that would otherwise be lost. They are added to the primary exception via `addSuppressed()`. Access them with `getSuppressed()`. This ensures no exception is silently swallowed.
 
+### Q11: What is the difference between `Error` and `Exception`?
+**Answer:** `Error`: unrecoverable system errors (e.g., `OutOfMemoryError`, `StackOverflowError`). Should not be caught. `Exception`: recoverable conditions (e.g., `IOException`). Should be caught and handled.
+
+### Q12: What is the best way to log exceptions?
+**Answer:** Use `log.error("message", exception)` with the exception as the last parameter. This preserves the full stack trace. Avoid `e.printStackTrace()` (writes to stderr, not configurable).
+
+### Q13: What is the `try-with-resources` effectively final variable?
+**Answer:** In Java 9+, you can use effectively final variables in try-with-resources: `var r = create(); try (r) { ... }`. The variable must be assigned only once (effectively final).
+
+### Q14: How do you handle multiple exceptions in a single catch block?
+**Answer:** Multi-catch (Java 7+): `catch (IOException | SQLException e)`. This reduces code duplication when handling different exceptions the same way. Cannot combine checked and unchecked exceptions.
+
+### Q15: What is the difference between `fillInStackTrace()` and `getStackTrace()`?
+**Answer:** `fillInStackTrace()`: captures the current stack trace (expensive). `getStackTrace()`: returns the captured stack trace as an array. Override `fillInStackTrace()` to return a lightweight exception (performance optimization).
+
 ## Cross-References
 
 - **Previous Module:** [02 - OOP](../02-oop/)

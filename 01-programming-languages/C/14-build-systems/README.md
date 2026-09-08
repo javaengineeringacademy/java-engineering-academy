@@ -275,6 +275,102 @@ CFLAGS = -Wall -Wextra -Werror -g -O2
 # Same flags on every machine
 ```
 
+### Incident 3: Stale Object Files After Header Change
+
+**Problem**: After modifying a header file, the build uses stale object files, causing runtime crashes.
+
+```makefile
+# Makefile without proper dependencies
+main: main.o utils.o
+	$(CC) -o main main.o utils.o
+
+# Changing utils.h does not trigger recompilation of main.o
+```
+
+**Cause**: Make doesn't know that `main.c` depends on `utils.h` because the dependency is not declared.
+
+**Impact**: Stale object files linked into binary, undefined behavior, crashes.
+
+**Solution**: Use auto-generated dependency files:
+
+```makefile
+CFLAGS = -MMD -MP -Wall -Wextra
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+-include $(OBJS:.o=.d)
+```
+
+**Prevention**: Always use `-MMD -MP` for automatic dependency tracking; use `make clean` when in doubt; rebuild from scratch periodically.
+
+---
+
+### Incident 4: Linker Order Dependency Failure
+
+**Problem**: Build fails on a different Linux distribution due to library link order.
+
+```bash
+# Works on Ubuntu
+gcc main.c -lpthread -lrt
+
+# Fails on Fedora: undefined reference to pthread_create
+gcc main.c -lrt -lpthread
+```
+
+**Cause**: GNU ld resolves symbols left-to-right; libraries must be listed after the objects that use them.
+
+**Impact**: Build failure on different platforms, portability issues.
+
+**Solution**: Place libraries at the end of the link command, or use `-Wl,--start-group`/`-Wl,--end-group`:
+
+```makefile
+# Correct: libraries after object files
+main: main.o utils.o
+	$(CC) -o $@ $^ -lpthread -lrt
+
+# Or: use group for circular dependencies
+main: main.o utils.o
+	$(CC) -o $@ $^ -Wl,--start-group -lpthread -lrt -Wl,--end-group
+```
+
+**Prevention**: Always place libraries after object files; test builds on multiple platforms; use CMake to handle link order automatically.
+
+---
+
+### Incident 5: Build System Rebuilds Everything Every Time
+
+**Problem**: Every `make` invocation recompiles all files, even when only one file changed.
+
+```makefile
+# Bad: phony targets force rebuild
+all: $(OBJS)
+	$(CC) -o main $^
+
+.PHONY: all
+# Also: missing dependency tracking
+```
+
+**Cause**: Phony targets or missing dependency files force unconditional rebuild.
+
+**Impact**: Slow development cycle, wasted CI/CD time.
+
+**Solution**: Remove unnecessary `.PHONY` and ensure proper dependencies:
+
+```makefile
+all: main
+
+main: $(OBJS)
+	$(CC) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+-include $(OBJS:.o=.d)
+```
+
+**Prevention**: Only declare targets as `.PHONY` if they don't produce a file; ensure dependency tracking works; use `make -d` to debug rebuild decisions.
+
 ## Production Checklist
 
 - [ ] Use a build system (Make, CMake, Meson)

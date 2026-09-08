@@ -357,6 +357,125 @@ Executor *create_sequential_executor(void);
 Executor *create_process_pool_executor(int num_workers);
 ```
 
+### Incident 3: Platform-Specific Code in Core Logic
+
+**Problem**: A cross-platform application crashes on Windows because POSIX-specific code was placed in the core logic.
+
+```c
+// Core logic using POSIX-specific API
+#include <unistd.h>
+#include <sys/mman.h>
+
+void *allocate_memory(size_t size) {
+    return mmap(NULL, size, PROT_READ | PROT_WRITE,
+                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+```
+
+**Cause**: `mmap` is not available on Windows; the code only compiles on Unix-like systems.
+
+**Impact**: Build failure on Windows; portability broken.
+
+**Solution**: Use platform abstraction layer:
+
+```c
+// platform.h
+void *platform_alloc(size_t size);
+void platform_free(void *ptr, size_t size);
+
+// platform_unix.c
+#include <sys/mman.h>
+void *platform_alloc(size_t size) {
+    return mmap(NULL, size, PROT_READ | PROT_WRITE,
+                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+
+// platform_win32.c
+#include <windows.h>
+void *platform_alloc(size_t size) {
+    return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+}
+```
+
+**Prevention**: Isolate platform-specific code in separate files; use abstraction layers; test on all target platforms; use CI/CD for cross-platform builds.
+
+---
+
+### Incident 4: Library Version Conflict in Dependency Tree
+
+**Problem**: Application crashes at startup because two libraries link to different versions of the same dependency (diamond dependency problem).
+
+```c
+// libA depends on libC v1.0
+// libB depends on libC v2.0
+// Both are linked into the application
+// libC v2.0 has breaking changes in data structures
+```
+
+**Cause**: No version management; different parts of the application use incompatible versions of the same library.
+
+**Impact**: Crash, data corruption, undefined behavior.
+
+**Solution**: Use semantic versioning and dependency management:
+
+```makefile
+# CMakeLists.txt
+find_package(libC 2.0 REQUIRED)  # Ensure consistent version
+
+# Or: use package manager (vcpkg, conan)
+# vcpkg.json
+{
+    "dependencies": [
+        { "name": "libc", "version>=": "2.0" }
+    ]
+}
+```
+
+**Prevention**: Use semantic versioning; enforce minimum version requirements; use package managers; test with consistent dependency versions.
+
+---
+
+### Incident 5: Missing ABI Version Check at Load Time
+
+**Problem**: A shared library is loaded but crashes because the application was compiled against a different ABI version.
+
+```c
+// Application compiled with libfoo v1.0
+// libfoo upgraded to v2.0 with ABI changes
+// Application loads libfoo v2.0 — crash due to struct layout mismatch
+```
+
+**Cause**: No version negotiation at library load time.
+
+**Impact**: Crash, data corruption, undefined behavior.
+
+**Solution**: Add version check at load time:
+
+```c
+// libfoo.h
+#define LIBFOO_VERSION_MAJOR 2
+#define LIBFOO_VERSION_MINOR 0
+
+int libfoo_check_version(int required_major, int required_minor);
+
+// libfoo.c
+int libfoo_check_version(int required_major, int required_minor) {
+    if (LIBFOO_VERSION_MAJOR != required_major) return -1;
+    if (LIBFOO_VERSION_MINOR < required_minor) return -1;
+    return 0;
+}
+
+// Application
+#include <dlfcn.h>
+typedef int (*check_version_fn)(int, int);
+check_version_fn check = dlsym(handle, "libfoo_check_version");
+if (check(LIBFOO_VERSION_MAJOR, LIBFOO_VERSION_MINOR) != 0) {
+    // Version mismatch — handle gracefully
+}
+```
+
+**Prevention**: Always check library version at load time; use semantic versioning; maintain ABI compatibility; document version requirements.
+
 ## Production Checklist
 
 - [ ] Design for ABI stability (opaque pointers, append-only structs)

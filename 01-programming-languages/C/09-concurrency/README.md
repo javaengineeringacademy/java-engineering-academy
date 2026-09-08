@@ -393,6 +393,166 @@ void *increment(void *arg) {
 // Document and enforce this ordering
 ```
 
+### Incident 3: Condition Variable Spurious Wakeup
+
+**Problem**: A producer-consumer queue occasionally loses data due to spurious wakeups.
+
+```c
+void *consumer(void *arg) {
+    Queue *q = arg;
+    while (true) {
+        pthread_mutex_lock(&q->mutex);
+        pthread_cond_wait(&q->not_empty, &q->mutex);  // May wake spuriously
+        Item *item = dequeue(q);
+        pthread_mutex_unlock(&q->mutex);
+        process(item);
+    }
+}
+```
+
+**Cause**: `pthread_cond_wait` can wake up without a signal (spurious wakeup). The queue may be empty when the consumer wakes.
+
+**Impact**: NULL pointer dereference, crash, data loss.
+
+**Solution**: Always check condition in a while loop:
+
+```c
+void *consumer(void *arg) {
+    Queue *q = arg;
+    while (true) {
+        pthread_mutex_lock(&q->mutex);
+        while (queue_empty(q)) {
+            pthread_cond_wait(&q->not_empty, &q->mutex);
+        }
+        Item *item = dequeue(q);
+        pthread_mutex_unlock(&q->mutex);
+        process(item);
+    }
+}
+```
+
+**Prevention**: Always use `while` loop (not `if`) with `pthread_cond_wait`; never assume the condition is true after wakeup.
+
+---
+
+### Incident 4: Thread Pool Exhaustion Under Load
+
+**Problem**: A web server's thread pool becomes exhausted under high load, causing request timeouts.
+
+```c
+#define MAX_THREADS 64
+
+typedef struct {
+    pthread_t threads[MAX_THREADS];
+    int thread_count;
+    // ...
+} ThreadPool;
+
+void handle_connection(int client_fd) {
+    // Process request...
+    sleep(10);  // Simulate slow processing
+    close(client_fd);
+}
+
+// All 64 threads are blocked in handle_connection
+// New connections cannot be processed
+```
+
+**Cause**: Thread pool size is fixed; slow requests block all threads.
+
+**Impact**: Service unavailability, request timeouts, client failures.
+
+**Solution**: Use work queue with bounded thread pool and reject policy:
+
+```c
+#define MAX_THREADS 64
+#define MAX_QUEUE 1000
+
+typedef struct {
+    pthread_t threads[MAX_THREADS];
+    TaskQueue queue;
+    pthread_mutex_t mutex;
+    bool shutdown;
+} ThreadPool;
+
+void *worker(void *arg) {
+    ThreadPool *pool = arg;
+    while (true) {
+        pthread_mutex_lock(&pool->mutex);
+        while (queue_empty(&pool->queue) && !pool->shutdown) {
+            pthread_cond_wait(&pool->cond, &pool->mutex);
+        }
+        if (pool->shutdown) {
+            pthread_mutex_unlock(&pool->mutex);
+            break;
+        }
+        Task task = dequeue(&pool->queue);
+        pthread_mutex_unlock(&pool->mutex);
+        task.fn(task.arg);
+    }
+    return NULL;
+}
+```
+
+**Prevention**: Size thread pool based on workload; use bounded queue with reject policy; monitor queue depth and thread utilization.
+
+---
+
+### Incident 5: ABA Problem in Lock-Free Stack
+
+**Problem**: A lock-free stack using compare-and-swap (CAS) experiences ABA problem, causing data corruption.
+
+```c
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+_Atomic(Node *) stack_top = NULL;
+
+void push(int value) {
+    Node *new_node = malloc(sizeof(Node));
+    new_node->data = value;
+    Node *old_top;
+    do {
+        old_top = atomic_load(&stack_top);
+        new_node->next = old_top;
+    } while (!atomic_compare_exchange_weak(&stack_top, &old_top, new_node));
+}
+
+int pop(void) {
+    Node *old_top;
+    int value;
+    do {
+        old_top = atomic_load(&stack_top);
+        if (!old_top) return -1;
+        value = old_top->data;
+        // ABA: old_top may have been freed and reallocated at same address
+    } while (!atomic_compare_exchange_weak(&stack_top, &old_top, old_top->next));
+    free(old_top);  // May free a different node at the same address
+    return value;
+}
+```
+
+**Cause**: Thread reads old_top (A), gets preempted, another thread pops and pushes, reusing the same address (A). The CAS succeeds incorrectly.
+
+**Impact**: Data corruption, use-after-free, crash.
+
+**Solution**: Use hazard pointers or tagged pointers:
+
+```c
+// Option 1: Use hazard pointers for safe memory reclamation
+// Option 2: Use generation counter (tagged pointer)
+typedef struct {
+    Node *ptr;
+    uintptr_t tag;  // Monotonically increasing
+} TaggedPointer;
+
+_Atomic(TaggedPointer) stack_top = {0};
+```
+
+**Prevention**: Use hazard pointers, epoch-based reclamation, or tagged pointers for lock-free structures.
+
 ## Production Checklist
 
 - [ ] Use proper synchronization for shared data

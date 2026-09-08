@@ -363,6 +363,142 @@ void cleanup_query(Query *q) {
 }
 ```
 
+### Incident 3: Memory Leak from Circular Reference
+
+**Problem**: A linked list with circular references leaks all nodes when freed.
+
+```c
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+void create_circular(Node *head) {
+    Node *tail = head;
+    while (tail->next) tail = tail->next;
+    tail->next = head;  // Circular reference
+}
+
+void free_list(Node *head) {
+    Node *current = head;
+    while (current) {
+        Node *next = current->next;
+        free(current);  // Infinite loop: circular reference
+        current = next;
+    }
+}
+```
+
+**Cause**: The free loop never terminates because the list is circular.
+
+**Impact**: Memory leak, infinite loop in free function.
+
+**Solution**: Break the cycle before freeing:
+
+```c
+void free_circular_list(Node *head) {
+    if (!head) return;
+    Node *current = head;
+    do {
+        Node *next = current->next;
+        free(current);
+        current = next;
+    } while (current && current != head);  // Stop at cycle
+}
+```
+
+**Prevention**: Detect cycles before freeing; use reference counting; avoid circular references in linked structures.
+
+---
+
+### Incident 4: Heap Overflow from strdup
+
+**Problem**: A function uses `strdup` without checking for NULL, causing NULL pointer dereference.
+
+```c
+void process(const char *input) {
+    char *copy = strdup(input);  // May return NULL if input is NULL or OOM
+    printf("Copy: %s\n", copy);  // NULL dereference if strdup failed
+    free(copy);
+}
+```
+
+**Cause**: `strdup` returns NULL when input is NULL or memory allocation fails.
+
+**Impact**: Segmentation fault, crash.
+
+**Solution**: Check for NULL:
+
+```c
+void process(const char *input) {
+    if (!input) return;
+    char *copy = strdup(input);
+    if (!copy) return;  // OOM
+    printf("Copy: %s\n", copy);
+    free(copy);
+}
+```
+
+**Prevention**: Always check `strdup` return value; use a safe wrapper; handle OOM gracefully.
+
+---
+
+### Incident 5: Use-After-Free in Event Handler
+
+**Problem**: An event handler accesses a structure that was freed by another thread.
+
+```c
+typedef struct {
+    int id;
+    char *data;
+} Event;
+
+void handle_event(Event *e) {
+    printf("Event %d: %s\n", e->id, e->data);  // May be freed by another thread
+}
+
+void cleanup_event(Event *e) {
+    free(e->data);
+    free(e);
+}
+
+// Thread 1: handle_event(e)
+// Thread 2: cleanup_event(e)  // Race condition
+```
+
+**Cause**: No synchronization between event handler and cleanup.
+
+**Impact**: Use-after-free, crash, data corruption.
+
+**Solution**: Use reference counting or mutex:
+
+```c
+typedef struct {
+    int id;
+    char *data;
+    atomic_int refcount;
+} Event;
+
+Event *event_create(int id, const char *data) {
+    Event *e = malloc(sizeof(Event));
+    e->id = id;
+    e->data = strdup(data);
+    atomic_init(&e->refcount, 1);
+    return e;
+}
+
+void event_ref(Event *e) { atomic_fetch_add(&e->refcount, 1); }
+
+void event_unref(Event *e) {
+    if (atomic_fetch_sub(&e->refcount, 1) == 1) {
+        free(e->data);
+        free(e);
+    }
+}
+```
+
+**Prevention**: Use reference counting for shared objects; protect with mutex; use AddressSanitizer to detect use-after-free.
+
 ## Production Checklist
 
 - [ ] Always check `malloc`/`calloc`/`realloc` return values

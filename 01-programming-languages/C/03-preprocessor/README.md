@@ -316,6 +316,102 @@ struct Config { int timeout; };
 #endif
 ```
 
+### Incident 3: Macro Operator Precedence Bug
+
+**Problem**: A macro without proper parentheses causes incorrect operator precedence, producing wrong results.
+
+```c
+#define MULTIPLY(a, b) a * b
+
+int result = MULTIPLY(2 + 3, 4 + 5);
+// Expected: 45 (5 * 9)
+// Actual: 23 (2 + 3 * 4 + 5 = 2 + 12 + 5 = 19)
+```
+
+**Cause**: Without parentheses, `2 + 3 * 4 + 5` is evaluated with standard precedence (multiplication before addition).
+
+**Impact**: Incorrect calculations, subtle bugs that are hard to trace.
+
+**Solution**: Always parenthesize macro arguments and the entire expression:
+
+```c
+#define MULTIPLY(a, b) ((a) * (b))
+
+int result = MULTIPLY(2 + 3, 4 + 5);  // Correct: 45
+```
+
+**Prevention**: Always parenthesize macro arguments and the entire macro body.
+
+---
+
+### Incident 4: Conditional Compilation Debug Code Left in Production
+
+**Problem**: Debug logging macros are accidentally left enabled in production, causing performance degradation and log spam.
+
+```c
+#ifdef DEBUG
+#define LOG(fmt, ...) printf(fmt, ##__VA_ARGS__)
+#else
+#define LOG(fmt, ...)
+#endif
+
+// In production build, DEBUG is defined by mistake
+LOG("Processing item %d\n", item);  // Executes in production
+```
+
+**Cause**: Debug code was compiled with `-DDEBUG` flag left in the build configuration.
+
+**Impact**: Performance degradation (logging in hot path), log files fill up disk.
+
+**Solution**: Use separate build configurations and verify debug flags:
+
+```c
+// In build system (CMake)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG)
+endif()
+
+// Or: runtime check
+#ifdef DEBUG
+#define LOG(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+#else
+#define LOG(fmt, ...) ((void)0)
+#endif
+```
+
+**Prevention**: Use distinct build profiles (Debug/Release); never enable debug flags in production builds; use CI/CD to verify build configuration.
+
+---
+
+### Incident 5: Token Pasting producing Invalid Identifiers
+
+**Problem**: A macro using token pasting creates invalid identifiers when used with certain arguments.
+
+```c
+#define CONCAT(a, b) a##b
+#define MAKE_VAR(name) int CONCAT(var_, name) = 0
+
+MAKE_VAR(123);  // Creates var_123 — OK
+MAKE_VAR(foo);  // Creates var_foo — OK
+MAKE_VAR(12foo);  // Creates var_12foo — INVALID: starts with digit
+```
+
+**Cause**: Token pasting does not validate the result; invalid tokens cause compile errors.
+
+**Impact**: Compilation failure when macro is used with certain arguments.
+
+**Solution**: Document macro constraints or use safer alternatives:
+
+```c
+// Document: MAKE_VAR requires a valid C identifier suffix
+// Better: use inline functions when possible
+static inline int make_var_helper(int id) { return id; }
+
+// Or: use _Generic for type-safe alternatives (C11)
+```
+
+**Prevention**: Document macro constraints; validate inputs at compile time when possible; prefer inline functions over macros.
+
 ## Production Checklist
 
 - [ ] Every header file has include guards (`#ifndef`/`#define`/`#endif` or `#pragma once`)

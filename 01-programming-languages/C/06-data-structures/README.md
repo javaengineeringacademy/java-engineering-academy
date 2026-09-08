@@ -445,6 +445,182 @@ void traverse(Node *head) {
 
 **Solution**: Use randomized hash functions (SipHash), limit bucket chain length, or switch to tree-based collision resolution.
 
+### Incident 3: Binary Tree Memory Leak on Deletion
+
+**Problem**: A binary search tree leaks memory when nodes are deleted because child pointers are not properly freed.
+
+```c
+Node *bst_delete(Node *root, int key) {
+    if (root == NULL) return NULL;
+    if (key < root->key) {
+        root->left = bst_delete(root->left, key);
+    } else if (key > root->key) {
+        root->right = bst_delete(root->right, key);
+    } else {
+        if (root->left == NULL) return root->right;
+        if (root->right == NULL) return root->left;
+        // Two children: replace with in-order successor
+        Node *successor = root->right;
+        while (successor->left) successor = successor->left;
+        root->key = successor->key;
+        root->right = bst_delete(root->right, successor->key);
+        // Memory leak: successor node is not freed!
+    }
+    return root;
+}
+```
+
+**Cause**: The in-order successor node is replaced but never freed.
+
+**Impact**: Memory leak grows with each deletion. Long-running service eventually runs out of memory.
+
+**Solution**: Free the successor node after copying its data:
+
+```c
+Node *bst_delete(Node *root, int key) {
+    if (root == NULL) return NULL;
+    if (key < root->key) {
+        root->left = bst_delete(root->left, key);
+    } else if (key > root->key) {
+        root->right = bst_delete(root->right, key);
+    } else {
+        if (root->left == NULL) {
+            Node *temp = root->right;
+            free(root);
+            return temp;
+        }
+        if (root->right == NULL) {
+            Node *temp = root->left;
+            free(root);
+            return temp;
+        }
+        Node *successor = root->right;
+        while (successor->left) successor = successor->left;
+        root->key = successor->key;
+        root->right = bst_delete(root->right, successor->key);
+    }
+    return root;
+}
+```
+
+**Prevention**: Always free nodes during deletion; use AddressSanitizer to detect leaks; test with Valgrind.
+
+---
+
+### Incident 4: Circular Buffer Wraparound Bug
+
+**Problem**: A circular buffer (ring buffer) loses data when the head and tail pointers wrap around incorrectly.
+
+```c
+typedef struct {
+    int *data;
+    size_t size;
+    size_t head;
+    size_t tail;
+    size_t count;
+} RingBuffer;
+
+void ring_push(RingBuffer *rb, int value) {
+    if (rb->count == rb->size) return;  // Full
+    rb->data[rb->tail] = value;
+    rb->tail = (rb->tail + 1) % rb->size;  // Wraparound
+    rb->count++;
+}
+
+int ring_pop(RingBuffer *rb) {
+    if (rb->count == 0) return -1;  // Empty
+    int value = rb->data[rb->head];
+    rb->head = (rb->head + 1) % rb->size;  // Wraparound
+    rb->count--;
+    return value;
+}
+```
+
+**Cause**: If the modulo operation is not applied consistently, head/tail can go out of bounds.
+
+**Impact**: Data corruption, out-of-bounds access, crash.
+
+**Solution**: Always use modulo for wraparound; add bounds checking:
+
+```c
+void ring_push(RingBuffer *rb, int value) {
+    if (rb == NULL || rb->data == NULL) return;
+    if (rb->count >= rb->size) return;  // Full
+    rb->data[rb->tail % rb->size] = value;
+    rb->tail = (rb->tail + 1) % rb->size;
+    rb->count++;
+}
+```
+
+**Prevention**: Always apply modulo for circular indexing; add NULL checks; use AddressSanitizer.
+
+---
+
+### Incident 5: Graph Traversal Memory Leak
+
+**Problem**: A breadth-first search (BFS) implementation leaks memory for the queue and visited array on large graphs.
+
+```c
+void bfs(Graph *g, int start) {
+    Queue *q = queue_create(g->num_vertices);
+    bool *visited = calloc(g->num_vertices, sizeof(bool));
+    
+    queue_push(q, start);
+    visited[start] = true;
+    
+    while (!queue_empty(q)) {
+        int v = queue_pop(q);
+        process(v);
+        for (int i = 0; i < g->adj_count[v]; i++) {
+            int neighbor = g->adj[v][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                queue_push(q, neighbor);
+            }
+        }
+    }
+    // Memory leak: q and visited not freed
+}
+```
+
+**Cause**: The queue and visited array are allocated but never freed.
+
+**Impact**: Memory leak proportional to graph size. Repeated BFS calls exhaust memory.
+
+**Solution**: Free all allocated resources:
+
+```c
+void bfs(Graph *g, int start) {
+    Queue *q = queue_create(g->num_vertices);
+    bool *visited = calloc(g->num_vertices, sizeof(bool));
+    if (!q || !visited) {
+        queue_destroy(q);
+        free(visited);
+        return;
+    }
+    
+    queue_push(q, start);
+    visited[start] = true;
+    
+    while (!queue_empty(q)) {
+        int v = queue_pop(q);
+        process(v);
+        for (int i = 0; i < g->adj_count[v]; i++) {
+            int neighbor = g->adj[v][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                queue_push(q, neighbor);
+            }
+        }
+    }
+    
+    queue_destroy(q);
+    free(visited);
+}
+```
+
+**Prevention**: Always free all allocated resources; use goto cleanup pattern; run Valgrind/AddressSanitizer in CI.
+
 ## Production Checklist
 
 - [ ] Choose the right structure for the use case

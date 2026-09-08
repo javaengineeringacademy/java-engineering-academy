@@ -446,6 +446,15 @@ public class AsyncPipeline {
 ### Q12: How many virtual threads can you create?
 **Answer:** Millions, since they use ~1KB heap-allocated stacks vs ~1MB for platform threads.
 
+### Q13: What is the `CountDownLatch` and when should you use it?
+**Answer:** A synchronization aid that allows one or more threads to wait until a set of operations completes. Use for one-shot events: main thread waits for N worker threads to initialize.
+
+### Q14: What is the difference between `CountDownLatch` and `CyclicBarrier`?
+**Answer:** `CountDownLatch`: one-shot, countdown to zero. `CyclicBarrier`: reusable, threads wait at a barrier point. Use `CountDownLatch` for initialization; `CyclicBarrier` for phased computations.
+
+### Q15: What is the `Semaphore` class?
+**Answer:** A counting semaphore that controls access to a resource pool. Use for rate limiting, connection pooling, or bounded resource access. `acquire()` blocks if no permits available; `release()` adds a permit.
+
 ## Cross-References
 
 - **Previous Module:** [08 - I/O and NIO](../08-io-nio/)

@@ -317,6 +317,21 @@ public class JVMTuning {
 ### Q10: How does the JVM handle string interning?
 **Answer:** String literals are interned in the string pool (PermGen/Metaspace). `String.intern()` adds strings to the pool. Excessive interning can cause Metaspace leaks. Use carefully in production.
 
+### Q11: What is the difference between `-Xmx` and `-Xms`?
+**Answer:** `-Xms`: initial heap size (minimum memory allocated). `-Xmx`: maximum heap size (upper limit). Set both to the same value for production to avoid resize pauses.
+
+### Q12: What is JIT compilation and what are its tiers?
+**Answer:** JIT converts bytecode to native code at runtime. Tiers: 0 (interpreter), 1-3 (C1 compiler with varying optimization), 4 (C2 compiler with full optimization). Hot methods progress through tiers.
+
+### Q13: What is the difference between `Minor GC` and `Major GC`?
+**Answer:** `Minor GC`: collects young generation (Eden + Survivor spaces), fast (~10ms). `Major GC`: collects old generation, slower (~100ms+). `Full GC`: collects entire heap + Metaspace, slowest.
+
+### Q14: What is the `jcmd` tool?
+**Answer:** A diagnostic tool for JVM management. Use for: GC runs, heap dumps, thread dumps, VM flags, native memory tracking. More powerful than individual tools (`jmap`, `jstack`).
+
+### Q15: What is the difference between `Concurrent Mark Sweep (CMS)` and `G1GC`?
+**Answer:** CMS: concurrent marking, no compaction (fragmentation risk). G1GC: regional, incremental compaction. G1GC is the default since Java 9; CMS was deprecated in Java 14.
+
 ## Cross-References
 
 - **Previous Module:** [09 - Multithreading](../09-multithreading-&-concurrency/)

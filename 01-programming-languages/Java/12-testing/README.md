@@ -316,6 +316,21 @@ class UserRepositoryIntegrationTest {
 ### Q10: What is the FIRST principle?
 **Answer:** Fast (runs quickly), Independent (no dependencies), Repeatable (same result), Self-validating (clear pass/fail), Timely (written with code).
 
+### Q11: What is the difference between `@Mock` and `@Spy`?
+**Answer:** `@Mock`: creates a mock object (all methods return defaults). `@Spy`: wraps a real object (calls real methods, can verify interactions). Use `@Mock` for isolation; `@Spy` for partial mocking.
+
+### Q12: What is test-driven development (TDD)?
+**Answer:** Write tests before code: Red (failing test) → Green (minimal code to pass) → Refactor (improve code). Benefits: better design, higher confidence, living documentation.
+
+### Q13: What is the difference between `verify()` and `assert()`?
+**Answer:** `verify()` (Mockito): checks that a method was called on a mock. `assert()` (JUnit): checks that a condition is true. `verify()` is for interactions; `assert()` is for state.
+
+### Q14: What is a test fixture?
+**Answer:** The fixed state used as a baseline for tests. Includes: test data, mock objects, configuration. In JUnit 5: `@BeforeEach` sets up fixtures; `@AfterEach` tears them down.
+
+### Q15: What is the difference between `@ExtendWith` and `@RunWith`?
+**Answer:** `@ExtendWith` (JUnit 5): registers extensions. `@RunWith` (JUnit 4): uses test runners. `@ExtendWith` is the JUnit 5 replacement for `@RunWith`. Use `@ExtendWith` for new projects.
+
 ## Cross-References
 
 - **Previous Module:** [11 - Design Patterns](../11-design-patterns/)

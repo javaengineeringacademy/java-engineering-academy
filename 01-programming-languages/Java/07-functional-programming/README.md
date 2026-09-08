@@ -468,6 +468,9 @@ public class StreamEnterpriseExample {
 ### Q14: What is the `Collectors.groupingBy()` used for?
 **Answer:** Groups stream elements by a classifier function into a Map. Example: `Collectors.groupingBy(User::getAge)` creates a Map<Integer, List<User>>.
 
+### Q15: What is the difference between `Stream.iterate()` and `Stream.generate()`?
+**Answer:** `iterate()`: produces sequential values using a function (`Stream.iterate(0, n -> n + 2)` for even numbers). `generate()`: produces constant values from a `Supplier` (`Stream.generate(Math::random)`). Both create infinite streams — use `limit()`.
+
 ## Cross-References
 
 - **Previous Module:** [06 - Generics](../06-generics/)

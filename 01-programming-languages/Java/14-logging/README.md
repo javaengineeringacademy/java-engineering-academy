@@ -337,6 +337,21 @@ User user = PerformanceLogger.logExecutionTime(
 ### Q10: What is the difference between Logback and Log4j2?
 **Answer:** Logback is simpler, native SLF4J implementation. Log4j2 has more features (async logging, lambda support, plugin system). Both are performant; choose based on needs.
 
+### Q11: What is the `@Slf4j` annotation?
+**Answer:** Lombok annotation that generates a private static final `Logger` field. Eliminates boilerplate: `private static final Logger log = LoggerFactory.getLogger(MyClass.class)`.
+
+### Q12: What is the difference between `DEBUG` and `TRACE` levels?
+**Answer:** `DEBUG`: detailed information for debugging. `TRACE`: even more detailed than DEBUG. Use TRACE for extremely verbose output (e.g., every method call).
+
+### Q13: What is log rotation?
+**Answer:** Automatically splitting log files by time or size. Prevents log files from growing indefinitely. Configure with `TimeBasedRollingPolicy` (Logback) or `RollingFileAppender` (Log4j2).
+
+### Q14: What is the difference between `slf4j-api` and `logback-classic`?
+**Answer:** `slf4j-api`: the facade interface (no implementation). `logback-classic`: the actual logging implementation. You need both: API in code, implementation at runtime.
+
+### Q15: How do you log in a lambda expression?
+**Answer:** Use `var` or explicit variable for the logger: `var log = LoggerFactory.getLogger(MyClass.class); list.forEach(item -> log.info("Item: {}", item));`. The logger reference must be final or effectively final.
+
 ## Cross-References
 
 - **Previous Module:** [13 - Reflection & Annotations](../13-reflection-annotations/)
