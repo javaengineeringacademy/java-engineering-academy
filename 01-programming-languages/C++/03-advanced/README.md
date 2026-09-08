@@ -1,12 +1,53 @@
 # Advanced C++ — C++
 
-## Why It Matters
+## Overview
+
+Advanced C++ covers techniques that go beyond basic language features: CRTP for static polymorphism, type erasure for runtime polymorphism without inheritance, perfect forwarding for generic factories, and advanced constexpr programming for compile-time computation.
+
+### Why It Matters
 
 When you've mastered the fundamentals and OOP, you hit a ceiling: code that works but isn't efficient, flexible, or maintainable enough for production systems. Advanced C++ techniques like CRTP, type erasure, and perfect forwarding let you write zero-overhead abstractions that are both generic and fast. Without these skills, you're stuck choosing between template complexity and runtime overhead.
 
-## What It Is
+### What It Is
 
 Advanced C++ covers techniques that go beyond basic language features: CRTP for static polymorphism, type erasure for runtime polymorphism without inheritance, perfect forwarding for generic factories, and advanced constexpr programming for compile-time computation.
+
+## Learning Objectives
+
+By the end of this module, you will be able to:
+
+- Implement CRTP for static polymorphism and mixin classes
+- Design type-safe type erasure patterns (std::function, std::any)
+- Use perfect forwarding and universal references correctly
+- Write compile-time computation with constexpr and consteval
+- Apply policy-based design for flexible component configuration
+- Avoid common pitfalls: template bloat, SFINAE failures, dangling references
+- Choose between static and runtime polymorphism based on requirements
+
+## Prerequisites
+
+- Module 01: C++ Fundamentals (variables, functions, pointers)
+- Module 02: Object-Oriented Programming (inheritance, virtual functions)
+- Module 03: Templates (function/class templates, specialization)
+
+## History
+
+| Year | Feature | Impact |
+|------|---------|--------|
+| 1994 | CRTP first described by Jim Coplien | Static polymorphism without virtual dispatch |
+| 1998 | std::auto_ptr (limited type erasure) | First standard library type erasure |
+| 2011 | Move semantics, std::function, std::any | Modern type erasure and forwarding |
+| 2014 | Generic lambdas | Simplified perfect forwarding in practice |
+| 2017 | constexpr if, std::optional, std::variant | Compile-time branching, better type erasure |
+| 2020 | Concepts, consteval, non-static data members | Cleaner template constraints, immediate compilation |
+
+## Production Notes
+
+### Compiler Support
+CRTP, type erasure, and perfect forwarding are well-supported in GCC 7+, Clang 5+, MSVC 2017+. However, error messages for template-heavy code can be cryptic — use C++20 concepts to improve diagnostics.
+
+### ABI Stability
+Type erasure through `std::function` and `std::any` have stable ABI across compiler versions. Custom type erasure implementations may not — be careful when sharing libraries across compilation boundaries.
 
 ## Architecture: How Advanced C++ Fits Together
 
@@ -490,6 +531,57 @@ Advanced C++ techniques enable zero-cost abstractions that bridge generic progra
 3. **How does perfect forwarding work?**: Perfect forwarding uses universal references (`T&&`) and `std::forward<T>()` to pass arguments to another function preserving their value category (lvalue/rvalue) and const-qualification. It's essential for generic factories and wrappers.
 4. **When should you prefer `if constexpr` over SFINAE?**: Use `if constexpr` when the branching is based on type traits and both branches are valid code (just different implementations). SFINAE is needed when one branch should not participate in overload resolution at all.
 5. **What is policy-based design and what are its trade-offs?**: Policy-based design passes behavior as template parameters (e.g., `Database<StoragePolicy, LoggerPolicy>`). Trade-offs: extreme compile-time flexibility vs. combinatorial template instantiation that can bloat binaries and hurt compile times.
+6. **What is the difference between CRTP and virtual functions?**: CRTP resolves calls at compile time (zero overhead, inlined). Virtual functions resolve at runtime (vtable lookup, not inlined). Use CRTP when the derived type is known; use virtual when you need runtime polymorphism.
+7. **How does std::function implement type erasure?**: `std::function` uses a small buffer optimization (SBO) for small callables, heap allocation for large ones. It stores a function pointer for the type-erased operation (call, destroy, copy) and invokes through that pointer.
+8. **What is the SBO (Small Buffer Optimization)?**: SBO stores small objects inline in the `std::function` object itself, avoiding heap allocation. Typical threshold is 24-32 bytes. Objects larger than this are heap-allocated.
+9. **What are universal references and how do they differ from rvalue references?**: Universal references (`T&&` where `T` is a template parameter) can bind to both lvalues and rvalues. Rvalue references (`int&&`) can only bind to rvalues. Universal references are deduced; rvalue references are not.
+10. **What is the problem with forwarding references and overloading?**: Forwarding references participate in overload resolution for all value categories, which can cause unexpected matches. Disambiguate with `std::enable_if` or C++20 concepts.
+11. **What is constexpr evaluation and what are its limits?**: `constexpr` functions can be evaluated at compile time when all inputs are constexpr. Limits include: no dynamic allocation (until C++20), no undefined behavior, recursion depth limits, no I/O.
+12. **How does compile-time polymorphism differ from runtime polymorphism?**: Compile-time (CRTP, templates) resolves at compile time — zero overhead, but binary bloat. Runtime (virtual functions) resolves at runtime — slight overhead, but smaller binaries and runtime flexibility.
+13. **What is the Curiously Recurring Template Pattern (CRTP) anti-pattern?**: CRTP anti-patterns include: deep inheritance chains, mixing CRTP with virtual functions, and forgetting to use `static_cast`. These lead to brittle code that's hard to debug.
+14. **What is the difference between std::any and std::variant?**: `std::any` can hold any copyable type (type-erased, heap-allocated). `std::variant` holds one of a fixed set of types (stack-allocated, type-safe visitation). Use `std::variant` when types are known; `std::any` when they're not.
+15. **How do you test type-erased code?**: Test with different concrete types stored in the same interface. Verify: correct behavior, exception safety, copy/move semantics, and SBO vs heap paths. Use sanitizer tools to catch memory issues in custom type erasure implementations.
+
+## Performance Considerations
+
+| Technique | Overhead | Notes |
+|-----------|----------|-------|
+| CRTP dispatch | Zero | Compiled to direct function call, same as non-virtual |
+| Virtual dispatch | ~2-5 ns | One pointer dereference + indirect call |
+| std::function call | ~5-10 ns | Type-erased indirect call, possible heap access |
+| Perfect forwarding | Zero | No copy/move, compile-time only |
+| constexpr computation | Zero (at runtime) | Computed at compile time, stored as constant |
+| Type erasure (SBO) | ~1-2 ns | Inline storage, no heap allocation |
+
+## Best Practices
+
+- Use CRTP when derived type is known at compile time and zero overhead is required
+- Use type erasure when you need runtime polymorphism without inheritance hierarchies
+- Use perfect forwarding in generic factories and wrappers to avoid unnecessary copies
+- Prefer `if constexpr` over SFINAE for readability when both branches are valid
+- Use C++20 concepts to constrain templates and improve error messages
+- Test type-erased code with multiple concrete types
+- Document template requirements in comments or concepts
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| CRTP `static_cast` to wrong type | Undefined behavior | Use `static_assert` or concepts to validate |
+| Forgetting `std::forward` in forwarding reference | Unnecessary copies | Always forward: `func(std::forward<T>(arg))` |
+| Using `std::function` in hot path | Heap allocation overhead | Use templates or CRTP for hot paths |
+| Overusing type erasure | Runtime overhead, debugging difficulty | Prefer compile-time solutions when possible |
+| Mixing CRTP with virtual functions | Confusing dispatch, potential bugs | Use one or the other, not both |
+
+## Cross-References
+
+- **Previous Module:** [02 - Object-Oriented Programming](../02-oop/)
+- **Next Module:** [03 - Templates](../03-templates/)
+- **Related:** [04 - STL](../04-stl/) — uses type erasure extensively
+- **Related:** [06 - Smart Pointers](../06-smart-pointers/) — type erasure in practice
+- **Related:** [08 - Modern C++](../08-modern-cpp/) — constexpr and concepts
+- **External:** [C++ Core Guidelines — Templates](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-templates)
+- **External:** [CppReference — std::function](https://en.cppreference.com/w/cpp/utility/functional/function)
 
 ## References
 
