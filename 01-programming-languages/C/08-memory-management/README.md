@@ -489,3 +489,356 @@ Manual memory management is C's greatest power and greatest responsibility. The 
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [Understanding and Using C Pointers (Reese)](https://www.oreilly.com/library/view/understanding-and-using-c/9781449344184/)
+
+## Overview
+
+The Memory Management module covers manual memory allocation and deallocation in C. Every byte you allocate must be explicitly freed, and getting it wrong leads to memory leaks, dangling pointers, double frees, or buffer overflows — the most dangerous class of software vulnerabilities.
+
+## Learning Objectives
+
+- Allocate memory with `malloc`, `calloc`, and `realloc`
+- Free memory properly with `free`
+- Detect and prevent memory leaks
+- Use Valgrind and AddressSanitizer for debugging
+- Implement custom allocators (arena, pool)
+
+## Prerequisites
+
+- Completion of Module 07 (Algorithms)
+- Understanding of pointers and arrays
+- Basic understanding of stack vs heap
+
+## History
+
+- **1972** — `malloc` and `free` included in original C
+- **1978** — K&R C documented memory management
+- **1989** — ANSI C standardized `malloc`, `calloc`, `realloc`, `free`
+- **1999** — C99 added `aligned_alloc` for aligned memory
+- **2011** — C11 added `<stdalign.h>` for alignment
+- **2023** — C23 added `free_sized` and `free_aligned_sized`
+
+## Production Notes
+
+- **Where is it used?** Operating systems, databases, embedded systems, game engines
+- **Why is it useful?** Direct control, no GC pauses, predictable allocation timing
+- **When should it be avoided?** When you can't guarantee careful audit of every allocation
+- **Alternative?** Rust (ownership), Go (GC), custom allocators (arena, pool)
+
+## Core Concepts
+
+### Memory Operations
+
+| Operation | Function | Purpose |
+|-----------|----------|---------|
+| Allocate | `malloc` | Allocate uninitialized memory |
+| Allocate zeroed | `calloc` | Allocate zero-initialized memory |
+| Resize | `realloc` | Grow or shrink allocation |
+| Free | `free` | Release memory back to the system |
+
+### Memory Bugs
+
+| Bug | Description | Consequence |
+|-----|-------------|-------------|
+| Memory leak | Not freeing allocated memory | Resource exhaustion |
+| Dangling pointer | Using pointer after free | Undefined behavior |
+| Double free | Freeing same memory twice | Heap corruption |
+| Buffer overflow | Writing past allocated bounds | Security vulnerability |
+| Use-after-free | Accessing freed memory | Undefined behavior |
+
+## Internal Working
+
+### Memory Layout
+
+```
+High Address
+├── Command-line args, environment variables
+├── Stack (grows downward)
+│   ├── Local variables
+│   ├── Function parameters
+│   └── Return addresses
+├── Gap
+├── Heap (grows upward)
+│   ├── malloc allocations
+│   └── Global/static variables
+├── BSS (uninitialized globals)
+├── Data (initialized globals)
+└── Text (read-only code)
+Low Address
+```
+
+### malloc Implementation
+
+```
+malloc(size)
+    ↓
+Search free list for large enough block
+    ↓
+If found: split and return
+If not: request from OS via sbrk/brk
+    ↓
+Return pointer to usable memory
+```
+
+## Syntax
+
+```c
+#include <stdlib.h>
+
+// Basic allocation
+int *p = malloc(10 * sizeof(int));
+if (!p) {
+    perror("malloc failed");
+    return 1;
+}
+
+// Zero-initialized allocation
+int *arr = calloc(10, sizeof(int));
+
+// Resize allocation
+int *temp = realloc(arr, 20 * sizeof(int));
+if (temp) {
+    arr = temp;
+} else {
+    // Handle error
+}
+
+// Free memory
+free(arr);
+arr = NULL;  // Avoid dangling pointer
+```
+
+## Examples
+
+### Easy Example: Basic Allocation
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int *arr = malloc(5 * sizeof(int));
+    if (!arr) return 1;
+    
+    for (int i = 0; i < 5; i++) {
+        arr[i] = i * 10;
+    }
+    
+    for (int i = 0; i < 5; i++) {
+        printf("%d ", arr[i]);
+    }
+    
+    free(arr);
+    return 0;
+}
+```
+
+### Medium Example: Dynamic Array
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int capacity = 2;
+    int size = 0;
+    int *arr = malloc(capacity * sizeof(int));
+    
+    for (int i = 0; i < 10; i++) {
+        if (size == capacity) {
+            capacity *= 2;
+            int *temp = realloc(arr, capacity * sizeof(int));
+            if (!temp) { free(arr); return 1; }
+            arr = temp;
+        }
+        arr[size++] = i;
+    }
+    
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    
+    free(arr);
+    return 0;
+}
+```
+
+### Hard Example: Memory Pool
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Block {
+    struct Block *next;
+} Block;
+
+typedef struct {
+    Block *free_list;
+    char *memory;
+    size_t size;
+} Pool;
+
+Pool *pool_create(size_t size) {
+    Pool *pool = malloc(sizeof(Pool));
+    pool->size = size;
+    pool->memory = malloc(size);
+    pool->free_list = NULL;
+    
+    size_t block_size = sizeof(Block);
+    for (size_t i = 0; i + block_size <= size; i += block_size) {
+        Block *block = (Block *)(pool->memory + i);
+        block->next = pool->free_list;
+        pool->free_list = block;
+    }
+    return pool;
+}
+
+void *pool_alloc(Pool *pool) {
+    if (!pool->free_list) return NULL;
+    Block *block = pool->free_list;
+    pool->free_list = block->next;
+    return block;
+}
+
+void pool_free(Pool *pool, void *ptr) {
+    Block *block = (Block *)ptr;
+    block->next = pool->free_list;
+    pool->free_list = block;
+}
+
+void pool_destroy(Pool *pool) {
+    free(pool->memory);
+    free(pool);
+}
+```
+
+### Enterprise Example: Arena Allocator
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char *memory;
+    size_t size;
+    size_t used;
+} Arena;
+
+Arena *arena_create(size_t size) {
+    Arena *arena = malloc(sizeof(Arena));
+    arena->memory = malloc(size);
+    arena->size = size;
+    arena->used = 0;
+    return arena;
+}
+
+void *arena_alloc(Arena *arena, size_t size) {
+    if (arena->used + size > arena->size) return NULL;
+    void *ptr = arena->memory + arena->used;
+    arena->used += size;
+    return ptr;
+}
+
+void arena_reset(Arena *arena) {
+    arena->used = 0;
+}
+
+void arena_destroy(Arena *arena) {
+    free(arena->memory);
+    free(arena);
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Allocation | malloc overhead | Use memory pools |
+| Fragmentation | External fragmentation | Use arena allocators |
+| Alignment | Cache line alignment | Use `aligned_alloc` |
+| Thread safety | Thread-local caches | Use thread-local allocators |
+| Deallocation | free overhead | Batch deallocations |
+
+## Best Practices
+
+- Do:
+  - Always check `malloc` return value
+  - Set pointer to NULL after `free`
+  - Use `calloc` for zero-initialized memory
+  - Free memory in same order as allocation
+  - Use memory debugging tools regularly
+  
+- Don't:
+  - Use memory after `free` (use-after-free)
+  - Free the same memory twice (double free)
+  - Use `malloc` without checking return value
+  - Forget to free allocated memory (leak)
+  - Mix `malloc`/`free` with `new`/`delete` (C++)
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Not checking malloc return | NULL dereference, crash | Always check for NULL |
+| Use-after-free | Undefined behavior, security | Set pointer to NULL after free |
+| Double free | Heap corruption | Check pointer before free |
+| Memory leak | Resource exhaustion | Use memory debugging tools |
+| Buffer overflow | Security vulnerability | Bounds checking |
+
+## Interview Questions
+
+### Q1: What is the difference between `malloc` and `calloc`?
+**Answer:** `malloc` allocates uninitialized memory. `calloc` allocates zero-initialized memory. `calloc` is slightly slower but prevents use of uninitialized data.
+
+### Q2: What is a memory leak?
+**Answer:** When allocated memory is not freed, causing the program to consume more memory over time until it crashes or runs out of memory.
+
+### Q3: What is a dangling pointer?
+**Answer:** A pointer that points to memory that has been freed. Using it causes undefined behavior.
+
+### Q4: What is a double free?
+**Answer:** Freeing the same memory twice. Can corrupt the heap and cause crashes or security vulnerabilities.
+
+### Q5: What is the difference between stack and heap allocation?
+**Answer:** Stack: automatic, fast, limited size. Heap: manual, slower, large size. Stack is freed when function returns; heap must be freed manually.
+
+### Q6: What is Valgrind?
+**Answer:** A memory debugging tool that detects memory leaks, use-after-free, and other memory errors. Run with `valgrind ./program`.
+
+### Q7: What is AddressSanitizer?
+**Answer:** A compiler feature that detects memory errors at runtime. Compile with `-fsanitize=address`.
+
+### Q8: What is the difference between `sizeof` and `strlen`?
+**Answer:** `sizeof` returns size in bytes (compile-time). `strlen` returns string length (runtime). `sizeof` includes null terminator; `strlen` does not.
+
+### Q9: What is the purpose of `NULL` pointer?
+**Answer:** Indicates a pointer does not point to any valid memory. Dereferencing NULL causes crash.
+
+### Q10: What is the difference between `malloc` and `realloc`?
+**Answer:** `malloc` allocates new memory. `realloc` resizes existing allocation (may move to new location).
+
+### Q11: What is a memory pool?
+**Answer:** A pre-allocated block of memory divided into fixed-size chunks. Reduces allocation overhead and fragmentation.
+
+### Q12: What is the difference between `free` and `realloc`?
+**Answer:** `free` releases memory entirely. `realloc` changes the size of allocated memory (may copy to new location).
+
+### Q13: What is the purpose of `aligned_alloc`?
+**Answer:** Allocates memory with specific alignment. Useful for SIMD operations and cache optimization.
+
+### Q14: What is the difference between `sbrk` and `mmap`?
+**Answer:** `sbrk` grows/shrinks heap. `mmap` maps files or anonymous memory into address space. `mmap` is used for large allocations.
+
+### Q15: What is the difference between `malloc` and `alloca`?
+**Answer:** `malloc` allocates on heap (must free). `alloca` allocates on stack (automatically freed when function returns). `alloca` has size limits.
+
+## Cross-References
+
+- **Previous Module:** [07 - Algorithms](../07-algorithms/)
+- **Next Module:** [09 - Concurrency](../09-concurrency/)
+- **Related:** [05 - Pointers Advanced](../05-pointers-advanced/) — Pointer patterns
+- **Related:** [11 - Security](../11-security/) — Memory vulnerabilities
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- **External:** [Understanding and Using C Pointers](https://www.oreilly.com/library/view/understanding-and-using-c/9781449344184/)

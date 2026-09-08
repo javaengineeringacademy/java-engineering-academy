@@ -523,3 +523,335 @@ Algorithms are the computational engine behind data structures. The choice of al
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/)
 - [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+
+## Overview
+
+The Algorithms module covers fundamental algorithms for sorting, searching, graph traversal, and dynamic programming. C's lack of a standard library for complex algorithms means you must understand the fundamentals to implement them correctly and efficiently.
+
+## Learning Objectives
+
+- Implement sorting algorithms (QuickSort, MergeSort, HeapSort)
+- Apply searching algorithms (Linear, Binary Search)
+- Traverse graphs using BFS and DFS
+- Solve problems with dynamic programming
+- Analyze algorithm complexity (Big O notation)
+
+## Prerequisites
+
+- Completion of Module 06 (Data Structures)
+- Understanding of arrays and pointers
+- Basic mathematical concepts
+
+## History
+
+- **1972** — Sorting algorithms implemented in early C
+- **1978** — K&R C documented `qsort` and `bsearch`
+- **1989** — ANSI C standardized library functions
+- **1999** — C99 added `<stdint.h>` for fixed-width types
+- **2011** — C11 added `<stdalign.h>` for alignment
+- **2023** — C23 added improved type inference
+
+## Production Notes
+
+- **Where is it used?** Databases, operating systems, compilers, search engines
+- **Why is it useful?** Efficient data processing, optimized performance
+- **When should it be avoided?** Use standard library for simple cases (`qsort`, `bsearch`)
+- **Alternative?** C++ `<algorithm>`, Rust iterators, specialized libraries
+
+## Core Concepts
+
+### Algorithm Categories
+
+| Category | Algorithms | Use Case |
+|----------|-----------|----------|
+| Sorting | QuickSort, MergeSort, HeapSort, Radix Sort | Ordering data |
+| Searching | Linear Search, Binary Search | Finding elements |
+| Graph | BFS, DFS, Dijkstra, Bellman-Ford | Network analysis |
+| String | KMP, Boyer-Moore, Rabin-Karp | Text processing |
+| Dynamic Programming | Fibonacci, Knapsack, Edit Distance | Optimization |
+
+### Time Complexity Comparison
+
+| Algorithm | Best | Average | Worst | Space |
+|-----------|------|---------|-------|-------|
+| QuickSort | O(n log n) | O(n log n) | O(n²) | O(log n) |
+| MergeSort | O(n log n) | O(n log n) | O(n log n) | O(n) |
+| HeapSort | O(n log n) | O(n log n) | O(n log n) | O(1) |
+| Binary Search | O(1) | O(log n) | O(log n) | O(1) |
+
+## Internal Working
+
+### QuickSort Partitioning
+
+```
+Array: [3, 6, 8, 10, 1, 2, 1]
+Pivot: 1
+Partition: [1, 1, 8, 10, 6, 3, 2]
+         <1  =1  >1
+Recurse on left and right partitions
+```
+
+### BFS vs DFS
+
+```
+BFS (Queue): Visit neighbors level by level
+DFS (Stack): Go deep, then backtrack
+
+Graph:
+    A
+   / \
+  B   C
+ / \
+D   E
+
+BFS: A B C D E
+DFS: A B D E C
+```
+
+## Syntax
+
+```c
+// qsort comparison function
+int compare(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+// Using qsort
+int arr[] = {5, 2, 8, 1, 9};
+qsort(arr, 5, sizeof(int), compare);
+
+// Binary search
+int bsearch(const void *key, const void *base, 
+            size_t nmemb, size_t size,
+            int (*compar)(const void *, const void *));
+
+// Linked list sort
+void merge_sort(struct Node **head) {
+    // Implementation
+}
+```
+
+## Examples
+
+### Easy Example: Linear Search
+
+```c
+#include <stdio.h>
+
+int linear_search(int *arr, int n, int target) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+int main(void) {
+    int arr[] = {1, 2, 3, 4, 5};
+    int idx = linear_search(arr, 5, 3);
+    printf("Found at index: %d\n", idx);
+    return 0;
+}
+```
+
+### Medium Example: QuickSort
+
+```c
+#include <stdio.h>
+
+void swap(int *a, int *b) {
+    int t = *a; *a = *b; *b = t;
+}
+
+int partition(int *arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            swap(&arr[++i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+
+void quicksort(int *arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+}
+```
+
+### Hard Example: Dijkstra's Algorithm
+
+```c
+#include <stdio.h>
+#include <limits.h>
+#include <stdbool.h>
+
+#define V 9
+
+int min_distance(int dist[], bool spt_set[]) {
+    int min = INT_MAX, min_idx;
+    for (int v = 0; v < V; v++) {
+        if (!spt_set[v] && dist[v] <= min) {
+            min = dist[v];
+            min_idx = v;
+        }
+    }
+    return min_idx;
+}
+
+void dijkstra(int graph[V][V], int src) {
+    int dist[V];
+    bool spt_set[V];
+    
+    for (int i = 0; i < V; i++) {
+        dist[i] = INT_MAX;
+        spt_set[i] = false;
+    }
+    dist[src] = 0;
+    
+    for (int count = 0; count < V - 1; count++) {
+        int u = min_distance(dist, spt_set);
+        spt_set[u] = true;
+        for (int v = 0; v < V; v++) {
+            if (!spt_set[v] && graph[u][v] && 
+                dist[u] != INT_MAX && 
+                dist[u] + graph[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph[u][v];
+            }
+        }
+    }
+}
+```
+
+### Enterprise Example: Parallel Merge Sort
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define THRESHOLD 1000
+
+void merge(int *arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    int *L = malloc(n1 * sizeof(int));
+    int *R = malloc(n2 * sizeof(int));
+    for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        arr[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+    free(L); free(R);
+}
+
+void parallel_mergesort(int *arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        if (right - left > THRESHOLD) {
+            parallel_mergesort(arr, left, mid);
+            parallel_mergesort(arr, mid + 1, right);
+        }
+        merge(arr, left, mid, right);
+    }
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Cache | Sequential access | Use iterative algorithms |
+| Branch prediction | Conditional branches | Minimize branches in hot loops |
+| Memory | Allocation overhead | Use stack allocation when possible |
+| Parallelism | Multi-threading | Use thread pool for large datasets |
+| SIMD | Vector operations | Use intrinsics for bulk operations |
+
+## Best Practices
+
+- Do:
+  - Profile before optimizing
+  - Choose the right algorithm for the data size
+  - Use standard library functions when available
+  - Test with edge cases (empty, single element, sorted)
+  - Document time/space complexity
+  
+- Don't:
+  - Prematurely optimize without profiling
+  - Ignore worst-case complexity
+  - Use recursion for deep structures (stack overflow)
+  - Assume input is already sorted
+  - Ignore integer overflow in calculations
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| QuickSort on sorted input | O(n²) worst case | Use median-of-three pivot |
+| Integer overflow in binary search | Wrong midpoint | Use `low + (high - low) / 2` |
+| Uninitialized variables | Undefined behavior | Initialize all variables |
+| Stack overflow in recursion | Crash | Use iterative approach |
+| Ignoring null pointers | Crash | Check before dereferencing |
+
+## Interview Questions
+
+### Q1: What is the difference between QuickSort and MergeSort?
+**Answer:** QuickSort: in-place, O(log n) space, unstable. MergeSort: O(n) space, stable, guaranteed O(n log n).
+
+### Q2: What is Big O notation?
+**Answer:** Describes algorithm growth rate. O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic.
+
+### Q3: When is binary search better than linear search?
+**Answer:** When data is sorted. Binary search: O(log n). Linear search: O(n).
+
+### Q4: What is the difference between BFS and DFS?
+**Answer:** BFS: uses queue, level-order, shortest path. DFS: uses stack, depth-first, less memory.
+
+### Q5: What is dynamic programming?
+**Answer:** Solving complex problems by breaking into overlapping subproblems, storing results to avoid recomputation.
+
+### Q6: What is the time complexity of hash table lookup?
+**Answer:** O(1) average, O(n) worst case. Depends on hash function quality and load factor.
+
+### Q7: What is the difference between stable and unstable sort?
+**Answer:** Stable: preserves relative order of equal elements. Unstable: may change order. Important for multi-key sorting.
+
+### Q8: What is the difference between depth-first and breadth-first search?
+**Answer:** DFS: go deep first (stack). BFS: go wide first (queue). DFS uses less memory; BFS finds shortest path.
+
+### Q9: What is the difference between best, average, and worst case?
+**Answer:** Best: minimum time. Average: expected time. Worst: maximum time. Always analyze worst case for guarantees.
+
+### Q10: What is the difference between iterative and recursive algorithms?
+**Answer:** Iterative: uses loops. Recursive: calls itself. Iterative uses less stack; recursive is often simpler.
+
+### Q11: What is the difference between comparison and non-comparison sorts?
+**Answer:** Comparison: compare elements (QuickSort, MergeSort). Non-comparison: use element values (Radix, Counting). Non-comparison can be O(n).
+
+### Q12: What is the difference between in-place and out-of-place algorithms?
+**Answer:** In-place: O(1) extra space (QuickSort). Out-of-place: O(n) extra space (MergeSort). In-place is memory efficient.
+
+### Q13: What is the difference between divide-and-conquer and dynamic programming?
+**Answer:** Divide-and-conquer: independent subproblems (MergeSort). Dynamic programming: overlapping subproblems (Fibonacci).
+
+### Q14: What is the difference between greedy and dynamic programming?
+**Answer:** Greedy: make locally optimal choice. DP: consider all possibilities. Greedy is faster but not always optimal.
+
+### Q15: What is the difference between amortized and worst-case analysis?
+**Answer:** Amortized: average over sequence of operations. Worst-case: single operation maximum. Dynamic arrays have O(1) amortized push.
+
+## Cross-References
+
+- **Previous Module:** [06 - Data Structures](../06-data-structures/)
+- **Next Module:** [08 - Memory Management](../08-memory-management/)
+- **Related:** [12 - Performance](../12-performance/) — Optimization techniques
+- **Related:** [09 - Concurrency](../09-concurrency/) — Parallel algorithms
+- **External:** [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/)
+- **External:** [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

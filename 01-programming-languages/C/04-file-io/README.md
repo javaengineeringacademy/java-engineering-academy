@@ -462,3 +462,314 @@ File I/O in C is built on the `FILE *` stream abstraction, which provides automa
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [Advanced Programming in the UNIX Environment (Stevens)](https://www.apuebook.com/)
+
+## Overview
+
+The File I/O module covers reading and writing files using C's `stdio.h` library. File operations work identically across Unix, Windows, and embedded systems, making C ideal for configuration parsers, log processors, database engines, and data migration tools.
+
+## Learning Objectives
+
+- Open and close files with `fopen` and `fclose`
+- Read and write text files with `fgets`/`fputs` and `fprintf`/`fscanf`
+- Perform binary I/O with `fread`/`fwrite`
+- Use file positioning with `fseek`/`ftell`
+- Handle file errors properly
+
+## Prerequisites
+
+- Completion of Module 03 (Preprocessor)
+- Understanding of pointers and arrays
+- Basic error handling concepts
+
+## History
+
+- **1972** — `stdio.h` included in original C
+- **1978** — K&R C documented file I/O functions
+- **1989** — ANSI C standardized `stdio.h` functions
+- **1999** — C99 added `fgetpos`/`fsetpos` for large files
+- **2011** — C11 added `fopen_s`, `fread_s` (Annex K)
+- **2023** — C23 added improved error handling
+
+## Production Notes
+
+- **Where is it used?** Configuration files, logs, databases, saved state, data processing
+- **Why is it useful?** Cross-platform, buffered I/O, standard library support
+- **When should it be avoided?** High-frequency small writes (buffering overhead)
+- **Alternative?** Memory-mapped files (`mmap`), POSIX `pread`/`pwrite`
+
+## Core Concepts
+
+### File I/O Functions
+
+| Function Family | Purpose | Example |
+|----------------|---------|---------|
+| `fopen`/`fclose` | Open/close files | `FILE *fp = fopen("data.txt", "r")` |
+| `fgets`/`fputs` | Read/write strings | `fgets(buf, n, fp)` |
+| `fgetc`/`fputc` | Read/write characters | `fgetc(fp)` |
+| `fprintf`/`fscanf` | Formatted I/O | `fprintf(fp, "%d\n", val)` |
+| `fread`/`fwrite` | Binary I/O | `fread(buf, size, count, fp)` |
+| `fseek`/`ftell` | File positioning | `fseek(fp, 0, SEEK_END)` |
+
+### File Modes
+
+| Mode | Description |
+|------|-------------|
+| `"r"` | Read (file must exist) |
+| `"w"` | Write (creates/truncates) |
+| `"a"` | Append (creates if needed) |
+| `"r+"` | Read/write (file must exist) |
+| `"w+"` | Read/write (creates/truncates) |
+| `"a+"` | Read/append (creates if needed) |
+| `"rb"` | Read binary |
+| `"wb"` | Write binary |
+
+## Internal Working
+
+### Buffered I/O Architecture
+
+```
+User Code
+    ↓
+stdio Buffer (user-space)
+    ↓
+Kernel Buffer (system calls)
+    ↓
+File System (disk)
+```
+
+### Buffering Modes
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| Full buffering | 4KB-8KB buffer | Large file operations |
+| Line buffering | Buffer flushed on newline | Terminal I/O |
+| No buffering | Immediate I/O | stderr |
+
+## Syntax
+
+```c
+#include <stdio.h>
+
+// File opening
+FILE *fp = fopen("data.txt", "r");
+if (!fp) {
+    perror("fopen failed");
+    return 1;
+}
+
+// Reading text
+char buffer[256];
+while (fgets(buffer, sizeof(buffer), fp)) {
+    printf("%s", buffer);
+}
+
+// Writing text
+fprintf(fp, "Number: %d\n", 42);
+
+// Binary I/O
+int data[100];
+size_t n = fread(data, sizeof(int), 100, fp);
+
+// File positioning
+fseek(fp, 0, SEEK_END);
+long size = ftell(fp);
+rewind(fp);
+
+// Closing
+fclose(fp);
+```
+
+## Examples
+
+### Easy Example: Read File
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    FILE *fp = fopen("data.txt", "r");
+    if (!fp) return 1;
+    
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        printf("%s", line);
+    }
+    
+    fclose(fp);
+    return 0;
+}
+```
+
+### Medium Example: Write CSV
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    FILE *fp = fopen("data.csv", "w");
+    if (!fp) return 1;
+    
+    fprintf(fp, "Name,Age,City\n");
+    fprintf(fp, "Alice,30,NYC\n");
+    fprintf(fp, "Bob,25,LA\n");
+    
+    fclose(fp);
+    return 0;
+}
+```
+
+### Hard Example: Binary Record I/O
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int id;
+    char name[50];
+    double balance;
+} Account;
+
+int write_accounts(const char *filename, Account *accs, size_t count) {
+    FILE *fp = fopen(filename, "wb");
+    if (!fp) return -1;
+    fwrite(accs, sizeof(Account), count, fp);
+    fclose(fp);
+    return 0;
+}
+
+Account *read_accounts(const char *filename, size_t *count) {
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) return NULL;
+    fseek(fp, 0, SEEK_END);
+    *count = ftell(fp) / sizeof(Account);
+    rewind(fp);
+    Account *accs = malloc(*count * sizeof(Account));
+    fread(accs, sizeof(Account), *count, fp);
+    fclose(fp);
+    return accs;
+}
+```
+
+### Enterprise Example: Log Processor
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+typedef struct {
+    time_t timestamp;
+    char level[10];
+    char message[256];
+} LogEntry;
+
+int process_log(const char *input, const char *output) {
+    FILE *in = fopen(input, "r");
+    FILE *out = fopen(output, "w");
+    if (!in || !out) return -1;
+    
+    char line[512];
+    while (fgets(line, sizeof(line), in)) {
+        if (strstr(line, "ERROR")) {
+            fputs(line, out);
+        }
+    }
+    
+    fclose(in);
+    fclose(out);
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Buffering | stdio uses full buffering | Use `setvbuf` for custom buffering |
+| Binary vs text | Text mode has newline translation | Use binary mode for performance |
+| File positioning | `fseek`/`ftell` may flush buffer | Minimize positioning operations |
+| Large files | 32-bit `ftell` limits | Use `fgetpos`/`fsetpos` for large files |
+
+## Best Practices
+
+- Do:
+  - Always check return values from `fopen`, `fread`, etc.
+  - Close files with `fclose` when done
+  - Use binary mode for structured data
+  - Handle errors with `perror` or `strerror`
+  - Use `fgets` instead of `gets` for safe input
+  
+- Don't:
+  - Ignore return values from file operations
+  - Forget to close files (resource leak)
+  - Use text mode for binary data
+  - Assume file position after `fread`/`fwrite`
+  - Use `scanf` for unbounded input
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Missing `fclose` | Resource leak, data loss | Always close files |
+| Ignoring `fread` return | Incomplete data processing | Check return value |
+| Text vs binary mode | Data corruption on Windows | Use `"rb"`/`"wb"` for binary |
+| Unbounded `scanf` | Buffer overflow | Use `%ns` with width limit |
+| Not checking `fopen` | NULL dereference | Always check for NULL |
+
+## Interview Questions
+
+### Q1: What is the difference between `fread` and `fgets`?
+**Answer:** `fread` reads binary data (fixed-size blocks). `fgets` reads text (line-by-line, null-terminated).
+
+### Q2: What is the difference between `feof` and `ferror`?
+**Answer:** `feof` returns true when end-of-file is reached. `ferror` returns true when an error occurred.
+
+### Q3: What is the difference between `fseek` and `fgetpos`?
+**Answer:** `fseek` uses a long offset (may be 32-bit). `fgetpos` uses `fpos_t` (supports large files).
+
+### Q4: What is the difference between text and binary mode?
+**Answer:** Text mode translates newlines (Unix: `\n`, Windows: `\r\n`). Binary mode has no translation.
+
+### Q5: What is `perror` used for?
+**Answer:** Prints a human-readable error message for the current `errno` value.
+
+### Q6: What is the difference between `fprintf` and `printf`?
+**Answer:** `fprintf` writes to a file stream. `printf` writes to stdout.
+
+### Q7: What is the difference between `fopen` and `open`?
+**Answer:** `fopen` is C standard library (buffered). `open` is POSIX system call (unbuffered).
+
+### Q8: What is the difference between `fread` return value and `feof`?
+**Answer:** `fread` returns number of items read (may be less than requested). `feof` only true after failed read.
+
+### Q9: What is `setvbuf` used for?
+**Answer:** Sets buffering mode and buffer size for a file stream.
+
+### Q10: What is the difference between `rewind` and `fseek(fp, 0, SEEK_SET)`?
+**Answer:** `rewind` also clears the error indicator. `fseek` does not.
+
+### Q11: What is `tmpfile` used for?
+**Answer:** Creates a temporary file that is automatically deleted when closed.
+
+### Q12: What is the difference between `snprintf` and `fprintf`?
+**Answer:** `snprintf` writes to a string buffer. `fprintf` writes to a file stream.
+
+### Q13: What is `ungetc` used for?
+**Answer:** Pushes a character back onto the input stream for re-reading.
+
+### Q14: What is the difference between `fopen` modes `"r+"` and `"w+"`?
+**Answer:** `"r+"` requires file to exist. `"w+"` creates or truncates.
+
+### Q15: What is `ferror` used for?
+**Answer:** Checks if an error occurred on a file stream.
+
+## Cross-References
+
+- **Previous Module:** [03 - Preprocessor](../03-preprocessor/)
+- **Next Module:** [05 - Pointers Advanced](../05-pointers-advanced/)
+- **Related:** [08 - Memory Management](../08-memory-management/) — Buffer management
+- **Related:** [10 - Networking](../10-networking/) — Socket I/O
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- **External:** [Advanced Programming in the UNIX Environment](https://www.apuebook.com/)

@@ -396,3 +396,301 @@ Build systems automate compilation, linking, and deployment. For small projects 
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [GNU Make Manual](https://www.gnu.org/software/make/manual/)
 - [CMake Documentation](https://cmake.org/cmake/help/latest/)
+
+## Overview
+
+The Build Systems module covers automating C project compilation with Make, CMake, and pkg-config. Build systems automate recompilation of only changed files, resolve dependencies, run tests, and work identically on every developer's machine.
+
+## Learning Objectives
+
+- Write Makefiles for C projects
+- Use CMake for cross-platform builds
+- Integrate external libraries with pkg-config
+- Build static and shared libraries
+- Manage dependencies effectively
+
+## Prerequisites
+
+- Completion of Module 13 (Testing)
+- Understanding of compilation process
+- Basic command-line skills
+
+## History
+
+- **1976** — Stuart Feldman created Make at Bell Labs
+- **1988** — GNU Make released with powerful features
+- **1995** — CMake created by Brad King
+- **2000** — pkg-config created for library discovery
+- **2010** — Meson created as modern alternative
+- **2020** — Build systems support cross-compilation
+
+## Production Notes
+
+- **Where is it used?** All C projects with multiple source files
+- **Why is it useful?** Automates recompilation, resolves dependencies, ensures reproducibility
+- **When should it be avoided?** One-off scripts or throwaway code
+- **Alternative?** Meson, Ninja, Bazel, xmake
+
+## Core Concepts
+
+### Build Tools
+
+| Tool | Purpose | Complexity |
+|------|---------|------------|
+| `gcc`/`clang` | Direct compilation | Simple projects |
+| `make` | Build automation | Medium projects |
+| CMake | Cross-platform build generation | Large projects |
+| `pkg-config` | Library configuration | Dependency discovery |
+| Meson | Modern build system | New projects |
+
+### Build Targets
+
+| Target | Purpose | Example |
+|--------|---------|---------|
+| `all` | Build everything | `make all` |
+| `clean` | Remove build artifacts | `make clean` |
+| `install` | Install to system | `make install` |
+| `test` | Run tests | `make test` |
+
+## Internal Working
+
+### Makefile Execution
+
+```
+Makefile
+    ↓
+Parse rules and dependencies
+    ↓
+Check timestamps (which files changed?)
+    ↓
+Execute commands for outdated targets
+    ↓
+Build complete
+```
+
+### Dependency Graph
+
+```
+main.o → main.c, utils.h
+utils.o → utils.c, utils.h
+math.o → math.c, math.h
+    ↓
+Link: main.o utils.o math.o → program
+```
+
+## Syntax
+
+```makefile
+# Simple Makefile
+CC = gcc
+CFLAGS = -Wall -Wextra -O2
+SOURCES = main.c utils.c
+OBJECTS = $(SOURCES:.c=.o)
+TARGET = program
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(OBJECTS) $(TARGET)
+
+.PHONY: all clean
+```
+
+```cmake
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.10)
+project(MyProject C)
+
+set(CMAKE_C_STANDARD 11)
+
+add_executable(program main.c utils.c)
+
+target_compile_options(program PRIVATE -Wall -Wextra)
+```
+
+## Examples
+
+### Easy Example: Simple Makefile
+
+```makefile
+CC = gcc
+CFLAGS = -Wall
+
+program: main.o
+	$(CC) -o $@ $^
+
+main.o: main.c
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f *.o program
+```
+
+### Medium Example: Multi-File Project
+
+```makefile
+CC = gcc
+CFLAGS = -Wall -Wextra -Iinclude
+SRCDIR = src
+OBJDIR = obj
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
+TARGET = program
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) -o $@ $^
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+clean:
+	rm -rf $(OBJDIR) $(TARGET)
+
+.PHONY: all clean
+```
+
+### Hard Example: CMake with Libraries
+
+```cmake
+# CMakeLists.txt
+cmake_minimum_required(VERSION 3.10)
+project(MyProject VERSION 1.0 LANGUAGES C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# Find packages
+find_package(PkgConfig)
+pkg_check_modules(SOCKETS REQUIRED IMPORTED_TARGET libsockets)
+
+# Add library
+add_library(mylib STATIC src/mylib.c)
+target_include_directories(mylib PUBLIC include)
+
+# Add executable
+add_executable(program src/main.c)
+target_link_libraries(program PRIVATE mylib PkgConfig::SOCKETS)
+
+# Enable testing
+enable_testing()
+add_test(NAME mytest COMMAND program)
+```
+
+### Enterprise Example: Cross-Compilation
+
+```cmake
+# Toolchain file for cross-compilation
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+
+set(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc)
+set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
+
+set(CMAKE_FIND_ROOT_PATH /usr/arm-linux-gnueabihf)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Parallel builds | `-j` flag for make | Use all CPU cores |
+| Incremental builds | Only rebuild changed files | Use dependency tracking |
+| Clean builds | Full rebuild | Use `make clean` when needed |
+| Cross-compilation | Different target | Use toolchain files |
+| Caching | CMake cache | Reuse configuration |
+
+## Best Practices
+
+- Do:
+  - Use `-MMD -MP` for automatic dependency tracking
+  - Support `make clean` target
+  - Use explicit `CFLAGS` and `LDFLAGS`
+  - Test builds on clean environment
+  - Document build requirements
+  
+- Don't:
+  - Hardcode paths
+  - Ignore compiler warnings
+  - Use absolute paths in Makefiles
+  - Forget to update dependencies
+  - Use implicit rules without understanding
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Missing header dependency | Incorrect builds | Use `-MMD -MP` |
+| Implicit rules | Unexpected behavior | Use explicit rules |
+| No `make clean` | Stale artifacts | Always support clean |
+| Hardcoded paths | Portability issues | Use variables |
+| Ignoring warnings | Hidden bugs | Enable `-Wall -Wextra` |
+
+## Interview Questions
+
+### Q1: What is the difference between `make` and `cmake`?
+**Answer:** `make`: runs Makefiles. `cmake`: generates Makefiles (or other build files) for cross-platform builds.
+
+### Q2: What is the purpose of `-MMD -MP` flags?
+**Answer:** `-MMD`: generates dependency files. `-MP`: adds phony targets for missing headers. Enables automatic dependency tracking.
+
+### Q3: What is the difference between static and shared libraries?
+**Answer:** Static: linked at compile time (larger binary). Shared: linked at runtime (smaller binary, shared code).
+
+### Q4: What is `pkg-config` used for?
+**Answer:** Discovers compiler flags and linker flags for installed libraries. Example: `pkg-config --cflags --libs gtk+-3.0`.
+
+### Q5: What is the difference between `$@` and `$<` in Makefiles?
+**Answer:** `$@`: target name. `$<`: first prerequisite. Used in implicit rules.
+
+### Q6: What is the purpose of `.PHONY`?
+**Answer:** Declares targets as phony (not files). Prevents conflicts with actual files named `clean`, `all`, etc.
+
+### Q7: What is the difference between `CFLAGS` and `LDFLAGS`?
+**Answer:** `CFLAGS`: compiler flags (e.g., `-O2`, `-Wall`). `LDFLAGS`: linker flags (e.g., `-L`, `-l`).
+
+### Q8: What is the difference between `wildcard` and `patsubst` in Make?
+**Answer:** `wildcard`: expands glob patterns (e.g., `*.c`). `patsubst`: substitutes patterns (e.g., `.c` → `.o`).
+
+### Q9: What is the difference between `add_executable` and `add_library` in CMake?
+**Answer:** `add_executable`: creates an executable. `add_library`: creates a static or shared library.
+
+### Q10: What is the purpose of `find_package` in CMake?
+**Answer:** Finds external packages/libraries. Example: `find_package(Threads REQUIRED)`.
+
+### Q11: What is the difference between `include_directories` and `target_include_directories`?
+**Answer:** `include_directories`: global, affects all targets. `target_include_directories`: per-target, more precise.
+
+### Q12: What is the difference between `make -j` and `make -j4`?
+**Answer:** `-j`: unlimited parallelism. `-j4`: limit to 4 parallel jobs. Use specific number to avoid overloading.
+
+### Q13: What is the purpose of `export` in Makefiles?
+**Answer:** Exports variables to sub-makes. Used for passing variables to recursive makes.
+
+### Q14: What is the difference between `order-only prerequisites` and regular prerequisites?
+**Answer:** Regular: rebuild target if prerequisite changes. Order-only: only build if prerequisite doesn't exist (e.g., directories).
+
+### Q15: What is the difference between `CMAKE_BUILD_TYPE` values?
+**Answer:** `Debug`: no optimization, debug info. `Release`: full optimization. `RelWithDebInfo`: optimized with debug info.
+
+## Cross-References
+
+- **Previous Module:** [13 - Testing](../13-testing/)
+- **Next Module:** [15 - Best Practices](../15-best-practices/)
+- **Related:** [03 - Preprocessor](../03-preprocessor/) — Build-time preprocessing
+- **Related:** [00 - Knowledge Atoms](../00-knowledge-atoms/) — Compilation model
+- **External:** [GNU Make Manual](https://www.gnu.org/software/make/manual/)
+- **External:** [CMake Documentation](https://cmake.org/cmake/help/latest/)

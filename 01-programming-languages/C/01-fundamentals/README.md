@@ -1,45 +1,358 @@
 # Fundamentals — C Language
 
-## Why It Matters
+## Overview
 
-When you're writing anything from a 20-line embedded firmware to a 10-million-line operating system, you need the same building blocks: variables, operators, control flow, functions, arrays, strings, pointers, and memory basics. Without mastering these, you fight syntax errors, undefined behavior, and subtle bugs that experienced developers avoid instinctively. The fundamentals are not just syntax — they are the mental model for how C thinks about data and execution.
+The Fundamentals module covers the complete set of building blocks that every C program uses: variables, operators, control flow, functions, arrays, strings, pointers, and memory basics. Without mastering these, you fight syntax errors, undefined behavior, and subtle bugs that experienced developers avoid instinctively. The fundamentals are not just syntax — they are the mental model for how C thinks about data and execution.
 
-## Engineering Decision Framework
+## Learning Objectives
 
-| Factor | Use This | Consider Alternatives |
-|--------|----------|----------------------|
-| When to use | Any C program, from embedded to OS kernels | Higher-level languages for rapid prototyping |
-| When NOT to use | N/A — these are foundational | N/A |
-| Alternatives | Rust ownership, Go garbage collection | Less control, less transparency |
-| Production Examples | Linux kernel, SQLite, Redis | All built on these fundamentals |
-| Common Mistakes | Uninitialized variables, unchecked return values, signed/unsigned mixing | Use `-Wall -Wextra -Werror` |
+- Declare and use variables with proper types (int, float, char, pointers)
+- Apply operators correctly (arithmetic, logical, bitwise, comparison)
+- Implement control flow (if/else, switch, for, while, do-while)
+- Write functions with proper parameter passing and return values
+- Work with arrays and strings safely
+- Understand pointer basics and memory allocation
 
-## What It Is
+## Prerequisites
 
-The fundamentals module covers the complete set of building blocks that every C program uses:
+- Completion of Module 00 (Knowledge Atoms)
+- Basic understanding of programming concepts
+- Command-line tools installed (gcc, make)
 
-- **Variables**: Named storage with specific types
-- **Operators**: Symbols that perform operations on values
-- **Control Flow**: Decision-making and loop constructs
-- **Functions**: Reusable blocks of code with clear interfaces
-- **Arrays**: Fixed-size collections of same-type elements
-- **Strings**: Null-terminated character arrays
-- **Pointers**: Variables that store memory addresses
-- **Memory Basics**: Stack vs heap allocation
+## History
 
-## Why It Exists
+- **1972** — Dennis Ritchie created C at Bell Labs
+- **1978** — K&R C published (The C Programming Language)
+- **1989** — ANSI C (C89/C90) standardized
+- **1999** — C99 added `inline`, `_Bool`, VLAs, `//` comments
+- **2011** — C11 added `_Generic`, `<stdatomic.h>`, `<threads.h>`
+- **2018** — C18 bug fix release
+- **2023** — C23 added `typeof`, `#embed`, improved `constexpr`
 
-C was designed as a "portable assembly language" — giving programmers direct control over hardware while maintaining readability. Every concept in this module maps to a hardware reality:
+## Production Notes
 
-| C Concept | Hardware Reality |
-|-----------|-----------------|
-| Variable | Memory location |
-| Pointer | Memory address |
-| Array | Contiguous memory block |
-| Function | Stack frame + call instruction |
-| `sizeof` | Actual memory consumed |
+- **Where is it used?** Operating systems, embedded systems, databases, compilers, game engines
+- **Why is it useful?** Direct hardware access, no runtime overhead, deterministic execution
+- **When should it be avoided?** When memory safety is critical and cannot be managed manually
+- **Alternative?** Rust (memory safety), Go (garbage collection), C++ (abstractions)
 
-Understanding this mapping is what makes C uniquely powerful — and uniquely dangerous.
+## Core Concepts
+
+### Variables and Types
+
+| Type | Size (typical) | Range | Use Case |
+|------|---------------|-------|----------|
+| `char` | 1 byte | -128 to 127 | Single characters, ASCII |
+| `short` | 2 bytes | -32768 to 32767 | Small integers |
+| `int` | 4 bytes | -2^31 to 2^31-1 | General integers |
+| `long` | 4/8 bytes | Platform-dependent | Large integers |
+| `float` | 4 bytes | ±3.4e38 | Single precision |
+| `double` | 8 bytes | ±1.7e308 | Double precision |
+
+### Operators
+
+| Category | Operators | Description |
+|----------|-----------|-------------|
+| Arithmetic | `+`, `-`, `*`, `/`, `%` | Basic math |
+| Comparison | `==`, `!=`, `<`, `>`, `<=`, `>=` | Value comparison |
+| Logical | `&&`, `||`, `!` | Boolean logic |
+| Bitwise | `&`, `|`, `^`, `~`, `<<`, `>>` | Bit manipulation |
+| Assignment | `=`, `+=`, `-=`, `*=`, `/=`, `%=` | Value assignment |
+
+### Control Flow
+
+```c
+// if/else
+if (condition) {
+    // true branch
+} else {
+    // false branch
+}
+
+// switch
+switch (value) {
+    case 1: break;
+    case 2: break;
+    default: break;
+}
+
+// for loop
+for (int i = 0; i < n; i++) {
+    // loop body
+}
+
+// while loop
+while (condition) {
+    // loop body
+}
+
+// do-while loop
+do {
+    // loop body
+} while (condition);
+```
+
+## Internal Working
+
+### Memory Layout
+
+```
+Stack (automatic, fast, limited)
+├── Local variables
+├── Function parameters
+├── Return addresses
+└── Stack frames
+
+Heap (dynamic, slower, large)
+├── malloc/calloc/realloc allocations
+├── Global/static variables (data segment)
+└── Memory-mapped files
+
+Text Segment (read-only)
+├── Compiled code
+└── Constant data
+
+Data Segment
+├── Initialized global/static variables
+└── Uninitialized global/static variables (BSS)
+```
+
+### Function Call Mechanism
+
+```
+1. Arguments pushed onto stack (right to left)
+2. Return address pushed
+3. Old stack frame saved
+4. New stack frame created
+5. Local variables allocated
+6. Function body executed
+7. Return value placed in register
+8. Stack frame restored
+9. Return to caller
+```
+
+## Syntax
+
+```c
+// Variable declaration
+int x = 42;
+double pi = 3.14159;
+char c = 'A';
+int *ptr = NULL;
+
+// Array declaration
+int arr[10] = {0};
+char str[] = "Hello";
+
+// Function declaration
+int add(int a, int b) {
+    return a + b;
+}
+
+// Pointer operations
+int x = 10;
+int *p = &x;      // p points to x
+*p = 20;          // x is now 20
+
+// Memory allocation
+int *arr = malloc(10 * sizeof(int));
+free(arr);
+
+// String operations
+char src[] = "Hello";
+char dst[20];
+strcpy(dst, src);
+```
+
+## Examples
+
+### Easy Example: Hello World
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    printf("Hello, World!\n");
+    return 0;
+}
+```
+
+### Medium Example: Function with Pointers
+
+```c
+#include <stdio.h>
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int main(void) {
+    int x = 5, y = 10;
+    printf("Before: x=%d, y=%d\n", x, y);
+    swap(&x, &y);
+    printf("After: x=%d, y=%d\n", x, y);
+    return 0;
+}
+```
+
+### Hard Example: Dynamic Array with Resize
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int capacity = 2;
+    int size = 0;
+    int *arr = malloc(capacity * sizeof(int));
+    
+    for (int i = 0; i < 10; i++) {
+        if (size == capacity) {
+            capacity *= 2;
+            int *new_arr = realloc(arr, capacity * sizeof(int));
+            if (!new_arr) { free(arr); return 1; }
+            arr = new_arr;
+        }
+        arr[size++] = i;
+    }
+    
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    free(arr);
+    return 0;
+}
+```
+
+### Enterprise Example: String Library
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char *data;
+    size_t length;
+    size_t capacity;
+} String;
+
+String *string_new(const char *init) {
+    String *s = malloc(sizeof(String));
+    if (!s) return NULL;
+    s->length = strlen(init);
+    s->capacity = s->length + 1;
+    s->data = malloc(s->capacity);
+    if (!s->data) { free(s); return NULL; }
+    strcpy(s->data, init);
+    return s;
+}
+
+void string_free(String *s) {
+    if (s) { free(s->data); free(s); }
+}
+
+int main(void) {
+    String *s = string_new("Hello");
+    printf("String: %s (length: %zu)\n", s->data, s->length);
+    string_free(s);
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Variables | Stack vs heap allocation | Prefer stack for small, fixed-size data |
+| Arrays | Contiguous memory access | Cache-friendly, use for sequential access |
+| Pointers | Indirection overhead | Minimize pointer chasing |
+| Functions | Call overhead | Use `inline` for small, frequently called functions |
+| Strings | Null-termination overhead | Use `strnlen` for bounded operations |
+
+## Best Practices
+
+- Do:
+  - Initialize all variables before use
+  - Check return values from `malloc`, `fopen`, etc.
+  - Use `const` for read-only parameters
+  - Prefer `++i` over `i++` in loops
+  - Use descriptive variable names
+  
+- Don't:
+  - Use uninitialized variables
+  - Mix signed and unsigned without care
+  - Assume type sizes
+  - Use `gets()` (removed in C11)
+  - Ignore compiler warnings
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Uninitialized variables | Undefined behavior | Initialize at declaration |
+| Array out-of-bounds | Buffer overflow, crash | Bounds checking |
+| Null pointer dereference | Crash, segfault | Check pointers before use |
+| Memory leak | Resource exhaustion | Always `free` after `malloc` |
+| Signed/unsigned mismatch | Unexpected comparisons | Use consistent types |
+
+## Interview Questions
+
+### Q1: What is the difference between `int *p` and `int * const p`?
+**Answer:** `int *p` is a pointer to int (pointer can be changed). `int * const p` is a const pointer to int (pointer cannot be changed after initialization).
+
+### Q2: What is the difference between `malloc` and `calloc`?
+**Answer:** `malloc` allocates uninitialized memory. `calloc` allocates zero-initialized memory. `calloc` is slightly slower but prevents use of uninitialized data.
+
+### Q3: What is array decay?
+**Answer:** When an array is passed to a function, it decays to a pointer to its first element. `int arr[10]` becomes `int *arr` in function parameters.
+
+### Q4: What is the difference between `++i` and `i++`?
+**Answer:** `++i` increments and returns the new value. `i++` returns the old value then increments. `++i` is slightly more efficient.
+
+### Q5: What is undefined behavior?
+**Answer:** Behavior that the C standard does not define, such as signed integer overflow, null pointer dereference, or array out-of-bounds access.
+
+### Q6: What is the difference between `sizeof` and `strlen`?
+**Answer:** `sizeof` returns the size in bytes of a type or variable (compile-time). `strlen` returns the length of a null-terminated string (runtime).
+
+### Q7: What is the difference between `char *str = "Hello"` and `char str[] = "Hello"`?
+**Answer:** `char *str = "Hello"` points to a string literal (read-only). `char str[] = "Hello"` creates a mutable array on the stack.
+
+### Q8: What is the purpose of `volatile` keyword?
+**Answer:** Tells the compiler that a variable may change unexpectedly (e.g., hardware register, interrupt handler). Prevents compiler optimizations that would cache the variable's value.
+
+### Q9: What is the difference between `struct` and `union`?
+**Answer:** `struct` allocates memory for all members. `union` allocates memory for the largest member only. All members share the same memory location.
+
+### Q10: What is the difference between `break` and `continue`?
+**Answer:** `break` exits the current loop or switch. `continue` skips the rest of the current iteration and moves to the next.
+
+### Q11: What is the difference between `while` and `do-while`?
+**Answer:** `while` checks condition before executing. `do-while` executes at least once before checking condition.
+
+### Q12: What is the purpose of `static` keyword?
+**Answer:** In file scope, it limits visibility to the current translation unit. In function scope, it preserves value between calls. In block scope, it persists for program lifetime.
+
+### Q13: What is the difference between `exit()` and `return`?
+**Answer:** `return` exits the current function. `exit()` terminates the entire program and calls `atexit` handlers.
+
+### Q14: What is the difference between `stdio.h` and `stdlib.h`?
+**Answer:** `stdio.h` provides input/output functions (`printf`, `scanf`, `fopen`). `stdlib.h` provides general utilities (`malloc`, `free`, `atoi`, `rand`).
+
+### Q15: What is the difference between `const` and `volatile`?
+**Answer:** `const` tells compiler the value won't change. `volatile` tells compiler the value may change unexpectedly. They can be combined: `volatile const int *ptr`.
+
+## Cross-References
+
+- **Previous Module:** [00 - Knowledge Atoms](../00-knowledge-atoms/)
+- **Next Module:** [02 - Structures](../02-structures/)
+- **Related:** [05 - Pointers Advanced](../05-pointers-advanced/) — Advanced pointer patterns
+- **Related:** [08 - Memory Management](../08-memory-management/) — Heap allocation details
+- **External:** [The C Programming Language (K&R)](https://en.wikipedia.org/wiki/The_C_Programming_Language)
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 
 ## Expanded Code Examples
 

@@ -441,3 +441,313 @@ The preprocessor is a text-processing engine that runs before compilation. It is
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [The Preprocessor — GNU C Manual](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor.html)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+
+## Overview
+
+The Preprocessor module covers the text-processing engine that runs before compilation. It performs file inclusion, macro definition, conditional compilation, and compiler hints. The preprocessor is a separate language that runs before C compilation, not part of C syntax itself.
+
+## Learning Objectives
+
+- Use `#include` for file inclusion (system vs local headers)
+- Define macros with `#define` (object-like and function-like)
+- Implement conditional compilation with `#ifdef`, `#if`, `#elif`
+- Create include guards to prevent multiple inclusion
+- Use predefined macros for compile-time metadata
+
+## Prerequisites
+
+- Completion of Module 02 (Structures)
+- Understanding of header files
+- Basic build concepts
+
+## History
+
+- **1972** — Preprocessor included in original C
+- **1978** — K&R C documented preprocessor directives
+- **1989** — ANSI C standardized preprocessor behavior
+- **1999** — C99 added `_Pragma` operator
+- **2011** — C11 added `_Generic` (type-generic macros)
+- **2023** — C23 added `#embed` for binary data inclusion
+
+## Production Notes
+
+- **Where is it used?** Cross-platform code, header inclusion, compile-time configuration
+- **Why is it useful?** Enables platform-specific code without runtime cost
+- **When should it be avoided?** When complex logic is needed (use inline functions instead)
+- **Alternative?** C11 `_Generic`, C99 inline functions, build-system flags
+
+## Core Concepts
+
+### Preprocessor Operations
+
+| Operation | Directive | Purpose |
+|-----------|-----------|---------|
+| File inclusion | `#include` | Insert contents of another file |
+| Macro definition | `#define` | Text replacement rule |
+| Conditional compilation | `#ifdef`, `#if`, `#elif`, `#else` | Include/exclude code blocks |
+| Compiler hints | `#pragma`, `#error`, `#warning` | Control compiler behavior |
+
+### Macro Types
+
+| Type | Example | Expansion |
+|------|---------|-----------|
+| Object-like | `#define PI 3.14159` | `PI` → `3.14159` |
+| Function-like | `#define MAX(a,b) ((a)>(b)?(a):(b))` | `MAX(x,y)` → `((x)>(y)?(x):(y))` |
+| Variadic | `#define LOG(...) printf(__VA_ARGS__)` | `LOG("x=%d",x)` → `printf("x=%d",x)` |
+| Type-generic | `#define TYPE(x) _Generic((x), int:"int", default:"other")` | Type-based selection |
+
+## Internal Working
+
+### Compilation Pipeline
+
+```
+Source Code (.c)
+    ↓ Preprocessor (#include, #define, #ifdef)
+Preprocessed Code (.i)
+    ↓ Compiler (syntax, semantics, optimization)
+Assembly Code (.s)
+    ↓ Assembler
+Object Code (.o)
+    ↓ Linker (combine objects, resolve symbols)
+Executable (a.out)
+```
+
+### Include Search Paths
+
+```
+1. Local directory (for "file.h")
+2. -I specified directories
+3. System include paths (/usr/include)
+```
+
+## Syntax
+
+```c
+// File inclusion
+#include <stdio.h>     // System header
+#include "myheader.h"  // Local header
+
+// Object-like macro
+#define PI 3.14159
+#define MAX_SIZE 1024
+
+// Function-like macro
+#define SQUARE(x) ((x) * (x))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+// Variadic macro
+#define LOG(fmt, ...) printf(fmt, ##__VA_ARGS__)
+
+// Conditional compilation
+#ifdef DEBUG
+    printf("Debug mode\n");
+#elif defined(RELEASE)
+    printf("Release mode\n");
+#else
+    printf("Unknown mode\n");
+#endif
+
+// Include guard
+#ifndef MYHEADER_H
+#define MYHEADER_H
+// header content
+#endif
+
+// Predefined macros
+__FILE__   // Source file name
+__LINE__   // Current line number
+__DATE__   // Compilation date
+__TIME__   // Compilation time
+__func__   // Current function name (C99)
+
+// X-Macro pattern
+#define COLOR_LIST \
+    X(RED, 0xFF0000) \
+    X(GREEN, 0x00FF00) \
+    X(BLUE, 0x0000FF)
+```
+
+## Examples
+
+### Easy Example: Simple Macros
+
+```c
+#include <stdio.h>
+
+#define PI 3.14159
+#define SQUARE(x) ((x) * (x))
+
+int main(void) {
+    printf("PI = %f\n", PI);
+    printf("Square of 5 = %d\n", SQUARE(5));
+    return 0;
+}
+```
+
+### Medium Example: Conditional Compilation
+
+```c
+#include <stdio.h>
+
+#ifdef _WIN32
+    #define PLATFORM "Windows"
+#elif __linux__
+    #define PLATFORM "Linux"
+#elif __APPLE__
+    #define PLATFORM "macOS"
+#else
+    #define PLATFORM "Unknown"
+#endif
+
+int main(void) {
+    printf("Running on: %s\n", PLATFORM);
+    return 0;
+}
+```
+
+### Hard Example: X-Macro Pattern
+
+```c
+#include <stdio.h>
+
+#define COLOR_LIST \
+    X(RED, 0xFF0000) \
+    X(GREEN, 0x00FF00) \
+    X(BLUE, 0x0000FF)
+
+#define X(name, value) name = value,
+enum Color { COLOR_LIST };
+#undef X
+
+#define X(name, value) #name,
+const char *color_names[] = { COLOR_LIST };
+#undef X
+
+int main(void) {
+    printf("Colors: %s, %s, %s\n", 
+        color_names[RED], color_names[GREEN], color_names[BLUE]);
+    return 0;
+}
+```
+
+### Enterprise Example: Config System
+
+```c
+// config.h
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#ifdef DEBUG
+    #define LOG_LEVEL 3
+    #define ASSERT_ENABLED 1
+#else
+    #define LOG_LEVEL 1
+    #define ASSERT_ENABLED 0
+#endif
+
+#if LOG_LEVEL >= 3
+    #define LOG_DEBUG(fmt, ...) printf("DEBUG: " fmt "\n", ##__VA_ARGS__)
+#else
+    #define LOG_DEBUG(fmt, ...)
+#endif
+
+#if ASSERT_ENABLED
+    #define ASSERT(expr) if (!(expr)) { fprintf(stderr, "ASSERT FAILED: %s\n", #expr); }
+#else
+    #define ASSERT(expr)
+#endif
+
+#endif
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Macro expansion | Compile-time overhead | Use `inline` for complex macros |
+| Include depth | Compilation time | Minimize header dependencies |
+| Conditional compilation | Code bloat | Use sparingly for platform-specific code |
+| X-Macros | Code generation | Powerful but can reduce readability |
+
+## Best Practices
+
+- Do:
+  - Always parenthesize macro arguments
+  - Use `inline` functions over function macros
+  - Include guards in all headers
+  - Use predefined macros for platform detection
+  - Document macro behavior in comments
+  
+- Don't:
+  - Use macros for complex logic (use inline functions)
+  - Forget parentheses in macro definitions
+  - Use `#define` to redefine standard keywords
+  - Ignore compiler warnings about macros
+  - Use macros where `const` or `enum` would work
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Unparenthesized macro args | Unexpected behavior | Always use parentheses |
+| Missing include guard | Multiple definition errors | Always use `#ifndef`/`#define`/`#endif` |
+| Side-effect macros | Double evaluation | Parenthesize arguments; use inline functions |
+| Macro name collision | Unexpected replacement | Use unique names; namespace with project prefix |
+| Ignoring `#undef` | Macro persists | Use `#undef` after use if needed |
+
+## Interview Questions
+
+### Q1: What is the difference between `#define` and `const`?
+**Answer:** `#define` is preprocessor text substitution with no type checking. `const` is a compile-time typed variable with proper scoping.
+
+### Q2: How do include guards work?
+**Answer:** `#ifndef SYMBOL` / `#define SYMBOL` / `#endif` prevents a header from being included multiple times in one translation unit.
+
+### Q3: What is the difference between `<stdio.h>` and `"stdio.h"`?
+**Answer:** `<stdio.h>` searches system include paths. `"stdio.h"` searches local directory first, then system paths.
+
+### Q4: What is the `##` operator in macros?
+**Answer:** Token concatenation operator. Joins two tokens into one: `#define CONCAT(a,b) a##b` → `CONCAT(foo,bar)` → `foobar`.
+
+### Q5: What is the `#` operator in macros?
+**Answer:** Stringification operator. Converts a macro argument to a string literal: `#define STR(x) #x` → `STR(hello)` → `"hello"`.
+
+### Q6: What is the difference between `#ifdef` and `#if defined()`?
+**Answer:** `#ifdef SYMBOL` checks if symbol is defined. `#if defined(SYMBOL)` is more flexible and can be used in complex expressions.
+
+### Q7: What is a variadic macro?
+**Answer:** A macro that accepts a variable number of arguments: `#define LOG(fmt, ...) printf(fmt, ##__VA_ARGS__)`.
+
+### Q8: What is the `_Pragma` operator?
+**Answer:** C99 feature that allows pragma as an expression: `_Pragma("GCC diagnostic ignored \"-Wunused\"")`.
+
+### Q9: What is the difference between `#undef` and `#define` with same name?
+**Answer:** `#undef` removes a macro definition. `#define` with same name redefines it (may cause warnings).
+
+### Q10: What is the purpose of `__FILE__` and `__LINE__`?
+**Answer:** Predefined macros that expand to the current source file name and line number. Useful for debugging and logging.
+
+### Q11: What is the `#error` directive?
+**Answer:** Causes a compilation error with a message: `#if !defined(__linux__)` / `#error "Linux only"` / `#endif`.
+
+### Q12: What is the `#warning` directive?
+**Answer:** Causes a compilation warning with a message. Not standard but widely supported.
+
+### Q13: What is the difference between `#pragma once` and include guards?
+**Answer:** `#pragma once` is compiler-specific but simpler. Include guards are standard but require more code.
+
+### Q14: What is the `#embed` directive in C23?
+**Answer:** Includes binary data from a file at compile time. Replaces manual binary inclusion hacks.
+
+### Q15: What is the difference between function-like and object-like macros?
+**Answer:** Object-like macros replace a name with text. Function-like macros replace a name with parameters: `#define FUNC(x) ((x)+1)`.
+
+## Cross-References
+
+- **Previous Module:** [02 - Structures](../02-structures/)
+- **Next Module:** [04 - File I/O](../04-file-io/)
+- **Related:** [14 - Build Systems](../14-build-systems/) — Make and CMake
+- **Related:** [00 - Knowledge Atoms](../00-knowledge-atoms/) — Compilation model
+- **External:** [GNU C Preprocessor](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor.html)
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)

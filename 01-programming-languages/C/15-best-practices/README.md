@@ -496,3 +496,430 @@ Best practices transform individual skill into team productivity. Consistent nam
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [Linux Kernel Coding Style](https://www.kernel.org/doc/html/latest/process/coding-style.html)
+
+## Overview
+
+The Best Practices module covers professional C coding standards: naming conventions, code organization, error handling, documentation, and memory management. These guidelines transform individual skill into team productivity.
+
+## Learning Objectives
+
+- Apply consistent naming conventions
+- Implement reliable error handling patterns
+- Organize code for maintainability
+- Document APIs effectively
+- Follow memory management best practices
+
+## Prerequisites
+
+- Completion of Module 14 (Build Systems)
+- Understanding of C syntax and features
+- Basic team development experience
+
+## History
+
+- **1978** — K&R C coding style established
+- **1989** — ANSI C standardized coding practices
+- **2004** — CERT C Coding Standard published
+- **2012** — Linux kernel coding style formalized
+- **2016** — MISRA C:2012 for safety-critical systems
+- **2023** — Modern C best practices evolved
+
+## Production Notes
+
+- **Where is it used?** All team projects, shared codebases, long-lived code
+- **Why is it useful?** Consistent, readable, maintainable code
+- **When should it be avoided?** Over-documenting obvious code
+- **Alternative?** MISRA C, CERT C, Linux kernel coding style
+
+## Core Concepts
+
+### Coding Standards
+
+| Practice | Purpose | Impact |
+|----------|---------|--------|
+| Naming conventions | Consistent, readable code | Faster onboarding |
+| Code organization | Modular, testable code | Easier maintenance |
+| Error handling | Reliable code | Fewer production bugs |
+| Documentation | Understandable interfaces | Faster development |
+| Memory discipline | Leak-free, safe code | Fewer crashes |
+| Testing | Verified correctness | Confident refactoring |
+
+### Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Functions | snake_case, verb_first | `create_user()`, `get_name()` |
+| Variables | snake_case, descriptive | `user_count`, `is_valid` |
+| Constants | UPPER_SNAKE_CASE | `MAX_BUFFER_SIZE` |
+| Types | snake_case, `_t` suffix | `user_t`, `string_t` |
+| Macros | UPPER_SNAKE_CASE | `MIN(a,b)` |
+| Files | snake_case, descriptive | `user.c`, `utils.h` |
+
+## Internal Working
+
+### Code Organization Pattern
+
+```
+src/
+├── main.c          Entry point
+├── core/           Business logic
+│   ├── user.c
+│   └── user.h
+├── utils/          Utilities
+│   ├── string.c
+│   └── string.h
+├── io/             I/O operations
+│   ├── file.c
+│   └── file.h
+└── tests/          Test files
+    ├── test_user.c
+    └── test_string.c
+```
+
+### Header File Structure
+
+```c
+// file.h
+#ifndef FILE_H
+#define FILE_H
+
+// Includes
+#include <stdbool.h>
+
+// Types
+typedef struct {
+    int id;
+    char name[50];
+} User;
+
+// Function declarations
+User *user_create(int id, const char *name);
+void user_destroy(User *user);
+bool user_is_valid(const User *user);
+
+#endif  // FILE_H
+```
+
+## Syntax
+
+```c
+// Naming conventions
+int user_count;              // Variable: snake_case
+const int MAX_USERS = 100;   // Constant: UPPER_SNAKE_CASE
+typedef struct user user_t;  // Type: snake_case_t
+
+// Error handling pattern
+typedef enum {
+    SUCCESS = 0,
+    ERROR_NULL_POINTER,
+    ERROR_OUT_OF_MEMORY,
+    ERROR_INVALID_ARGUMENT
+} ErrorCode;
+
+ErrorCode user_create(user_t **user, int id, const char *name) {
+    if (!user || !name) return ERROR_NULL_POINTER;
+    *user = malloc(sizeof(user_t));
+    if (!*user) return ERROR_OUT_OF_MEMORY;
+    (*user)->id = id;
+    strncpy((*user)->name, name, 49);
+    return SUCCESS;
+}
+
+// Function documentation
+/**
+ * Creates a new user with the given id and name.
+ * @param id User ID (must be positive)
+ * @param name User name (must not be NULL)
+ * @return Pointer to new user, or NULL on error
+ */
+user_t *user_create(int id, const char *name);
+```
+
+## Examples
+
+### Easy Example: Naming Conventions
+
+```c
+#include <stdio.h>
+
+// Constants: UPPER_SNAKE_CASE
+#define MAX_BUFFER_SIZE 1024
+#define DEFAULT_TIMEOUT 30
+
+// Types: snake_case_t
+typedef struct {
+    int x;
+    int y;
+} point_t;
+
+// Functions: snake_case, verb_first
+point_t point_create(int x, int y) {
+    point_t p = {x, y};
+    return p;
+}
+
+void point_print(const point_t *p) {
+    printf("(%d, %d)\n", p->x, p->y);
+}
+
+int main(void) {
+    // Variables: snake_case, descriptive
+    point_t origin = point_create(0, 0);
+    point_t current_position = point_create(5, 10);
+    
+    point_print(&origin);
+    point_print(&current_position);
+    return 0;
+}
+```
+
+### Medium Example: Error Handling
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Error codes
+typedef enum {
+    OK = 0,
+    ERR_NULL_PTR,
+    ERR_NO_MEMORY,
+    ERR_INVALID
+} Status;
+
+// Safe string copy
+Status safe_strcpy(char *dest, size_t dest_size, const char *src) {
+    if (!dest || !src) return ERR_NULL_PTR;
+    if (dest_size == 0) return ERR_INVALID;
+    
+    size_t len = strlen(src);
+    if (len >= dest_size) return ERR_NO_MEMORY;
+    
+    memcpy(dest, src, len + 1);
+    return OK;
+}
+
+// Usage pattern
+int main(void) {
+    char buffer[20];
+    Status status = safe_strcpy(buffer, sizeof(buffer), "Hello");
+    
+    switch (status) {
+        case OK:
+            printf("Copied: %s\n", buffer);
+            break;
+        case ERR_NULL_PTR:
+            fprintf(stderr, "Error: NULL pointer\n");
+            break;
+        case ERR_NO_MEMORY:
+            fprintf(stderr, "Error: buffer too small\n");
+            break;
+        case ERR_INVALID:
+            fprintf(stderr, "Error: invalid size\n");
+            break;
+    }
+    
+    return status == OK ? 0 : 1;
+}
+```
+
+### Hard Example: Module Organization
+
+```c
+// user.h - Public interface
+#ifndef USER_H
+#define USER_H
+
+#include <stdbool.h>
+
+typedef struct user user_t;
+
+user_t *user_create(int id, const char *name);
+void user_destroy(user_t *user);
+const char *user_get_name(const user_t *user);
+int user_get_id(const user_t *user);
+bool user_set_name(user_t *user, const char *name);
+
+#endif
+
+// user.c - Implementation
+#include "user.h"
+#include <stdlib.h>
+#include <string.h>
+
+struct user {
+    int id;
+    char name[50];
+};
+
+user_t *user_create(int id, const char *name) {
+    if (!name) return NULL;
+    
+    user_t *user = malloc(sizeof(user_t));
+    if (!user) return NULL;
+    
+    user->id = id;
+    strncpy(user->name, name, sizeof(user->name) - 1);
+    user->name[sizeof(user->name) - 1] = '\0';
+    
+    return user;
+}
+
+void user_destroy(user_t *user) {
+    free(user);
+}
+
+const char *user_get_name(const user_t *user) {
+    return user ? user->name : NULL;
+}
+
+int user_get_id(const user_t *user) {
+    return user ? user->id : -1;
+}
+
+bool user_set_name(user_t *user, const char *name) {
+    if (!user || !name) return false;
+    strncpy(user->name, name, sizeof(user->name) - 1);
+    user->name[sizeof(user->name) - 1] = '\0';
+    return true;
+}
+```
+
+### Enterprise Example: Documentation Standards
+
+```c
+/**
+ * @file utils.h
+ * @brief Utility functions for string and memory operations.
+ * 
+ * This module provides safe string and memory operations
+ * with proper error handling and bounds checking.
+ * 
+ * @author Java Engineering Academy
+ * @date 2024
+ * @version 1.0
+ */
+
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <stddef.h>
+#include <stdbool.h>
+
+/**
+ * @brief Safely copies a string with bounds checking.
+ * 
+ * @param dest Destination buffer
+ * @param dest_size Size of destination buffer
+ * @param src Source string (must not be NULL)
+ * @return true on success, false on error
+ * 
+ * @note Destination buffer will be null-terminated
+ * @warning If dest_size is 0, returns false
+ */
+bool safe_strcpy(char *dest, size_t dest_size, const char *src);
+
+/**
+ * @brief Calculates the length of a string safely.
+ * 
+ * @param str Input string (may be NULL)
+ * @param max_size Maximum size to scan
+ * @return Length of string, or max_size if no null terminator found
+ */
+size_t safe_strlen(const char *str, size_t max_size);
+
+#endif  // UTILS_H
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Naming | Long names slower to type | Use IDE autocomplete |
+| Documentation | Time-consuming | Use documentation generators |
+| Error handling | Adds code | Use macros for patterns |
+| Code organization | More files | Use logical grouping |
+| Testing | Time-consuming | Use test frameworks |
+
+## Best Practices
+
+- Do:
+  - Use consistent naming conventions
+  - Document public APIs
+  - Handle all error cases
+  - Use `const` for read-only parameters
+  - Keep functions short and focused
+  
+- Don't:
+  - Use single-letter variable names
+  - Ignore error returns
+  - Mix naming styles
+  - Over-document obvious code
+  - Use global variables
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Inconsistent naming | Readability issues | Enforce style guide |
+| Magic numbers | Maintenance nightmare | Use named constants |
+| Missing error handling | Crashes, data loss | Always check returns |
+| Over-documentation | Cluttered code | Document only public APIs |
+| Global variables | Side effects, testing difficulty | Use parameters |
+
+## Interview Questions
+
+### Q1: What is the difference between `snake_case` and `camelCase`?
+**Answer:** `snake_case`: `user_name` (C convention). `camelCase`: `userName` (Java convention). C uses `snake_case`.
+
+### Q2: Why use `const` for function parameters?
+**Answer:** Documents intent (read-only), enables compiler optimizations, prevents accidental modification.
+
+### Q3: What is the difference between declaration and definition?
+**Answer:** Declaration: tells compiler about existence. Definition: provides implementation. Headers contain declarations.
+
+### Q4: What is the purpose of include guards?
+**Answer:** Prevents multiple inclusion of the same header, avoiding redefinition errors.
+
+### Q5: What is the difference between `static` and `extern`?
+**Answer:** `static`: file scope. `extern`: external linkage. Use `static` for private functions.
+
+### Q6: What is the purpose of `do { ... } while(0)` in macros?
+**Answer:** Ensures macro behaves like a statement (can be used with `if`/`else` without braces).
+
+### Q7: What is the difference between function and macro?
+**Answer:** Function: type-checked, debugger-friendly. Macro: text substitution, no type checking. Prefer functions.
+
+### Q8: What is the purpose of `__attribute__((unused))`?
+**Answer:** Suppresses unused variable/function warnings. Useful for unused parameters in interfaces.
+
+### Q9: What is the difference between `memcpy` and `memmove`?
+**Answer:** `memcpy`: no overlap handling. `memmove`: handles overlapping regions. Use `memmove` when overlapping possible.
+
+### Q10: What is the purpose of `__func__`?
+**Answer:** Predefined identifier containing current function name. Useful for logging and debugging.
+
+### Q11: What is the difference between `static` and `auto` variables?
+**Answer:** `static`: persists for program lifetime. `auto`: automatic lifetime (stack). Default is `auto`.
+
+### Q12: What is the purpose of `restrict` keyword?
+**Answer:** Tells compiler pointer is the only reference to data. Enables more optimizations (no aliasing).
+
+### Q13: What is the difference between `inline` and `static inline`?
+**Answer:** `inline`: compiler may inline (no external linkage). `static inline`: file scope, always available for inlining.
+
+### Q14: What is the purpose of `__attribute__((format))`?
+**Answer:** Tells compiler to check format string arguments. Prevents format string vulnerabilities.
+
+### Q15: What is the difference between `assert` and error handling?
+**Answer:** `assert`: debugging aid, removed in release. Error handling: runtime recovery, always active.
+
+## Cross-References
+
+- **Previous Module:** [14 - Build Systems](../14-build-systems/)
+- **Next Module:** [16 - Senior Topics](../16-senior/)
+- **Related:** [11 - Security](../11-security/) — Secure coding
+- **Related:** [13 - Testing](../13-testing/) — Testing practices
+- **External:** [CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- **External:** [Linux Kernel Coding Style](https://www.kernel.org/doc/html/latest/process/coding-style.html)

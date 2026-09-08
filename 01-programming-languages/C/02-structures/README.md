@@ -515,3 +515,327 @@ Structures are the fundamental data modeling tool in C. Every complex system —
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [Compilers and Alignment (深入理解计算机系统)](https://csapp.cs.cmu.edu/)
+
+## Overview
+
+The Structures & Unions module covers user-defined data types that group related data under a single name. Structures, unions, bit fields, and typedef are the foundation for all data abstraction in C: linked lists, trees, hash tables, I/O buffers, and every complex data type in systems programming.
+
+## Learning Objectives
+
+- Declare and use structures to group related data
+- Understand structure padding and alignment
+- Use unions for variant data types
+- Implement bit fields for compact storage
+- Create opaque structures for API design
+
+## Prerequisites
+
+- Completion of Module 01 (Fundamentals)
+- Understanding of arrays and pointers
+- Basic memory concepts
+
+## History
+
+- **1972** — Structures added in original C
+- **1978** — K&R C documented structure syntax
+- **1989** — ANSI C standardized structure alignment rules
+- **1999** — C99 added designated initializers for structures
+- **2011** — C11 added anonymous structures and unions
+- **2023** — C23 added `#embed` for binary data in structures
+
+## Production Notes
+
+- **Where is it used?** Database records, network packets, file formats, hardware registers
+- **Why is it useful?** Groups related data, enables data abstraction, supports ABI stability
+- **When should it be avoided?** When returning large structs by value (copies entire struct)
+- **Alternative?** C++ classes (OOP), Rust enums (tagged unions)
+
+## Core Concepts
+
+### Structure vs Union vs Bit Field
+
+| Feature | Structure | Union | Bit Field |
+|---------|-----------|-------|-----------|
+| Memory | Separate for each member | Shared (largest member) | Precise bits |
+| Access | All members simultaneously | Only one at a time | Individual bits |
+| Use Case | Grouping related data | Variant data types | Flags, compact storage |
+| Size | Sum of members + padding | Size of largest member | Specified bits |
+
+### Memory Layout
+
+```c
+struct Person {
+    char name[50];  // 50 bytes
+    int age;        // 4 bytes
+    float height;   // 4 bytes
+};
+// sizeof(struct Person) = 58 bytes (minimum)
+// Actual: may be 60+ due to alignment padding
+```
+
+## Internal Working
+
+### Structure Padding
+
+```
+struct Example {
+    char a;     // 1 byte + 3 bytes padding
+    int b;      // 4 bytes
+    char c;     // 1 byte + 3 bytes padding
+};
+// sizeof = 12 bytes, not 6 bytes
+```
+
+### Alignment Requirements
+
+| Type | Alignment | Typical Size |
+|------|-----------|--------------|
+| char | 1 byte | 1 byte |
+| short | 2 bytes | 2 bytes |
+| int | 4 bytes | 4 bytes |
+| long | 4/8 bytes | Platform-dependent |
+| pointer | 4/8 bytes | Platform-dependent |
+
+## Syntax
+
+```c
+// Structure declaration
+struct Person {
+    char name[50];
+    int age;
+    float height;
+};
+
+// Structure initialization
+struct Person p1 = {"Alice", 30, 5.7};
+
+// Member access
+p1.age = 31;
+
+// Pointer to structure
+struct Person *ptr = &p1;
+ptr->age = 32;
+
+// Union declaration
+union Data {
+    int i;
+    float f;
+    char str[20];
+};
+
+// Union usage
+union Data d;
+d.i = 10;      // i is active
+d.f = 3.14;    // f is now active, i is invalid
+
+// Bit field
+struct Flags {
+    unsigned int active : 1;
+    unsigned int admin : 1;
+    unsigned int mode : 4;
+};
+
+// typedef
+typedef struct {
+    int x;
+    int y;
+} Point;
+```
+
+## Examples
+
+### Easy Example: Structure Usage
+
+```c
+#include <stdio.h>
+
+struct Person {
+    char name[50];
+    int age;
+};
+
+int main(void) {
+    struct Person p = {"Alice", 30};
+    printf("Name: %s, Age: %d\n", p.name, p.age);
+    return 0;
+}
+```
+
+### Medium Example: Structure with Pointers
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Person {
+    char *name;
+    int age;
+};
+
+struct Person *create_person(const char *name, int age) {
+    struct Person *p = malloc(sizeof(struct Person));
+    p->name = strdup(name);
+    p->age = age;
+    return p;
+}
+
+void free_person(struct Person *p) {
+    if (p) { free(p->name); free(p); }
+}
+
+int main(void) {
+    struct Person *p = create_person("Bob", 25);
+    printf("Name: %s, Age: %d\n", p->name, p->age);
+    free_person(p);
+    return 0;
+}
+```
+
+### Hard Example: Opaque Structure
+
+```c
+// person.h (public API)
+typedef struct Person Person;
+Person *person_new(const char *name, int age);
+void person_free(Person *p);
+const char *person_name(const Person *p);
+int person_age(const Person *p);
+
+// person.c (implementation)
+struct Person {
+    char name[50];
+    int age;
+};
+
+Person *person_new(const char *name, int age) {
+    Person *p = malloc(sizeof(Person));
+    strncpy(p->name, name, 49);
+    p->age = age;
+    return p;
+}
+```
+
+### Enterprise Example: Network Packet
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+#pragma pack(push, 1)
+struct PacketHeader {
+    uint8_t version;
+    uint8_t type;
+    uint16_t length;
+    uint32_t sequence;
+    uint32_t checksum;
+};
+
+struct Packet {
+    struct PacketHeader header;
+    uint8_t payload[1024];
+};
+#pragma pack(pop)
+
+uint32_t calculate_checksum(const struct Packet *pkt) {
+    uint32_t sum = 0;
+    const uint8_t *data = (const uint8_t *)pkt;
+    for (size_t i = 0; i < sizeof(struct PacketHeader); i++) {
+        sum += data[i];
+    }
+    return sum;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Padding | Structure alignment waste | Use `#pragma pack` for network protocols |
+| Copying | Large structs by value | Pass pointers instead |
+| Access | Cache locality | Group frequently accessed members together |
+| Alignment | Misaligned access penalties | Use `__attribute__((aligned))` |
+| Size | Memory usage | Use bit fields for flags |
+
+## Best Practices
+
+- Do:
+  - Use `typedef` for cleaner syntax
+  - Initialize structures at declaration
+  - Use `const` pointers for read-only access
+  - Check union tags before access
+  - Use `offsetof()` for layout verification
+  
+- Don't:
+  - Return large structs by value
+  - Ignore structure padding
+  - Mix union members without checking tags
+  - Assume structure size across platforms
+  - Use `memcpy` for structure assignment (use `=`)
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Ignoring padding | Protocol mismatches, wasted memory | Use `#pragma pack` or `__attribute__((packed))` |
+| Union type confusion | Reading wrong member | Always check which member is active |
+| Shallow copying pointers | Double free, dangling pointers | Deep copy when needed |
+| Assuming structure size | Portability bugs | Use `sizeof` and `offsetof` |
+| Missing initialization | Undefined behavior | Initialize all members |
+
+## Interview Questions
+
+### Q1: What is the difference between `struct` and `union`?
+**Answer:** `struct` allocates separate memory for each member. `union` overlays members at the same memory location (only one active at a time).
+
+### Q2: What is structure padding?
+**Answer:** The compiler inserts padding bytes between members to satisfy alignment requirements. This ensures efficient memory access but wastes space.
+
+### Q3: What is `#pragma pack`?
+**Answer:** Controls structure alignment. `#pragma pack(1)` removes padding; `#pragma pack(push, n)` saves and sets alignment to n.
+
+### Q4: What is an opaque structure?
+**Answer:** A structure whose definition is hidden in the implementation file. Provides data hiding and ABI stability.
+
+### Q5: What is the difference between `->` and `.` operators?
+**Answer:** `.` accesses members directly. `->` accesses members through a pointer (equivalent to `(*ptr).member`).
+
+### Q6: What is a bit field?
+**Answer:** Allocates precise numbers of bits within a struct member. Useful for flags and compact storage.
+
+### Q7: What is the purpose of `typedef` with structures?
+**Answer:** Creates a type alias so you can use `Person` instead of `struct Person`. Improves readability.
+
+### Q8: How do you compare two structures?
+**Answer:** Use `memcmp` for byte-level comparison, or compare member by member. `==` doesn't work for structures.
+
+### Q9: What is the difference between `sizeof` a structure and sum of members?
+**Answer:** `sizeof` includes padding bytes. Sum of members excludes padding. May differ due to alignment.
+
+### Q10: What is a flexible array member?
+**Answer:** `struct { int n; int data[]; }` — array of unknown size at end of structure. Requires `malloc` with extra space.
+
+### Q11: What is the difference between `const struct Person *p` and `struct Person * const p`?
+**Answer:** `const struct Person *p` — pointer to const data (can't modify person). `struct Person * const p` — const pointer (can't change what p points to).
+
+### Q12: What is the purpose of `offsetof` macro?
+**Answer:** Returns the offset of a member from the start of a structure. Useful for manual padding and serialization.
+
+### Q13: What is the difference between `struct` in C and `class` in C++?
+**Answer:** C structures have no methods, no inheritance, no access control. C++ classes add these features. C structures are public by default.
+
+### Q14: What is a tagged union?
+**Answer:** A union with an additional tag field indicating which member is active. Prevents type confusion.
+
+### Q15: What is the difference between `#pragma pack` and `__attribute__((packed))`?
+**Answer:** `#pragma pack` is a compiler directive for alignment. `__attribute__((packed))` is GCC-specific and removes padding for specific structures.
+
+## Cross-References
+
+- **Previous Module:** [01 - Fundamentals](../01-fundamentals/)
+- **Next Module:** [03 - Preprocessor](../03-preprocessor/)
+- **Related:** [05 - Pointers Advanced](../05-pointers-advanced/) — Pointers to structures
+- **Related:** [06 - Data Structures](../06-data-structures/) — Linked lists, trees, etc.
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
+- **External:** [Compilers and Alignment](https://csapp.cs.cmu.edu/)

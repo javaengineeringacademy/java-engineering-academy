@@ -560,3 +560,380 @@ Data structures are the backbone of systems software: operating systems use link
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/introduction-to-algorithms/)
 - [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+
+## Overview
+
+The Data Structures module covers implementing fundamental data structures in C: linked lists, stacks, queues, hash tables, and binary search trees. C has no built-in collections, so you implement these from scratch using structs and pointers, gaining speed, size, and predictability.
+
+## Learning Objectives
+
+- Implement linked lists (singly and doubly)
+- Build stack and queue data structures
+- Create hash tables with collision handling
+- Implement binary search trees
+- Choose the right data structure for the problem
+
+## Prerequisites
+
+- Completion of Module 05 (Pointers Advanced)
+- Understanding of structures and pointers
+- Basic algorithm concepts
+
+## History
+
+- **1972** — Arrays and pointers in original C
+- **1978** — K&R C documented linked list patterns
+- **1989** — ANSI C standardized struct syntax
+- **1999** — C99 added flexible array members
+- **2011** — C11 added `_Alignas` for data alignment
+- **2023** — C23 added improved type inference
+
+## Production Notes
+
+- **Where is it used?** Databases, operating systems, compilers, interpreters
+- **Why is it useful?** Efficient data management, fast lookup, sorted iteration
+- **When should it be avoided?** Arrays for small, fixed collections
+- **Alternative?** C++ STL, Rust collections, third-party libraries
+
+## Core Concepts
+
+### Data Structure Comparison
+
+| Structure | Insert | Delete | Search | Ordered | Use Case |
+|-----------|--------|--------|--------|---------|----------|
+| Array | O(n) | O(n) | O(n) | Yes | Fixed collections |
+| Linked List | O(1)* | O(1)* | O(n) | No | Dynamic collections |
+| Stack | O(1) | O(1) | O(n) | No | LIFO operations |
+| Queue | O(1) | O(1) | O(n) | No | FIFO operations |
+| Hash Table | O(1) avg | O(1) avg | O(1) avg | No | Fast lookup |
+| BST | O(log n) | O(log n) | O(log n) | Yes | Sorted data |
+
+### When to Use Each
+
+| Problem | Best Structure | Why |
+|---------|----------------|-----|
+| Fast lookup by key | Hash Table | O(1) average |
+| Sorted iteration | BST | In-order traversal |
+| LIFO operations | Stack | Push/pop O(1) |
+| FIFO operations | Queue | Enqueue/dequeue O(1) |
+| Dynamic sizing | Linked List | O(1) insert/delete |
+
+## Internal Working
+
+### Memory Layout Comparison
+
+```
+Array: [1][2][3][4][5]  — Contiguous
+Linked List: 1→2→3→4→5  — Scattered
+Stack: Top→[5][4][3][2][1]  — LIFO
+Queue: [1][2][3][4][5]→Tail  — FIFO
+Hash Table: [bucket0]→[bucket1]→[bucket2]  — Chaining
+BST:      3
+         / \
+        1   5
+       / \
+      0   2
+```
+
+### Hash Table Collision Resolution
+
+| Method | Description | Trade-off |
+|--------|-------------|-----------|
+| Chaining | Linked list at each bucket | Simple, memory overhead |
+| Open Addressing | Probe for next empty slot | Cache-friendly, clustering |
+| Robin Hood | Rehash to minimize variance | Balanced, complex |
+
+## Syntax
+
+```c
+// Linked list node
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+// Stack
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} Stack;
+
+// Queue (circular)
+typedef struct {
+    int *data;
+    int front;
+    int rear;
+    int capacity;
+} Queue;
+
+// Hash table entry
+typedef struct Entry {
+    char *key;
+    int value;
+    struct Entry *next;
+} Entry;
+
+typedef struct {
+    Entry **buckets;
+    int size;
+} HashTable;
+
+// BST node
+typedef struct TreeNode {
+    int data;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+```
+
+## Examples
+
+### Easy Example: Linked List
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+void push(struct Node **head, int data) {
+    struct Node *new = malloc(sizeof(struct Node));
+    new->data = data;
+    new->next = *head;
+    *head = new;
+}
+
+void print(struct Node *head) {
+    while (head) {
+        printf("%d ", head->data);
+        head = head->next;
+    }
+}
+
+int main(void) {
+    struct Node *list = NULL;
+    push(&list, 3);
+    push(&list, 2);
+    push(&list, 1);
+    print(list);  // 1 2 3
+    return 0;
+}
+```
+
+### Medium Example: Stack
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} Stack;
+
+Stack *stack_new(int cap) {
+    Stack *s = malloc(sizeof(Stack));
+    s->data = malloc(cap * sizeof(int));
+    s->top = -1;
+    s->capacity = cap;
+    return s;
+}
+
+void push(Stack *s, int val) {
+    if (s->top < s->capacity - 1) {
+        s->data[++s->top] = val;
+    }
+}
+
+int pop(Stack *s) {
+    if (s->top >= 0) {
+        return s->data[s->top--];
+    }
+    return -1;
+}
+```
+
+### Hard Example: Hash Table
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TABLE_SIZE 100
+
+typedef struct Entry {
+    char *key;
+    int value;
+    struct Entry *next;
+} Entry;
+
+typedef struct {
+    Entry *buckets[TABLE_SIZE];
+} HashTable;
+
+unsigned int hash(const char *key) {
+    unsigned int h = 0;
+    while (*key) {
+        h = h * 31 + *key++;
+    }
+    return h % TABLE_SIZE;
+}
+
+void insert(HashTable *ht, const char *key, int value) {
+    unsigned int idx = hash(key);
+    Entry *e = malloc(sizeof(Entry));
+    e->key = strdup(key);
+    e->value = value;
+    e->next = ht->buckets[idx];
+    ht->buckets[idx] = e;
+}
+
+int search(HashTable *ht, const char *key) {
+    unsigned int idx = hash(key);
+    Entry *e = ht->buckets[idx];
+    while (e) {
+        if (strcmp(e->key, key) == 0) return e->value;
+        e = e->next;
+    }
+    return -1;
+}
+```
+
+### Enterprise Example: Thread-Safe Queue
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+typedef struct {
+    int *data;
+    int front, rear, size, capacity;
+    pthread_mutex_t mutex;
+    pthread_cond_t not_empty;
+    pthread_cond_t not_full;
+} ThreadSafeQueue;
+
+void enqueue(ThreadSafeQueue *q, int val) {
+    pthread_mutex_lock(&q->mutex);
+    while (q->size == q->capacity) {
+        pthread_cond_wait(&q->not_full, &q->mutex);
+    }
+    q->data[q->rear] = val;
+    q->rear = (q->rear + 1) % q->capacity;
+    q->size++;
+    pthread_cond_signal(&q->not_empty);
+    pthread_mutex_unlock(&q->mutex);
+}
+
+int dequeue(ThreadSafeQueue *q) {
+    pthread_mutex_lock(&q->mutex);
+    while (q->size == 0) {
+        pthread_cond_wait(&q->not_empty, &q->mutex);
+    }
+    int val = q->data[q->front];
+    q->front = (q->front + 1) % q->capacity;
+    q->size--;
+    pthread_cond_signal(&q->not_full);
+    pthread_mutex_unlock(&q->mutex);
+    return val;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Cache locality | Arrays > linked lists | Use arrays when possible |
+| Memory overhead | Pointers add overhead | Use compact representations |
+| Hash function | Distribution quality | Use FNV-1a or MurmurHash |
+| Tree balancing | BST can degrade | Use AVL or Red-Black trees |
+| Allocation | malloc/free overhead | Use memory pools |
+
+## Best Practices
+
+- Do:
+  - Choose the right data structure for the problem
+  - Free all allocated memory
+  - Check for NULL after malloc
+  - Use const for read-only parameters
+  - Document interface contracts
+  
+- Don't:
+  - Use linked lists for random access
+  - Ignore hash table load factor
+  - Recurse on deep trees (stack overflow)
+  - Assume O(1) for all operations
+  - Mix data structure interfaces
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Memory leak in linked list | Resource exhaustion | Free all nodes on destruction |
+| Hash table collision attack | O(n) degradation | Use cryptographic hash, limit size |
+| Stack overflow in recursion | Crash | Use iterative traversal |
+| Off-by-one in queue | Buffer overflow | Use circular buffer |
+| Uninitialized pointers | Undefined behavior | Initialize all pointers |
+
+## Interview Questions
+
+### Q1: What is the difference between array and linked list?
+**Answer:** Array: contiguous memory, O(1) access, O(n) insert. Linked list: scattered memory, O(n) access, O(1) insert.
+
+### Q2: What is a hash table collision?
+**Answer:** Two keys hash to the same bucket. Resolved by chaining (linked list) or open addressing (probing).
+
+### Q3: What is the difference between stack and queue?
+**Answer:** Stack: LIFO (last in, first out). Queue: FIFO (first in, first out).
+
+### Q4: What is a binary search tree?
+**Answer:** A tree where left child < parent < right child. Enables O(log n) search, insert, delete.
+
+### Q5: What is the time complexity of hash table lookup?
+**Answer:** O(1) average, O(n) worst case (all keys collide). Good hash function minimizes collisions.
+
+### Q6: What is the difference between singly and doubly linked list?
+**Answer:** Singly: next pointer only. Doubly: next and prev pointers. Doubly allows O(1) deletion but uses more memory.
+
+### Q7: What is a circular buffer?
+**Answer:** A fixed-size array with head and tail pointers that wrap around. Used for queues and streams.
+
+### Q8: What is the load factor of a hash table?
+**Answer:** Number of entries / number of buckets. When > 0.75, resize to maintain O(1) performance.
+
+### Q9: What is the difference between BST and heap?
+**Answer:** BST: left < root < right. Heap: parent >= children (max-heap). BST enables search; heap enables priority queue.
+
+### Q10: What is a self-balancing tree?
+**Answer:** A tree that automatically adjusts to maintain O(log n) height. Examples: AVL, Red-Black, B-tree.
+
+### Q11: What is the difference between depth-first and breadth-first search?
+**Answer:** DFS: go deep first (stack). BFS: go wide first (queue). DFS uses less memory; BFS finds shortest path.
+
+### Q12: What is the purpose of a sentinel node?
+**Answer:** A dummy node that simplifies edge cases (empty list, head deletion). Reduces conditional logic.
+
+### Q13: What is the difference between open addressing and chaining?
+**Answer:** Open addressing: store in array, probe for empty slot. Chaining: linked list at each bucket. Chaining is simpler.
+
+### Q14: What is a skip list?
+**Answer:** A linked list with multiple layers for O(log n) search. Alternative to balanced trees.
+
+### Q15: What is the difference between static and dynamic data structures?
+**Answer:** Static: fixed size (array). Dynamic: resizable (linked list, dynamic array). Dynamic uses more memory.
+
+## Cross-References
+
+- **Previous Module:** [05 - Pointers Advanced](../05-pointers-advanced/)
+- **Next Module:** [07 - Algorithms](../07-algorithms/)
+- **Related:** [02 - Structures](../02-structures/) — Building blocks
+- **Related:** [08 - Memory Management](../08-memory-management/) — Custom allocators
+- **External:** [Introduction to Algorithms (CLRS)](https://mitpress.mit.edu/9780262046305/)
+- **External:** [The Art of Computer Programming (Knuth)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

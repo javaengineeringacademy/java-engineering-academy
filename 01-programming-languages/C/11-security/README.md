@@ -434,3 +434,346 @@ Security in C requires defense in depth: secure coding practices (input validati
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [OWASP C Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C_Security_Cheat_Sheet.html)
+
+## Overview
+
+The Security module covers preventing the most dangerous class of software vulnerabilities in C: buffer overflows, format string vulnerabilities, integer overflows, and use-after-free bugs. Security must be baked into every line of C code you write.
+
+## Learning Objectives
+
+- Prevent buffer overflows with bounds checking
+- Avoid format string vulnerabilities
+- Detect and prevent integer overflows
+- Implement secure string handling
+- Apply defense-in-depth strategies
+
+## Prerequisites
+
+- Completion of Module 10 (Networking)
+- Understanding of memory management
+- Basic understanding of common vulnerabilities
+
+## History
+
+- **1988** — Morris worm exploited buffer overflow
+- **2001** — Code Red worm exploited IIS buffer overflow
+- **2014** — Heartbleed exploited OpenSSL buffer over-read
+- **2019** — CERT C Coding Standard published
+- **2021** — C11 Annex K (optional) added secure functions
+- **2023** — C23 added improved bounds checking
+
+## Production Notes
+
+- **Where is it used?** All C code handling untrusted input
+- **Why is it useful?** Prevents remote code execution, data corruption
+- **When should it be avoided?** Trusted internal code (still use compiler flags)
+- **Alternative?** Rust (ownership prevents most vulns), Go (GC + bounds checking)
+
+## Core Concepts
+
+### Common Vulnerabilities
+
+| Vulnerability | Description | Impact |
+|--------------|-------------|--------|
+| Buffer overflow | Writing past array bounds | Remote code execution |
+| Format string | User input as format string | Memory read/write |
+| Integer overflow | Arithmetic wraps around | Buffer overflow, logic errors |
+| Use-after-free | Using freed memory | Remote code execution |
+| Double free | Freeing same memory twice | Heap corruption |
+| Null dereference | Dereferencing NULL pointer | Crash, DoS |
+
+### Defense-in-Depth Layers
+
+| Layer | Strategy | Tools |
+|-------|----------|-------|
+| Code | Safe functions, bounds checking | `strncpy`, `snprintf` |
+| Compiler | Security flags | `-fstack-protector`, `-D_FORTIFY_SOURCE` |
+| OS | ASLR, DEP, stack canaries | Linux, Windows, macOS |
+| Runtime | Sanitizers | AddressSanitizer, Valgrind |
+
+## Internal Working
+
+### Buffer Overflow Attack
+
+```
+Stack Frame:
+[local variables]
+[return address] ← attacker overwrites this
+[saved frame pointer]
+[function arguments]
+
+Attack: overflow buffer to overwrite return address
+Result: attacker controls execution flow
+```
+
+### Format String Attack
+
+```
+printf(user_input);  // If input is "%x%x%x", leaks stack data
+printf("%s", user_input);  // Safe: user input as data, not format
+```
+
+## Syntax
+
+```c
+// Safe string handling
+char dest[100];
+strncpy(dest, src, sizeof(dest) - 1);
+dest[sizeof(dest) - 1] = '\0';
+
+// Safe formatted output
+char buffer[256];
+snprintf(buffer, sizeof(buffer), "Name: %s, Age: %d", name, age);
+
+// Bounds checking
+if (index >= 0 && index < array_size) {
+    array[index] = value;
+}
+
+// Integer overflow check
+if (a > INT_MAX - b) {
+    // overflow would occur
+    return -1;
+}
+int result = a + b;
+
+// Null check
+if (ptr == NULL) {
+    return -1;
+}
+```
+
+## Examples
+
+### Easy Example: Safe String Copy
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char dest[20];
+    const char *src = "Hello, World!";
+    
+    // Safe: limit copy to buffer size
+    strncpy(dest, src, sizeof(dest) - 1);
+    dest[sizeof(dest) - 1] = '\0';
+    
+    printf("Copied: %s\n", dest);
+    return 0;
+}
+```
+
+### Medium Example: Input Validation
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+int validate_input(const char *input) {
+    if (!input) return 0;
+    
+    size_t len = strlen(input);
+    if (len == 0 || len > 100) return 0;
+    
+    for (size_t i = 0; i < len; i++) {
+        if (!isalnum((unsigned char)input[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int main(void) {
+    char buffer[100];
+    printf("Enter username: ");
+    fgets(buffer, sizeof(buffer), stdin);
+    buffer[strcspn(buffer, "\n")] = '\0';
+    
+    if (validate_input(buffer)) {
+        printf("Valid input: %s\n", buffer);
+    } else {
+        printf("Invalid input\n");
+    }
+    return 0;
+}
+```
+
+### Hard Example: Safe Memory Operations
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+// Safe integer addition with overflow check
+int safe_add(int a, int b, int *result) {
+    if ((b > 0 && a > INT_MAX - b) ||
+        (b < 0 && a < INT_MIN - b)) {
+        return -1;  // overflow
+    }
+    *result = a + b;
+    return 0;
+}
+
+// Safe memory allocation
+void *safe_malloc(size_t size) {
+    if (size == 0 || size > SIZE_MAX / 2) {
+        return NULL;
+    }
+    void *ptr = malloc(size);
+    if (!ptr) {
+        return NULL;
+    }
+    return ptr;
+}
+
+// Safe string duplicate
+char *safe_strdup(const char *s) {
+    if (!s) return NULL;
+    size_t len = strlen(s);
+    char *dup = safe_malloc(len + 1);
+    if (dup) {
+        memcpy(dup, s, len + 1);
+    }
+    return dup;
+}
+```
+
+### Enterprise Example: Secure Buffer
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+typedef struct {
+    char *data;
+    size_t size;
+    size_t capacity;
+} SecureBuffer;
+
+SecureBuffer *secbuf_new(size_t capacity) {
+    SecureBuffer *buf = malloc(sizeof(SecureBuffer));
+    if (!buf) return NULL;
+    buf->data = calloc(capacity, 1);
+    if (!buf->data) { free(buf); return NULL; }
+    buf->size = 0;
+    buf->capacity = capacity;
+    return buf;
+}
+
+int secbuf_append(SecureBuffer *buf, const char *data, size_t len) {
+    if (buf->size + len > buf->capacity) {
+        return -1;  // would overflow
+    }
+    memcpy(buf->data + buf->size, data, len);
+    buf->size += len;
+    buf->data[buf->size] = '\0';
+    return 0;
+}
+
+void secbuf_free(SecureBuffer *buf) {
+    if (buf) {
+        memset(buf->data, 0, buf->capacity);  // clear sensitive data
+        free(buf->data);
+        free(buf);
+    }
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Bounds checking | Runtime overhead | Use compiler flags for auto-checking |
+| Secure functions | Slightly slower | Worth the security trade-off |
+| Sanitizers | 2-5x slowdown | Use in development, not production |
+| ASLR | Minor overhead | Enable by default |
+| Stack canaries | Minor overhead | Enable with `-fstack-protector` |
+
+## Best Practices
+
+- Do:
+  - Use `strncpy` instead of `strcpy`
+  - Use `snprintf` instead of `sprintf`
+  - Check return values from all functions
+  - Validate all input
+  - Enable compiler security flags
+  
+- Don't:
+  - Use `gets()` (removed in C11)
+  - Use `strcpy`, `strcat`, `sprintf`
+  - Trust user input
+  - Ignore compiler warnings
+  - Use deprecated functions
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Buffer overflow | Remote code execution | Use `strncpy` with size limit |
+| Format string | Memory read/write | Use `%s` format specifier |
+| Integer overflow | Buffer overflow | Check arithmetic before allocation |
+| Use-after-free | Undefined behavior | Set pointer to NULL after free |
+| Uninitialized memory | Information leak | Use `calloc` or `memset` |
+
+## Interview Questions
+
+### Q1: What is a buffer overflow?
+**Answer:** Writing past the end of an array, overwriting adjacent memory. Can corrupt data, crash, or enable remote code execution.
+
+### Q2: What is a format string vulnerability?
+**Answer:** When user input is used as a format string in `printf`. Allows reading/writing arbitrary memory.
+
+### Q3: What is the difference between `strcpy` and `strncpy`?
+**Answer:** `strcpy` copies until null terminator (no bounds checking). `strncpy` copies at most n bytes (safer).
+
+### Q4: What is the difference between `sprintf` and `snprintf`?
+**Answer:** `sprintf` writes without bounds checking. `snprintf` writes at most n bytes (prevents buffer overflow).
+
+### Q5: What is integer overflow?
+**Answer:** When arithmetic result exceeds the maximum value for the type, wrapping around. Can cause buffer overflows.
+
+### Q6: What is the purpose of `-fstack-protector`?
+**Answer:** Adds stack canaries to detect buffer overflows. Compiler inserts checks before function return.
+
+### Q7: What is AddressSanitizer?
+**Answer:** A compiler feature that detects memory errors at runtime. Compile with `-fsanitize=address`.
+
+### Q8: What is the difference between `memset` and `bzero`?
+**Answer:** `memset` sets memory to a value (standard). `bzero` sets to zero (deprecated, not standard).
+
+### Q9: What is the purpose of `_FORTIFY_SOURCE`?
+**Answer:** Enables runtime buffer overflow detection for common functions. Compile with `-D_FORTIFY_SOURCE=2`.
+
+### Q10: What is a use-after-free vulnerability?
+**Answer:** Accessing memory after it has been freed. Can lead to remote code execution.
+
+### Q11: What is a double free vulnerability?
+**Answer:** Freeing the same memory twice. Can corrupt the heap and lead to code execution.
+
+### Q12: What is the difference between ASLR and DEP?
+**Answer:** ASLR: randomizes memory layout. DEP: marks memory as non-executable. Both prevent code execution attacks.
+
+### Q13: What is the purpose of `__attribute__((format))`?
+**Answer:** Tells compiler to check format string arguments. Prevents format string vulnerabilities.
+
+### Q14: What is the difference between `const` and `readonly`?
+**Answer:** `const` is compile-time enforcement. `readonly` is runtime enforcement. `const` is more common in C.
+
+### Q15: What is the purpose of `secure_zero`?
+**Answer:** Securely zeroes memory to prevent compiler optimization from removing the clear. Used for sensitive data.
+
+## Cross-References
+
+- **Previous Module:** [10 - Networking](../10-networking/)
+- **Next Module:** [12 - Performance](../12-performance/)
+- **Related:** [08 - Memory Management](../08-memory-management/) — Memory safety
+- **Related:** [15 - Best Practices](../15-best-practices/) — Coding standards
+- **External:** [CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+- **External:** [OWASP C Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/C_Security_Cheat_Sheet.html)

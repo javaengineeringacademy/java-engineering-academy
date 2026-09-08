@@ -458,3 +458,317 @@ Performance optimization follows a hierarchy: algorithm choice (biggest impact),
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Computer Architecture: A Quantitative Approach (Hennessy & Patterson)](https://www.elsevier.com/books/computer-architecture/hennessy/978-0-128-20109-1)
 - [Linux perf性能分析工具](https://perf.wiki.kernel.org/index.php/Main_Page)
+
+## Overview
+
+The Performance module covers profiling, cache optimization, branch prediction, SIMD, and memory pools. C is already fast, but fast is not fast enough — profile first, identify bottlenecks, and optimize the critical 1% of code that accounts for 99% of execution time.
+
+## Learning Objectives
+
+- Profile code with gprof, perf, and Valgrind
+- Optimize for cache locality and branch prediction
+- Use SIMD intrinsics for parallel data processing
+- Implement memory pools for allocation-heavy code
+- Apply compiler optimization flags effectively
+
+## Prerequisites
+
+- Completion of Module 11 (Security)
+- Understanding of memory management
+- Basic understanding of computer architecture
+
+## History
+
+- **1972** — C designed for efficiency
+- **1985** — GCC optimizations improved significantly
+- **1999** — C99 added `restrict` keyword for aliasing hints
+- **2011** — C11 added `_Alignas` for cache alignment
+- **2017** — Compiler optimizations (LTO, PGO) matured
+- **2023** — C23 added improved `constexpr` for compile-time computation
+
+## Production Notes
+
+- **Where is it used?** Databases, game engines, high-frequency trading, embedded systems
+- **Why is it useful?** Maximum throughput, minimum latency
+- **When should it be avoided?** Before profiling — premature optimization wastes time
+- **Alternative?** Rust (LLVM backend), C++ (same performance, more abstractions)
+
+## Core Concepts
+
+### Performance Techniques
+
+| Technique | Purpose | Impact |
+|-----------|---------|--------|
+| Profiling | Find bottlenecks | Know where to optimize |
+| Cache optimization | Reduce cache misses | 2-10x speedup |
+| Branch optimization | Reduce mispredictions | 2-5x speedup |
+| SIMD | Parallel data processing | 4-16x speedup |
+| Memory pools | Reduce allocation overhead | 10-100x for allocation-heavy code |
+| Compiler flags | Enable optimizations | 1.5-3x speedup |
+
+### Optimization Priority
+
+| Priority | Technique | When to Apply |
+|----------|-----------|---------------|
+| 1 | Algorithm choice | Always first |
+| 2 | Data structure | Before micro-optimization |
+| 3 | Cache optimization | After profiling |
+| 4 | Branch optimization | After profiling |
+| 5 | SIMD | After basic optimization |
+| 6 | Compiler flags | Final step |
+
+## Internal Working
+
+### Cache Hierarchy
+
+```
+CPU Registers (fastest, ~1 cycle)
+    ↓
+L1 Cache (32KB, ~4 cycles)
+    ↓
+L2 Cache (256KB, ~10 cycles)
+    ↓
+L3 Cache (8MB, ~40 cycles)
+    ↓
+Main Memory (slowest, ~100 cycles)
+```
+
+### Branch Prediction
+
+```
+If branch is predicted correctly: ~1 cycle
+If branch is predicted wrong: ~15-20 cycles (pipeline flush)
+
+Use branchless code for critical paths:
+result = (condition) ? value_if_true : value_if_false;
+```
+
+## Syntax
+
+```c
+// Compiler optimization flags
+// gcc -O2 -march=native -flto -fomit-frame-pointer
+
+// restrict keyword (C99)
+void copy(int *restrict dst, const int *restrict src, int n) {
+    for (int i = 0; i < n; i++) {
+        dst[i] = src[i];
+    }
+}
+
+// Alignment (C11)
+_Alignas(64) int cache_aligned_array[1024];
+
+// SIMD intrinsics (GCC/Clang)
+#include <immintrin.h>
+__m256i a = _mm256_loadu_si256((__m256i *)ptr);
+__m256i b = _mm256_loadu_si256((__m256i *)ptr2);
+__m256i c = _mm256_add_epi32(a, b);
+_mm256_storeu_si256((__m256i *)result, c);
+```
+
+## Examples
+
+### Easy Example: Cache-Friendly Access
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define N 4096
+
+// Bad: column-major access
+void access_columns(int matrix[N][N]) {
+    for (int j = 0; j < N; j++) {
+        for (int i = 0; i < N; i++) {
+            matrix[i][j] = i + j;
+        }
+    }
+}
+
+// Good: row-major access
+void access_rows(int matrix[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            matrix[i][j] = i + j;
+        }
+    }
+}
+```
+
+### Medium Example: Branchless Code
+
+```c
+#include <stdio.h>
+
+// Branching version (slow for random data)
+int abs_branching(int x) {
+    if (x < 0) return -x;
+    return x;
+}
+
+// Branchless version (fast)
+int abs_branchless(int x) {
+    int mask = x >> 31;
+    return (x ^ mask) - mask;
+}
+
+// Conditional move (compiler may optimize)
+int max_branchless(int a, int b) {
+    return (a > b) ? a : b;
+}
+```
+
+### Hard Example: Memory Pool
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BLOCK_SIZE 64
+#define POOL_SIZE 1024
+
+typedef struct Block {
+    struct Block *next;
+} Block;
+
+typedef struct {
+    Block *free_list;
+    char memory[POOL_SIZE * BLOCK_SIZE];
+} Pool;
+
+void pool_init(Pool *pool) {
+    pool->free_list = NULL;
+    for (int i = 0; i < POOL_SIZE; i++) {
+        Block *block = (Block *)(pool->memory + i * BLOCK_SIZE);
+        block->next = pool->free_list;
+        pool->free_list = block;
+    }
+}
+
+void *pool_alloc(Pool *pool) {
+    if (!pool->free_list) return NULL;
+    Block *block = pool->free_list;
+    pool->free_list = block->next;
+    return block;
+}
+
+void pool_free(Pool *pool, void *ptr) {
+    Block *block = (Block *)ptr;
+    block->next = pool->free_list;
+    pool->free_list = block;
+}
+```
+
+### Enterprise Example: SIMD Vector Addition
+
+```c
+#include <immintrin.h>
+#include <stdio.h>
+
+void add_arrays_simd(int *a, int *b, int *result, int n) {
+    int i = 0;
+    for (; i + 8 <= n; i += 8) {
+        __m256i va = _mm256_loadu_si256((__m256i *)(a + i));
+        __m256i vb = _mm256_loadu_si256((__m256i *)(b + i));
+        __m256i vc = _mm256_add_epi32(va, vb);
+        _mm256_storeu_si256((__m256i *)(result + i), vc);
+    }
+    for (; i < n; i++) {
+        result[i] = a[i] + b[i];
+    }
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Cache misses | Memory latency | Use cache-friendly access patterns |
+| Branch mispredictions | Pipeline flushes | Use branchless code |
+| Allocation overhead | malloc/free cost | Use memory pools |
+| False sharing | Cache line conflicts | Pad shared data |
+| Loop unrolling | Instruction overhead | Let compiler handle |
+
+## Best Practices
+
+- Do:
+  - Profile before optimizing
+  - Optimize hot paths first
+  - Use cache-friendly data structures
+  - Enable compiler optimizations
+  - Benchmark before and after changes
+  
+- Don't:
+  - Prematurely optimize
+  - Ignore profiling data
+  - Over-optimize cold paths
+  - Assume you know the bottleneck
+  - Sacrifice readability for micro-optimization
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Premature optimization | Wasted time, complex code | Profile first |
+| Cache misses | Slow memory access | Use sequential access |
+| Branch mispredictions | Pipeline flushes | Use branchless code |
+| False sharing | Performance degradation | Pad shared data |
+| Ignoring compiler flags | Missed optimizations | Use `-O2` or `-O3` |
+
+## Interview Questions
+
+### Q1: What is the difference between `-O1`, `-O2`, and `-O3`?
+**Answer:** `-O1`: basic optimizations. `-O2`: more optimizations (inlining, loop unrolling). `-O3`: aggressive optimizations (SIMD, vectorization).
+
+### Q2: What is cache locality?
+**Answer:** Accessing data that is close in memory to recently accessed data. Improves performance by reducing cache misses.
+
+### Q3: What is branch prediction?
+**Answer:** CPU predicting which branch of an if/else will be taken. Correct predictions improve performance; mispredictions cause pipeline flushes.
+
+### Q4: What is the difference between `malloc` and a memory pool?
+**Answer:** `malloc`: general-purpose, slower. Memory pool: pre-allocated, faster for fixed-size allocations.
+
+### Q5: What is SIMD?
+**Answer:** Single Instruction, Multiple Data. Processing multiple data elements with one instruction (e.g., AVX, SSE).
+
+### Q6: What is the difference between `restrict` pointer and regular pointer?
+**Answer:** `restrict`: tells compiler the pointer is the only reference to the data. Enables more optimizations (no aliasing).
+
+### Q7: What is the purpose of `-march=native`?
+**Answer:** Enables CPU-specific optimizations (AVX, SSE4) for the current machine. Improves performance but reduces portability.
+
+### Q8: What is the difference between `static` and `inline` functions?
+**Answer:** `static`: file scope, external linkage. `inline`: compiler may inline the function (no external linkage).
+
+### Q9: What is the difference between `gprof` and `perf`?
+**Answer:** `gprof`: profiling tool, requires compilation with `-pg`. `perf`: Linux performance counters, no compilation needed.
+
+### Q10: What is the difference between `volatile` and `const`?
+**Answer:** `volatile`: prevents compiler optimization (value may change unexpectedly). `const`: read-only (compiler may optimize).
+
+### Q11: What is the difference between `__attribute__((packed))` and `__attribute__((aligned))`?
+**Answer:** `packed`: removes padding. `aligned`: ensures specific alignment. Both affect structure layout.
+
+### Q12: What is the purpose of `__builtin_expect`?
+**Answer:** Hints to compiler about branch probability. `if (__builtin_expect(x, 0))` means x is usually false.
+
+### Q13: What is the difference between `memcpy` and `memmove`?
+**Answer:** `memcpy`: faster, no overlap handling. `memmove`: handles overlapping regions. Use `memmove` when overlapping is possible.
+
+### Q14: What is the difference between `calloc` and `malloc` + `memset`?
+**Answer:** `calloc`: zero-initialized, may be optimized by OS. `malloc` + `memset`: explicit zeroing, two operations.
+
+### Q15: What is the difference between `-flto` and regular compilation?
+**Answer:** `-flto`: link-time optimization, enables cross-file inlining and optimization. Slower build but better performance.
+
+## Cross-References
+
+- **Previous Module:** [11 - Security](../11-security/)
+- **Next Module:** [13 - Testing](../13-testing/)
+- **Related:** [07 - Algorithms](../07-algorithms/) — Algorithm complexity
+- **Related:** [08 - Memory Management](../08-memory-management/) — Memory optimization
+- **External:** [Computer Architecture: A Quantitative Approach](https://www.elsevier.com/books/computer-architecture/hennessy/978-0-128-20109-1)
+- **External:** [Linux perf](https://perf.wiki.kernel.org/index.php/Main_Page)

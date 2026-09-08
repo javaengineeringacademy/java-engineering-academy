@@ -480,3 +480,338 @@ Testing in C is critical because there is no runtime safety net — no exception
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
 - [Advanced Linux Programming (free)](https://www.advancedlinuxprogramming.com/)
+
+## Overview
+
+The Testing module covers unit testing, integration testing, memory testing, fuzz testing, and static analysis for C code. Without testing, you discover bugs in production — when customers are affected, data is lost, or systems go down.
+
+## Learning Objectives
+
+- Write unit tests with assert and custom frameworks
+- Detect memory leaks with Valgrind and AddressSanitizer
+- Apply fuzz testing with AFL and libFuzzer
+- Use static analysis tools (Clang, Cppcheck)
+- Achieve meaningful test coverage
+
+## Prerequisites
+
+- Completion of Module 12 (Performance)
+- Understanding of C functions and pointers
+- Basic debugging concepts
+
+## History
+
+- **1972** — assert macro in original C
+- **1978** — K&R C documented debugging techniques
+- **1989** — ANSI C standardized assert macro
+- **1998** — Valgrind released for memory debugging
+- **2004** — AFL released for fuzz testing
+- **2011** — C11 added `_Static_assert` for compile-time checks
+
+## Production Notes
+
+- **Where is it used?** All production C code, especially parsers and input handlers
+- **Why is it useful?** Prevents crashes, memory corruption, silent wrong answers
+- **When should it be avoided?** 100% coverage is not the goal — focus on critical paths
+- **Alternative?** Property-based testing (QuickCheck), fuzzing campaigns
+
+## Core Concepts
+
+### Testing Types
+
+| Type | Purpose | Tool |
+|------|---------|------|
+| Unit tests | Verify individual functions | assert, Unity, Check |
+| Integration tests | Verify component interaction | Custom test harnesses |
+| Memory tests | Find leaks and corruption | Valgrind, AddressSanitizer |
+| Fuzz tests | Find crashes with random input | AFL, libFuzzer |
+| Performance tests | Verify performance requirements | Custom benchmarks |
+| Static analysis | Find bugs without execution | Clang Static Analyzer, Cppcheck |
+
+### Testing Pyramid
+
+```
+        ┌─────────┐
+        │  E2E    │  Few, slow, high confidence
+        ├─────────┤
+        │Integration│  Medium, moderate speed
+        ├─────────┤
+        │  Unit   │  Many, fast, low confidence
+        └─────────┘
+```
+
+## Internal Working
+
+### Valgrind Workflow
+
+```
+valgrind --leak-check=full ./program
+    ↓
+Heap summary: allocated, freed, leaked
+    ↓
+If leaks > 0: investigate and fix
+```
+
+### Fuzz Testing Workflow
+
+```
+AFL fuzzer
+    ↓
+Mutates input randomly
+    ↓
+Executes program
+    ↓
+Monitors for crashes
+    ↓
+Reports crashing inputs
+```
+
+## Syntax
+
+```c
+// assert macro
+#include <assert.h>
+#include <stdio.h>
+
+int add(int a, int b) { return a + b; }
+
+int main(void) {
+    assert(add(2, 3) == 5);
+    assert(add(-1, 1) == 0);
+    assert(add(0, 0) == 0);
+    printf("All tests passed\n");
+    return 0;
+}
+
+// Custom test framework
+#define TEST(name) void name(void)
+#define ASSERT(expr) do { \
+    if (!(expr)) { \
+        fprintf(stderr, "FAIL: %s:%d: %s\n", __FILE__, __LINE__, #expr); \
+        return 1; \
+    } \
+} while(0)
+
+// Memory leak detection
+// valgrind --leak-check=full ./program
+// Or compile with -fsanitize=address
+```
+
+## Examples
+
+### Easy Example: Basic Assert
+
+```c
+#include <assert.h>
+#include <stdio.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int main(void) {
+    assert(max(1, 2) == 2);
+    assert(max(2, 1) == 2);
+    assert(max(1, 1) == 1);
+    assert(max(-1, -2) == -1);
+    printf("All tests passed\n");
+    return 0;
+}
+```
+
+### Medium Example: Test Framework
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    const char *name;
+    int (*test)(void);
+} TestCase;
+
+#define TEST(name) int test_##name(void)
+#define ASSERT_EQ(a, b) do { \
+    if ((a) != (b)) { \
+        fprintf(stderr, "FAIL: %s:%d: %d != %d\n", __FILE__, __LINE__, (a), (b)); \
+        return 1; \
+    } \
+} while(0)
+
+int run_tests(TestCase *tests, int count) {
+    int passed = 0, failed = 0;
+    for (int i = 0; i < count; i++) {
+        printf("Running %s... ", tests[i].name);
+        if (tests[i].test() == 0) {
+            printf("PASSED\n");
+            passed++;
+        } else {
+            printf("FAILED\n");
+            failed++;
+        }
+    }
+    printf("\n%d passed, %d failed\n", passed, failed);
+    return failed > 0 ? 1 : 0;
+}
+```
+
+### Hard Example: Memory Leak Test
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+// Run with: valgrind --leak-check=full ./test
+// Or compile with: gcc -fsanitize=address -g test.c
+
+void leak_memory(void) {
+    int *p = malloc(100);  // Intentional leak for testing
+    // Missing free(p);
+}
+
+void no_leak(void) {
+    int *p = malloc(100);
+    free(p);  // Properly freed
+}
+
+int main(void) {
+    printf("Testing memory leaks...\n");
+    // leak_memory();  // Uncomment to see Valgrind report
+    no_leak();
+    printf("Done\n");
+    return 0;
+}
+```
+
+### Enterprise Example: Fuzz Testing Harness
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// libFuzzer harness
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (size < 4) return 0;
+    
+    // Parse input
+    int value = *(int *)data;
+    
+    // Use value in some logic
+    if (value > 0) {
+        // Do something
+    }
+    
+    return 0;
+}
+
+// AFL harness
+int main(int argc, char **argv) {
+    FILE *f = fopen(argv[1], "r");
+    if (!f) return 1;
+    
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    rewind(f);
+    
+    char *buffer = malloc(size);
+    fread(buffer, 1, size, f);
+    fclose(f);
+    
+    LLVMFuzzerTestOneInput((const uint8_t *)buffer, size);
+    free(buffer);
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Test speed | Fast feedback loop | Run unit tests frequently |
+| Valgrind overhead | 5-20x slowdown | Use selectively, not in CI |
+| ASan overhead | 2-5x slowdown | Use in development |
+| Fuzz testing | Time-consuming | Use continuous fuzzing |
+| Coverage | Meaningless without context | Focus on critical paths |
+
+## Best Practices
+
+- Do:
+  - Test edge cases (NULL, empty, boundary values)
+  - Run tests under Valgrind/ASan
+  - Use continuous integration
+  - Test error paths, not just happy paths
+  - Document test expectations
+  
+- Don't:
+  - Only test happy paths
+  - Ignore memory leaks
+  - Assume 100% coverage means correctness
+  - Skip tests in production code
+  - Use assert for runtime errors (use error handling)
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Testing only happy paths | Missed edge cases | Test NULL, empty, boundary |
+| Ignoring memory leaks | Resource exhaustion | Run Valgrind regularly |
+| Using assert for errors | Crashes in production | Use error handling |
+| Not testing error paths | Undetected bugs | Test all code paths |
+| Skipping integration tests | Undetected interactions | Test component interactions |
+
+## Interview Questions
+
+### Q1: What is the difference between unit and integration tests?
+**Answer:** Unit tests verify individual functions in isolation. Integration tests verify components working together.
+
+### Q2: What is Valgrind?
+**Answer:** A memory debugging tool that detects memory leaks, use-after-free, and other memory errors. Run with `valgrind ./program`.
+
+### Q3: What is AddressSanitizer?
+**Answer:** A compiler feature that detects memory errors at runtime. Compile with `-fsanitize=address`. Faster than Valgrind.
+
+### Q4: What is fuzz testing?
+**Answer:** Testing with random inputs to find crashes and vulnerabilities. Tools: AFL, libFuzzer.
+
+### Q5: What is the difference between `assert` and error handling?
+**Answer:** `assert`: debugging aid, removed in release builds. Error handling: runtime error recovery, always active.
+
+### Q6: What is static analysis?
+**Answer:** Analyzing code without executing it to find bugs. Tools: Clang Static Analyzer, Cppcheck, Coverity.
+
+### Q7: What is the difference between code coverage and test quality?
+**Answer:** Code coverage measures which lines are executed. Test quality measures whether tests actually verify correctness.
+
+### Q8: What is the difference between `assert` and `_Static_assert`?
+**Answer:** `assert`: runtime check, can be disabled. `_Static_assert`: compile-time check, always active.
+
+### Q9: What is the purpose of `__attribute__((constructor))`?
+**Answer:** Runs a function before `main()`. Useful for test setup.
+
+### Q10: What is the difference between `fprintf(stderr)` and `fprintf(stdout)`?
+**Answer:** `stderr`: unbuffered, always displayed. `stdout`: buffered, may be delayed. Use `stderr` for error messages.
+
+### Q11: What is the difference between `exit(0)` and `return 0` from `main`?
+**Answer:** `exit(0)`: terminates program, calls `atexit` handlers. `return 0`: equivalent to `exit(0)` from `main`.
+
+### Q12: What is the difference between `gdb` and `valgrind`?
+**Answer:** `gdb`: debugger, step through code. `valgrind`: memory debugger, detect leaks and errors.
+
+### Q13: What is the difference between `make check` and `make test`?
+**Answer:** Both run tests, but `make check` is more common in GNU projects. Implementation varies.
+
+### Q14: What is the difference between `CUnit` and `Unity`?
+**Answer:** Both are unit testing frameworks for C. `CUnit`: more features, larger. `Unity`: simpler, embedded-friendly.
+
+### Q15: What is the purpose of `catchsegv`?
+**Answer:** Catches segmentation faults and prints a backtrace. Useful for debugging crashes.
+
+## Cross-References
+
+- **Previous Module:** [12 - Performance](../12-performance/)
+- **Next Module:** [14 - Build Systems](../14-build-systems/)
+- **Related:** [11 - Security](../11-security/) — Security testing
+- **Related:** [15 - Best Practices](../15-best-practices/) — Coding standards
+- **External:** [Valgrind](https://valgrind.org/)
+- **External:** [AFL Fuzzer](https://lcamtuf.coredump.cx/afl/)

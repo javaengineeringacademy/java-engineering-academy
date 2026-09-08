@@ -494,3 +494,310 @@ Advanced pointer patterns enable C's most powerful abstractions: function pointe
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Expert C Programming: Deep C Secrets (van der Linden)](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+
+## Overview
+
+The Advanced Pointers module covers function pointers, opaque pointers, pointer-to-pointer, and complex declarations. These patterns enable callbacks, dynamic dispatch, plugin architectures, and polymorphic behavior in C. Every major C library uses these patterns.
+
+## Learning Objectives
+
+- Use function pointers for callbacks and dynamic dispatch
+- Implement opaque pointers for API boundaries
+- Work with pointer-to-pointer for modifying pointers in functions
+- Read complex declarations using the Spiral Rule
+- Implement flexible array members (C99)
+
+## Prerequisites
+
+- Completion of Module 04 (File I/O)
+- Understanding of basic pointers
+- Function declaration and calling
+
+## History
+
+- **1972** — Function pointers included in original C
+- **1978** — K&R C documented pointer syntax
+- **1989** — ANSI C standardized function pointer behavior
+- **1999** — C99 added flexible array members
+- **2011** — C11 added `_Generic` for type-generic macros
+- **2023** — C23 added improved function pointer syntax
+
+## Production Notes
+
+- **Where is it used?** Callbacks, plugin systems, event handlers, dynamic dispatch
+- **Why is it useful?** Enables polymorphism, decouples interfaces from implementations
+- **When should it be avoided?** When simple function calls suffice
+- **Alternative?** C++ virtual methods, Rust trait objects, Go interfaces
+
+## Core Concepts
+
+### Advanced Pointer Patterns
+
+| Pattern | Syntax | Use Case |
+|---------|--------|----------|
+| Pointer-to-pointer | `int **pp` | Modifying pointers in functions |
+| Array of pointers | `int *arr[]` | Variable-length argument lists |
+| Pointer to array | `int (*ptr)[N]` | Passing 2D arrays |
+| Function pointer | `int (*func)(int)` | Callbacks, dynamic dispatch |
+| Opaque pointer | `typedef struct Handle Handle` | API boundaries, ABI stability |
+
+### Function Pointer Types
+
+| Type | Declaration | Use Case |
+|------|-------------|----------|
+| Simple | `int (*func)(int)` | Single parameter callback |
+| Multiple params | `int (*func)(int, int)` | Multi-parameter callback |
+| Return pointer | `int *(*func)(int)` | Returns pointer |
+| No return | `void (*func)(void)` | Notification callback |
+
+## Internal Working
+
+### Function Pointer Memory Layout
+
+```
+Function Pointer Variable
+├── Address of function (8 bytes on 64-bit)
+├── Points to: function code in text segment
+└── Called via: indirect call instruction
+```
+
+### Opaque Pointer Pattern
+
+```
+Header File (.h)
+├── typedef struct Handle Handle;
+├── Handle *handle_new(void);
+└── void handle_free(Handle *h);
+
+Implementation File (.c)
+├── struct Handle { int data; };
+├── Handle *handle_new(void) { ... }
+└── void handle_free(Handle *h) { ... }
+```
+
+## Syntax
+
+```c
+// Function pointer declaration
+int add(int a, int b) { return a + b; }
+int (*func_ptr)(int, int) = add;
+int result = func_ptr(2, 3);  // 5
+
+// Pointer-to-pointer
+int x = 10;
+int *p = &x;
+int **pp = &p;
+printf("%d\n", **pp);  // 10
+
+// Opaque pointer
+typedef struct Handle Handle;
+Handle *handle_new(void);
+void handle_free(Handle *h);
+
+// Complex declaration (Spiral Rule)
+int (*(*func)(int))(int, int);  // Function returning function pointer
+
+// Flexible array member (C99)
+struct flex {
+    int count;
+    int data[];
+};
+```
+
+## Examples
+
+### Easy Example: Function Pointer
+
+```c
+#include <stdio.h>
+
+int add(int a, int b) { return a + b; }
+int sub(int a, int b) { return a - b; }
+
+int main(void) {
+    int (*op)(int, int) = add;
+    printf("add: %d\n", op(2, 3));
+    op = sub;
+    printf("sub: %d\n", op(2, 3));
+    return 0;
+}
+```
+
+### Medium Example: Callback System
+
+```c
+#include <stdio.h>
+
+typedef void (*callback)(int);
+
+void process(int *arr, int n, callback cb) {
+    for (int i = 0; i < n; i++) {
+        cb(arr[i]);
+    }
+}
+
+void print(int val) { printf("%d ", val); }
+void square(int val) { printf("%d ", val * val); }
+
+int main(void) {
+    int arr[] = {1, 2, 3, 4, 5};
+    printf("Values: ");
+    process(arr, 5, print);
+    printf("\nSquares: ");
+    process(arr, 5, square);
+    return 0;
+}
+```
+
+### Hard Example: Opaque Pointer API
+
+```c
+// handle.h
+typedef struct Handle Handle;
+Handle *handle_create(void);
+void handle_destroy(Handle *h);
+int handle_get_value(Handle *h);
+void handle_set_value(Handle *h, int val);
+
+// handle.c
+#include "handle.h"
+#include <stdlib.h>
+
+struct Handle {
+    int value;
+    int (*validator)(int);
+};
+
+Handle *handle_create(void) {
+    Handle *h = malloc(sizeof(Handle));
+    h->value = 0;
+    h->validator = NULL;
+    return h;
+}
+
+void handle_destroy(Handle *h) { free(h); }
+int handle_get_value(Handle *h) { return h->value; }
+void handle_set_value(Handle *h, int val) { h->value = val; }
+```
+
+### Enterprise Example: Plugin System
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    const char *name;
+    int version;
+    int (*init)(void);
+    void (*execute)(const char *input);
+    void (*cleanup)(void);
+} Plugin;
+
+int plugin_init_a(void) { printf("Plugin A initialized\n"); return 0; }
+void plugin_execute_a(const char *input) { printf("Plugin A: %s\n", input); }
+void plugin_cleanup_a(void) { printf("Plugin A cleaned up\n"); }
+
+Plugin plugins[] = {
+    {"Alpha", 1, plugin_init_a, plugin_execute_a, plugin_cleanup_a},
+    {NULL, 0, NULL, NULL, NULL}
+};
+
+int load_plugins(void) {
+    for (Plugin *p = plugins; p->name; p++) {
+        if (p->init() != 0) return -1;
+    }
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Indirection | Function pointer calls | Inline small functions |
+| Cache | Indirect call prediction | Minimize function pointer usage in hot paths |
+| Optimization | Compiler can't inline through pointers | Use direct calls when possible |
+| Virtual dispatch | vtable lookup overhead | Consider direct calls for performance |
+
+## Best Practices
+
+- Do:
+  - Use `typedef` for function pointer types
+  - Null-check function pointers before calling
+  - Use opaque pointers for API boundaries
+  - Document callback behavior
+  - Use `const` for read-only parameters
+  
+- Don't:
+  - Overuse function pointers (readability)
+  - Store dangling function pointers
+  - Ignore compiler warnings about pointer types
+  - Use complex declarations without explanation
+  - Assume function pointer size
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Dangling function pointer | Crash, undefined behavior | Null-check before call |
+| Wrong function signature | Undefined behavior | Match types exactly |
+| Missing `volatile` on callback | Optimization issues | Use `volatile` for hardware callbacks |
+| Overuse of function pointers | Unreadable code | Use direct calls when possible |
+| Not checking `realloc` temp | Memory leak | Use temp pointer for realloc |
+
+## Interview Questions
+
+### Q1: What is a function pointer?
+**Answer:** A variable that stores the address of a function. Used for callbacks, dynamic dispatch, and event handling.
+
+### Q2: What is the Spiral Rule for reading declarations?
+**Answer:** Start at the variable name, spiral right for array/function, left for pointer/reference. Explains complex C declarations.
+
+### Q3: What is an opaque pointer?
+**Answer:** A pointer to a struct whose definition is hidden in the implementation file. Provides data hiding and ABI stability.
+
+### Q4: What is the difference between `int *arr[10]` and `int (*arr)[10]`?
+**Answer:** `int *arr[10]` is an array of 10 pointers to int. `int (*arr)[10]` is a pointer to an array of 10 ints.
+
+### Q5: What is a flexible array member?
+**Answer:** `struct { int n; int data[]; }` — array of unknown size at end of structure. Requires `malloc` with extra space.
+
+### Q6: What is the difference between function pointer and void pointer?
+**Answer:** Function pointer stores function address. Void pointer stores data address. Function pointers can be called; void pointers must be cast.
+
+### Q7: What is the purpose of `typedef` with function pointers?
+**Answer:** Creates a readable alias: `typedef int (*operation)(int, int);` instead of `int (*operation)(int, int);`.
+
+### Q8: What is a callback function?
+**Answer:** A function passed as an argument to another function. Called back when an event occurs or operation completes.
+
+### Q9: What is the difference between `int (*func)(int)` and `int (*func)(int, int)`?
+**Answer:** First takes one parameter. Second takes two parameters. Function pointer types must match exactly.
+
+### Q10: What is the difference between `sizeof` on function pointer and data pointer?
+**Answer:** Both are typically 8 bytes on 64-bit systems. Function pointer size is implementation-defined.
+
+### Q11: What is the difference between `extern` function and function pointer?
+**Answer:** `extern` function is resolved at link time. Function pointer is resolved at runtime (dynamic dispatch).
+
+### Q12: What is the purpose of `__attribute__((constructor))`?
+**Answer:** GCC attribute that runs a function before `main()`. Useful for initialization.
+
+### Q13: What is the difference between `register` and `static` variables?
+**Answer:** `register` suggests CPU register allocation (no address). `static` persists for program lifetime.
+
+### Q14: What is the difference between `const int *p` and `int * const p`?
+**Answer:** `const int *p` — pointer to const data. `int * const p` — const pointer to data.
+
+### Q15: What is the difference between `sizeof` and `strlen`?
+**Answer:** `sizeof` returns size in bytes (compile-time). `strlen` returns string length (runtime).
+
+## Cross-References
+
+- **Previous Module:** [04 - File I/O](../04-file-io/)
+- **Next Module:** [06 - Data Structures](../06-data-structures/)
+- **Related:** [02 - Structures](../02-structures/) — Structure pointers
+- **Related:** [09 - Concurrency](../09-concurrency/) — Thread callbacks
+- **External:** [Expert C Programming](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)

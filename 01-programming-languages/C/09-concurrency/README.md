@@ -513,3 +513,365 @@ Concurrency in C maps directly to OS primitives — pthreads, mutexes, condition
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [POSIX Threads Programming (LLNL)](https://hpc-tutorials.llc.us/posix/)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+
+## Overview
+
+The Concurrency module covers multi-threaded programming in C using POSIX threads (pthreads), C11 atomics, and synchronization primitives. Concurrency enables handling thousands of connections simultaneously, keeping UIs responsive, and improving throughput — but introduces race conditions, deadlocks, and data corruption.
+
+## Learning Objectives
+
+- Create and manage threads with pthreads
+- Protect shared data with mutexes
+- Synchronize threads with condition variables
+- Use atomic operations for lock-free programming
+- Implement thread pool patterns
+
+## Prerequisites
+
+- Completion of Module 08 (Memory Management)
+- Understanding of pointers and functions
+- Basic understanding of processes
+
+## History
+
+- **1972** — Processes and signals in original C
+- **1978** — K&R C documented process creation
+- **1989** — ANSI C standardized `setjmp`/`longjmp`
+- **1995** — POSIX threads (pthreads) standardized
+- **2011** — C11 added `<stdatomic.h>` and `<threads.h>`
+- **2023** — C23 added improved atomic operations
+
+## Production Notes
+
+- **Where is it used?** Web servers, databases, operating systems, game engines
+- **Why is it useful?** Multi-core utilization, overlapping I/O, responsive UIs
+- **When should it be avoided?** When synchronization overhead exceeds parallelism benefit
+- **Alternative?** Go goroutines, Rust async/tokio, Erlang processes
+
+## Core Concepts
+
+### Concurrency Mechanisms
+
+| Mechanism | Purpose | Header |
+|-----------|---------|--------|
+| Threads | Independent execution paths | `<pthread.h>` |
+| Mutex | Mutual exclusion (protect shared data) | `<pthread.h>` |
+| Condition variables | Thread synchronization (wait/signal) | `<pthread.h>` |
+| Semaphores | Counting synchronization | `<semaphore.h>` |
+| Atomics | Thread-safe operations without locks | `<stdatomic.h>` |
+
+### Threading Models
+
+| Model | Description | Use Case |
+|-------|-------------|----------|
+| One thread per task | Simple but doesn't scale | Low-concurrency apps |
+| Thread pool | Reuse threads for tasks | Web servers |
+| Event-driven | Single thread + async I/O | High-concurrency I/O |
+| Actor model | Message passing between actors | Distributed systems |
+
+## Internal Working
+
+### Thread Execution
+
+```
+Main Thread
+    ↓ pthread_create()
+New Thread
+    ↓
+Thread Body Function
+    ↓
+pthread_exit() or return
+    ↓
+Main Thread continues
+```
+
+### Mutex Lock/Unlock
+
+```
+Thread A: lock(mutex) → critical section → unlock(mutex)
+Thread B: lock(mutex) → waits... → critical section → unlock(mutex)
+```
+
+## Syntax
+
+```c
+#include <pthread.h>
+#include <stdatomic.h>
+
+// Thread creation
+void *thread_func(void *arg) {
+    printf("Hello from thread\n");
+    return NULL;
+}
+
+int main(void) {
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_func, NULL);
+    pthread_join(thread, NULL);
+    return 0;
+}
+
+// Mutex
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_lock(&mutex);
+// critical section
+pthread_mutex_unlock(&mutex);
+
+// Condition variable
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+pthread_mutex_lock(&mutex);
+while (!ready) {
+    pthread_cond_wait(&cond, &mutex);
+}
+pthread_mutex_unlock(&mutex);
+
+// Atomic operations
+atomic_int counter = ATOMIC_VAR_INIT(0);
+atomic_fetch_add(&counter, 1);
+int val = atomic_load(&counter);
+```
+
+## Examples
+
+### Easy Example: Thread Creation
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+
+void *print_message(void *arg) {
+    char *msg = (char *)arg;
+    printf("%s\n", msg);
+    return NULL;
+}
+
+int main(void) {
+    pthread_t t1, t2;
+    pthread_create(&t1, NULL, print_message, "Thread 1");
+    pthread_create(&t2, NULL, print_message, "Thread 2");
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    return 0;
+}
+```
+
+### Medium Example: Mutex Counter
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+
+int counter = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void *increment(void *arg) {
+    for (int i = 0; i < 100000; i++) {
+        pthread_mutex_lock(&mutex);
+        counter++;
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+int main(void) {
+    pthread_t t1, t2;
+    pthread_create(&t1, NULL, increment, NULL);
+    pthread_create(&t2, NULL, increment, NULL);
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    printf("Counter: %d\n", counter);  // 200000
+    return 0;
+}
+```
+
+### Hard Example: Producer-Consumer
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define BUFFER_SIZE 10
+int buffer[BUFFER_SIZE];
+int count = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t not_full = PTHREAD_COND_INITIALIZER;
+pthread_cond_t not_empty = PTHREAD_COND_INITIALIZER;
+
+void *producer(void *arg) {
+    for (int i = 0; i < 20; i++) {
+        pthread_mutex_lock(&mutex);
+        while (count == BUFFER_SIZE) {
+            pthread_cond_wait(&not_full, &mutex);
+        }
+        buffer[count++] = i;
+        pthread_cond_signal(&not_empty);
+        pthread_mutex_unlock(&mutex);
+    }
+    return NULL;
+}
+
+void *consumer(void *arg) {
+    for (int i = 0; i < 20; i++) {
+        pthread_mutex_lock(&mutex);
+        while (count == 0) {
+            pthread_cond_wait(&not_empty, &mutex);
+        }
+        int item = buffer[--count];
+        pthread_cond_signal(&not_full);
+        pthread_mutex_unlock(&mutex);
+        printf("Consumed: %d\n", item);
+    }
+    return NULL;
+}
+```
+
+### Enterprise Example: Thread Pool
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+typedef struct Task {
+    void (*function)(void *);
+    void *arg;
+    struct Task *next;
+} Task;
+
+typedef struct {
+    pthread_t *threads;
+    Task *task_head;
+    Task *task_tail;
+    pthread_mutex_t mutex;
+    pthread_cond_t not_empty;
+    int thread_count;
+    int running;
+} ThreadPool;
+
+void *worker(void *arg) {
+    ThreadPool *pool = (ThreadPool *)arg;
+    while (1) {
+        pthread_mutex_lock(&pool->mutex);
+        while (!pool->task_head && pool->running) {
+            pthread_cond_wait(&pool->not_empty, &pool->mutex);
+        }
+        if (!pool->running && !pool->task_head) {
+            pthread_mutex_unlock(&pool->mutex);
+            break;
+        }
+        Task *task = pool->task_head;
+        pool->task_head = task->next;
+        pthread_mutex_unlock(&pool->mutex);
+        task->function(task->arg);
+        free(task);
+    }
+    return NULL;
+}
+
+ThreadPool *pool_create(int count) {
+    ThreadPool *pool = malloc(sizeof(ThreadPool));
+    pool->thread_count = count;
+    pool->running = 1;
+    pool->task_head = pool->task_tail = NULL;
+    pthread_mutex_init(&pool->mutex, NULL);
+    pthread_cond_init(&pool->not_empty, NULL);
+    pool->threads = malloc(count * sizeof(pthread_t));
+    for (int i = 0; i < count; i++) {
+        pthread_create(&pool->threads[i], NULL, worker, pool);
+    }
+    return pool;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Lock contention | Serializes execution | Minimize critical section |
+| Context switching | Expensive | Use thread pool |
+| False sharing | Cache line conflicts | Pad shared data |
+| Lock-free | No locks | Use atomics for simple operations |
+| Thread creation | Expensive | Reuse threads |
+
+## Best Practices
+
+- Do:
+  - Always check pthread return values
+  - Use `while` loop for condition variables
+  - Initialize mutexes before use
+  - Destroy mutexes when done
+  - Use atomics for simple counters
+  
+- Don't:
+  - Use `volatile` for thread safety
+  - Forget to unlock mutexes
+  - Hold mutexes while calling `pthread_cond_wait`
+  - Create too many threads
+  - Ignore return values from pthread functions
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Race condition | Data corruption | Use mutex for shared data |
+| Deadlock | Program hangs | Consistent lock ordering |
+| Use-after-free in threads | Undefined behavior | Use `pthread_join` before free |
+| Missing mutex unlock | Deadlock | Always unlock in same scope |
+| Signal handler race | Undefined behavior | Use `sig_atomic_t` |
+
+## Interview Questions
+
+### Q1: What is the difference between a process and a thread?
+**Answer:** Process: separate memory space, heavier. Thread: shared memory space, lighter. Threads within same process share memory.
+
+### Q2: What is a race condition?
+**Answer:** When two or more threads access shared data concurrently and the result depends on timing. Can cause data corruption.
+
+### Q3: What is a deadlock?
+**Answer:** When two or more threads are blocked forever, each waiting for the other to release a resource.
+
+### Q4: What is the difference between mutex and semaphore?
+**Answer:** Mutex: binary (locked/unlocked), owned by thread. Semaphore: counting, no ownership. Mutex protects critical section; semaphore signals events.
+
+### Q5: What is the purpose of `pthread_join`?
+**Answer:** Waits for a thread to finish. Ensures thread has completed before accessing its results.
+
+### Q6: What is a condition variable?
+**Answer:** A synchronization primitive that allows threads to wait until a condition becomes true. Used with mutex for producer-consumer patterns.
+
+### Q7: What is the difference between `volatile` and atomics?
+**Answer:** `volatile` prevents compiler optimization but doesn't guarantee atomicity. Atomics guarantee atomic operations and memory ordering.
+
+### Q8: What is a thread pool?
+**Answer:** A collection of pre-created threads that wait for tasks. Reduces thread creation overhead.
+
+### Q9: What is false sharing?
+**Answer:** When threads on different cores access different data on the same cache line, causing cache invalidation. Fix with padding.
+
+### Q10: What is the difference between `pthread_mutex_lock` and `trylock`?
+**Answer:** `lock` waits until mutex is available. `trylock` returns immediately if mutex is locked.
+
+### Q11: What is a deadlock detection?
+**Answer:** Detecting when threads are in a circular wait. Can be done with resource allocation graphs or timeouts.
+
+### Q12: What is the difference between user-space and kernel-space threads?
+**Answer:** User-space: managed by library, lightweight. Kernel-space: managed by OS, heavier. Pthreads are user-space.
+
+### Q13: What is the purpose of `pthread_detach`?
+**Answer:** Marks a thread as detached, so its resources are automatically released when it finishes. No need to join.
+
+### Q14: What is the difference between `pthread_cond_broadcast` and `pthread_cond_signal`?
+**Answer:** `broadcast` wakes all waiting threads. `signal` wakes one waiting thread. Use `broadcast` for state changes affecting all threads.
+
+### Q15: What is the difference between `_Atomic` qualifier and `atomic_*` functions?
+**Answer:** `_Atomic` is a type qualifier for atomic variables. `atomic_*` functions provide explicit atomic operations with memory ordering.
+
+## Cross-References
+
+- **Previous Module:** [08 - Memory Management](../08-memory-management/)
+- **Next Module:** [10 - Networking](../10-networking/)
+- **Related:** [07 - Algorithms](../07-algorithms/) — Parallel algorithms
+- **Related:** [12 - Performance](../12-performance/) — Performance optimization
+- **External:** [POSIX Threads Programming](https://hpc-tutorials.llc.us/posix/)
+- **External:** [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)

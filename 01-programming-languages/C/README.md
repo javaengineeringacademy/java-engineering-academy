@@ -53,8 +53,9 @@ Every computing system — from a 8-bit microcontroller to a 1024-core supercomp
 | 14 | [Build Systems](14-build-systems/README.md) | 6 hours | Advanced | 03 |
 | 15 | [Best Practices](15-best-practices/README.md) | 8 hours | Senior | All above |
 | 16 | [Senior](16-senior/README.md) | 15 hours | Senior | All above |
+| 17 | [Capstone Project](17-capstone-project/README.md) | 20 hours | Expert | All above |
 
-**Total Duration: ~144 hours**
+**Total Duration: ~164 hours**
 
 ## Learning Path
 
@@ -82,13 +83,13 @@ Every computing system — from a 8-bit microcontroller to a 1024-core supercomp
 
 **Outcome**: Can build concurrent networked applications, write secure code, optimize performance, and manage complex build systems.
 
-### Expert (Senior → Staff/CTO) — 23 hours
+### Expert (Senior → Staff/CTO) — 43 hours
 
 ```
-15-best-practices → 16-senior
+15-best-practices → 16-senior → 17-capstone-project
 ```
 
-**Outcome**: Can design system architectures, lead C development teams, make technology decisions, and define coding standards.
+**Outcome**: Can design system architectures, lead C development teams, make technology decisions, define coding standards, and build production-grade systems applications.
 
 ## Real-World Projects by Module
 
@@ -110,6 +111,7 @@ Every computing system — from a 8-bit microcontroller to a 1024-core supercomp
 | 14 | Build system | Linux kernel Kbuild |
 | 15 | Style guide | Linux kernel coding style |
 | 16 | Module architecture | SQLite virtual machine |
+| 17 | Capstone project | Full-stack systems application |
 
 ## Toolchain
 

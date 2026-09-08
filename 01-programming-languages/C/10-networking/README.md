@@ -500,3 +500,420 @@ C networking is built on the BSD socket API, which provides a universal abstract
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Unix Network Programming (Stevens)](https://www.unixnetworkprogramming.org/)
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
+
+## Overview
+
+The Networking module covers network programming in C using the BSD sockets API. This is the universal foundation for every networked application, giving you maximum control and performance for TCP/UDP servers, clients, and multiplexed I/O.
+
+## Learning Objectives
+
+- Create TCP servers and clients with BSD sockets
+- Implement UDP socket communication
+- Use multiplexed I/O with `select()` and `poll()`
+- Handle partial sends and receives
+- Implement proper connection management
+
+## Prerequisites
+
+- Completion of Module 09 (Concurrency)
+- Understanding of file descriptors
+- Basic understanding of IP addresses and ports
+
+## History
+
+- **1972** — ARPANET protocols developed
+- **1978** — BSD sockets API introduced in 4.2BSD
+- **1989** — ANSI C standardized socket functions
+- **1993** — POSIX standardized networking APIs
+- **2001** — POSIX.1-2001 standardized `poll()`
+- **2017** — C17 bug fix release
+- **2023** — C23 added improved type inference
+
+## Production Notes
+
+- **Where is it used?** Web servers, databases, APIs, microservices
+- **Why is it useful?** Maximum control, performance, close to the metal
+- **When should it be avoided?** Simple HTTP clients (use libcurl)
+- **Alternative?** Go net, Rust tokio, libuv, Boost.Asio
+
+## Core Concepts
+
+### BSD Socket API
+
+| Concept | System Call | Purpose |
+|---------|------------|---------|
+| Create socket | `socket()` | Create communication endpoint |
+| Bind address | `bind()` | Associate socket with address/port |
+| Listen | `listen()` | Wait for incoming connections |
+| Accept | `accept()` | Accept incoming connection |
+| Connect | `connect()` | Initiate outgoing connection |
+| Send data | `send()` / `write()` | Send data to peer |
+| Receive data | `recv()` / `read()` | Receive data from peer |
+| Close | `close()` | Close socket |
+
+### Socket Types
+
+| Type | Protocol | Use Case |
+|------|----------|----------|
+| SOCK_STREAM | TCP | Reliable, ordered data |
+| SOCK_DGRAM | UDP | Unreliable, fast data |
+| SOCK_RAW | IP | Raw IP packets |
+
+## Internal Working
+
+### TCP Connection Lifecycle
+
+```
+Server:
+socket() → bind() → listen() → accept() → recv()/send() → close()
+
+Client:
+socket() → connect() → send()/recv() → close()
+```
+
+### Three-Way Handshake
+
+```
+Client → Server: SYN
+Server → Client: SYN-ACK
+Client → Server: ACK
+Connection established
+```
+
+## Syntax
+
+```c
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+// Create socket
+int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+// Server setup
+struct sockaddr_in server_addr;
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(8080);
+server_addr.sin_addr.s_addr = INADDR_ANY;
+
+bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+listen(sockfd, 10);
+
+int client_fd = accept(sockfd, NULL, NULL);
+
+// Client setup
+struct sockaddr_in server_addr;
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(8080);
+inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+
+connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+
+// Send/Receive
+send(sockfd, buffer, len, 0);
+recv(sockfd, buffer, sizeof(buffer), 0);
+
+// Close
+close(sockfd);
+```
+
+## Examples
+
+### Easy Example: Simple TCP Server
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
+int main(void) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(8080);
+    addr.sin_addr.s_addr = INADDR_ANY;
+    
+    bind(server_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(server_fd, 5);
+    
+    printf("Server listening on port 8080\n");
+    
+    int client_fd = accept(server_fd, NULL, NULL);
+    char buffer[1024] = {0};
+    recv(client_fd, buffer, sizeof(buffer), 0);
+    printf("Received: %s\n", buffer);
+    
+    close(client_fd);
+    close(server_fd);
+    return 0;
+}
+```
+
+### Medium Example: TCP Client-Server
+
+```c
+// server.c
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
+int main(void) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080),
+        .sin_addr.s_addr = INADDR_ANY
+    };
+    
+    bind(server_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(server_fd, 5);
+    
+    int client_fd = accept(server_fd, NULL, NULL);
+    char buffer[1024];
+    ssize_t n = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+    buffer[n] = '\0';
+    printf("Client says: %s\n", buffer);
+    
+    send(client_fd, "Hello from server!", 18, 0);
+    
+    close(client_fd);
+    close(server_fd);
+    return 0;
+}
+
+// client.c
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+int main(void) {
+    int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    
+    struct sockaddr_in server_addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080)
+    };
+    inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+    
+    connect(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    
+    send(sock_fd, "Hello from client!", 18, 0);
+    
+    char buffer[1024] = {0};
+    recv(sock_fd, buffer, sizeof(buffer), 0);
+    printf("Server says: %s\n", buffer);
+    
+    close(sock_fd);
+    return 0;
+}
+```
+
+### Hard Example: Multiplexed I/O
+
+```c
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <sys/select.h>
+
+int main(void) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080),
+        .sin_addr.s_addr = INADDR_ANY
+    };
+    
+    bind(server_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(server_fd, 5);
+    
+    fd_set read_fds;
+    int max_fd = server_fd;
+    
+    while (1) {
+        FD_ZERO(&read_fds);
+        FD_SET(server_fd, &read_fds);
+        
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+        
+        if (FD_ISSET(server_fd, &read_fds)) {
+            int client_fd = accept(server_fd, NULL, NULL);
+            FD_SET(client_fd, &read_fds);
+            if (client_fd > max_fd) max_fd = client_fd;
+        }
+        
+        for (int i = 0; i <= max_fd; i++) {
+            if (i != server_fd && FD_ISSET(i, &read_fds)) {
+                char buffer[1024];
+                ssize_t n = recv(i, buffer, sizeof(buffer), 0);
+                if (n <= 0) {
+                    close(i);
+                    FD_CLR(i, &read_fds);
+                } else {
+                    send(i, buffer, n, 0);
+                }
+            }
+        }
+    }
+    return 0;
+}
+```
+
+### Enterprise Example: HTTP Server
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
+void handle_client(int client_fd) {
+    char buffer[4096];
+    recv(client_fd, buffer, sizeof(buffer), 0);
+    
+    const char *response =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 13\r\n"
+        "\r\n"
+        "Hello, World!";
+    
+    send(client_fd, response, strlen(response), 0);
+    close(client_fd);
+}
+
+int main(void) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(80),
+        .sin_addr.s_addr = INADDR_ANY
+    };
+    
+    bind(server_fd, (struct sockaddr *)&addr, sizeof(addr));
+    listen(server_fd, 128);
+    
+    while (1) {
+        int client_fd = accept(server_fd, NULL, NULL);
+        if (fork() == 0) {
+            close(server_fd);
+            handle_client(client_fd);
+            _exit(0);
+        }
+        close(client_fd);
+    }
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Blocking I/O | Thread per connection | Use select/poll/epoll |
+| Buffer copying | Kernel/user space | Use zero-copy (sendfile) |
+| Connection setup | TCP handshake | Use connection pooling |
+| Small writes | Nagle's algorithm | Use TCP_NODELAY |
+| Large data | Multiple send calls | Use scatter-gather I/O |
+
+## Best Practices
+
+- Do:
+  - Always check return values from socket functions
+  - Set `SO_REUSEADDR` for servers
+  - Handle partial sends and receives
+  - Close sockets in all code paths
+  - Use non-blocking I/O for high concurrency
+  
+- Don't:
+  - Ignore errors from `send`/`recv`
+  - Forget to close file descriptors
+  - Block on I/O in event loops
+  - Assume `send` sends all data
+  - Use `gets` for network input
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Partial send | Corrupted data | Loop until all data sent |
+| Missing `SO_REUSEADDR` | Address already in use | Set before `bind` |
+| Connection leak | Resource exhaustion | Close in all paths |
+| Blocking I/O in select | Starvation | Use non-blocking sockets |
+| Not handling EINTR | Interrupted system calls | Retry on signal interruption |
+
+## Interview Questions
+
+### Q1: What is the difference between TCP and UDP?
+**Answer:** TCP: reliable, ordered, connection-oriented. UDP: unreliable, unordered, connectionless. TCP for correctness; UDP for speed.
+
+### Q2: What is the three-way handshake?
+**Answer:** TCP connection establishment: SYN → SYN-ACK → ACK. Ensures both sides are ready.
+
+### Q3: What is `SO_REUSEADDR`?
+**Answer:** Allows binding to an address that's in TIME_WAIT state. Essential for servers to restart quickly.
+
+### Q4: What is the difference between `select` and `poll`?
+**Answer:** `select` uses fd_set (limited to 1024 fds). `poll` uses array of pollfd structs (no limit). Both have O(n) performance.
+
+### Q5: What is the difference between `send` and `write`?
+**Answer:** `send` has flags parameter (e.g., `MSG_NOSIGNAL`). `write` is simpler. Both work for sockets.
+
+### Q6: What is the difference between `recv` and `read`?
+**Answer:** `recv` has flags parameter (e.g., `MSG_PEEK`). `read` is simpler. Both work for sockets.
+
+### Q7: What is the difference between blocking and non-blocking I/O?
+**Answer:** Blocking: waits for data. Non-blocking: returns immediately with EAGAIN/EWOULDBLOCK if no data.
+
+### Q8: What is the difference between `epoll` and `select`?
+**Answer:** `epoll` (Linux) uses event-based notification. `select` polls all fds. `epoll` is O(1) for event retrieval.
+
+### Q9: What is the difference between `listen` backlog and `accept` queue?
+**Answer:** `listen` backlog: pending connections queue. `accept` queue: completed connections ready for `accept`.
+
+### Q10: What is `connect` timeout?
+**Answer:** Time limit for TCP handshake. Set with `setsockopt` `SO_SNDTIMEO`. Important for client responsiveness.
+
+### Q11: What is the difference between `shutdown` and `close`?
+**Answer:** `shutdown`: half-duplex (close read/write). `close`: full close. `shutdown` allows graceful close.
+
+### Q12: What is `SIGPIPE`?
+**Answer:** Signal sent when writing to a broken pipe. Default action is terminate. Ignore with `signal(SIGPIPE, SIG_IGN)`.
+
+### Q13: What is the difference between `gethostbyname` and `getaddrinfo`?
+**Answer:** `gethostbyname`: IPv4 only, not thread-safe. `getaddrinfo`: IPv4/IPv6, thread-safe, preferred.
+
+### Q14: What is the difference between `htons` and `htonl`?
+**Answer:** `htons`: host to network short (16-bit). `htonl`: host to network long (32-bit). For portability across byte orders.
+
+### Q15: What is the difference between `inet_ntoa` and `inet_ntop`?
+**Answer:** `inet_ntoa`: IPv4 only, returns static buffer (not thread-safe). `inet_ntop`: IPv4/IPv6, thread-safe, preferred.
+
+## Cross-References
+
+- **Previous Module:** [09 - Concurrency](../09-concurrency/)
+- **Next Module:** [11 - Security](../11-security/)
+- **Related:** [04 - File I/O](../04-file-io/) — File descriptors
+- **Related:** [05 - Pointers Advanced](../05-pointers-advanced/) — Callbacks
+- **External:** [Unix Network Programming](https://www.unixnetworkprogramming.org/)
+- **External:** [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)

@@ -480,3 +480,425 @@ Senior-level architecture in C focuses on designing systems that last years and 
 - [C Standard (N3220)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf)
 - [Expert C Programming: Deep C Secrets (van der Linden)](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
 - [Secure Coding in C and CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
+
+## Overview
+
+The Senior Topics module covers advanced C engineering: ABI-stable API design, cross-platform abstraction layers, dynamic dispatch, architecture patterns, and senior-level decision-making. This module prepares you for staff and principal engineering roles.
+
+## Learning Objectives
+
+- Design ABI-stable shared library APIs
+- Build cross-platform abstraction layers
+- Implement dynamic dispatch tables
+- Make sound architecture decisions
+- Lead technical design reviews
+
+## Prerequisites
+
+- Completion of Module 15 (Best Practices)
+- Strong understanding of all previous modules
+- 3+ years of C development experience
+
+## History
+
+- **1972** — C created at Bell Labs
+- **1985** — First ABI conventions established for Unix
+- **1989** — ANSI C standardized
+- **1999** — C99 introduced flexible array members
+- **2011** — C11 introduced `_Generic`, `_Static_assert`
+- **2018** — C18 minor revision
+- **2023** — C23 introduces major features (`typeof`, `nullptr`, `#embed`)
+
+## Production Notes
+
+- **Where is it used?** Systems libraries, OS kernels, embedded firmware, game engines
+- **Why is it useful?** Defines how senior engineers make long-lasting design decisions
+- **When should it be avoided?** Simple projects where KISS applies
+- **Alternative?** Higher-level languages trade control for safety
+
+## Core Concepts
+
+### Senior Engineering Skills
+
+| Skill | Description | Impact |
+|-------|-------------|--------|
+| ABI stability | Maintain binary compatibility | Library evolution without recompilation |
+| Platform abstraction | Uniform API across OSes | Portable codebases |
+| Dynamic dispatch | Runtime polymorphism in C | Plugin architectures |
+| Architecture decisions | Long-term design trade-offs | System longevity |
+| Technical leadership | Guide team decisions | Consistent codebase quality |
+
+### Architecture Decision Records
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| Context | Problem statement | "We need cross-platform networking" |
+| Decision | What was chosen | "Abstract via function pointers" |
+| Consequences | Trade-offs | "Slight runtime overhead, full portability" |
+
+## Internal Working
+
+### ABI Stability Mechanism
+
+```
+Public API (stable)
+    ↓
+Opaque pointer pattern
+    ↓
+Internal struct (can change)
+    ↓
+Versioned symbol naming
+    ↓
+Forward/backward compatibility
+```
+
+### Cross-Platform Abstraction Layer
+
+```
+Application Code
+    ↓
+Platform Abstraction API
+    ↓┌─────────┬─────────┬─────────┐
+  Linux     Windows    macOS     Embedded
+    ↓         ↓         ↓         ↓
+POSIX APIs  Win32    Cocoa    Bare Metal
+```
+
+## Syntax
+
+```c
+// ABI-stable API with opaque pointer
+// mylib.h (public, stable)
+#ifndef MYLIB_H
+#define MYLIB_H
+
+#include <stddef.h>
+
+typedef struct mylib_context mylib_context_t;
+
+mylib_context_t *mylib_create(void);
+void mylib_destroy(mylib_context_t *ctx);
+int mylib_process(mylib_context_t *ctx, const void *data, size_t len);
+const char *mylib_version(void);
+
+#endif
+
+// mylib.c (private, can change)
+#include "mylib.h"
+#include <stdlib.h>
+#include <string.h>
+
+struct mylib_context {
+    int version;
+    char *buffer;
+    size_t capacity;
+    size_t length;
+};
+
+mylib_context_t *mylib_create(void) {
+    mylib_context_t *ctx = calloc(1, sizeof(*ctx));
+    if (!ctx) return NULL;
+    ctx->version = 1;
+    ctx->capacity = 4096;
+    ctx->buffer = malloc(ctx->capacity);
+    if (!ctx->buffer) { free(ctx); return NULL; }
+    return ctx;
+}
+
+void mylib_destroy(mylib_context_t *ctx) {
+    if (!ctx) return;
+    free(ctx->buffer);
+    free(ctx);
+}
+
+const char *mylib_version(void) { return "1.2.3"; }
+
+// Dynamic dispatch table
+typedef struct {
+    const char *name;
+    int (*init)(void *ctx);
+    int (*execute)(void *ctx, const void *input, size_t len);
+    void (*cleanup)(void *ctx);
+} plugin_ops_t;
+
+static plugin_ops_t plugins[] = {
+    { .name = "compress", .init = compress_init, .execute = compress_run, .cleanup = compress_free },
+    { .name = "encrypt",  .init = encrypt_init,  .execute = encrypt_run,  .cleanup = encrypt_free  },
+    { .name = NULL }
+};
+
+const plugin_ops_t *plugin_find(const char *name) {
+    for (int i = 0; plugins[i].name; i++) {
+        if (strcmp(plugins[i].name, name) == 0) return &plugins[i];
+    }
+    return NULL;
+}
+```
+
+## Examples
+
+### Easy Example: Version Negotiation
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+
+#define MYLIB_API_VERSION 3
+#define MYLIB_MIN_VERSION 2
+
+int negotiate_version(int client_version) {
+    if (client_version < MYLIB_MIN_VERSION) {
+        fprintf(stderr, "Client version %d too old (need %d)\n",
+                client_version, MYLIB_MIN_VERSION);
+        return -1;
+    }
+    if (client_version > MYLIB_API_VERSION) {
+        fprintf(stderr, "Client version %d too new (max %d)\n",
+                client_version, MYLIB_API_VERSION);
+        return -1;
+    }
+    printf("Negotiated version %d\n", client_version);
+    return client_version;
+}
+
+int main(void) {
+    negotiate_version(2);  // OK
+    negotiate_version(3);  // OK
+    negotiate_version(1);  // Fails
+    return 0;
+}
+```
+
+### Medium Example: Platform Abstraction
+
+```c
+// platform.h — uniform API
+#ifndef PLATFORM_H
+#define PLATFORM_H
+
+#include <stddef.h>
+
+typedef struct {
+    const char *(*get_name)(void);
+    int (*get_cpu_count)(void);
+    size_t (*get_page_size)(void);
+    int (*get_endian)(void);  // 0=LE, 1=BE
+} platform_ops_t;
+
+const platform_ops_t *platform_get(void);
+
+#endif
+
+// platform_linux.c
+#include "platform.h"
+#include <unistd.h>
+#include <endian.h>
+
+static const char *linux_name(void) { return "Linux"; }
+static int linux_cpu_count(void) { return (int)sysconf(_SC_NPROCESSORS_ONLN); }
+static size_t linux_page_size(void) { return (size_t)sysconf(_SC_PAGESIZE); }
+static int linux_endian(void) {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    return 0;
+#else
+    return 1;
+#endif
+}
+
+static const platform_ops_t linux_ops = {
+    .get_name = linux_name,
+    .get_cpu_count = linux_cpu_count,
+    .get_page_size = linux_page_size,
+    .get_endian = linux_endian
+};
+
+const platform_ops_t *platform_get(void) { return &linux_ops; }
+```
+
+### Hard Example: Plugin Architecture
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Plugin interface
+typedef struct plugin {
+    const char *name;
+    const char *version;
+    int (*init)(struct plugin *self);
+    int (*process)(struct plugin *self, const char *input, char *output, size_t out_len);
+    void (*destroy)(struct plugin *self);
+    void *private_data;
+} plugin_t;
+
+// Plugin registry
+#define MAX_PLUGINS 32
+static plugin_t *registry[MAX_PLUGINS];
+static int plugin_count = 0;
+
+int plugin_register(plugin_t *p) {
+    if (plugin_count >= MAX_PLUGINS) return -1;
+    registry[plugin_count++] = p;
+    return 0;
+}
+
+plugin_t *plugin_find_by_name(const char *name) {
+    for (int i = 0; i < plugin_count; i++) {
+        if (strcmp(registry[i]->name, name) == 0) return registry[i];
+    }
+    return NULL;
+}
+
+int plugin_init_all(void) {
+    for (int i = 0; i < plugin_count; i++) {
+        if (registry[i]->init(registry[i]) != 0) {
+            fprintf(stderr, "Failed to init plugin: %s\n", registry[i]->name);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+void plugin_destroy_all(void) {
+    for (int i = 0; i < plugin_count; i++) {
+        registry[i]->destroy(registry[i]);
+    }
+    plugin_count = 0;
+}
+```
+
+### Enterprise Example: Semantic Versioning and ABI Guarantees
+
+```c
+// Versioned ABI with forward compatibility
+typedef struct {
+    uint32_t magic;       // 0x4D594C42 ("MYLB")
+    uint16_t major;       // Breaking changes
+    uint16_t minor;       // New features (backward compatible)
+    uint16_t patch;       // Bug fixes only
+    uint16_t reserved;    // Must be 0
+} mylib_header_t;
+
+// Layout-compatible struct across versions
+typedef struct {
+    mylib_header_t hdr;
+    uint64_t flags;       // v1.0+
+    uint32_t max_items;   // v1.1+
+    // New fields go here in future versions
+} mylib_config_t;
+
+#define MYLIB_MAGIC    0x4D594C42
+#define MYLIB_VERSION_MAJOR 2
+#define MYLIB_VERSION_MINOR 1
+#define MYLIB_VERSION_PATCH 0
+
+int mylib_config_init(mylib_config_t *cfg) {
+    memset(cfg, 0, sizeof(*cfg));
+    cfg->hdr.magic = MYLIB_MAGIC;
+    cfg->hdr.major = MYLIB_VERSION_MAJOR;
+    cfg->hdr.minor = MYLIB_VERSION_MINOR;
+    cfg->hdr.patch = MYLIB_VERSION_PATCH;
+    cfg->max_items = 1000;
+    return 0;
+}
+
+int mylib_config_validate(const mylib_config_t *cfg) {
+    if (cfg->hdr.magic != MYLIB_MAGIC) return -1;
+    if (cfg->hdr.major != MYLIB_VERSION_MAJOR) return -2;
+    return 0;
+}
+```
+
+## Performance Considerations
+
+| Aspect | Consideration | Optimization |
+|--------|---------------|--------------|
+| Dynamic dispatch | Indirect function call overhead | Inline hot paths |
+| ABI stability | Extra indirection | Opaque pointers |
+| Platform abstraction | Virtual dispatch | Compile-time selection |
+| Version checks | Runtime cost | Cache at init time |
+| Plugin loading | dlopen overhead | Pre-link known plugins |
+
+## Best Practices
+
+- Do:
+  - Use opaque pointers for ABI stability
+  - Version your public APIs semantically
+  - Write Architecture Decision Records (ADRs)
+  - Design for backward compatibility
+  - Use function pointer tables for extensibility
+  
+- Don't:
+  - Expose struct layouts in public headers
+  - Break ABI without bumping major version
+  - Use platform-specific code in core logic
+  - Skip version negotiation at load time
+  - Make architecture decisions without documentation
+
+## Common Mistakes
+
+| Mistake | Consequence | Prevention |
+|---------|-------------|------------|
+| Exposing struct internals | ABI breaks on layout change | Use opaque pointers |
+| No versioning | Unmanageable compatibility | Semantic versioning |
+| Hardcoded platform code | Portability failures | Abstract layer |
+| Ignoring alignment | Crash on some architectures | Use aligned allocations |
+| Skipping ADRs | Lost design context | Document all major decisions |
+
+## Interview Questions
+
+### Q1: What is ABI stability and why does it matter?
+**Answer:** ABI (Application Binary Interface) stability ensures compiled libraries remain compatible without recompilation. Critical for shared libraries distributed to third parties.
+
+### Q2: What is the opaque pointer pattern?
+**Answer:** Forward-declaring a struct in the public header but defining it only in the implementation. Changes to internal layout don't break ABI.
+
+### Q3: What is semantic versioning and how does it apply to C libraries?
+**Answer:** `MAJOR.MINOR.PATCH` — MAJOR: breaking ABI/API changes. MINOR: backward-compatible features. PATCH: bug fixes. Libraries must follow this for compatibility.
+
+### Q4: How do you implement runtime polymorphism in C?
+**Answer:** Function pointer tables (vtables). A struct contains pointers to functions, allowing different implementations to be swapped at runtime.
+
+### Q5: What is an Architecture Decision Record?
+**Answer:** A lightweight document capturing context, decision, and consequences of a technical design choice. Ensures design rationale is preserved.
+
+### Q6: How do you handle cross-platform compilation?
+**Answer:** Platform abstraction layer with function pointers or compile-time macros. Separate platform-specific code into distinct translation units.
+
+### Q7: What is the difference between static and dynamic linking?
+**Answer:** Static: library code copied into binary at compile time. Dynamic: library loaded at runtime. Dynamic enables shared code but adds dependency management.
+
+### Q8: What are the risks of dlopen/dlsym?
+**Answer:** Symbol not found at runtime, version mismatches, memory leaks if not properly managed, security risks from loading untrusted code.
+
+### Q9: How do you maintain backward compatibility in a C API?
+**Answer:** Never remove or reorder existing functions, use versioned symbols, add new functions rather than modifying existing ones, use feature flags.
+
+### Q10: What is the purpose of `__attribute__((visibility))`?
+**Answer:** Controls symbol visibility in shared libraries. `default`: exported. `hidden`: internal. Reduces ABI surface and improves load time.
+
+### Q11: What is a design pattern for plugin systems in C?
+**Answer:** Registry pattern: plugins register function pointers at load time. Host iterates registry to invoke plugins. Each plugin implements a standard interface.
+
+### Q12: What is the difference between HAL and platform abstraction?
+**Answer:** HAL: hardware abstraction layer (direct hardware). Platform abstraction: OS-level abstraction (file I/O, threading). Both serve portability at different levels.
+
+### Q13: How do you test ABI compatibility?
+**Answer:** Use tools like `abi-compliance-checker`, `abidiff`, or `libabigail`. Compare header files and symbol lists between versions.
+
+### Q14: What is the purpose of symbol versioning in ELF?
+**Answer:** Allows multiple versions of a function to coexist in a shared library. Old binaries use old version; new binaries use new version.
+
+### Q15: What is the role of a tech lead in C project architecture?
+**Answer:** Defines coding standards, reviews architecture decisions, mentors team on C-specific concerns (memory, ABI, portability), ensures long-term maintainability.
+
+## Cross-References
+
+- **Previous Module:** [15 - Best Practices](../15-best-practices/)
+- **Related:** [05 - Pointers Advanced](../05-pointers-advanced/) — Opaque pointers
+- **Related:** [08 - Memory Management](../08-memory-management/) — Memory patterns
+- **Related:** [09 - Concurrency](../09-concurrency/) — Thread-safe design
+- **Related:** [11 - Security](../11-security/) — Secure API design
+- **External:** [Expert C Programming: Deep C Secrets](https://www.amazon.com/Expert-C-Programming-Deep-Secrets/dp/0131774298)
+- **External:** [CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/display/c/)
