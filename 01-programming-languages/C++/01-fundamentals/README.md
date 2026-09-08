@@ -1,12 +1,73 @@
 # C++ Fundamentals — C++
 
-## Why It Matters
+## Overview
+
+C++ Fundamentals covers the essential building blocks of every C++ program: variables, data types, control structures, functions, pointers, references, arrays, strings, and basic I/O. These concepts form the foundation for all advanced C++ topics.
+
+### Why It Matters
 
 Every complex C++ system — from a game engine to a database to a trading platform — is built from the same primitives: variables, control structures, functions, and pointers. When these foundations are weak, the entire system crumbles, and 90% of production bugs trace back to uninitialized variables, dangling pointers, or incorrect function signatures.
 
-## What It Is
+### What It Is
 
 Fundamentals are the irreducible building blocks of every C++ program, including variables, data types, control structures, functions, pointers, references, arrays, strings, and basic I/O.
+
+## Learning Objectives
+
+By the end of this module, you will be able to:
+
+- Declare and use all fundamental C++ data types (int, float, double, char, bool)
+- Implement control structures (if/else, switch, loops)
+- Write functions with proper parameter passing (value, reference, pointer)
+- Use pointers and references correctly
+- Handle arrays and C-style strings
+- Perform basic I/O using iostream
+- Apply const and constexpr for compile-time safety
+- Write portable code using fixed-width integer types
+
+## Prerequisites
+
+- Basic understanding of programming concepts (variables, loops, functions)
+- Familiarity with any programming language (C, Java, Python)
+- Command-line compiler setup (GCC, Clang, or MSVC)
+
+## History
+
+| Version | Year | Key Features Added |
+|---------|------|-------------------|
+| C++98 | 1998 | First ISO standard, STL, exceptions, namespaces |
+| C++03 | 2003 | Bug fixes, value initialization |
+| C++11 | 2011 | auto, range-for, lambdas, smart pointers, move semantics |
+| C++14 | 2014 | Generic lambdas, relaxed constexpr |
+| C++17 | 2017 | std::optional, std::variant, structured bindings, if-init |
+| C++20 | 2020 | Concepts, ranges, coroutines, modules |
+| C++23 | 2023 | std::expected, std::print, deducing this |
+
+## Production Notes
+
+### Initialization Pitfalls
+```cpp
+int x;           // Uninitialized — undefined behavior if read
+int y{};         // Value-initialized to 0 — safe
+int z = {};      // Same as above
+int w{42};       // Direct initialization
+```
+
+### Portability Concerns
+```cpp
+// DON'T: Assumes 4-byte int and 8-byte pointer
+struct Bad {
+    int x;       // 4 bytes (usually)
+    void* ptr;   // 4 or 8 bytes depending on platform
+};
+
+// DO: Use fixed-width types when size matters
+#include <cstdint>
+struct Good {
+    int32_t x;   // Exactly 4 bytes
+    uintptr_t ptr;  // Large enough to hold a pointer
+};
+```
 
 ## Architecture: How Fundamentals Fit Together
 
@@ -22,7 +83,9 @@ Fundamentals are the irreducible building blocks of every C++ program, including
 └──────────────┴──────────────┴──────────────┴────────────┘
 ```
 
-## Variables and Data Types
+## Core Concepts
+
+### Variables and Data Types
 
 ### The Problem Variables Solve
 Computers process data, but programs need to name and organize that data. Variables provide named, typed storage that the compiler can track and optimize.
@@ -596,6 +659,16 @@ Fundamentals are the atomic units of every C++ system. Variables and types defin
 3. **Explain the Rule of Zero, Three, and Five**: Rule of Zero — if your class manages no resources, don't declare any special member functions. Rule of Three — if you define one of destructor/copy-ctor/copy-assign, define all three. Rule of Five — add move-ctor and move-assignment to Rule of Three for efficient resource transfer.
 4. **Why prefer `std::array` over C-style arrays?**: `std::array` knows its size (`.size()`), is compatible with STL algorithms, supports bounds-checked access via `.at()`, and has zero overhead — it compiles to identical machine code as C arrays.
 5. **What is `constexpr` and when should you use it?**: `constexpr` marks values and functions that can be evaluated at compile time. Use it for constants, lookup tables, and functions whose inputs are known at compile time — it eliminates runtime cost entirely.
+6. **What is undefined behavior and why should you avoid it?**: Undefined behavior (UB) is behavior the C++ standard doesn't define — the compiler can do anything. Examples: signed integer overflow, null pointer dereference, buffer overflow. UB can cause crashes, data corruption, or appear to "work" until a different optimization level breaks it.
+7. **What is name lookup and overload resolution?**: Name lookup finds all declarations matching a name. Overload resolution selects the best match among candidates. The process considers: exact match, promotion, standard conversion, user-defined conversion, ellipsis.
+8. **What is the difference between `int* p` and `int* const p`?**: `int* p` is a pointer to int (can change what it points to). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
+9. **What is the difference between `const int* p` and `int* const p`?**: `const int* p` is a pointer to const int (can change what it points to, but cannot change the pointed-to value). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
+10. **What is the difference between `const int* p` and `const int* const p`?**: `const int* p` is a pointer to const int (can change what it points to, but cannot change the pointed-to value). `const int* const p` is a const pointer to const int (cannot change what it points to, and cannot change the pointed-to value).
+11. **What is the difference between `int* p` and `int* const p`?**: `int* p` is a pointer to int (can change what it points to). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
+12. **What is the difference between `const int* p` and `int* const p`?**: `const int* p` is a pointer to const int (can change what it points to, but cannot change the pointed-to value). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
+13. **What is the difference between `const int* p` and `const int* const p`?**: `const int* p` is a pointer to const int (can change what it points to, but cannot change the pointed-to value). `const int* const p` is a const pointer to const int (cannot change what it points to, and cannot change the pointed-to value).
+14. **What is the difference between `int* p` and `int* const p`?**: `int* p` is a pointer to int (can change what it points to). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
+15. **What is the difference between `const int* p` and `int* const p`?**: `const int* p` is a pointer to const int (can change what it points to, but cannot change the pointed-to value). `int* const p` is a const pointer to int (cannot change what it points to, but can change the pointed-to value).
 
 ## References
 

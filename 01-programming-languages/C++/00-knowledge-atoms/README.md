@@ -543,6 +543,157 @@ Understanding knowledge atoms is foundational to every C++ architecture decision
 3. **What is object slicing and how do you prevent it?**: Object slicing occurs when a derived class object is assigned to a base class variable by value, silently losing derived-specific data and virtual overrides. Prevent it by using pointers or smart pointers (`std::unique_ptr<Base>`) for polymorphic containers.
 4. **How does virtual dispatch work at the machine level?**: The compiler reads the vptr from the object, looks up the function pointer in the vtable (an array of function pointers), and calls through that pointer. Cost is one pointer dereference plus indirect call (~2-5 ns).
 5. **What is the purpose of `constexpr` in modern C++?**: `constexpr` enables compile-time computation, producing zero runtime cost. It replaces `#define` constants, enables template metaprogramming with values, and allows the compiler to validate invariants at compile time via `static_assert`.
+6. **What is undefined behavior and how does it affect optimization?**: UB is behavior the C++ standard doesn't define — the compiler can do anything. Optimizers exploit UB to generate faster code (e.g., assuming no signed overflow enables loop optimizations). UB can cause crashes, data corruption, or appear to "work" until a different optimization level breaks it.
+7. **What is the difference between `struct` and `class` in C++?**: The only difference is default access: `struct` members are public by default; `class` members are private. Use `struct` for passive data aggregates; use `class` for encapsulated objects with invariants.
+8. **What is name mangling and why is it used?**: Name mangling encodes function/variable names with type information to support overloading. The compiler transforms `foo(int)` into something like `_Z3fooi`. This allows the linker to distinguish between overloaded functions.
+9. **What is SFINAE and when should you use it?**: Substitution Failure Is Not An Error — when template argument substitution fails, the compiler silently removes that overload from consideration instead of producing an error. Use SFINAE (or better, C++20 concepts) to enable/disable overloads based on type properties.
+10. **What is the difference between `static_cast`, `dynamic_cast`, `const_cast`, and `reinterpret_cast`?**: `static_cast` performs compile-time conversions (numeric, up/downcast without RTTI). `dynamic_cast` performs safe downcasts with RTTI (returns nullptr for pointers). `const_cast` adds/removes const. `reinterpret_cast` reinterprets bit patterns (dangerous, non-portable).
+11. **What is RAII and why is it fundamental to C++?**: Resource Acquisition Is Initialization — tie resource lifetime to object lifetime. Constructor acquires, destructor releases. Enables exception-safe code without explicit cleanup. Fundamental because it prevents resource leaks and enables deterministic destruction.
+12. **What is the difference between `new`/`delete` and `malloc`/`free`?**: `new`/`delete` call constructors/destructors and are type-safe. `malloc`/`free` only allocate/deallocate memory without calling constructors. Never mix them — use `new`/`delete` for C++ objects, `malloc`/`free` only for C-compatible code.
+13. **What is template specialization and when should you use it?**: Providing a different implementation for specific template arguments. Use when the generic implementation is inefficient or incorrect for certain types (e.g., `bool` specialization for vector to pack bits). Prefer full specialization over partial specialization when possible.
+14. **What is the compilation model in C++?**: Each `.cpp` file is compiled independently into an object file (translation unit). The linker combines object files into an executable. Headers are textually included (`#include`), causing repeated compilation. Modules (C++20) aim to fix this.
+15. **What is the difference between `auto` and explicit type declarations?**: `auto` deduces type from initializer, reducing verbosity and enabling generic code. Explicit declarations document intent clearly. Use `auto` when type is obvious; use explicit types when clarity requires it.
+
+## Production Incidents
+
+### Incident 1: One-Definition Rule Violation
+
+**Problem:** A header file defined a global variable without `extern`, causing linker errors when included in multiple translation units.
+
+```cpp
+// config.h
+int global_timeout = 30;  // ODR violation — defined in header
+```
+
+**Cause:** Defining variables in headers violates ODR. Each translation unit that includes the header creates its own copy.
+
+**Impact:** Linker error: "multiple definition of `global_timeout`".
+
+**Solution:** Use `extern` in header, define in `.cpp` file:
+
+```cpp
+// config.h
+extern int global_timeout;  // Declaration
+
+// config.cpp
+int global_timeout = 30;    // Definition
+```
+
+**Prevention:** Never define non-`inline` variables in headers. Use `constexpr` or `inline` for header constants.
+
+### Incident 2: Undefined Behavior from Signed Integer Overflow
+
+**Problem:** A financial calculation used `int` for amounts. When total exceeded 2^31-1, signed overflow occurred — undefined behavior.
+
+```cpp
+int total = 0;
+for (const auto& transaction : transactions) {
+    total += transaction.amount;  // UB when overflow occurs
+}
+```
+
+**Cause:** Signed integer overflow is undefined behavior in C++. The compiler can optimize based on the assumption it never happens.
+
+**Impact:** Incorrect totals, potential exploitation, crashes.
+
+**Solution:** Use unsigned types or check for overflow:
+
+```cpp
+int64_t total = 0;  // 64-bit prevents overflow for realistic amounts
+for (const auto& transaction : transactions) {
+    total += transaction.amount;
+}
+```
+
+**Prevention:** Use fixed-width types (`int64_t`) for financial calculations. Enable `-fsanitize=undefined` in CI.
+
+### Incident 3: Dangling Reference from Range-based For
+
+**Problem:** A range-based for loop captured elements by reference, but the container was modified during iteration.
+
+```cpp
+std::vector<int> vec = {1, 2, 3, 4, 5};
+for (const auto& elem : vec) {
+    if (elem == 3) {
+        vec.push_back(6);  // Invalidates iterators
+    }
+}
+```
+
+**Cause:** Modifying a container while iterating over it invalidates iterators, causing undefined behavior.
+
+**Impact:** Crashes, corrupted data, undefined behavior.
+
+**Solution:** Copy container or use index-based loop:
+
+```cpp
+std::vector<int> vec = {1, 2, 3, 4, 5};
+std::vector<int> to_add;
+for (const auto& elem : vec) {
+    if (elem == 3) {
+        to_add.push_back(6);
+    }
+}
+vec.insert(vec.end(), to_add.begin(), to_add.end());
+```
+
+**Prevention:** Never modify a container while iterating. Use algorithms or collect modifications separately.
+
+### Incident 4: Null Pointer Dereference from Unchecked `dynamic_cast`
+
+**Problem:** `dynamic_cast` returned `nullptr` for invalid casts, but the code didn't check the result.
+
+```cpp
+Base* base = get_object();
+Derived* derived = dynamic_cast<Derived*>(base);
+derived->do_something();  // Crash if base is not Derived
+```
+
+**Cause:** `dynamic_cast` returns `nullptr` for pointer casts when the cast fails. Code didn't check for `nullptr`.
+
+**Impact:** Null pointer dereference, crash.
+
+**Solution:** Check result before use:
+
+```cpp
+Base* base = get_object();
+Derived* derived = dynamic_cast<Derived*>(base);
+if (derived) {
+    derived->do_something();
+} else {
+    // Handle error
+}
+```
+
+**Prevention:** Always check `dynamic_cast` result. Prefer `static_cast` when type is known.
+
+### Incident 5: Memory Leak from Raw `new` Without `delete`
+
+**Problem:** Code used raw `new` without corresponding `delete`, causing memory leaks.
+
+```cpp
+void process() {
+    int* data = new int[1000];
+    // ... process data ...
+    // forgot to delete[] data
+}
+```
+
+**Cause:** Raw `new` requires manual `delete`. Forgetting to delete causes memory leaks.
+
+**Impact:** Memory leaks, eventually OOM.
+
+**Solution:** Use smart pointers or RAII:
+
+```cpp
+void process() {
+    auto data = std::make_unique<int[]>(1000);
+    // ... process data ...
+    // automatically deleted when function exits
+}
+```
+
+**Prevention:** Never use raw `new`/`delete`. Use `std::unique_ptr` or `std::shared_ptr`.
 
 ## References
 
