@@ -262,6 +262,216 @@ public record User(String name, int age, String email) {
 }
 ```
 
+### Production: Thread-Safe Singleton with Double-Checked Locking
+```java
+public class ThreadSafeSingleton {
+    private static volatile ThreadSafeSingleton instance;
+    private final String configuration;
+    
+    private ThreadSafeSingleton(String configuration) {
+        this.configuration = configuration;
+    }
+    
+    public static ThreadSafeSingleton getInstance(String config) {
+        if (instance == null) {
+            synchronized (ThreadSafeSingleton.class) {
+                if (instance == null) {
+                    instance = new ThreadSafeSingleton(config);
+                }
+            }
+        }
+        return instance;
+    }
+    
+    public String getConfiguration() {
+        return configuration;
+    }
+}
+```
+
+### Advanced: Memory-Efficient Data Structure
+```java
+import java.util.BitSet;
+
+public class BloomFilter {
+    private final BitSet bitSet;
+    private final int size;
+    private final int hashCount;
+    
+    public BloomFilter(int size, int hashCount) {
+        this.size = size;
+        this.hashCount = hashCount;
+        this.bitSet = new BitSet(size);
+    }
+    
+    public void add(String value) {
+        for (int i = 0; i < hashCount; i++) {
+            int hash = hash(value, i);
+            bitSet.set(Math.abs(hash % size));
+        }
+    }
+    
+    public boolean mightContain(String value) {
+        for (int i = 0; i < hashCount; i++) {
+            int hash = hash(value, i);
+            if (!bitSet.get(Math.abs(hash % size))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private int hash(String value, int seed) {
+        int hash = 0;
+        for (int i = 0; i < value.length(); i++) {
+            hash = seed * 31 + value.charAt(i);
+        }
+        return hash;
+    }
+}
+```
+
+### Performance: Object Pool Pattern
+```java
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Supplier;
+import java.util.function.Consumer;
+
+public class ObjectPool<T> {
+    private final ConcurrentLinkedQueue<T> pool;
+    private final Supplier<T> factory;
+    private final Consumer<T> resetter;
+    
+    public ObjectPool(int size, Supplier<T> factory, Consumer<T> resetter) {
+        this.pool = new ConcurrentLinkedQueue<>();
+        this.factory = factory;
+        this.resetter = resetter;
+        
+        for (int i = 0; i < size; i++) {
+            pool.offer(factory.get());
+        }
+    }
+    
+    public T borrow() {
+        T object = pool.poll();
+        return object != null ? object : factory.get();
+    }
+    
+    public void returnObject(T object) {
+        resetter.accept(object);
+        pool.offer(object);
+    }
+}
+
+// Usage
+ObjectPool<StringBuilder> pool = new ObjectPool<>(
+    10,
+    StringBuilder::new,
+    sb -> sb.setLength(0)
+);
+
+StringBuilder sb = pool.borrow();
+try {
+    sb.append("Hello");
+    // Use StringBuilder
+} finally {
+    pool.returnObject(sb);
+}
+```
+
+### Production: Type-Safe Enum Pattern
+```java
+public enum PaymentMethod {
+    CREDIT_CARD("Visa", "Mastercard") {
+        @Override
+        public void process(double amount) {
+            System.out.println("Processing credit card: $" + amount);
+        }
+    },
+    BANK_TRANSFER("ACH", "Wire") {
+        @Override
+        public void process(double amount) {
+            System.out.println("Processing bank transfer: $" + amount);
+        }
+    },
+    PAYPAL("PayPal") {
+        @Override
+        public void process(double amount) {
+            System.out.println("Processing PayPal: $" + amount);
+        }
+    };
+    
+    private final String[] supportedTypes;
+    
+    PaymentMethod(String... supportedTypes) {
+        this.supportedTypes = supportedTypes;
+    }
+    
+    public String[] getSupportedTypes() {
+        return supportedTypes.clone();
+    }
+    
+    public abstract void process(double amount);
+    
+    public static PaymentMethod fromString(String method) {
+        return switch (method.toUpperCase()) {
+            case "CREDIT_CARD", "CC" -> CREDIT_CARD;
+            case "BANK_TRANSFER", "BT" -> BANK_TRANSFER;
+            case "PAYPAL", "PP" -> PAYPAL;
+            default -> throw new IllegalArgumentException("Unknown payment method: " + method);
+        };
+    }
+}
+
+// Usage
+PaymentMethod method = PaymentMethod.fromString("CC");
+method.process(100.00);
+```
+
+### Advanced: Builder Pattern with Validation
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ValidatedBuilder<T> {
+    private final List<String> errors = new ArrayList<>();
+    
+    public ValidatedBuilder<T> validate(String field, boolean condition, String message) {
+        if (!condition) {
+            errors.add(field + ": " + message);
+        }
+        return this;
+    }
+    
+    public boolean isValid() {
+        return errors.isEmpty();
+    }
+    
+    public List<String> getErrors() {
+        return List.copyOf(errors);
+    }
+    
+    public void throwIfInvalid() {
+        if (!isValid()) {
+            throw new ValidationException("Validation failed: " + String.join(", ", errors));
+        }
+    }
+}
+
+class ValidationException extends RuntimeException {
+    public ValidationException(String message) {
+        super(message);
+    }
+}
+
+// Usage
+new ValidatedBuilder<User>()
+    .validate("name", user.name() != null, "Name is required")
+    .validate("email", user.email().contains("@"), "Invalid email")
+    .validate("age", user.age() > 0, "Age must be positive")
+    .throwIfInvalid();
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |

@@ -346,6 +346,106 @@ public class ApiClient {
 }
 ```
 
+### Production: Virtual Threads with Modern Features
+```java
+import java.util.concurrent.*;
+
+public class VirtualThreadsExample {
+    
+    public static void main(String[] args) throws Exception {
+        // Create virtual thread executor
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            // Submit multiple tasks
+            var futures = java.util.stream.IntStream.range(0, 100)
+                .mapToObj(i -> executor.submit(() -> {
+                    Thread.sleep(100);
+                    return "Task " + i + " completed on " + Thread.currentThread();
+                }))
+                .toList();
+            
+            // Collect results
+            for (var future : futures) {
+                System.out.println(future.get());
+            }
+        }
+    }
+}
+```
+
+### Advanced: Switch Expression with Enums
+```java
+public enum Day {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+}
+
+public class SwitchExample {
+    
+    public static String classifyDay(Day day) {
+        return switch (day) {
+            case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY -> "Weekday";
+            case SATURDAY, SUNDAY -> "Weekend";
+        };
+    }
+    
+    public static int getDayNumber(Day day) {
+        return switch (day) {
+            case MONDAY -> 1;
+            case TUESDAY -> 2;
+            case WEDNESDAY -> 3;
+            case THURSDAY -> 4;
+            case FRIDAY -> 5;
+            case SATURDAY -> 6;
+            case SUNDAY -> 7;
+        };
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(classifyDay(Day.MONDAY));  // Weekday
+        System.out.println(getDayNumber(Day.FRIDAY)); // 5
+    }
+}
+```
+
+### Performance: Immutable Collections with Records
+```java
+import java.util.List;
+import java.util.Map;
+
+public record ImmutableConfig(
+    String appName,
+    int maxConnections,
+    List<String> allowedOrigins,
+    Map<String, String> properties
+) {
+    public ImmutableConfig {
+        // Compact constructor for validation
+        if (maxConnections <= 0) {
+            throw new IllegalArgumentException("maxConnections must be positive");
+        }
+        allowedOrigins = List.copyOf(allowedOrigins);
+        properties = Map.copyOf(properties);
+    }
+    
+    // Static factory method
+    public static ImmutableConfig of(String appName, int maxConnections) {
+        return new ImmutableConfig(appName, maxConnections, List.of(), Map.of());
+    }
+    
+    // Custom accessor
+    public boolean isOriginAllowed(String origin) {
+        return allowedOrigins.contains(origin);
+    }
+}
+
+// Usage
+ImmutableConfig config = new ImmutableConfig(
+    "MyApp",
+    100,
+    List.of("https://example.com", "https://test.com"),
+    Map.of("timeout", "30", "retry", "3")
+);
+```
+
 ## Performance Considerations
 
 | Feature | Cost | Notes |
@@ -530,6 +630,24 @@ Modern Java features enable cleaner, safer code at scale. Records reduce boilerp
 **Detection:** Code review feedback; new developer complaints.
 **Solution:** Replaced with explicit type; documented var usage guidelines.
 **Prevention:** Use var only when type is obvious; prefer explicit types for complex types.
+
+### Incident 4: Text Blocks Causing Formatting Issues
+
+**Problem:** A SQL query using text blocks failed due to unexpected whitespace.
+**Cause:** Text blocks preserved indentation; leading spaces became part of the query.
+**Impact:** SQL queries failed; application errors.
+**Detection:** Database error logs; investigation revealed whitespace in queries.
+**Solution:** Used stripIndent() or formatted text blocks; documented text block formatting.
+**Prevention:** Use stripIndent() for multi-line strings; test text block formatting; document indentation rules.
+
+### Incident 5: Sealed Classes Breaking Extension
+
+**Problem:** A library using sealed classes couldn't be extended by third-party code.
+**Cause:** Sealed classes restricted subclassing; third-party extensions failed.
+**Impact:** Third-party integrations broken; customer complaints.
+**Detection:** Customer reports of compilation errors; investigation revealed sealed class restrictions.
+**Solution:** Made sealed classes open for extension; documented extension points; provided abstract base classes.
+**Prevention:** Consider extensibility when using sealed classes; document extension points; provide abstract base classes.
 
 ## Production Checklist
 

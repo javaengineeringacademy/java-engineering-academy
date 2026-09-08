@@ -349,6 +349,122 @@ class User {
 }
 ```
 
+### Production: Type-Safe Builder Pattern
+```java
+public class TypeSafeBuilder {
+    
+    public static class Builder<T> {
+        private final Class<T> type;
+        private final Map<String, Object> properties = new HashMap<>();
+        
+        public Builder(Class<T> type) {
+            this.type = type;
+        }
+        
+        public Builder<T> set(String property, Object value) {
+            properties.put(property, value);
+            return this;
+        }
+        
+        public T build() {
+            try {
+                T instance = type.getDeclaredConstructor().newInstance();
+                for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                    Field field = type.getDeclaredField(entry.getKey());
+                    field.setAccessible(true);
+                    field.set(instance, entry.getValue());
+                }
+                return instance;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to build instance", e);
+            }
+        }
+    }
+}
+
+// Usage
+User user = new TypeSafeBuilder.Builder<>(User.class)
+    .set("id", 1L)
+    .set("name", "Alice")
+    .build();
+```
+
+### Advanced: Generic Factory Pattern
+```java
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class GenericFactory {
+    private static final Map<Class<?>, Supplier<?>> registry = new ConcurrentHashMap<>();
+    
+    public static <T> void register(Class<T> type, Supplier<T> supplier) {
+        registry.put(type, supplier);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T create(Class<T> type) {
+        Supplier<?> supplier = registry.get(type);
+        if (supplier == null) {
+            throw new IllegalArgumentException("No supplier registered for " + type);
+        }
+        return (T) supplier.get();
+    }
+    
+    public static void main(String[] args) {
+        // Register suppliers
+        GenericFactory.register(User.class, () -> new User(1L, "Default"));
+        GenericFactory.register(Order.class, Order::new);
+        
+        // Create instances
+        User user = GenericFactory.create(User.class);
+        Order order = GenericFactory.create(Order.class);
+    }
+}
+```
+
+### Performance: Generic Cache Implementation
+```java
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
+public class GenericCache<K, V> {
+    private final Map<K, V> cache = new ConcurrentHashMap<>();
+    private final Function<K, V> loader;
+    private final int maxSize;
+    
+    public GenericCache(Function<K, V> loader, int maxSize) {
+        this.loader = loader;
+        this.maxSize = maxSize;
+    }
+    
+    public V get(K key) {
+        return cache.computeIfAbsent(key, loader);
+    }
+    
+    public void invalidate(K key) {
+        cache.remove(key);
+    }
+    
+    public void clear() {
+        cache.clear();
+    }
+    
+    public int size() {
+        return cache.size();
+    }
+}
+
+// Usage
+GenericCache<String, User> userCache = new GenericCache<>(
+    id -> userService.findById(id),
+    1000
+);
+
+User user = userCache.get("user:123");
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |

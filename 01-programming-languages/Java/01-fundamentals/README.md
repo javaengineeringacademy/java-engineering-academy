@@ -215,6 +215,208 @@ public class ControlFlow {
 }
 ```
 
+### Medium: Array Processing
+```java
+public class ArrayProcessing {
+    public static void main(String[] args) {
+        int[] numbers = {5, 2, 8, 1, 9, 3};
+        
+        // Find maximum
+        int max = numbers[0];
+        for (int num : numbers) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        System.out.println("Maximum: " + max);
+        
+        // Calculate average
+        int sum = 0;
+        for (int num : numbers) {
+            sum += num;
+        }
+        double average = (double) sum / numbers.length;
+        System.out.println("Average: " + average);
+    }
+}
+```
+
+### Hard: String Manipulation
+```java
+public class StringManipulation {
+    public static void main(String[] args) {
+        String input = "  Hello, World!  ";
+        
+        // Trim and reverse
+        String trimmed = input.trim();
+        String reversed = new StringBuilder(trimmed).reverse().toString();
+        System.out.println("Reversed: " + reversed);
+        
+        // Count words
+        String[] words = trimmed.split("\\s+");
+        System.out.println("Word count: " + words.length);
+        
+        // Palindrome check
+        String clean = trimmed.toLowerCase().replaceAll("[^a-z]", "");
+        String reverseClean = new StringBuilder(clean).reverse().toString();
+        boolean isPalindrome = clean.equals(reverseClean);
+        System.out.println("Is palindrome: " + isPalindrome);
+    }
+}
+```
+
+### Enterprise: Object Initialization Patterns
+```java
+public class ObjectInitialization {
+    // Static factory method
+    public static User createAdmin(String name) {
+        return new User(name, Role.ADMIN);
+    }
+    
+    // Builder pattern
+    public static class UserBuilder {
+        private String name;
+        private Role role = Role.USER;
+        
+        public UserBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+        
+        public UserBuilder role(Role role) {
+            this.role = role;
+            return this;
+        }
+        
+        public User build() {
+            return new User(name, role);
+        }
+    }
+    
+    public static void main(String[] args) {
+        // Static factory
+        User admin = createAdmin("Alice");
+        
+        // Builder pattern
+        User user = new UserBuilder()
+            .name("Bob")
+            .role(Role.USER)
+            .build();
+    }
+}
+```
+
+### Production: Thread-Safe Singleton
+```java
+public class ThreadSafeSingleton {
+    private static volatile ThreadSafeSingleton instance;
+    private final String configuration;
+    
+    private ThreadSafeSingleton(String configuration) {
+        this.configuration = configuration;
+    }
+    
+    public static ThreadSafeSingleton getInstance(String config) {
+        if (instance == null) {
+            synchronized (ThreadSafeSingleton.class) {
+                if (instance == null) {
+                    instance = new ThreadSafeSingleton(config);
+                }
+            }
+        }
+        return instance;
+    }
+    
+    public String getConfiguration() {
+        return configuration;
+    }
+}
+```
+
+### Advanced: Data Processing Pipeline
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class DataProcessingPipeline {
+    
+    public static void main(String[] args) {
+        List<Order> orders = List.of(
+            new Order("ORD001", "Electronics", 1500.00),
+            new Order("ORD002", "Clothing", 250.00),
+            new Order("ORD003", "Electronics", 800.00),
+            new Order("ORD004", "Food", 120.00),
+            new Order("ORD005", "Clothing", 350.00)
+        );
+        
+        // Process orders: group by category, calculate total per category
+        Map<String, Double> categoryTotals = orders.stream()
+            .filter(o -> o.amount() > 100)
+            .collect(Collectors.groupingBy(
+                Order::category,
+                Collectors.summingDouble(Order::amount)
+            ));
+        
+        System.out.println("Category Totals: " + categoryTotals);
+        
+        // Find top order by amount
+        Optional<Order> topOrder = orders.stream()
+            .max(Comparator.comparingDouble(Order::amount));
+        
+        topOrder.ifPresent(order -> 
+            System.out.println("Top Order: " + order.id() + " = $" + order.amount()));
+    }
+    
+    record Order(String id, String category, double amount) {}
+}
+```
+
+### Performance: Memory-Efficient Data Structures
+```java
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MemoryOptimizedStructures {
+    
+    // Use primitives when possible
+    public static long sumWithPrimitive(int[] values) {
+        long sum = 0;
+        for (int value : values) {
+            sum += value;  // No boxing overhead
+        }
+        return sum;
+    }
+    
+    // Use BitSet for boolean flags
+    public static BitSet createFlagSet(int maxSize) {
+        BitSet flags = new BitSet(maxSize);
+        // Set flags
+        flags.set(10);
+        flags.set(20);
+        flags.set(30);
+        return flags;
+    }
+    
+    // Use HashMap with expected size
+    public static Map<String, Integer> createOptimizedMap(int expectedSize) {
+        return new HashMap<>(expectedSize, 0.75f);  // Avoid rehashing
+    }
+    
+    public static void main(String[] args) {
+        // Primitive performance
+        int[] values = new int[1_000_000];
+        Arrays.setAll(values, i -> i);
+        long sum = sumWithPrimitive(values);
+        System.out.println("Sum: " + sum);
+        
+        // BitSet memory efficiency
+        BitSet flags = createFlagSet(1000);
+        System.out.println("Flag 20 set: " + flags.get(20));
+    }
+}
+```
+
 ## Performance
 
 | Operation | Time | Space |

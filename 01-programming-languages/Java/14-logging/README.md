@@ -269,6 +269,107 @@ User user = PerformanceLogger.logExecutionTime(
 );
 ```
 
+### Production: Async Logging with Disruptor
+```java
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.DslEventDriven;
+
+public class AsyncLogger {
+    private static final RingBuffer<LogEvent> ringBuffer = 
+        RingBuffer.createSingleProducer(LogEvent::new, 1024, new YieldingWaitStrategy());
+    
+    public static void logAsync(String level, String message) {
+        long sequence = ringBuffer.next();
+        try {
+            LogEvent event = ringBuffer.get(sequence);
+            event.setTimestamp(System.currentTimeMillis());
+            event.setLevel(level);
+            event.setMessage(message);
+            event.setThread(Thread.currentThread().getName());
+        } finally {
+            ringBuffer.publish(sequence);
+        }
+    }
+    
+    public static void main(String[] args) {
+        // Log 1 million events asynchronously
+        for (int i = 0; i < 1_000_000; i++) {
+            logAsync("INFO", "Event " + i);
+        }
+    }
+}
+```
+
+### Advanced: Logback Custom Appender
+```java
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.Level;
+
+public class CustomAppender extends AppenderBase<ILoggingEvent> {
+    private PatternLayoutEncoder encoder;
+    private String applicationName;
+    
+    @Override
+    protected void append(ILoggingEvent event) {
+        // Custom logic: send to external system
+        if (event.getLevel().equals(Level.ERROR)) {
+            sendToAlertSystem(event);
+        }
+    }
+    
+    private void sendToAlertSystem(ILoggingEvent event) {
+        // Implementation for sending alerts
+    }
+}
+
+// logback.xml configuration
+// <configuration>
+//     <appender name="CUSTOM" class="com.example.CustomAppender">
+//         <applicationName>my-service</applicationName>
+//     </appender>
+//     <root level="INFO">
+//         <appender-ref ref="CUSTOM"/>
+//     </root>
+// </configuration>
+```
+
+### Production: Log Aggregation Example
+```java
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+public class LogAggregator {
+    private static final BlockingQueue<LogEntry> queue = new LinkedBlockingQueue<>();
+    private static final Logger logger = LoggerFactory.getLogger(LogAggregator.class);
+    
+    public static void start() {
+        Thread consumer = new Thread(() -> {
+            while (true) {
+                try {
+                    LogEntry entry = queue.take();
+                    sendToElasticsearch(entry);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        consumer.setDaemon(true);
+        consumer.start();
+    }
+    
+    public static void log(String level, String message) {
+        LogEntry entry = new LogEntry(level, message, System.currentTimeMillis());
+        queue.offer(entry);
+    }
+    
+    private static void sendToElasticsearch(LogEntry entry) {
+        // Send to Elasticsearch
+    }
+}
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |
@@ -448,6 +549,24 @@ Logging is a cross-cutting concern that affects every layer of an application. A
 **Detection:** Support team couldn't correlate logs; investigation revealed missing context.
 **Solution:** Implemented MDC propagation in thread pools; added correlation IDs.
 **Prevention:** Always propagate MDC in async code; use correlation IDs in microservices.
+
+### Incident 4: Log Injection Attack
+
+**Problem:** A malicious user injected log entries via user input; logs contained fake ERROR messages.
+**Cause:** User input was logged without sanitization; attacker injected newline characters.
+**Impact:** Logs polluted with fake errors; monitoring triggered false alerts; debugging confused.
+**Detection:** Security audit found injected log entries; monitoring showed anomalous error patterns.
+**Solution:** Sanitized user input before logging; added log injection protection; used structured logging.
+**Prevention:** Always sanitize user input; use structured logging; implement log validation.
+
+### Incident 5: Logback Configuration Causing Memory Leak
+
+**Problem:** A Spring Boot application leaked memory due to Logback configuration reloading.
+**Cause:** Logback reloaded configuration frequently; old Configuration objects not garbage collected.
+**Impact:** Memory usage grew 20MB per hour; OOM after 48 hours.
+**Detection:** Heap dump showed Logback Configuration objects; MAT analysis found configuration reload.
+**Solution:** Disabled auto-reload; fixed configuration loading; added Logback monitoring.
+**Prevention:** Disable auto-reload in production; monitor Logback memory usage; test configuration changes.
 
 ## Production Checklist
 

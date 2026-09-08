@@ -361,6 +361,123 @@ public class AsyncPipeline {
 }
 ```
 
+### Production: Thread Pool with Monitoring
+```java
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
+
+public class MonitoredThreadPool {
+    private static final Logger logger = Logger.getLogger(MonitoredThreadPool.class.getName());
+    private final ThreadPoolExecutor executor;
+    private final AtomicInteger completedTasks = new AtomicInteger(0);
+    private final AtomicInteger failedTasks = new AtomicInteger(0);
+    
+    public MonitoredThreadPool(int corePoolSize, int maxPoolSize, long keepAliveTime) {
+        this.executor = new ThreadPoolExecutor(
+            corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(1000),
+            new ThreadFactory() {
+                private final AtomicInteger counter = new AtomicInteger(0);
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "monitored-pool-" + counter.incrementAndGet());
+                }
+            },
+            new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+        
+        // Monitor pool status
+        ScheduledExecutorService monitor = Executors.newSingleThreadScheduledExecutor();
+        monitor.scheduleAtFixedRate(() -> {
+            logger.info(String.format(
+                "Pool: active=%d, completed=%d, failed=%d, queue=%d",
+                executor.getActiveCount(),
+                completedTasks.get(),
+                failedTasks.get(),
+                executor.getQueue().size()
+            ));
+        }, 0, 5, TimeUnit.SECONDS);
+    }
+    
+    public <T> CompletableFuture<T> submit(Callable<T> task) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                T result = task.call();
+                completedTasks.incrementAndGet();
+                return result;
+            } catch (Exception e) {
+                failedTasks.incrementAndGet();
+                throw new CompletionException(e);
+            }
+        }, executor);
+    }
+    
+    public void shutdown() {
+        executor.shutdown();
+    }
+}
+
+// Usage
+MonitoredThreadPool pool = new MonitoredThreadPool(4, 8, 60);
+CompletableFuture<String> future = pool.submit(() -> {
+    Thread.sleep(1000);
+    return "Task completed";
+});
+```
+
+### Advanced: ReadWriteLock Pattern
+```java
+import java.util.concurrent.locks.*;
+import java.util.*;
+
+public class CachedData<K, V> {
+    private final Map<K, V> cache = new HashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock readLock = lock.readLock();
+    private final Lock writeLock = lock.writeLock();
+    
+    public V get(K key) {
+        readLock.lock();
+        try {
+            return cache.get(key);
+        } finally {
+            readLock.unlock();
+        }
+    }
+    
+    public void put(K key, V value) {
+        writeLock.lock();
+        try {
+            cache.put(key, value);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+    
+    public V computeIfAbsent(K key, java.util.function.Function<K, V> computer) {
+        readLock.lock();
+        try {
+            V value = cache.get(key);
+            if (value != null) return value;
+        } finally {
+            readLock.unlock();
+        }
+        
+        writeLock.lock();
+        try {
+            return cache.computeIfAbsent(key, computer);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+}
+
+// Usage
+CachedData<String, User> userCache = new CachedData<>();
+User user = userCache.computeIfAbsent("user:123", id -> userService.findById(id));
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |
@@ -554,6 +671,24 @@ Concurrency is a cross-cutting concern that affects every layer of an applicatio
 **Detection:** JFR showed `jdk.VirtualThreadPinned` events; profiling revealed synchronized usage.
 **Solution:** Replaced `synchronized` with `ReentrantLock` in hot paths.
 **Prevention:** Audit code for `synchronized` before migrating to virtual threads; use JFR monitoring.
+
+### Incident 4: CompletableFuture Exception Swallowed
+
+**Problem:** A microservice silently dropped results from downstream calls; no errors logged.
+**Cause:** `CompletableFuture.thenApply()` chain had no exception handling; exceptions were swallowed.
+**Impact:** 30% of API responses were incomplete; data inconsistency across services.
+**Detection:** Customer complaints about missing data; tracing showed incomplete result chains.
+**Solution:** Added `.exceptionally()` and `.handle()` to all async chains; logged all failures.
+**Prevention:** Always add exception handling to CompletableFuture chains; use `.whenComplete()` for logging.
+
+### Incident 5: Deadlock from Nested Synchronized Blocks
+
+**Problem:** Application froze every few hours under specific load patterns.
+**Cause:** Two methods acquired locks in opposite order: `methodA` locks `userLock` then `orderLock`; `methodB` locks `orderLock` then `userLock`.
+**Impact:** Complete application freeze; required restart; affected 10,000+ users.
+**Detection:** Thread dump showed circular lock dependency; heap analysis revealed blocked threads.
+**Solution:** Established global lock ordering; refactored to always acquire `userLock` before `orderLock`.
+**Prevention:** Document lock ordering; use `jstack` to detect deadlocks; prefer `tryLock` with timeout.
 
 ## Production Checklist
 

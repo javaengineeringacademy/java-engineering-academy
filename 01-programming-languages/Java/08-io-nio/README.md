@@ -297,6 +297,166 @@ public class EnterpriseExample {
 }
 ```
 
+### Production: File Watcher Service
+```java
+import java.nio.file.*;
+import java.util.concurrent.*;
+
+public class FileWatcherService {
+    private final WatchService watchService;
+    private final Map<WatchKey, Path> keys = new ConcurrentHashMap<>();
+    private volatile boolean running = true;
+    
+    public FileWatcherService(Path dir) throws IOException {
+        this.watchService = FileSystems.getDefault().newWatchService();
+        registerDirectory(dir);
+    }
+    
+    private void registerDirectory(Path dir) throws IOException {
+        WatchKey key = dir.register(watchService, 
+            StandardWatchEventKinds.ENTRY_CREATE,
+            StandardWatchEventKinds.ENTRY_DELETE,
+            StandardWatchEventKinds.ENTRY_MODIFY);
+        keys.put(key, dir);
+    }
+    
+    public void start() {
+        Thread watcherThread = new Thread(() -> {
+            while (running) {
+                try {
+                    WatchKey key = watchService.take();
+                    Path dir = keys.get(key);
+                    
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        WatchEvent.Kind<?> kind = event.kind();
+                        Path child = dir.resolve((Path) event.context());
+                        
+                        if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                            System.out.println("Created: " + child);
+                            if (Files.isDirectory(child)) {
+                                registerDirectory(child);
+                            }
+                        } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                            System.out.println("Deleted: " + child);
+                        } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                            System.out.println("Modified: " + child);
+                        }
+                    }
+                    
+                    boolean valid = key.reset();
+                    if (!valid) {
+                        keys.remove(key);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        watcherThread.setDaemon(true);
+        watcherThread.start();
+    }
+    
+    public void stop() {
+        running = false;
+    }
+}
+
+// Usage
+FileWatcherService watcher = new FileWatcherService(Path.of("/watch/dir"));
+watcher.start();
+```
+
+### Advanced: NIO Channel Operations
+```java
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.util.concurrent.*;
+
+public class NIOChannelOperations {
+    
+    public static void asyncFileCopy(Path source, Path target) throws IOException {
+        AsynchronousFileChannel sourceChannel = AsynchronousFileChannel.open(source, StandardOpenOption.READ);
+        AsynchronousFileChannel targetChannel = AsynchronousFileChannel.open(target, 
+            StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        
+        ByteBuffer buffer = ByteBuffer.allocateDirect(8192);
+        long position = 0;
+        
+        Future<Integer> readFuture = sourceChannel.read(buffer, position);
+        try {
+            Integer bytesRead = readFuture.get();
+            buffer.flip();
+            
+            Future<Integer> writeFuture = targetChannel.write(buffer, position);
+            writeFuture.get();
+        } catch (Exception e) {
+            throw new IOException("Async copy failed", e);
+        } finally {
+            sourceChannel.close();
+            targetChannel.close();
+        }
+    }
+    
+    public static String readWithMemoryMapping(Path file) throws IOException {
+        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
+            MappedByteBuffer buffer = channel.map(
+                FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            
+            StringBuilder sb = new StringBuilder();
+            while (buffer.hasRemaining()) {
+                sb.append((char) buffer.get());
+            }
+            return sb.toString();
+        }
+    }
+}
+
+// Usage
+NIOChannelOperations.asyncFileCopy(Path.of("large.bin"), Path.of("copy.bin"));
+String content = NIOChannelOperations.readWithMemoryMapping(Path.of("large.txt"));
+```
+
+### Performance: Stream Processing Pipeline
+```java
+import java.nio.file.*;
+import java.util.stream.*;
+import java.io.IOException;
+
+public class StreamProcessingPipeline {
+    
+    public static void main(String[] args) throws IOException {
+        Path start = Path.of(".");
+        
+        // Find all Java files, count lines, sort by size
+        try (Stream<Path> paths = Files.walk(start)) {
+            Map<String, Long> fileStats = paths
+                .filter(Files::isRegularFile)
+                .filter(p -> p.toString().endsWith(".java"))
+                .collect(Collectors.toMap(
+                    p -> p.getFileName().toString(),
+                    p -> {
+                        try {
+                            return Files.lines(p).count();
+                        } catch (IOException e) {
+                            return 0L;
+                        }
+                    }
+                ));
+            
+            // Sort by line count descending
+            fileStats.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(10)
+                .forEach(entry -> 
+                    System.out.printf("%-30s %,d lines%n", 
+                        entry.getKey(), entry.getValue()));
+        }
+    }
+}
+```
+
 ## Performance Considerations
 - Use buffered streams for large files
 - NIO is faster for large files

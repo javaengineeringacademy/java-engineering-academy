@@ -376,6 +376,124 @@ public class RegexExample {
 }
 ```
 
+### Production: Text Sanitization
+```java
+public class TextSanitizer {
+    
+    private static final Pattern HTML_PATTERN = Pattern.compile("<[^>]*>");
+    private static final Pattern SQL_PATTERN = Pattern.compile("('.*?')|(\\d+)");
+    
+    public static String sanitizeHtml(String input) {
+        if (input == null) return null;
+        return HTML_PATTERN.matcher(input).replaceAll("");
+    }
+    
+    public static String sanitizeSql(String input) {
+        if (input == null) return null;
+        return input.replaceAll("[';]", "");
+    }
+    
+    public static String normalizeWhitespace(String input) {
+        if (input == null) return null;
+        return input.trim().replaceAll("\\s+", " ");
+    }
+    
+    public static String truncate(String input, int maxLength) {
+        if (input == null) return null;
+        if (input.length() <= maxLength) return input;
+        return input.substring(0, maxLength - 3) + "...";
+    }
+}
+```
+
+### Advanced: Advanced String Parsing
+```java
+public class AdvancedParser {
+    
+    public static Map<String, String> parseQueryString(String queryString) {
+        Map<String, String> params = new LinkedHashMap<>();
+        if (queryString == null || queryString.isEmpty()) {
+            return params;
+        }
+        
+        String[] pairs = queryString.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf('=');
+            if (idx > 0) {
+                String key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8);
+                String value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8);
+                params.put(key, value);
+            }
+        }
+        return params;
+    }
+    
+    public static List<String> extractLinks(String html) {
+        List<String> links = new ArrayList<>();
+        Pattern linkPattern = Pattern.compile("href=\"(https?://[^\"]+)\"");
+        Matcher matcher = linkPattern.matcher(html);
+        
+        while (matcher.find()) {
+            links.add(matcher.group(1));
+        }
+        return links;
+    }
+    
+    public static String formatDuration(long millis) {
+        long hours = millis / 3600000;
+        long minutes = (millis % 3600000) / 60000;
+        long seconds = (millis % 60000) / 1000;
+        
+        StringBuilder sb = new StringBuilder();
+        if (hours > 0) sb.append(hours).append("h ");
+        if (minutes > 0) sb.append(minutes).append("m ");
+        sb.append(seconds).append("s");
+        
+        return sb.toString().trim();
+    }
+}
+```
+
+### Performance: Text Processing Optimization
+```java
+public class TextProcessingOptimization {
+    
+    public static String concatenateEfficiently(List<String> strings) {
+        // Pre-calculate total length
+        int totalLength = strings.stream().mapToInt(String::length).sum();
+        
+        StringBuilder sb = new StringBuilder(totalLength);
+        for (String s : strings) {
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+    
+    public static boolean containsFast(String text, String substring) {
+        // Boyer-Moore-like optimization
+        if (substring.length() > text.length()) return false;
+        
+        for (int i = 0; i <= text.length() - substring.length(); i++) {
+            if (text.regionMatches(i, substring, 0, substring.length())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static int countOccurrences(String text, String pattern) {
+        int count = 0;
+        int index = 0;
+        
+        while ((index = text.indexOf(pattern, index)) != -1) {
+            count++;
+            index += pattern.length();
+        }
+        return count;
+    }
+}
+```
+
 ## Best Practices
 
 **Do's:**

@@ -267,6 +267,125 @@ public class TechnologyAnalysis {
 }
 ```
 
+### Production: Architecture Decision Record
+```java
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class ArchitectureDecisionRecord {
+    private String id;
+    private String title;
+    private LocalDateTime date;
+    private String status; // PROPOSED, ACCEPTED, DEPRECATED, SUPERSEDED
+    private Context context;
+    private Decision decision;
+    private List<Consequence> consequences;
+    
+    public static ArchitectureDecisionRecord create(String title, Context context, Decision decision) {
+        ArchitectureDecisionRecord adr = new ArchitectureDecisionRecord();
+        adr.id = generateId(title);
+        adr.title = title;
+        adr.date = LocalDateTime.now();
+        adr.status = "PROPOSED";
+        adr.context = context;
+        adr.decision = decision;
+        adr.consequences = evaluateConsequences(decision);
+        return adr;
+    }
+    
+    public void accept() {
+        this.status = "ACCEPTED";
+        notifyStakeholders();
+    }
+    
+    public void deprecated(String reason) {
+        this.status = "DEPRECATED";
+        this.deprecationReason = reason;
+        archiveDocument();
+    }
+}
+
+// Usage
+ArchitectureDecisionRecord adr = ArchitectureDecisionRecord.create(
+    "Use Event Sourcing for Order Service",
+    new Context("Order Service needs audit trail and temporal queries"),
+    new Decision("Implement event sourcing with Kafka")
+);
+adr.accept();
+```
+
+### Advanced: Technical Debt Assessment
+```java
+public class TechnicalDebtAssessment {
+    
+    public static DebtReport assessCodebase(String codebasePath) {
+        DebtReport report = new DebtReport();
+        
+        // Code-level debt
+        report.addCategory("Code Quality", assessCodeQuality(codebasePath));
+        report.addCategory("Test Coverage", assessTestCoverage(codearchitecture));
+        report.addCategory("Documentation", assessDocumentation(codearchitecture));
+        
+        // Architecture-level debt
+        report.addCategory("Coupling", assessCoupling(codearchitecture));
+        report.addCategory("Complexity", assessComplexity(codearchitecture));
+        
+        // Calculate total debt
+        double totalDebt = report.getCategories().stream()
+            .mapToDouble(DebtCategory::getScore)
+            .average()
+            .orElse(0.0);
+        
+        report.setTotalScore(totalDebt);
+        report.setEstimatedRemediationTime(calculateRemediationTime(totalDebt));
+        
+        return report;
+    }
+    
+    private static double calculateRemediationTime(double debtScore) {
+        // Estimate: 1 point of debt = 2 weeks of remediation
+        return debtScore * 2;
+    }
+}
+```
+
+### Performance: Scalability Analysis
+```java
+public class ScalabilityAnalysis {
+    
+    public static ScalabilityReport analyze(SystemMetrics metrics) {
+        ScalabilityReport report = new ScalabilityReport();
+        
+        // Horizontal scalability
+        report.setHorizontalScalability(
+            metrics.getRequestsPerSecond() / metrics.getInstanceCount()
+        );
+        
+        // Vertical scalability
+        report.setVerticalScalability(
+            metrics.getRequestsPerSecond() / metrics.getCpuCores()
+        );
+        
+        // Bottleneck identification
+        if (metrics.getP99Latency() > 1000) {
+            report.addBottleneck("High P99 latency - consider async processing");
+        }
+        
+        if (metrics.getMemoryUsage() > 0.8) {
+            report.addBottleneck("High memory usage - consider memory profiling");
+        }
+        
+        // Capacity planning
+        report.setRecommendedInstances(
+            (int) Math.ceil(metrics.getPeakRequestsPerSecond() / 
+                metrics.getRequestsPerSecondPerInstance())
+        );
+        
+        return report;
+    }
+}
+```
+
 ## Performance Considerations
 
 | Pattern | Cost | Notes |
@@ -443,6 +562,24 @@ Senior engineering requires balancing business needs, team capabilities, and sys
 **Detection:** Performance didn't improve despite optimization.
 **Solution:** Profiled application; found actual bottleneck in database query; optimized query.
 **Prevention:** Always profile before optimizing; measure impact of changes.
+
+### Incident 4: Microservice Communication Overhead
+
+**Problem:** A microservice architecture had 20 services communicating via REST; latency increased 10x.
+**Cause:** Excessive network calls between services; no batching or caching.
+**Impact:** Response time increased from 100ms to 1000ms; user complaints.
+**Detection:** Distributed tracing showed 50+ network calls per request; latency analysis revealed overhead.
+**Solution:** Implemented API gateway; added request batching; used gRPC for internal communication.
+**Prevention:** Minimize network calls; use batching; prefer gRPC for internal communication; cache aggressively.
+
+### Incident 5: Database Connection Pool Exhaustion
+
+**Problem:** A production application ran out of database connections; all requests failed.
+**Cause:** Connection pool size was too small; connections not returned properly.
+**Impact:** Complete application outage; 30 minutes downtime.
+**Detection:** Database monitoring showed connection exhaustion; application logs showed timeout errors.
+**Solution:** Increased connection pool size; added connection leak detection; implemented connection timeout.
+**Prevention:** Monitor connection pool metrics; configure appropriate pool size; implement connection validation.
 
 ## Production Checklist
 

@@ -288,6 +288,138 @@ public class GlobalExceptionHandler {
 }
 ```
 
+### Production: Retry with Exponential Backoff
+```java
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+public class RetryHandler {
+    
+    public static <T> T executeWithRetry(Callable<T> operation, int maxRetries) {
+        int attempt = 0;
+        while (true) {
+            try {
+                return operation.call();
+            } catch (Exception e) {
+                attempt++;
+                if (attempt >= maxRetries) {
+                    throw new RuntimeException("Operation failed after " + maxRetries + " attempts", e);
+                }
+                
+                long delay = calculateDelay(attempt);
+                System.out.println("Attempt " + attempt + " failed. Retrying in " + delay + "ms");
+                
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Retry interrupted", ie);
+                }
+            }
+        }
+    }
+    
+    private static long calculateDelay(int attempt) {
+        // Exponential backoff with jitter
+        long baseDelay = 1000L;
+        long maxDelay = 30000L;
+        long delay = Math.min(baseDelay * (1L << attempt), maxDelay);
+        long jitter = (long) (delay * 0.2 * Math.random());
+        return delay + jitter;
+    }
+}
+
+// Usage
+User user = RetryHandler.executeWithRetry(
+    () -> userService.findUser(userId),
+    3
+);
+```
+
+### Advanced: Circuit Breaker Pattern
+```java
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class CircuitBreaker {
+    private enum State { CLOSED, OPEN, HALF_OPEN }
+    
+    private final AtomicInteger failureCount = new AtomicInteger(0);
+    private final AtomicLong lastFailureTime = new AtomicLong(0);
+    private volatile State state = State.CLOSED;
+    
+    private final int failureThreshold;
+    private final long openDuration;
+    
+    public CircuitBreaker(int failureThreshold, long openDuration) {
+        this.failureThreshold = failureThreshold;
+        this.openDuration = openDuration;
+    }
+    
+    public <T> T execute(Callable<T> operation) throws Exception {
+        if (state == State.OPEN) {
+            if (isTimeoutExpired()) {
+                state = State.HALF_OPEN;
+            } else {
+                throw new CircuitBreakerOpenException("Circuit breaker is open");
+            }
+        }
+        
+        try {
+            T result = operation.call();
+            onSuccess();
+            return result;
+        } catch (Exception e) {
+            onFailure();
+            throw e;
+        }
+    }
+    
+    private void onSuccess() {
+        failureCount.set(0);
+        state = State.CLOSED;
+    }
+    
+    private void onFailure() {
+        lastFailureTime.set(System.currentTimeMillis());
+        if (failureCount.incrementAndGet() >= failureThreshold) {
+            state = State.OPEN;
+        }
+    }
+    
+    private boolean isTimeoutExpired() {
+        return System.currentTimeMillis() - lastFailureTime.get() > openDuration;
+    }
+}
+```
+
+### Performance: Exception Pool Pattern
+```java
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class ExceptionPool<T extends Exception> {
+    private final ConcurrentLinkedQueue<T> pool = new ConcurrentLinkedQueue<>();
+    private final Supplier<T> factory;
+    
+    public ExceptionPool(Supplier<T> factory) {
+        this.factory = factory;
+    }
+    
+    public T borrow(String message) {
+        T exception = pool.poll();
+        if (exception == null) {
+            exception = factory.get();
+        }
+        exception = (T) exception.getClass().getConstructor(String.class).newInstance(message);
+        return exception;
+    }
+    
+    public void returnObject(T exception) {
+        pool.offer(exception);
+    }
+}
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |

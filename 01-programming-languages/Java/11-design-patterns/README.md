@@ -553,6 +553,24 @@ Design patterns are building blocks of software architecture. At scale, pattern 
 **Solution:** Removed factories for simple objects; kept factories only for complex creation logic.
 **Prevention:** Apply patterns only when justified; prefer simplicity.
 
+### Incident 4: Strategy Pattern Causing Memory Leak
+
+**Problem:** A payment processing system leaked memory due to Strategy objects not being garbage collected.
+**Cause:** Strategy objects held references to large datasets; strategies were cached but never evicted.
+**Impact:** Memory usage grew 50MB per hour; OOM after 24 hours.
+**Detection:** Heap dump showed cached Strategy objects; MAT analysis found large dataset references.
+**Solution:** Removed caching of Strategy objects; used flyweight pattern for shared state; added eviction policy.
+**Prevention:** Avoid caching Strategy objects; use WeakReference for cached strategies; monitor strategy lifecycle.
+
+### Incident 5: Decorator Pattern Breaking toString()
+
+**Problem:** Logging system showed `Decorator@1a2b3c4d` instead of meaningful object representation.
+**Cause:** Decorator pattern did not override `toString()` method; default Object.toString() used.
+**Impact:** Logs were unreadable; debugging became difficult.
+**Detection:** Customer complaints about log quality; code review showed missing toString() overrides.
+**Solution:** Added toString() method to all Decorator classes; delegated to wrapped object.
+**Prevention:** Always override toString() in Decorator pattern; document toString() behavior.
+
 ## Production Checklist
 
 - [ ] Singleton is thread-safe (enum or volatile)

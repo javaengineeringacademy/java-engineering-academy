@@ -248,6 +248,126 @@ public class JVMTuning {
 }
 ```
 
+### Production: JFR Monitoring Example
+```java
+import jdk.jfr.*;
+
+@Name("com.example.RequestEvent")
+@Label("HTTP Request")
+@StackTrace(true)
+public class RequestEvent extends Event {
+    @Label("URL")
+    String url;
+    
+    @Label("Duration")
+    @Timespan
+    long duration;
+    
+    @Label("Status Code")
+    int statusCode;
+}
+
+public class JFRMonitoring {
+    public static void main(String[] args) throws Exception {
+        Recording recording = new Recording();
+        recording.enable(RequestEvent.class);
+        recording.start();
+        
+        // Simulate requests
+        for (int i = 0; i < 100; i++) {
+            RequestEvent event = new RequestEvent();
+            event.url = "/api/user/" + i;
+            event.begin();
+            Thread.sleep(10);
+            event.end();
+            event.commit();
+        }
+        
+        recording.stop();
+        recording.dump(Paths.get("recording.jfr"));
+    }
+}
+```
+
+### Advanced: Memory Leak Detection
+```java
+import java.util.*;
+import java.lang.ref.*;
+
+public class MemoryLeakDetector {
+    private static Map<String, WeakReference<Object>> references = new HashMap<>();
+    
+    public static void track(String name, Object obj) {
+        references.put(name, new WeakReference<>(obj));
+    }
+    
+    public static void reportLeaks() {
+        System.out.println("=== Memory Leak Report ===");
+        for (Map.Entry<String, WeakReference<Object>> entry : references.entrySet()) {
+            WeakReference<Object> ref = entry.getValue();
+            if (ref.get() != null) {
+                System.out.println("LEAK: " + entry.getKey() + " is still alive");
+            } else {
+                System.out.println("OK: " + entry.getKey() + " was collected");
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        // Track objects
+        byte[] data = new byte[1024 * 1024]; // 1MB
+        track("largeArray", data);
+        
+        // Force GC
+        System.gc();
+        Thread.sleep(100);
+        
+        // Check for leaks
+        reportLeaks();
+    }
+}
+```
+
+### Production: GC Tuning Simulator
+```java
+public class GCTuningSimulator {
+    private static final int OBJECT_SIZE = 1024;
+    private static final int ALLOCATIONS_PER_SECOND = 10000;
+    
+    public static void simulateG1GC() {
+        System.out.println("=== G1GC Simulation ===");
+        System.out.println("Region size: 16MB");
+        System.out.println("Heap: 4GB");
+        System.out.println("Max pause: 200ms");
+        
+        // Simulate allocation
+        List<byte[]> objects = new ArrayList<>();
+        for (int i = 0; i < ALLOCATIONS_PER_SECOND; i++) {
+            objects.add(new byte[OBJECT_SIZE]);
+            
+            // Simulate GC every 1000 objects
+            if (i % 1000 == 0) {
+                System.gc();
+                System.out.println("GC triggered at allocation " + i);
+            }
+        }
+    }
+    
+    public static void simulateZGC() {
+        System.out.println("=== ZGC Simulation ===");
+        System.out.println("Heap: 16GB");
+        System.out.println("Max pause: 10ms");
+        
+        // ZGC uses colored pointers and load barriers
+        // Simulates concurrent marking and relocation
+        List<byte[]> objects = new ArrayList<>();
+        for (int i = 0; i < ALLOCATIONS_PER_SECOND * 10; i++) {
+            objects.add(new byte[OBJECT_SIZE]);
+        }
+    }
+}
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |
@@ -431,6 +551,24 @@ JVM internals are the foundation of Java application performance. At scale, GC a
 **Detection:** Kubernetes events showed OOM kill; JVM logs showed heap at 8GB.
 **Solution:** Set `-Xmx3g` (container limit - 1GB for overhead); enabled `-XX:+UseContainerSupport`.
 **Prevention:** Always set heap ≤ container memory; use container-aware JVM flags.
+
+### Incident 4: JIT Compilation Causing Performance Regression
+
+**Problem:** Application performance degraded after upgrading from Java 11 to Java 17.
+**Cause:** JIT compiler in Java 17 had different optimization heuristics; some hot methods were not compiled.
+**Impact:** 20% throughput drop; response times increased.
+**Detection:** JFR showed fewer compiled methods; profiling revealed interpreter overhead.
+**Solution:** Added `-XX:CompileCommand` to force compilation of critical methods; tuned `-XX:ReservedCodeCacheSize`.
+**Prevention:** Benchmark before/after upgrades; monitor JIT compilation; use `-XX:+PrintCompilation` for debugging.
+
+### Incident 5: String Deduplication Causing Memory Issues
+
+**Problem:** Application using G1GC with string deduplication showed increased CPU usage.
+**Cause:** String deduplication added overhead for short-lived strings; frequent GC cycles.
+**Impact:** 15% CPU increase; GC cycles took longer.
+**Detection:** CPU profiling showed G1GC deduplication overhead; GC logs showed longer pauses.
+**Solution:** Disabled `-XX:+UseStringDeduplication` for short-lived strings; tuned `-XX:G1PeriodicGCInterval`.
+**Prevention:** Benchmark string deduplication impact; monitor GC overhead; use JFR to analyze string usage.
 
 ## Production Checklist
 

@@ -248,6 +248,151 @@ class UserRepositoryIntegrationTest {
 }
 ```
 
+### Production: Comprehensive Test Suite
+```java
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.parallel.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@DisplayName("Production Test Suite")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Execution(ExecutionMode.CONCURRENT)
+class ProductionTestSuite {
+    
+    private static final AtomicInteger testCount = new AtomicInteger(0);
+    
+    @BeforeAll
+    static void setup() {
+        System.out.println("Starting test suite...");
+        testCount.set(0);
+    }
+    
+    @AfterAll
+    static void teardown() {
+        System.out.println("Completed " + testCount.get() + " tests");
+    }
+    
+    @Test
+    @Order(1)
+    @DisplayName("Should handle concurrent access")
+    void shouldHandleConcurrentAccess() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger(0);
+        Thread[] threads = new Thread[10];
+        
+        for (int i = 0; i < threads.length; i++) {
+            threads[i] = new Thread(() -> {
+                for (int j = 0; j < 1000; j++) {
+                    counter.incrementAndGet();
+                }
+            });
+            threads[i].start();
+        }
+        
+        for (Thread thread : threads) {
+            thread.join();
+        }
+        
+        assertEquals(10000, counter.get());
+        testCount.incrementAndGet();
+    }
+    
+    @Test
+    @Order(2)
+    @DisplayName("Should validate all edge cases")
+    void shouldValidateAllEdgeCases() {
+        // Null input
+        assertThrows(NullPointerException.class, () -> {
+            processInput(null);
+        });
+        
+        // Empty input
+        assertEquals("", processInput(""));
+        
+        // Whitespace only
+        assertEquals("trimmed", processInput("  trimmed  "));
+        
+        testCount.incrementAndGet();
+    }
+    
+    private String processInput(String input) {
+        if (input == null) throw new NullPointerException();
+        return input.trim();
+    }
+}
+```
+
+### Advanced: Mutation Testing Example
+```java
+import org.pitest.mutationtest.MutationTest;
+import org.pitest.mutationtest.MutationStrategies;
+import org.pitest.mutationtest.engine.Mutant;
+import org.pitest.mutationtest.engine.MutationEngine;
+import org.pitest.mutationtest.engine.MutationDetails;
+
+public class MutationTestingExample {
+    
+    // Original code
+    public static boolean isPositive(int number) {
+        return number > 0;
+    }
+    
+    // Mutant 1: Changed > to >=
+    public static boolean isPositiveMutant1(int number) {
+        return number >= 0;  // Mutation: boundary condition
+    }
+    
+    // Mutant 2: Changed > to <
+    public static boolean isPositiveMutant2(int number) {
+        return number < 0;   // Mutation: negation
+    }
+    
+    // Test that catches mutants
+    public static void testIsPositive() {
+        // Test case that catches mutant1
+        assert isPositive(-1) == false;  // Fails with mutant1 (0 >= 0 is true)
+        
+        // Test case that catches mutant2
+        assert isPositive(5) == true;    // Fails with mutant2 (5 < 0 is false)
+    }
+}
+```
+
+### Performance: Test Execution Timing
+```java
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import java.time.Duration;
+import java.time.Instant;
+
+class PerformanceTest {
+    
+    private Instant start;
+    
+    @BeforeEach
+    void startTimer() {
+        start = Instant.now();
+    }
+    
+    @AfterEach
+    void stopTimer() {
+        Duration duration = Duration.between(start, Instant.now());
+        System.out.println("Test took: " + duration.toMillis() + "ms");
+        
+        // Assert performance requirement
+        assert duration.toMillis() < 1000 : "Test exceeded 1 second";
+    }
+    
+    @Test
+    void shouldProcessLargeDataset() {
+        // Simulate processing
+        for (int i = 0; i < 1000000; i++) {
+            Math.sqrt(i);
+        }
+    }
+}
+```
+
 ## Performance Considerations
 
 | Test Type | Execution Time | Cost |
@@ -426,6 +571,24 @@ Testing is a cross-cutting concern that affects every layer of an application. A
 **Detection:** Code review revealed trivial tests; mutation testing showed low mutation score.
 **Solution:** Focused on mutation testing; added edge case tests; improved test quality.
 **Prevention:** Use mutation testing alongside coverage; focus on test quality over quantity.
+
+### Incident 4: Test Contamination Causing False Positives
+
+**Problem:** Tests passed in isolation but failed in full suite due to shared database state.
+**Cause:** Tests modified shared database records; subsequent tests saw modified state.
+**Impact:** 20% of test failures were false positives; CI pipeline unreliable.
+**Detection:** Tests passed locally but failed in CI; database cleanup logs showed missing cleanup.
+**Solution:** Added `@Transactional` to tests; used test containers; implemented proper cleanup.
+**Prevention:** Isolate test data; use transaction rollback; clean up after each test.
+
+### Incident 5: Missing Assertions in Parameterized Tests
+
+**Problem:** Parameterized tests passed but had no assertions; all test cases were green.
+**Cause:** Developer forgot to add assertions; test ran but didn't verify anything.
+**Impact:** False confidence; bugs slipped through.
+**Detection:** Code review showed missing assertions; mutation testing showed 0% mutation score.
+**Solution:** Added assertions to all test cases; used AssertJ for fluent assertions; added mutation testing.
+**Prevention:** Always verify assertions exist; use mutation testing to catch missing assertions; review test code.
 
 ## Production Checklist
 

@@ -299,6 +299,136 @@ public class BuilderProcessor extends AbstractProcessor {
 }
 ```
 
+### Production: Dependency Injection Container
+```java
+import java.lang.reflect.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DIContainer {
+    private final Map<Class<?>, Object> instances = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Class<?>> bindings = new ConcurrentHashMap<>();
+    
+    public <T> void bind(Class<T> interfaceType, Class<? extends T> implementation) {
+        bindings.put(interfaceType, implementation);
+    }
+    
+    public <T> T resolve(Class<T> type) {
+        // Check for existing instance
+        T instance = type.cast(instances.get(type));
+        if (instance != null) {
+            return instance;
+        }
+        
+        // Check for binding
+        Class<?> implClass = bindings.getOrDefault(type, type);
+        
+        // Create instance
+        try {
+            Constructor<?> constructor = implClass.getDeclaredConstructors()[0];
+            Object[] args = resolveDependencies(constructor);
+            instance = type.cast(constructor.newInstance(args));
+            instances.put(type, instance);
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create instance of " + type, e);
+        }
+    }
+    
+    private Object[] resolveDependencies(Constructor<?> constructor) {
+        Class<?>[] parameterTypes = constructor.getParameterTypes();
+        Object[] args = new Object[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            args[i] = resolve(parameterTypes[i]);
+        }
+        return args;
+    }
+}
+
+// Usage
+DIContainer container = new DIContainer();
+container.bind(UserRepository.class, PostgresUserRepository.class);
+container.bind(NotificationService.class, EmailNotificationService.class);
+
+UserService service = container.resolve(UserService.class);
+```
+
+### Advanced: Method Handle vs Reflection
+```java
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
+public class MethodHandleExample {
+    
+    private String name = "Alice";
+    
+    public String getName() {
+        return name;
+    }
+    
+    public static void main(String[] args) throws Throwable {
+        MethodHandleExample example = new MethodHandleExample();
+        
+        // Reflection approach
+        Method reflectiveMethod = MethodHandleExample.class.getMethod("getName");
+        String result1 = (String) reflectiveMethod.invoke(example);
+        
+        // MethodHandle approach
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandle handle = lookup.findVirtual(
+            MethodHandleExample.class,
+            "getName",
+            MethodType.methodType(String.class)
+        );
+        String result2 = (String) handle.invoke(example);
+        
+        System.out.println("Reflection: " + result1);
+        System.out.println("MethodHandle: " + result2);
+    }
+}
+```
+
+### Performance: Annotation Caching
+```java
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class AnnotationCache {
+    private static final Map<Class<?>, Map<String, Annotation>> cache = new ConcurrentHashMap<>();
+    
+    public static <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T> annotationType) {
+        return (T) cache
+            .computeIfAbsent(clazz, c -> {
+                Map<String, Annotation> map = new ConcurrentHashMap<>();
+                for (Annotation annotation : c.getAnnotations()) {
+                    map.put(annotation.annotationType().getName(), annotation);
+                }
+                return map;
+            })
+            .get(annotationType.getName());
+    }
+    
+    public static boolean hasAnnotation(Class<?> clazz, Class<? extends Annotation> annotationType) {
+        return getAnnotation(clazz, annotationType) != null;
+    }
+}
+
+// Usage
+@Deprecated
+class OldService {
+}
+
+public class Main {
+    public static void main(String[] args) {
+        boolean isDeprecated = AnnotationCache.hasAnnotation(OldService.class, Deprecated.class);
+        System.out.println("Has @Deprecated: " + isDeprecated);
+    }
+}
+```
+
 ## Performance Considerations
 
 | Operation | Cost | Notes |
@@ -479,6 +609,24 @@ Reflection and annotations are the foundation of Java frameworks. At scale, refl
 **Detection:** Framework logs showed annotation not found; code review revealed retention policy.
 **Solution:** Changed to `@Retention(RetentionPolicy.RUNTIME)`.
 **Prevention:** Verify retention policy matches usage; add tests for annotation detection.
+
+### Incident 4: Dynamic Proxy Breaking Serialization
+
+**Problem:** A JPA entity using dynamic proxy failed to serialize to JSON; Jackson threw InvalidDefinitionException.
+**Cause:** Dynamic proxy class was not recognized by Jackson; serialization failed.
+**Impact:** REST API returned 500 errors for all JPA entities.
+**Detection:** Customer complaints; logs showed Jackson serialization failure.
+**Solution:** Added `@JsonIgnoreProperties(ignoreUnknown = true)`; configured Jackson to handle proxies; used mix-ins.
+**Prevention:** Test serialization with proxies; configure Jackson for proxy handling; document proxy serialization.
+
+### Incident 5: Reflection Bypassing Security Manager
+
+**Problem:** A security audit found that reflection could bypass SecurityManager restrictions.
+**Cause:** `setAccessible(true)` was used without SecurityManager check; reflective access bypassed permissions.
+**Impact:** Security vulnerability; potential for privilege escalation.
+**Detection:** Security audit revealed missing SecurityManager checks; penetration testing confirmed bypass.
+**Solution:** Added SecurityManager checks before `setAccessible(true)`; restricted reflective access.
+**Prevention:** Always check SecurityManager; use `--add-opens` carefully; audit reflective access in security-sensitive code.
 
 ## Production Checklist
 

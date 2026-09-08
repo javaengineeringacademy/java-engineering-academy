@@ -384,6 +384,121 @@ public class StreamEnterpriseExample {
 }
 ```
 
+### Production: Functional Error Handling
+```java
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class FunctionalErrorHandling {
+    
+    // Result type for functional error handling
+    public static class Result<T> {
+        private final T value;
+        private final Exception error;
+        
+        private Result(T value, Exception error) {
+            this.value = value;
+            this.error = error;
+        }
+        
+        public static <T> Result<T> success(T value) {
+            return new Result<>(value, null);
+        }
+        
+        public static <T> Result<T> failure(Exception error) {
+            return new Result<>(null, error);
+        }
+        
+        public boolean isSuccess() { return error == null; }
+        public T getValue() { return value; }
+        public Exception getError() { return error; }
+        
+        public <R> Result<R> map(Function<T, R> mapper) {
+            if (isSuccess()) {
+                try {
+                    return Result.success(mapper.apply(value));
+                } catch (Exception e) {
+                    return Result.failure(e);
+                }
+            }
+            return Result.failure(error);
+        }
+        
+        public <R> Result<R> flatMap(Function<T, Result<R>> mapper) {
+            if (isSuccess()) {
+                return mapper.apply(value);
+            }
+            return Result.failure(error);
+        }
+    }
+    
+    // Safe execution
+    public static <T> Result<T> execute(Supplier<T> supplier) {
+        try {
+            return Result.success(supplier.get());
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
+    
+    public static void main(String[] args) {
+        Result<Integer> result = execute(() -> Integer.parseInt("123"))
+            .map(n -> n * 2)
+            .map(n -> n + 10);
+        
+        System.out.println("Result: " + result.getValue());
+        
+        Result<Integer> failed = execute(() -> Integer.parseInt("abc"))
+            .map(n -> n * 2);
+        
+        System.out.println("Failed: " + failed.getError().getMessage());
+    }
+}
+```
+
+### Advanced: Stream Composition Patterns
+```java
+import java.util.function.Predicate;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+public class StreamComposition {
+    
+    // Compose predicates
+    public static <T> Predicate<T> and(Predicate<T> left, Predicate<T> right) {
+        return t -> left.test(t) && right.test(t);
+    }
+    
+    public static <T> Predicate<T> or(Predicate<T> left, Predicate<T> right) {
+        return t -> left.test(t) || right.test(t);
+    }
+    
+    public static <T> Predicate<T> not(Predicate<T> predicate) {
+        return t -> !predicate.test(t);
+    }
+    
+    // Compose functions
+    public static <T, R> Function<T, R> compose(Function<T, R> after, Function<R, R> before) {
+        return t -> after.apply(before.apply(t));
+    }
+    
+    public static void main(String[] args) {
+        // Compose predicates
+        Predicate<String> isLong = s -> s.length() > 5;
+        Predicate<String> startsWithA = s -> s.startsWith("A");
+        Predicate<String> longAndStartsWithA = and(isLong, startsWithA);
+        
+        System.out.println(longAndStartsWithA.test("Alice"));    // false
+        System.out.println(longAndStartsWithA.test("Alexander")); // true
+        
+        // Filter with composed predicate
+        Stream.of("Alice", "Bob", "Alexander", "Charlie")
+            .filter(longAndStartsWithA)
+            .forEach(System.out::println);  // Alexander
+    }
+}
+```
+
 ## Performance Considerations
 - Parallel streams for large datasets
 - Lazy evaluation reduces intermediate operations

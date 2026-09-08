@@ -291,6 +291,129 @@ public class ConcurrentCollectionExample {
 }
 ```
 
+### Production: LRU Cache Implementation
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private final int maxSize;
+    
+    public LRUCache(int maxSize) {
+        super(maxSize, 0.75f, true); // accessOrder = true
+        this.maxSize = maxSize;
+    }
+    
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > maxSize;
+    }
+    
+    public V getOrCreate(K key, java.util.function.Supplier<V> supplier) {
+        return computeIfAbsent(key, k -> supplier.get());
+    }
+}
+
+// Usage
+LRUCache<String, User> cache = new LRUCache<>(1000);
+User user = cache.getOrCreate("user:123", () -> userService.findById("123"));
+```
+
+### Advanced: Bloom Filter Implementation
+```java
+import java.util.BitSet;
+
+public class BloomFilter<T> {
+    private final BitSet bitSet;
+    private final int size;
+    private final int hashCount;
+    private int insertions = 0;
+    
+    public BloomFilter(int expectedElements, double falsePositiveRate) {
+        this.size = (int) (-expectedElements * Math.log(falsePositiveRate) / (Math.log(2) * Math.log(2)));
+        this.hashCount = (int) (size / expectedElements * Math.log(2));
+        this.bitSet = new BitSet(size);
+    }
+    
+    public void add(T element) {
+        for (int i = 0; i < hashCount; i++) {
+            int hash = hash(element, i);
+            bitSet.set(Math.abs(hash % size));
+        }
+        insertions++;
+    }
+    
+    public boolean mightContain(T element) {
+        for (int i = 0; i < hashCount; i++) {
+            int hash = hash(element, i);
+            if (!bitSet.get(Math.abs(hash % size))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private int hash(T element, int seed) {
+        int hash = 0;
+        String str = element.toString();
+        for (int i = 0; i < str.length(); i++) {
+            hash = seed * 31 + str.charAt(i);
+        }
+        return hash;
+    }
+    
+    public double getFalsePositiveRate() {
+        return Math.pow(1 - Math.exp(-hashCount * insertions / (double) size), hashCount);
+    }
+}
+```
+
+### Performance: Efficient Collection Usage
+```java
+import java.util.*;
+import java.util.stream.*;
+
+public class EfficientCollectionUsage {
+    
+    public static void main(String[] args) {
+        // Pre-size collections
+        List<String> preSized = new ArrayList<>(10000);
+        
+        // Use appropriate collection
+        Set<String> uniqueElements = new HashSet<>(); // O(1) lookup
+        Map<String, Integer> sortedMap = new TreeMap<>(); // sorted keys
+        
+        // Use primitive-specialized collections
+        it.unimi.dsi.fastutil.ints.IntArrayList intList = new it.unimi.dsi.fastutil.ints.IntArrayList();
+        
+        // Batch operations
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        
+        // Partition into chunks
+        List<List<Integer>> chunks = partition(numbers, 3);
+        System.out.println("Chunks: " + chunks);
+        
+        // Merge maps
+        Map<String, Integer> map1 = Map.of("a", 1, "b", 2);
+        Map<String, Integer> map2 = Map.of("b", 3, "c", 4);
+        Map<String, Integer> merged = mergeMaps(map1, map2, Integer::sum);
+        System.out.println("Merged: " + merged);
+    }
+    
+    public static <T> List<List<T>> partition(List<T> list, int size) {
+        return IntStream.range(0, (list.size() + size - 1) / size)
+            .mapToObj(i -> list.subList(i * size, Math.min((i + 1) * size, list.size())))
+            .collect(Collectors.toList());
+    }
+    
+    public static <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2, BinaryOperator<V> merger) {
+        Map<K, V> result = new HashMap<>(map1);
+        map2.forEach((key, value) -> result.merge(key, value, merger));
+        return result;
+    }
+}
+```
+
 ## Performance Considerations
 
 | Operation | ArrayList | LinkedList | HashSet | HashMap | TreeMap |
