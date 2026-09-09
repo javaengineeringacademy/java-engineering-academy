@@ -1,12 +1,14 @@
 # Standard Template Library (STL) — C++
 
+## Overview
+
+The Standard Template Library (STL) is C++'s foundational library of generic containers, iterators, algorithms, and function objects. It provides type-safe, efficient, and reusable implementations of common data structures and operations, enabling developers to write correct, performant code without reinventing the wheel.
+
+The STL is C++'s standard library of generic containers, iterators, algorithms, and function objects, providing type-safe, efficient, and reusable implementations of common data structures and operations.
+
 ## Why It Matters
 
 Every C++ program needs data structures and algorithms. When developers reinvent linked lists, hash maps, and sorting routines, they introduce subtle bugs, inconsistent APIs, and wasted time. The STL provides production-tested, type-safe, zero-overhead containers and algorithms optimized across 40+ years of real-world use.
-
-## What It Is
-
-The STL is C++'s standard library of generic containers, iterators, algorithms, and function objects, providing type-safe, efficient, and reusable implementations of common data structures and operations.
 
 ## Architecture: How the STL Fits Together
 
@@ -25,6 +27,102 @@ The STL is C++'s standard library of generic containers, iterators, algorithms, 
 │  (stack, queue, priority_queue, pmr::allocators)            │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+## Internal Working
+
+### Hash Table Implementation (`std::unordered_map`, `std::unordered_set`)
+
+The unordered containers use a hash table with separate chaining (linked lists per bucket) or open addressing (Swiss tables in Abseil). Key internals:
+
+```cpp
+std::unordered_map<int, std::string> map;
+map.reserve(1024);           // Pre-allocate 1024 buckets
+map.max_load_factor();       // Default 1.0 — triggers rehash when load exceeds this
+map.bucket_count();          // Number of buckets
+map.load_factor();           // size() / bucket_count()
+
+// Hash collision: worst-case O(n) lookup when all keys hash to same bucket
+// Mitigation: use a good hash function, reserve() for known sizes
+```
+
+### Red-Black Tree (`std::map`, `std::set`)
+
+The ordered associative containers use a self-balancing red-black tree, guaranteeing O(log n) for all operations:
+
+- **Insertion**: O(log n) — may trigger tree rebalancing
+- **Deletion**: O(log n) — rebalancing after removal
+- **Search**: O(log n) — binary search on tree structure
+- **Iteration**: O(n) — in-order traversal produces sorted sequence
+
+```cpp
+std::map<std::string, int> tree;
+tree["a"] = 1;  // Insert triggers rebalancing
+// The tree maintains sorted order internally via red-black balancing
+```
+
+### Iterator Categories
+
+Iterators are classified by the operations they support, forming a hierarchy:
+
+```
+InputIterator → ForwardIterator → BidirectionalIterator → RandomAccessIterator → ContiguousIterator
+     ↑                                                                    ↑
+  (read-only)                                                     (vector, array, string)
+```
+
+| Category | Operations | Containers |
+|----------|-----------|------------|
+| InputIterator | `*it`, `++it`, `it != other` | `istream_iterator` |
+| ForwardIterator | + default construction, multi-pass | `forward_list`, `unordered_map` |
+| BidirectionalIterator | + `--it` | `list`, `set`, `map` |
+| RandomAccessIterator | + `it + n`, `it - n`, `it[n]`, `it1 < it2` | `vector`, `deque` |
+| ContiguousIterator | + elements stored contiguously in memory | `vector`, `array`, `string`, `span` |
+
+## Learning Objectives
+
+After completing this module, you will be able to:
+
+- Choose the appropriate STL container based on access patterns and performance requirements
+- Use iterators correctly and understand iterator invalidation rules for each container
+- Apply STL algorithms (`std::sort`, `std::find`, `std::transform`, `std::accumulate`) to solve common problems
+- Recognize the time and space complexity trade-offs between sequential, associative, and unordered containers
+- Write exception-safe code using the erase-remove idiom and emplace operations
+- Identify and fix common STL-related bugs such as iterator invalidation and dangling pointers
+- Leverage C++11/17/20 STL features (`emplace_back`, `std::string_view`, `std::span`, ranges)
+
+## Prerequisites
+
+Before studying the STL, you should be comfortable with:
+
+- **C++ Basics**: Variables, functions, classes, and object lifecycle
+- **Templates**: Basic template syntax and how generic programming works in C++ (see [Templates](../03-templates/))
+- **Pointers & References**: Dereferencing, pointer arithmetic, and reference semantics
+- **Memory Management**: `new`/`delete`, stack vs. heap, and RAII principles (see [Memory Management](../05-memory-management/))
+- **Basic Data Structures**: Arrays, linked lists, stacks, queues, and hash maps (conceptual understanding)
+
+## History
+
+The STL's evolution reflects the broader history of C++ standardization:
+
+| Year | Milestone | Details |
+|------|-----------|---------|
+| 1994 | HP STL released | Alexander Stepanov and Meng Lee at HP Labs release the first implementation of the STL |
+| 1994 | STL proposed for C++ | The STL is proposed for inclusion in the C++ standard library |
+| 1998 | C++98 STL adopted | The STL becomes part of the C++98 standard, with containers, iterators, algorithms, and function objects |
+| 2011 | C++11 emplace & move | `emplace_back`, `emplace`, move semantics, `std::array`, initializer lists added — enabling in-place construction and eliminating unnecessary copies |
+| 2014 | C++14 refinements | `std::exchange`, `std::cbegin`/`std::cend`, and other quality-of-life improvements |
+| 2017 | C++17 `std::pmr` | Polymorphic memory allocators (`std::pmr::vector`, `std::pmr::string`) allow custom allocation strategies without changing container types |
+| 2020 | C++20 ranges & views | `std::ranges`, `std::views`, `std::span` — lazy pipeline algorithms and non-owning views extend the STL's expressiveness |
+
+The original HP STL was designed around the idea that algorithms should be separated from containers via iterators — a separation of concerns that remains the STL's core architectural principle.
+
+## Production Notes
+
+- **STL implementations vary**: libstdc++ (GCC), libc++ (Clang), and MSVC's STL have different performance profiles for edge cases. Benchmark on your target platform.
+- **Debug vs. Release performance**: STL containers in debug builds (with iterator checking, `_GLIBCXX_DEBUG`) can be 10–100× slower. Always benchmark in release mode.
+- **Compiler optimizations**: Modern compilers inline STL algorithm calls effectively. `std::sort` often outperforms hand-written quicksort due to compiler-specific optimizations (e.g., pdqsort in libstdc++).
+- **ABI stability**: GCC's `std::string` ABI changed in GCC 5 (COW vs. SSO). Mixing code compiled with different GCC versions can cause linking issues.
+- **Memory overhead**: `std::unordered_map` with default settings may allocate far more memory than expected due to bucket count growth. Call `reserve()` for known sizes.
 
 ## Containers
 
@@ -224,6 +322,19 @@ auto above = std::count_if(vec.begin(), vec.end(),
 | Holding pointers to elements across push_back | `std::vector` | `std::deque` or `reserve()` |
 | Need stable iterators during erase | `std::vector` (erase returns iterator) | Use `it = vec.erase(it)` |
 
+## Best Practices
+
+1. **Default to `std::vector`**: It's cache-friendly, has O(1) random access, and is the most optimized container across compilers.
+2. **Always `reserve()` when you know the size**: Avoids reallocation and iterator invalidation.
+3. **Use `emplace_back` over `push_back`**: Constructs objects in-place, avoiding unnecessary copies/moves.
+4. **Prefer algorithms over manual loops**: `std::sort`, `std::find`, `std::transform` express intent and are often hand-optimized.
+5. **Use `std::string_view` for read-only strings**: Avoids copying string data when you only need to read it.
+6. **Use `auto` with iterators**: Reduces verbosity and prevents type mismatches.
+7. **Use structured bindings for maps (C++17)**: `for (auto& [key, value] : map)` is cleaner than `it->first`/`it->second`.
+8. **Use `std::exchange` for complex state transitions**: Cleaner than manual swap-and-assign patterns.
+9. **Provide custom hashers for user-defined types in `unordered_map`**: The standard library doesn't hash custom types by default.
+10. **Monitor container sizes in long-running systems**: Unbounded growth leads to OOM; use bounded containers or periodic pruning.
+
 ### Real-World Production Examples
 1. **Google Abseil**: Provides Swiss tables (`absl::flat_hash_map`) faster than `std::unordered_map`
 2. **Facebook Folly**: `fbvector` with optimized allocation strategies
@@ -251,6 +362,39 @@ auto above = std::count_if(vec.begin(), vec.end(),
 **Impact**: ~1,200 bids/hour failed. $15K/day revenue loss.
 
 **Solution**: Switched to `std::deque` (stable pointers on push_back) and called `vec.reserve()`.
+
+---
+
+### Incident 3: `std::unordered_map` Hash Collision DoS
+**Problem**: An authentication service experienced sudden latency spikes (p99 > 5s) under load, with no code changes.
+
+**Cause**: An attacker crafted input that produced identical hash values for `std::unordered_map<std::string, int>`, degrading all lookups to O(n). The default `std::hash<std::string>` was vulnerable to collision attacks.
+
+**Impact**: Authentication latency spiked 50×. ~3% of requests timed out. Service degraded for 45 minutes.
+
+**Solution**: Replaced `std::hash` with a randomized salt-based hasher (`absl::Hash` or `std::hash` with random seed). Added load factor monitoring and alerting.
+
+---
+
+### Incident 4: Vector Insert Causing Iterator Invalidation in Hot Loop
+**Problem**: A log processing pipeline crashed intermittently under high throughput.
+
+**Cause**: A loop used `std::vector::insert` to add elements while iterating. The insert could trigger reallocation, invalidating all iterators including the loop variable. The crash was non-deterministic because it only occurred when the vector grew past its capacity.
+
+**Impact**: ~5 crashes/day during peak hours. Each crash required a full service restart (30s downtime).
+
+**Solution**: Replaced the loop with `std::remove_if` + `erase` (erase-remove idiom) or used `std::copy_if` with `std::back_inserter`. Added `-fsanitize=address` in CI to catch future issues.
+
+---
+
+### Incident 5: `std::list` Memory Leak from Unbounded Growth
+**Problem**: A chat application's server process grew memory usage by ~2GB/day until OOM kill.
+
+**Cause**: Messages were stored in a `std::list`, but the cleanup code used `list.erase(it++)` instead of `it = list.erase(it)`. The post-increment on an invalidated iterator caused the erase to silently skip elements, leaving leaked nodes.
+
+**Impact**: Server OOM kills happened daily. Each restart caused 2–3 minutes of lost connections for all connected users.
+
+**Solution**: Changed to `it = list.erase(it)`. Added AddressSanitizer in CI. Implemented a memory budget alert at 80% of container capacity.
 
 ---
 
@@ -381,6 +525,26 @@ The STL is the backbone of data-oriented design in C++. Containers provide type-
 3. **Why is `std::list` rarely the right choice?**: Despite O(1) insertion/deletion, `std::list` has poor cache locality — each node is a separate heap allocation. For most workloads, `std::vector` with `std::move` is faster due to cache-friendly memory layout.
 4. **What is iterator invalidation and which containers are affected?**: Iterator invalidation occurs when an operation (insert, erase, reallocation) makes existing iterators point to invalid memory. `std::vector` invalidates all iterators on reallocation and most on middle-insert. `std::list` only invalidates iterators to the erased element.
 5. **How do you choose between `std::map` and `std::unordered_map`?**: Use `std::unordered_map` when you need O(1) average lookup and don't care about order. Use `std::map` when you need sorted order, range queries, or guaranteed O(log n) without hash collision risk.
+
+6. **What is the advantage of `emplace_back` over `push_back`?**: `emplace_back` constructs the object in-place using the arguments you provide, avoiding an intermediate temporary object and potential copy/move. `push_back` requires an already-constructed object. For complex types, `emplace_back` can be significantly faster.
+
+7. **Why does `std::vector` invalidate all iterators on reallocation?**: When `push_back` exceeds capacity, the vector allocates a new buffer and moves all elements. Old iterators still point to the freed buffer. Always re-acquire iterators after operations that may reallocate.
+
+8. **Explain `std::deque`'s iterator invalidation rules**: `std::deque` invalidates all iterators on `push_back`/`push_front` (but not on `insert` at ends). On `insert` in the middle, all iterators are invalidated. On `erase`, iterators to elements before the erased position remain valid.
+
+9. **What is the time complexity of `std::sort` and why is it preferred over quicksort?**: `std::sort` is O(n log n) guaranteed (typically introsort: quicksort + heapsort fallback). It avoids quicksort's O(n²) worst case, is cache-friendly, and is often hand-optimized by compiler vendors (e.g., pdqsort in libstdc++).
+
+10. **When should you use `std::forward_list` over `std::list`?**: Use `std::forward_list` when you only need forward iteration and want lower memory overhead (one pointer per node vs. two). It's useful in memory-constrained environments and for implementing singly-linked list algorithms.
+
+11. **How do you safely iterate and erase from a `std::vector`?**: Use the pattern `it = vec.erase(it)` which returns an iterator to the next element. Never do `vec.erase(it); it++` because `erase` invalidates `it`. Alternatively, use the erase-remove idiom for batch removal.
+
+12. **What is the difference between `std::map::insert` and `std::map::operator[]`?**: `insert` does nothing if the key exists (returns iterator to existing element). `operator[]` inserts a default-constructed value if the key doesn't exist. Use `insert` when you don't want to overwrite; use `operator[]` or `insert_or_assign` (C++17) when you do.
+
+13. **Explain `std::priority_queue` and when to use `std::make_heap`/`std::push_heap` instead**: `std::priority_queue` is a container adapter providing heap operations. Use raw heap functions (`std::make_heap`, `std::push_heap`, `std::pop_heap`) when you need direct access to the underlying container or custom comparison with more control.
+
+14. **What is the purpose of `std::accumulate` and what are its pitfalls?**: `std::accumulate` computes a running sum (or custom operation) over a range. Pitfall: the initial value's type determines the result type, so `std::accumulate(vec.begin(), vec.end(), 0)` truncates if elements are `long long`. Use the correct initial value type.
+
+15. **How do C++20 ranges improve STL algorithm usage?**: Ranges allow piped algorithm composition: `vec | std::views::filter(pred) | std::views::transform(fn)`. They eliminate iterator pairs, support lazy evaluation, and integrate with concepts for better error messages. Use `std::ranges::sort(vec)` instead of `std::sort(vec.begin(), vec.end())`.
 
 ## References
 
