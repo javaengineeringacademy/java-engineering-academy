@@ -1,5 +1,30 @@
 # Modern C++ — C++
 
+## Overview
+
+Modern C++ refers to the collection of features introduced in C++11 and subsequent standards (C++14, C++17, C++20, C++23). These features fundamentally change how you write C++ code — enabling safer resource management, cleaner syntax, better performance, and more expressive type systems. Modern C++ is not a separate language; it is an evolution of C++ that builds on decades of backward compatibility while addressing long-standing pain points in the language.
+
+## Learning Objectives
+
+After completing this module, you will be able to:
+
+- Use `auto` type inference, range-based for loops, and `nullptr` to write cleaner code
+- Apply move semantics and perfect forwarding to eliminate unnecessary copies
+- Write lambda expressions and use them with STL algorithms
+- Use `std::optional`, `std::variant`, and `std::string_view` for safer, more expressive designs
+- Apply `constexpr` and `if constexpr` for compile-time programming
+- Constrain templates with C++20 concepts
+- Recognize and avoid common pitfalls with modern C++ features
+- Understand when to use modern versus legacy approaches
+
+## Prerequisites
+
+- Solid understanding of C++ basics: variables, functions, classes, pointers, references
+- Familiarity with the STL: `std::vector`, `std::string`, iterators
+- Basic knowledge of templates (template syntax, function templates)
+- Understanding of heap vs. stack memory and manual resource management (`new`/`delete`)
+- A C++17-capable compiler (GCC 7+, Clang 5+, MSVC 19.14+)
+
 ## Why It Matters
 
 Modern C++ (C++11/14/17/20) is not just syntax sugar — it fundamentally changes how you express intent, manage resources, and write safe, performant code. When you master these features, you get fewer bugs, clearer code, and the ability to use the full power of the language instead of writing "C++03-style" code with the parking brake on.
@@ -7,6 +32,21 @@ Modern C++ (C++11/14/17/20) is not just syntax sugar — it fundamentally change
 ## What It Is
 
 Modern C++ encompasses features from C++11 onwards, including auto type inference, lambdas, move semantics, smart pointers, constexpr, optional, variant, string_view, and concepts that transform how you write C++ code.
+
+## History
+
+Modern C++ began with the C++11 standard, which was a major overhaul of the language after over a decade of stability (C++03).
+
+| Standard | Year | Key Features |
+|----------|------|--------------|
+| **C++03** | 2003 | Last "legacy" standard; `auto` as storage class specifier; no lambdas |
+| **C++11** | 2011 | `auto` type inference, lambdas, `std::move`, `constexpr`, `nullptr`, range-based for, smart pointers, `std::thread`, uniform initialization |
+| **C++14** | 2014 | Generic lambdas, `std::make_unique`, `std::index_sequence`, relaxed `constexpr` restrictions, variable templates |
+| **C++17** | 2017 | `std::optional`, `std::variant`, `std::string_view`, structured bindings, `if constexpr`, `std::filesystem`, class template argument deduction (CTAD), parallel algorithms |
+| **C++20** | 2020 | Concepts, ranges, coroutines, `std::format`, modules, `std::span`, three-way comparison (`<=>`), `consteval`, `constinit` |
+| **C++23** | 2023 | `std::expected`, `std::print`, `std::mdspan`, `std::generator`, `std::flat_map`, deducing `this`, `std::stacktrace` |
+
+The term "Modern C++" typically refers to C++11 and later. Many features were backported from Boost and other libraries after years of real-world use. The committee's philosophy: if a pattern is widely used and could benefit from language-level support, standardize it.
 
 ## Engineering Decision Framework
 
@@ -21,6 +61,115 @@ Modern C++ encompasses features from C++11 onwards, including auto type inferenc
 | Optional value | `std::optional` | Sentinel values / `bool + T` | Use `std::optional` when absence is a valid state |
 | Type-safe union | `std::variant` | `union` + type tag | Use `std::variant` for discriminated unions |
 | Non-owning string ref | `std::string_view` | `const std::string&` | Use `string_view` for read-only string parameters |
+
+## Production Notes
+
+- **Compiler support varies**: C++17 is widely supported (GCC 7+, Clang 5+, MSVC 19.14+). C++20 requires GCC 10+, Clang 12+, MSVC 19.22+. Check your target compilers before adopting features.
+- **Compile times increase**: Modules (C++20) reduce compile times but are not yet universally supported. Heavy template/metaprogramming with concepts can slow builds.
+- **ABI compatibility**: `std::string`, `std::vector`, and other types have stable ABI across most compilers. However, adding new members to `std::optional` or `std::variant` in future standards may break ABI — use `-fno-exceptions` or custom types for ABI-sensitive code.
+- **Sanitizer compatibility**: Enable AddressSanitizer, UndefinedBehaviorSanitizer, and ThreadSanitizer in CI. Modern C++ features like move semantics and lambdas interact with sanitizers correctly.
+- **Deployment considerations**: When deploying across heterogeneous environments (different Linux distros, compiler versions), pin your compiler version and test with the oldest supported toolchain.
+
+## Syntax
+
+### Type Inference
+
+```cpp
+auto x = 42;              // int
+auto y = 3.14;            // double
+auto z = std::string("hi"); // std::string
+decltype(x) w = 10;       // same type as x (int)
+```
+
+### Lambda Expressions
+
+```cpp
+// Basic lambda
+auto f = [](int x) { return x * 2; };
+
+// Capture by value
+auto g = [factor](int x) { return x * factor; };
+
+// Capture by reference
+auto h = [&count]() { return ++count; };
+
+// Generic lambda (C++14)
+auto add = [](auto a, auto b) { return a + b; };
+
+// Mutable lambda
+auto counter = [n = 0]() mutable { return ++n; };
+```
+
+### Move Semantics
+
+```cpp
+std::vector<int> a = {1, 2, 3};
+std::vector<int> b = std::move(a);  // a is now empty, b has {1, 2, 3}
+
+std::string s = "hello";
+std::string t = std::move(s);       // s is moved-from (valid but unspecified)
+```
+
+### Smart Pointers
+
+```cpp
+auto p1 = std::make_unique<int>(42);         // unique ownership
+auto p2 = std::make_shared<int>(42);         // shared ownership
+std::weak_ptr<int> wp = p2;                  // non-owning observer
+```
+
+### std::optional / std::variant / std::string_view
+
+```cpp
+std::optional<int> opt = 42;          // has value
+std::optional<int> empty;             // no value (std::nullopt)
+
+std::variant<int, std::string> v = "hello";  // holds string
+std::get<std::string>(v);                     // access as string
+
+std::string_view sv = "hello world";  // non-owning view
+sv.substr(0, 5);                      // "hello" — no allocation
+```
+
+### Structured Bindings
+
+```cpp
+auto [x, y] = std::pair(1, 2.0);
+auto [key, value] = *map.begin();
+auto [a, b, c] = std::tuple(1, 2.0, "three");
+```
+
+### Concepts (C++20)
+
+```cpp
+template <typename T>
+concept Addable = requires(T a, T b) {
+    { a + b } -> std::convertible_to<T>;
+};
+
+template <Addable T>
+T add(T a, T b) { return a + b; }
+
+// Abbreviated form
+auto multiply(Addable auto a, Addable auto b) { return a * b; }
+```
+
+### constexpr and if constexpr
+
+```cpp
+constexpr int factorial(int n) {
+    return (n <= 1) ? 1 : n * factorial(n - 1);
+}
+
+template <typename T>
+auto process(T value) {
+    if constexpr (std::is_integral_v<T>) {
+        return value * 2;
+    } else {
+        return value + 0.5;
+    }
+}
+```
 
 ## Expanded Code Examples
 
@@ -415,6 +564,45 @@ int main() {
 }
 ```
 
+## Core Concepts
+
+| Concept | Description | Standard |
+|---------|-------------|----------|
+| **Type inference** (`auto`, `decltype`) | Let the compiler deduce types from expressions, reducing verbosity | C++11 |
+| **Move semantics** | Transfer resource ownership instead of copying, using rvalue references (`T&&`) | C++11 |
+| **Lambda expressions** | Anonymous function objects with capture lists, enabling inline callbacks | C++11 |
+| **Perfect forwarding** | `std::forward` preserves value category when passing arguments through templates | C++11 |
+| **RAII + smart pointers** | Automatic resource management via `std::unique_ptr`, `std::shared_ptr`, `std::weak_ptr` | C++11 |
+| **constexpr** | Functions and variables evaluated at compile time, zero runtime cost | C++11/14/17 |
+| **Structured bindings** | Decompose tuples, pairs, structs into named variables | C++17 |
+| **`std::optional`** | Explicit nullable value type — absence is a valid, type-safe state | C++17 |
+| **`std::variant`** | Type-safe discriminated union — replaces raw `union` + type tag | C++17 |
+| **`std::string_view`** | Non-owning, read-only reference to a contiguous character sequence | C++17 |
+| **`if constexpr`** | Compile-time branching — only instantiates the taken branch | C++17 |
+| **Concepts** | Named constraints on template parameters — readable error messages | C++20 |
+| **Ranges** | Lazy, composable algorithm pipelines with views | C++20 |
+| **Coroutines** | Stackless suspend/resume for generators, async I/O, state machines | C++20 |
+| **Modules** | Replacement for `#include` — faster builds, no macro leakage | C++20 |
+
+## Performance Considerations
+
+| Feature | Overhead | Notes |
+|---------|----------|-------|
+| `auto` | Zero | Purely compile-time type deduction |
+| Range-based for | Zero | Equivalent to iterator-based loop |
+| Lambdas | Zero | Inlined by the compiler like regular functions |
+| `std::move` | Zero | Compile-time cast only; actual move cost depends on type |
+| `std::forward` | Zero | Perfect forwarding preserves value category at zero cost |
+| `std::optional` | Minimal | Size of `T` + 1 byte (bool); may add padding |
+| `std::variant` | Size of largest alternative + 1 byte | `std::visit` is optimized via jump tables |
+| `std::string_view` | 16 bytes (pointer + size) | No heap allocation; avoids copies |
+| `constexpr` | Zero (when computed at compile time) | Falls back to runtime if arguments are not constexpr |
+| `std::shared_ptr` | Atomic reference count + heap control block | Prefer `std::unique_ptr` when shared ownership is not needed |
+| `std::function` | Heap allocation for non-trivial callables | Use direct lambda type or `std::move_only_function` (C++23) when possible |
+| Concepts | Zero | Compile-time constraint; no runtime overhead |
+
+**Key principle**: Modern C++ features follow the zero-overhead abstraction principle. You should not pay for what you do not use, and what you do use should be as efficient as hand-written low-level code.
+
 ## Production Incidents
 
 ### Incident 1: Lambda Capture Dangling Reference
@@ -456,6 +644,48 @@ int main() {
 
 **Prevention**: Never use `std::move` on a `const` object (it won't move). After a move, the source object is in a valid-but-unspecified state — document this. Use compiler warnings `-Wpessimizing-move` to catch unnecessary moves.
 
+### Incident 4: Structured Bindings Dangling Reference in Lambda
+**Problem**: A real-time data processing service segfaulted intermittently in production, crashing worker threads.
+
+**Cause**: A developer used structured bindings to decompose a `std::map` entry, then captured the binding by reference in a lambda dispatched to an async task. The structured binding was a reference to the map element, and the map was modified (elements erased) before the lambda executed.
+
+```cpp
+// Bug: structured binding captures reference to map element
+for (const auto& [key, value] : data_map) {
+    thread_pool.submit([&key, &value]() {  // dangling if map is modified
+        process(key, value);
+    });
+}
+```
+
+**Impact**: ~2 crashes/day under high load. 0.1% of data processing jobs failed. Customer data pipeline showed gaps.
+
+**Detection**: AddressSanitizer in staging caught `heap-use-after-free` pointing to the lambda's captured references. GDB backtrace showed the crash inside the lambda body.
+
+**Solution**: Changed capture to by-value: `[key, value]`. For large objects, used `std::shared_ptr` to the map entry. Added a rule: when dispatching lambdas to other threads, always capture by value or via `std::shared_ptr`.
+
+**Prevention**: Enable `-Wdangling-captured-reference` in CI. Code review must verify that structured binding captures outlive the source container. Prefer capturing the container element by shared ownership for async tasks.
+
+### Incident 5: Structured Bindings Causing Unintended Copies
+**Problem**: A high-throughput trading system showed unexpected latency spikes under load.
+
+**Cause**: A developer used structured bindings in a hot loop to decompose a `std::pair<int, double>` returned by a function. The binding created copies of both elements on every iteration, instead of references. The compiler could not optimize away the copies because the pair was returned by value.
+
+```cpp
+// Bug: structured binding creates copies, not references
+for (const auto& [id, price] : get_prices()) {  // copies pair elements
+    aggregate(id, price);  // price is a copy, not a reference
+}
+```
+
+**Impact**: 3x latency increase in the hot path. Trading system missed SLA targets during peak hours.
+
+**Detection**: Profiling with `perf` showed high CPU cache misses and excessive memory allocation in the loop. Disassembling the function revealed copy constructors being called.
+
+**Solution**: Stored the returned pair in a local variable and used `const auto&` on the structured binding to bind by reference. For `std::tuple`, used `std::tie` or explicitly accessed `.first`/`.second`.
+
+**Prevention**: Use `const auto&` with structured bindings when you don't need ownership. Add a lint rule to flag structured bindings from temporary returns. Profile hot loops regularly with `perf` or `VTune`.
+
 ## Production Checklist
 
 - [ ] Use `auto` when type is obvious from context
@@ -470,6 +700,62 @@ int main() {
 - [ ] Use concepts (C++20) to constrain templates
 - [ ] Enable compiler warnings: `-Wall -Wextra -Wpedantic`
 - [ ] Test with multiple compiler versions (GCC, Clang, MSVC)
+
+## Internal Working
+
+### How Modern C++ Features Are Implemented at Compile Time
+
+Modern C++ features are not runtime constructs — they are resolved entirely by the compiler. Understanding this helps you reason about performance and behavior.
+
+### The `__cplusplus` Macro
+
+The `__cplusplus` macro is defined by all C++ compilers and indicates the supported standard version. Use it for feature detection:
+
+```cpp
+#if __cplusplus >= 202002L
+    // C++20 features available
+    #include <concepts>
+#elif __cplusplus >= 201703L
+    // C++17 features available
+    #include <optional>
+#elif __cplusplus >= 201402L
+    // C++14 features available
+#else
+    // C++11 or earlier
+#endif
+```
+
+### Compiler Feature Detection
+
+| Macro | Value | Indicates |
+|-------|-------|-----------|
+| `__cplusplus` | `201103L` | C++11 |
+| `__cplusplus` | `201402L` | C++14 |
+| `__cplusplus` | `201703L` | C++17 |
+| `__cplusplus` | `202002L` | C++20 |
+| `__cplusplus` | `202302L` | C++23 |
+| `__cpp_constexpr` | `201907L` | Extended `constexpr` (non-literal types in C++23) |
+| `__cpp_concepts` | `201907L` | Concepts support |
+| `__cpp_structured_bindings` | `201606L` | Structured bindings |
+| `__cpp_lib_optional` | `201606L` | `std::optional` in library |
+| `__cpp_lib_variant` | `201606L` | `std::variant` in library |
+| `_MSVC_LANG` | Similar values | MSVC-specific (does not update `__cplusplus` by default) |
+
+### How `auto` Works
+
+`auto` is pure compile-time type deduction. The compiler examines the initializer's type and substitutes `auto` with the deduced type. There is zero runtime cost — the generated code is identical to writing the type explicitly.
+
+### How Move Semantics Work
+
+`std::move` does not move anything. It is a `static_cast` to an rvalue reference (`T&&`). The actual move happens when a move constructor or move assignment operator is called. The compiler selects the move overload when the argument is an rvalue (or cast to one via `std::move`).
+
+### How `constexpr` Works
+
+`constexpr` functions are evaluated at compile time when their arguments are compile-time constants. When called with runtime values, they fall back to runtime evaluation. The compiler maintains two code paths — one for compile-time, one for runtime.
+
+### How Concepts Work
+
+Concepts are evaluated during template instantiation. The compiler checks if the template arguments satisfy the concept's requirements (expressions, type traits, nested requirements). If not, the template is removed from overload resolution via SFINAE, producing a clear error message instead of a deep template instantiation error.
 
 ## Maturity Levels
 
@@ -490,6 +776,40 @@ int main() {
 | "Move semantics means no copies" | Move semantics reduces unnecessary copies. Copy elision (NRVO) already eliminated many. |
 | "Smart pointers are always better than raw pointers" | Raw pointers are fine for non-owning references. Use smart pointers for ownership. |
 
+## Best Practices
+
+1. **Use `auto` when type is obvious**: `auto it = vec.begin()`, `auto [key, value] = *map.begin()`. Avoid `auto` for return types of unclear functions.
+2. **Prefer `std::unique_ptr` over `std::shared_ptr`**: Shared ownership has atomic reference-counting overhead. Only use `std::shared_ptr` when ownership is genuinely shared.
+3. **Capture by value in thread-dispatched lambdas**: `[name]` not `[&name]`. The originating scope may be destroyed before the lambda runs.
+4. **Use `std::string_view` for read-only string parameters**: Avoids unnecessary `std::string` construction from literals and substrings.
+5. **Use `constexpr` for compile-time computable values**: Enables zero-cost abstractions and compile-time validation.
+6. **Use `std::optional` instead of sentinel values**: `std::nullopt` is explicit; `-1` or `""` are ambiguous.
+7. **Use `std::variant` instead of raw `union`**: Type-safe, no manual tag management, no undefined behavior from wrong access.
+8. **Use structured bindings for unpacking**: `auto [name, age] = get_user()` is clearer than `.first`/`.second`.
+9. **Mark move constructors and move assignment as `noexcept`**: The STL containers only use move operations if they are `noexcept`.
+10. **Use `nullptr` instead of `NULL` or `0`**: `nullptr` is type-safe and works with all pointer types.
+11. **Enable compiler warnings**: `-Wall -Wextra -Wpedantic -Werror` catches many modern C++ issues.
+12. **Test with multiple compilers**: GCC, Clang, and MSVC may differ in template instantiation behavior and conformance.
+13. **Use C++20 concepts to replace SFINAE**: Clear error messages, self-documenting code, easier maintenance.
+
+## Common Mistakes
+
+| Mistake | Why It's Wrong | Correct Approach |
+|---------|---------------|------------------|
+| Using `auto` for unclear return types | Code becomes unreadable; refactoring breaks silently | Use explicit types for function returns and complex expressions |
+| `std::move` on `const` objects | Casts to `const T&&`, which binds to `const T&` — no move happens | Remove `std::move` or remove `const` |
+| Using `.value()` on `std::optional` without checking | Throws `std::bad_optional_access` if empty | Use `.value_or()` or check `.has_value()` first |
+| Capturing by reference in async lambdas | Dangling reference when originating scope exits | Capture by value or use `std::shared_ptr` |
+| Using `std::string_view` past source lifetime | Dangling view — undefined behavior | Ensure the underlying string outlives the view |
+| `std::get` on `std::variant` without checking type | Throws `std::bad_variant_access` | Use `std::holds_alternative` or `std::visit` |
+| Making move operations throw exceptions | STL containers won't use non-`noexcept` move operations | Mark move operations `noexcept` |
+| Using `std::function` for hot-path callbacks | Heap allocation + type erasure overhead | Use template parameters or direct lambda types |
+| Raw `new`/`delete` in modern code | Manual memory management, leak-prone | Use `std::unique_ptr`, `std::make_unique`, RAII |
+| Ignoring compiler warnings | Missed bugs, undefined behavior | Treat warnings as errors in CI |
+| Using `NULL` or `0` as null pointer | `NULL` may be `0` (integer), not a pointer literal | Use `nullptr` |
+| Forgetting `override` on virtual functions | Silently creates new virtual function instead of overriding | Always use `override` keyword |
+| Not using `constexpr` for compile-time values | Runtime computation where compile-time suffices | Use `constexpr` for constants and simple computations |
+
 ## One-Minute Revision Table
 
 | Feature | Standard | Purpose | Example |
@@ -509,7 +829,7 @@ int main() {
 | Ranges | C++20 | Lazy pipeline algorithms | `vec \| std::views::filter(...)` |
 | Coroutines | C++20 | Async/generator functions | `task<int> compute();` |
 
-## Cross-Linked Related Topics
+## Cross-References
 
 - **Templates** → [Module 03: Templates](../03-templates/) — Concepts constrain template parameters
 - **STL** → [Module 04: STL](../04-stl/) — Algorithms with lambdas, structured bindings
@@ -578,10 +898,34 @@ Modern C++ fundamentally changes how you express intent. Lambdas enable inline c
 ## Interview Questions
 
 1. **When should you use `auto` and when should you avoid it?**: Use `auto` when the type is obvious from context (`auto it = vec.begin()`). Avoid it when the type is not obvious (`auto result = compute_value()`) or when a specific type is needed for API contracts.
+
 2. **Explain move semantics and when `std::move` is needed**: Move semantics transfer ownership of resources (heap memory, file handles) from one object to another instead of copying. `std::move` is a cast that enables move overloads — use it when transferring ownership of large or non-copyable objects.
+
 3. **What is `std::optional` and when should you use it?**: `std::optional<T>` represents a value that may or may not exist. Use it instead of sentinel values (`-1`, `""`, `nullptr`) or `bool + T` pairs for function return values that may legitimately be absent.
+
 4. **How do C++20 concepts improve on SFINAE?**: Concepts produce clear error messages stating which constraint was violated, are self-documenting, enable constrained auto, and replace the cryptic `std::enable_if` pattern. They make template code readable and maintainable.
+
 5. **What is the difference between `std::move` and copy elision (NRVO)?**: `std::move` casts an lvalue to an rvalue reference to enable move construction. NRVO (Named Return Value Optimization) eliminates the copy/move entirely by constructing the return value directly in the caller's stack frame. C++17 mandates copy elision for prvalues (guaranteed copy elision).
+
+6. **What is `std::string_view` and what are its lifetime pitfalls?**: `std::string_view` is a non-owning, read-only view of a contiguous character sequence. It does not own the data. Pitfall: if the underlying string is destroyed (e.g., a temporary), the `string_view` becomes dangling. Always ensure the source string outlives the view. Use `std::string` when you need ownership.
+
+7. **When should you use `std::variant` over a class hierarchy?**: Use `std::variant` for a small, fixed set of types where you need a discriminated union (e.g., JSON values: int, double, string, array, object). Use class hierarchies when the set of types is open-ended (extensible via inheritance) or when you need virtual dispatch.
+
+8. **What is the difference between `std::unique_ptr` and `std::shared_ptr`?**: `std::unique_ptr` is a lightweight, non-copyable smart pointer with exclusive ownership — zero overhead over raw pointer. `std::shared_ptr` uses atomic reference counting for shared ownership, with overhead for the control block. Prefer `unique_ptr` unless ownership must be shared.
+
+9. **How does `constexpr` differ from `const`?**: `const` means "read-only at runtime." `constexpr` means "evaluable at compile time." A `constexpr` function can be called with runtime arguments (falling back to runtime evaluation), but when called with compile-time constants, it produces a compile-time result. `const` members can be initialized at runtime; `constexpr` members must be initialized with constant expressions.
+
+10. **Explain structured bindings and their limitations**: Structured bindings decompose tuples, pairs, arrays, or structs into named variables: `auto [x, y] = get_point()`. Limitation: the binding names cannot be used as runtime values (they are aliases, not variables). You cannot rebind them. For `const auto&` bindings, the original object must outlive the binding.
+
+11. **What is `if constexpr` and how does it differ from runtime `if`?**: `if constexpr` branches at compile time — only the taken branch is instantiated. This enables template specialization without SFINAE or `std::enable_if`. The discarded branch is not compiled, so it can contain invalid code for that type (e.g., calling member functions that don't exist on all types).
+
+12. **How do you handle exceptions in move constructors?**: Move constructors and move assignment operators should be marked `noexcept`. If a move can throw, the STL containers will fall back to copying. Use `try`/`catch` inside the move operation if necessary, but prefer operations that don't throw (e.g., `std::swap` uses `noexcept` moves).
+
+13. **What is the Rule of Five in modern C++?**: If you define any of these, define all five: destructor, copy constructor, copy assignment operator, move constructor, move assignment operator. Modern C++ simplifies this: if you use RAII correctly (smart pointers, containers), you often only need `= default` or don't need to declare any of them (Rule of Zero).
+
+14. **When should you use `std::function` versus a direct lambda type?**: `std::function` is a type-erased callable wrapper — it can store any callable with the right signature, but it may heap-allocate. Use it when you need to store heterogeneous callables (e.g., function pointers, lambdas, bind expressions) in the same container. For performance-critical code, use the lambda type directly or `std::move_only_function` (C++23).
+
+15. **What are coroutines and when should you use them?**: Coroutines (C++20) are functions that can suspend and resume execution. Use them for generators (`std::generator`), asynchronous I/O, lazy evaluation, and state machines. They avoid callback nesting ("callback hell") and stack allocation for suspended frames. Use them when you need cooperative multitasking without the overhead of OS threads.
 
 ## References
 
