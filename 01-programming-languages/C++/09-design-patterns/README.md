@@ -1017,6 +1017,19 @@ void enterprise_example() {
 | Composite | Structural | Treat individual and uniform objects the same | Tree structures |
 | Chain of Responsibility | Behavioral | Pass request along a chain of handlers | Decoupled sender/receiver |
 
+## Cross-References
+
+| Related Module | Relevance to Design Patterns |
+|----------------|------------------------------|
+| **Module 02 — OOP** | Polymorphism, inheritance, and encapsulation are the foundation of all Gang of Four patterns |
+| **Module 03 — Templates** | CRTP, template factories, and compile-time Strategy patterns leverage class/function templates |
+| **Module 06 — Smart Pointers** | `std::unique_ptr`, `std::shared_ptr`, `std::weak_ptr` are essential for Factory, Observer, and Decorator ownership |
+| **Module 07 — Concurrency** | Thread-safe Singleton, Observer, and Command patterns use `std::mutex`, `std::call_once`, atomics |
+| **Module 08 — Modern C++** | Lambdas simplify Strategy and Command; `std::function` enables type-erased callbacks |
+| **Module 10 — Testing** | Patterns must be testable; mocks inject via Adapter/Strategy; Singleton requires interface extraction |
+| **Module 11 — SOLID Principles** | Open/Closed Principle drives Strategy/Decorator; Dependency Inversion guides Factory design |
+| **Module 14 — Best Practices** | YAGNI, composition over inheritance, and RAII inform when and how to apply patterns |
+
 ## Cross-Linked Related Topics
 
 - **OOP** → [Module 02: OOP](../02-oop/) — Patterns build on inheritance, polymorphism, encapsulation

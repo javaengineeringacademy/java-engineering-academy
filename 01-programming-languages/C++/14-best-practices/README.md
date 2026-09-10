@@ -1,5 +1,9 @@
 # Best Practices — C++
 
+## Overview
+
+Best practices in C++ are standardized guidelines and patterns derived from decades of production use, codified in the C++ Core Guidelines (Bjarne Stroustrup & Herb Sutter), Scott Meyers' Effective C++ series, and MISRA/CERT safety standards. They address const correctness, RAII resource management, Rule of Zero/Three/Five, smart pointer ownership semantics, and exception safety guarantees. Following these practices prevents memory leaks, undefined behavior, data races, and entire categories of security vulnerabilities while enabling compiler optimizations through predictable code patterns.
+
 ## Why It Matters
 
 Best practices are not arbitrary rules — they're hard-won lessons from millions of lines of production code. When you follow them, you prevent entire categories of bugs, make code review faster, and ensure your team ships reliable software instead of writing messy, inconsistent code that's hard to maintain.
@@ -7,6 +11,73 @@ Best practices are not arbitrary rules — they're hard-won lessons from million
 ## What It Is
 
 Best practices in C++ encompass const correctness, RAII, smart pointers, error handling patterns, naming conventions, and code organization principles that make code clear, correct, and maintainable by anyone on your team.
+
+## Learning Objectives
+
+- Understand the C++ Core Guidelines and their rationale
+- Apply const correctness systematically to prevent accidental modification
+- Implement RAII for all resource management (memory, files, locks, handles)
+- Distinguish when to use Rule of Zero vs. Rule of Three vs. Rule of Five
+- Select appropriate smart pointer types (`unique_ptr`, `shared_ptr`, `weak_ptr`) based on ownership semantics
+- Apply exception safety guarantees (nothrow, strong, basic) in function design
+- Use `noexcept` specifiers to enable move semantics and compiler optimizations
+- Compose classes using HAS-A relationships instead of deep inheritance hierarchies
+- Apply SOLID principles in C++ class and module design
+- Configure and enforce compiler warnings, static analysis, and CI quality gates
+
+## Prerequisites
+
+| Module | Why It's Needed |
+|--------|----------------|
+| [02 — OOP](../02-oop/) | Virtual dispatch, inheritance semantics, encapsulation — understand why composition often beats inheritance |
+| [05 — Memory Management](../05-memory-management/) | Heap vs stack, `new`/`delete`, lifetime semantics — understand why RAII exists |
+| [06 — Smart Pointers](../06-smart-pointers/) | `unique_ptr`, `shared_ptr`, `weak_ptr` ownership models — foundational to modern memory best practices |
+
+## History
+
+| Year | Milestone | Significance |
+|------|-----------|--------------|
+| 1998 | C++98 Standard | First ISO standard; established core language but limited library support for best practices |
+| 2003 | C++03修订 | Defect fixes; no new best practice patterns |
+| 2011 | C++11 | `= default`/`= delete`, move semantics, `noexcept`, `unique_ptr`/`shared_ptr` — enabled modern RAII and Rule of Zero |
+| 2014 | C++14 | `constexpr` relaxations, `std::make_unique` — reduced raw resource handling |
+| 2015 | C++ Core Guidelines published | Stroustrup & Sutter codified best practices into a searchable, enforceable reference |
+| 2017 | C++17 | `std::optional`, `std::variant`, `std::string_view` — safer alternatives to sentinel values and unions |
+| 2020 | C++20 | Concepts, ranges, `std::format` — self-documenting template constraints, safer range-based operations |
+| 2023 | C++23 | `std::expected`, `std::flat_map` — standardized error handling without exceptions |
+
+## Production Notes
+
+- **Compiler warnings are non-negotiable**: Always compile with `-Wall -Wextra -Wpedantic -Werror` in CI. GCC and Clang catch const violations, unused variables, and narrowing conversions that cause silent bugs.
+- **Static analysis runs on every commit**: clang-tidy with C++ Core Guidelines checks (`cppcoreguidelines-*`, `modernize-*`, `readability-*`) catches violations before code review.
+- **Valgrind/ASan/TSan in CI**: Run memory leak detection (valgrind), address sanitizer (ASan), and thread sanitizer (TSan) on every test suite run.
+- **No `#include` of implementation details**: Forward-declare classes in headers; include only in `.cpp` files to minimize compilation dependencies.
+- **Exception safety is a design-time decision**: Choose your exception safety guarantee (nothrow, strong, basic) before writing the function body, not after.
+
+## Core Concepts
+
+| Concept | Description | Core Guideline Reference |
+|---------|-------------|------------------------|
+| **Const correctness** | Mark everything `const` by default; remove only when modification is needed | [Con: Constants](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-constants) |
+| **RAII** | Acquire resources in constructors, release in destructors; no manual cleanup | [R: Resource management](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-resource) |
+| **Rule of Zero** | If class manages no raw resources, declare no special members; let compiler generate them | [C.20](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c20-if-possible-avoid-define-defaulted-or-deleted-special-members) |
+| **Rule of Three/Five** | If class manages a resource, explicitly declare or delete all five special members | [C.21](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c21-if-you-define-or-delete-any-default-copy-move-destructor-or-copy-move-operator-define-or-delete-them-all) |
+| **Smart pointer ownership** | `unique_ptr` for sole ownership, `shared_ptr` for shared ownership, `raw ptr` for non-owning观察 | [R.20-34](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#r-resource-management) |
+| **Exception safety** | `noexcept` for moves and destructors; basic/strong guarantee for functions | [E.12-16](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#e-error-handling) |
+| **Composition over inheritance** | Model HAS-A with composition; use inheritance only for true IS-A behavioral contracts | [C.120](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c120-use-class-hierarchy-for-related-variants-of-entities-and-level-concepts-for-common-utils) |
+| **Single responsibility** | One function, one job; one class, one reason to change | [F: Functions](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-functions) |
+
+## Internal Working
+
+Best practices in C++ are not arbitrary — they exploit compile-time and runtime mechanisms that produce correct, efficient code.
+
+**How const correctness works at compile-time**: The compiler enforces `const` as a type qualifier. A `const` reference parameter prevents calling non-const member functions on the object, effectively freezing its state. This enables the compiler to place objects in read-only memory sections and eliminate redundant loads. `constexpr` extends this to compile-time evaluation, eliminating runtime cost entirely.
+
+**How RAII works at runtime**: Constructor acquires a resource (allocates memory, opens file, locks mutex). Destructor releases it when the object goes out of scope (stack unwinding from normal return, exception, or `break`/`continue`). This creates a deterministic, exception-safe cleanup path. The compiler generates destructor calls automatically via stack unwinding — no garbage collector needed.
+
+**How smart pointer ownership works at compile-time**: `std::unique_ptr` uses move semantics (non-copyable) to enforce single ownership. The compiler prevents accidental copies that would cause double-free. `std::shared_ptr` uses an atomic reference count allocated on the heap; the last owner's destructor triggers deletion. The type system encodes ownership semantics — misuse is a compile-time error, not a runtime bug.
+
+**How compiler warnings prevent bugs**: `-Wall -Wextra` enables warnings for uninitialized variables, narrowing conversions, missing return statements, and implicit fallthrough. `-Werror` promotes these to errors, preventing code with warnings from compiling. Clang-tidy checks like `cppcoreguidelines-owning-memory` analyze code patterns against the Core Guidelines and flag violations at build time.
 
 ## Engineering Decision Framework
 
@@ -19,6 +90,71 @@ Best practices in C++ encompass const correctness, RAII, smart pointers, error h
 | Naming | `camelCase` for functions, `PascalCase` for types | Follow your team's convention consistently | Mixing conventions in one project |
 | Functions | Small, single-responsibility functions | Always — aim for 5-30 lines | Functions doing multiple unrelated things |
 | Headers | Minimal includes, forward declarations | Always — reduce compilation dependencies | Including `<bits/stdc++.h>` in production |
+
+## Syntax
+
+### Const Correctness Patterns
+
+```cpp
+// Const reference parameter — read-only access, no copy
+void process(const std::string& data);
+
+// Const member function — promise not to modify object state
+int getSize() const;
+
+// Const pointer to const — can't modify pointer or pointed-to object
+void read(const int* const ptr);
+
+// Constexpr — compile-time evaluation
+constexpr int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
+```
+
+### RAII Declaration Patterns
+
+```cpp
+// Rule of Zero — no special members declared
+class Widget {
+    std::string name_;
+    std::vector<int> data_;
+};
+
+// Rule of Five — all five special members declared
+class Buffer {
+    int* data_;
+    size_t size_;
+public:
+    explicit Buffer(size_t n);
+    ~Buffer();
+    Buffer(const Buffer&);
+    Buffer& operator=(const Buffer&);
+    Buffer(Buffer&&) noexcept;
+    Buffer& operator=(Buffer&&) noexcept;
+};
+
+// = default / = delete — explicit special member control
+class NonCopyable {
+public:
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+};
+```
+
+### Smart Pointer Ownership Patterns
+
+```cpp
+// Unique ownership — non-copyable, transferable
+auto resource = std::make_unique<Connection>(addr);
+
+// Shared ownership — reference-counted
+auto shared = std::make_shared<Session>(socket);
+
+// Weak observer — breaks circular references
+std::weak_ptr<Node> parent;
+
+// Non-owning observation — raw pointer
+void observe(const Node* node);
+```
 
 ## Expanded Code Examples
 
@@ -356,6 +492,55 @@ public:
 };
 ```
 
+## Performance Considerations
+
+| Guideline | Performance Impact | Mechanism |
+|-----------|-------------------|-----------|
+| **`const` correctness** | Enables compiler to place data in read-only memory, eliminate redundant loads, and inline more aggressively | Type system conveys aliasing information to optimizer |
+| **`constexpr` functions** | Compile-time evaluation eliminates runtime cost entirely | Computed at compile time; result embedded as constant |
+| **`noexcept` on moves** | Enables `std::vector` reallocation to use moves instead of copies | `std::vector` checks `noexcept` to decide move vs. copy |
+| **`unique_ptr` over `shared_ptr`** | `unique_ptr` has zero overhead vs. raw pointer; `shared_ptr` has atomic ref-count overhead | `unique_ptr` is a zero-cost abstraction; `shared_ptr` allocates control block |
+| **RAII vs manual cleanup** | No performance penalty; deterministic destruction enables optimizer | Stack-based cleanup eliminates branch prediction misses from manual checks |
+| **Rule of Zero** | Compiler-generated special members are often inlined and optimized better than hand-written | Compiler has full visibility into member-wise operations |
+| **Small function inlining** | 5-30 line functions are candidates for inlining; large functions are not | Inliner thresholds vary by compiler (typically 25-100 instructions) |
+| **Forward declarations** | Reduces header includes, improving compilation parallelism and reducing PCH invalidation | Fewer includes = less dependency = more parallel builds |
+| **`std::move` for large parameters** | Prevents unnecessary copies when transferring ownership into functions | Enables move constructor invocation instead of copy constructor |
+| **`emplace_back` over `push_back`** | Constructs element in-place, avoiding temporary object creation and move | Perfect forwarding to in-place constructor |
+
+## Best Practices
+
+| Category | Practice | Why |
+|----------|----------|-----|
+| **Const correctness** | Mark everything `const` by default; remove only when modification is needed | Prevents accidental mutation, enables compiler optimizations, documents intent |
+| **RAII** | Acquire resources in constructors, release in destructors | Eliminates resource leaks; exception-safe cleanup; deterministic lifetime |
+| **Rule of Zero** | Use RAII types (`std::string`, `std::vector`, `std::unique_ptr`); declare no special members | Compiler generates correct copy/move/delete; zero boilerplate |
+| **Rule of Five** | If managing raw resources, declare or `=delete` all five special members | Prevents double-free, use-after-free, shallow-copy bugs |
+| **Smart pointers** | `unique_ptr` for sole ownership; `shared_ptr` for shared; raw ptr for non-owning | Encodes ownership semantics in the type system; misuse is a compile error |
+| **Error handling** | Exceptions for exceptional errors; error codes for expected failures; `std::optional` for nullable returns | Each mechanism fits its use case; exceptions for stack unwinding, codes for control flow |
+| **Single responsibility** | One function, one job; one class, one reason to change | Testable, debuggable, modifiable units |
+| **Composition over inheritance** | HAS-A with composition; IS-A only for true behavioral contracts | Flexible ownership, avoids fragile base class problem |
+| **Compiler warnings** | `-Wall -Wextra -Wpedantic -Werror` in CI | Catches uninitialized variables, narrowing, missing returns at build time |
+| **Static analysis** | clang-tidy with `cppcoreguidelines-*` and `modernize-*` checks | Automated Core Guidelines enforcement; catches violations before code review |
+| **Minimal includes** | Forward-declare in headers; include only in `.cpp` files | Reduces compilation dependencies; faster builds |
+| **Move semantics** | Use `std::move` to transfer ownership; return by value to enable NRVO | Eliminates unnecessary copies; enables efficient resource transfer |
+
+## Common Mistakes
+
+| Mistake | Why It's Wrong | Correct Approach |
+|---------|---------------|------------------|
+| Using `shared_ptr` when `unique_ptr` suffices | Atomic ref-count overhead; prevents `std::vector` optimization; harder to reason about ownership | Use `unique_ptr` by default; escalate to `shared_ptr` only when shared ownership is truly needed |
+| Writing `catch(...)` without rethrowing | Swallows all errors silently; hides bugs; makes debugging impossible | Log the error, rethrow, or use `std::current_exception()` — never silently swallow |
+| Deep inheritance hierarchies (>3 levels) | Fragile base class problem; tight coupling; hard to test and refactor | Use composition; flatten hierarchies; prefer interfaces (pure virtual) over base classes |
+| Raw `new`/`delete` outside RAII | Manual memory management is error-prone; leads to leaks, double-frees, use-after-free | Use `std::unique_ptr`, `std::make_unique`, `std::vector` instead |
+| Missing `const` on member functions | Prevents calling the function on const objects; hides intent; prevents compiler optimizations | Mark every non-modifying member function `const` |
+| Using `#include <bits/stdc++.h>` | Non-standard header; includes everything; dramatically increases compilation time | Include only what you use; forward-declare when possible |
+| Returning `nullptr` for error state | Forces caller to null-check; easy to forget; leads to null dereferences | Use `std::optional<T>` or return error codes/exceptions |
+| Copying `std::unique_ptr` | Compile-time error; prevents accidental ownership transfer | Use `std::move` to transfer; use raw ptr for non-owning observation |
+| Not using `noexcept` on moves | Prevents `std::vector` reallocation from using moves; forces copies | Mark move constructors and move assignment operators `noexcept` |
+| Catching exceptions by value | Slices derived exception types; prevents accessing derived-class information | Catch by reference: `catch (const std::exception& e)` |
+| Ignoring compiler warnings | Warnings indicate potential bugs; `-Werror` promotes them to errors | Fix all warnings; enable `-Werror` in CI |
+| Overusing `std::shared_ptr` | Atomic operations on ref count; prevents `std::vector` optimization; unclear ownership | Use `std::unique_ptr` for sole ownership; only `shared_ptr` when sharing is required |
+
 ## Production Incidents
 
 ### Incident 1: Missing Const Causing Accidental Modification
@@ -396,6 +581,32 @@ public:
 **Solution**: Split into 4 functions: `authenticate()`, `lookupUser()`, `getCachedUser()`, `formatResponse()`. Each function was 15-30 lines with clear responsibility. Added unit tests for each function independently.
 
 **Prevention**: Enforce maximum function length (50 lines) in code review. Use cyclomatic complexity tools. Extract functions proactively when you notice nesting depth > 3.
+
+### Incident 4: Shared Pointer Circular Reference Causing Memory Leak
+**Problem**: A tree-structured cache held `std::shared_ptr` references between parent and child nodes. The cache reported 2GB memory usage after 1 hour of operation despite containing only 50,000 nodes (expected ~200MB).
+
+**Cause**: Parent nodes held `shared_ptr` to children; children held `shared_ptr` back to parent. The atomic reference counts never reached zero because each node kept the other alive. The circular reference was invisible to valgrind's leak checker because the memory was technically "reachable" through the cycle.
+
+**Impact**: Server OOM crash after 4 hours. Cache eviction logic was bypassed because the leaked nodes were never destroyed. Memory usage grew linearly with request count.
+
+**Detection**: Heap dump analysis showed thousands of `TreeNode` objects with ref count > 0 but no external references. The cycle was identified by tracing `shared_ptr` ownership chains in the debugger.
+
+**Solution**: Changed child-to-parent references from `std::shared_ptr` to `std::weak_ptr`. The parent still owns children via `shared_ptr`, but children observe the parent without extending its lifetime. When the parent is destroyed, the weak pointers expire automatically.
+
+**Prevention**: Use `std::weak_ptr` for back-pointers and observer patterns. Run ASan leak detection in CI. Code review checklist must flag `shared_ptr` usage and verify no cycles exist.
+
+### Incident 5: Missing noexcept on Move Constructor Preventing Vector Optimization
+**Problem**: A `std::vector<std::string>` reallocation was copying all elements instead of moving them, causing a 10x performance regression during vector growth.
+
+**Cause**: The custom `Buffer` class had a move constructor that threw an exception (it called `malloc` which can throw `std::bad_alloc`). Without `noexcept`, `std::vector` fell back to copying because the move constructor wasn't guaranteed to be non-throwing. The performance regression was invisible in small-scale testing but catastrophic in production with 100K+ element vectors.
+
+**Impact**: Vector reallocation took 15 seconds instead of 1.5 seconds. JSON parsing pipeline timed out under load. 30% of API requests failed with timeout errors.
+
+**Detection**: Profiling showed `std::copy` being called during vector reallocation instead of `std::move`. Adding `noexcept` to the move constructor resolved the performance issue.
+
+**Solution**: Added `noexcept` to the move constructor and move assignment operator. For operations that could throw, used a swap-based move pattern that guarantees `noexcept`. Verified with `std::is_nothrow_move_constructible<Buffer>::value`.
+
+**Prevention**: Mark all move constructors and move assignment operators `noexcept`. Use `static_assert(std::is_nothrow_move_constructible<T>::value)` in critical classes. Code review checklist must verify `noexcept` on all move operations.
 
 ## Production Checklist
 
@@ -516,6 +727,16 @@ Best practices encode hard-won lessons from millions of lines of production code
 3. **What is the single-responsibility principle?**: A function or class should have one reason to change — one job. Functions doing multiple unrelated things are hard to test, debug, and modify. Keep functions small (5-30 lines) and focused.
 4. **How does composition improve on inheritance?**: Composition models HAS-A relationships, provides flexible ownership, avoids fragile base class problems, and enables runtime behavior swapping. Inheritance should only be used for true IS-A behavioral contracts.
 5. **When should you use error codes vs exceptions?**: Use error codes for expected, recoverable failures (file not found, parse error). Use exceptions for unexpected, unrecoverable errors (out of memory, invariant violation). Exceptions propagate errors automatically; error codes require explicit checking.
+6. **What are the three exception safety guarantees?**: Basic guarantee — no leaks, invariants preserved, but object state may change. Strong guarantee — commit-or-rollback semantics, state unchanged if exception thrown. `noexcept` guarantee — operation never throws. Design functions for the strongest guarantee you can achieve.
+7. **When should you use `std::shared_ptr` vs `std::unique_ptr`?**: Use `unique_ptr` by default — zero overhead, sole ownership, clear semantics. Use `shared_ptr` only when multiple owners must extend object lifetime simultaneously (e.g., caches, observer lists). Never use `shared_ptr` when `unique_ptr` suffices — the atomic ref-count overhead prevents `std::vector` optimization.
+8. **What is the fragile base class problem?**: When a derived class depends on the implementation details of its base class, changes to the base class can silently break derived classes. Adding a new virtual function, changing data members, or modifying non-virtual methods can cause subtle, hard-to-detect bugs. Composition avoids this by depending only on the public interface.
+9. **How does `noexcept` affect move semantics?**: `std::vector` reallocation checks if the move constructor is `noexcept`. If it is, the vector uses moves during reallocation (O(n) move operations). If not, it falls back to copies (O(n) copy operations). Mark all move constructors and move assignment operators `noexcept` to enable this optimization.
+10. **What is copy-and-swap and when should you use it?**: Copy-and-swap implements the copy assignment operator by creating a local copy (via copy constructor), then swapping with `std::swap`. This provides strong exception safety automatically. Use it when a class manages a resource and you need a safe, concise copy assignment implementation.
+11. **Why should you catch exceptions by reference?**: Catching by value slices derived exception types, losing derived-class information. Catching by non-const reference allows catching by value semantics. Catch by `const&` to preserve the full exception hierarchy and avoid slicing: `catch (const std::exception& e)`.
+12. **What are the performance implications of `std::make_shared` vs `new`?**: `std::make_shared` allocates the object and control block in a single memory allocation. Using `new` separately allocates the object, then `shared_ptr` constructor allocates the control block — two allocations, worse cache locality. `make_shared` is almost always preferred for `shared_ptr` creation.
+13. **When should you use `std::optional` over return codes or exceptions?**: Use `std::optional<T>` when a function may legitimately not return a value (lookup that finds nothing, parse that yields no result). It's type-safe, self-documenting, and avoids sentinel values (`-1`, `nullptr`). Use error codes for recoverable failures with context; exceptions for truly exceptional errors.
+14. **What is the Rule of Three and how does it relate to the Rule of Five?**: Rule of Three — if you declare any of destructor, copy constructor, or copy assignment operator, you should declare all three. Rule of Five extends this to move constructor and move assignment operator (C++11). If a class manages resources, all five must be explicitly defined or `=delete`d.
+15. **How do you prevent resource leaks in exception-throwing code?**: RAII — wrap all resources (memory, files, sockets, locks) in RAII objects whose destructors clean up. Stack unwinding calls destructors automatically when exceptions propagate. Never use raw `new`/`delete` across exception-throwing boundaries. Use `std::unique_ptr`, `std::lock_guard`, `std::fstream` to ensure cleanup.
 
 ## References
 

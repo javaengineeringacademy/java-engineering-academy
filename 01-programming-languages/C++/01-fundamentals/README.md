@@ -69,6 +69,132 @@ struct Good {
 };
 ```
 
+## Internal Working: Compilation and Linking
+
+C++ code goes through a multi-stage pipeline before execution. Understanding this pipeline is critical for debugging linking errors, understanding header inclusion, and optimizing build times.
+
+### The Four Stages of Compilation
+
+```
+Source Code (.cpp)  →  Preprocessor  →  Compiler  →  Assembler  →  Linker  →  Executable
+```
+
+| Stage | Tool | Input | Output | What Happens |
+|-------|------|-------|--------|-------------|
+| Preprocessing | `cpp` / `-E` | `.cpp` + headers | Expanded source | `#include` expanded, macros substituted, `#ifdef` resolved |
+| Compilation | `cc1plus` / `-S` | Expanded source | Assembly (`.s`) | Syntax checking, optimization, code generation |
+| Assembly | `as` / `-c` | Assembly | Object file (`.o`/`.obj`) | Machine code + metadata (symbol table, relocations) |
+| Linking | `ld` / `ld++` | Object files + libraries | Executable (`.exe`/`a.out`) | Resolves symbols, combines sections, produces final binary |
+
+### Compilation in Practice
+
+```bash
+# Preprocessing only (see expanded source)
+g++ -E main.cpp -o main.i
+
+# Compilation to assembly
+g++ -S main.cpp -o main.s
+
+# Compilation to object file
+g++ -c main.cpp -o main.o
+
+# Full pipeline: compile and link
+g++ main.cpp utils.cpp -o program
+
+# Verbose: show all stages
+g++ -v main.cpp -o program
+```
+
+### Translation Units and ODR
+
+Each `.cpp` file is a **translation unit** — the compiler sees it independently with all its included headers. The **One Definition Rule (ODR)** states that every function, variable, class, and template must be defined exactly once across the entire program (with exceptions for `inline` and templates).
+
+```cpp
+// header.h
+#pragma once               // Include guard — prevents multiple inclusion
+inline int square(int x) { // inline allows multiple definitions (must be identical)
+    return x * x;
+}
+
+// main.cpp
+#include "header.h"        // textually pasted here by preprocessor
+#include "header.h"        // #pragma once prevents duplicate
+
+// utils.cpp
+#include "header.h"        // same text pasted here too
+```
+
+### Linkage: Internal vs External
+
+```cpp
+// External linkage (default) — visible across translation units
+int global_counter = 0;            // Other .cpp files can access via extern
+void process() { /* ... */ }       // Other .cpp files can call this
+
+// Internal linkage — visible only in this translation unit
+static int file_local = 0;         // Only this .cpp sees this
+constexpr int MAX = 100;           // const objects have internal linkage by default
+namespace { int hidden = 42; }     // Anonymous namespace = internal linkage
+
+// Explicit external linkage
+extern int global_counter;         // Declaration (definition in another TU)
+extern "C" void c_function();      // Use C linkage (no name mangling)
+```
+
+### Static vs Dynamic Linking
+
+```
+Static Linking (.a / .lib)              Dynamic Linking (.so / .dll / .dylib)
+┌──────────┐  ┌──────────┐             ┌──────────┐
+│ main.o   │  │ lib.a    │             │ main.o   │
+└────┬─────┘  └────┬─────┘             └────┬─────┘
+     │    static    │                       │   dynamic
+     └──────┬───────┘                       └──────┬───────┐
+            ▼                                      ▼       │
+      [Executable]                            [Executable] │
+      (all code embedded)                    (references   │
+                                             shared lib)  ▼
+                                                        [.so/.dll]
+                                                        (loaded at runtime)
+```
+
+### Header File Organization
+
+```cpp
+// myclass.h — Header Guard pattern (portable)
+#ifndef MYCLASS_H
+#define MYCLASS_H
+
+class MyClass {
+public:
+    void process();
+private:
+    int value_;
+};
+
+#endif // MYCLASS_H
+
+// myclass.h — #pragma once pattern (non-standard but widely supported)
+#pragma once
+
+class MyClass {
+public:
+    void process();
+private:
+    int value_;
+};
+```
+
+### Common Linking Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `undefined reference to 'function'` | Function declared but not defined | Ensure definition exists in some `.cpp` file |
+| `multiple definition of 'symbol'` | Same symbol defined in multiple TUs | Use `inline`, `static`, or anonymous namespace |
+| `undefined reference to 'vtable for Class'` | Missing virtual function definitions | Define all virtual functions (including destructor) |
+| `cannot find -lxyz` | Library not found | Install library or add `-L/path` and `-lxyz` flags |
+| `ld: library not found for -lc++` | Missing C++ standard library | Install Xcode Command Line Tools or libc++ |
+
 ## Architecture: How Fundamentals Fit Together
 
 ```
@@ -503,6 +629,660 @@ s2.find("World");                  // 6
 std::string_view sv = s2;          // No copy, just a view
 ```
 
+## Syntax
+
+C++ syntax follows a statement-based grammar. Every statement ends with a semicolon. Declarations introduce names; definitions provide implementations.
+
+### Declaration vs Definition
+
+```cpp
+extern int count;              // Declaration only (no memory allocated)
+int count = 0;                 // Definition (allocates memory)
+extern const int SIZE = 100;   // Definition with external linkage
+```
+
+### Statement Forms
+
+```cpp
+// Expression statement
+x = x + 1;
+
+// Declaration statement
+int y = compute(x);
+
+// Compound statement (block)
+{
+    int temp = x;
+    x = y;
+    y = temp;
+}
+
+// Null statement
+;  // sometimes used as loop body placeholder
+```
+
+### Initialization Syntaxes
+
+```cpp
+int a = 10;       // Copy initialization
+int b(20);        // Direct initialization
+int c{30};        // Direct list initialization (C++11) — prevents narrowing
+int d = {40};     // Copy list initialization
+auto e = 50;      // Type deduction
+```
+
+### Scope Resolution and Member Access
+
+```cpp
+int global_var = 10;                    // Global scope
+namespace Foo { int bar = 20; }         // Namespace scope
+struct S { int member; };               // Class scope
+S s;
+s.member = 30;                          // Member access (object)
+S* p = &s;
+p->member = 40;                         // Member access (pointer)
+int ns_val = Foo::bar;                  // Namespace member access
+```
+
+### Preprocessor Directives
+
+```cpp
+#include <iostream>              // System header
+#include "myheader.h"            // Project header
+#define PI 3.14159               // Macro constant
+#define SQUARE(x) ((x)*(x))     // Macro function (prefer inline/constexpr)
+#ifdef DEBUG                     // Conditional compilation
+    #define LOG(msg) std::cout << msg
+#else
+    #define LOG(msg)
+#endif
+#pragma once                    // Include guard (non-standard)
+```
+
+## Examples
+
+### Easy: Hello World and Basic Types
+
+```cpp
+#include <iostream>
+#include <string>
+
+int main() {
+    // Basic types
+    int age = 25;
+    double pi = 3.14159;
+    char grade = 'A';
+    bool passed = true;
+    std::string name = "Alice";
+
+    // Output
+    std::cout << name << " is " << age << " years old" << std::endl;
+    std::cout << "Grade: " << grade << ", Passed: " << std::boolalpha << passed << std::endl;
+
+    // Input
+    std::cout << "Enter your name: ";
+    std::getline(std::cin, name);
+    std::cout << "Hello, " << name << "!" << std::endl;
+
+    return 0;
+}
+```
+
+### Medium: Function Overloading and References
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+// Overloaded functions
+int max_val(int a, int b) { return (a > b) ? a : b; }
+double max_val(double a, double b) { return (a > b) ? a : b; }
+const std::string& max_val(const std::string& a, const std::string& b) {
+    return (a > b) ? a : b;
+}
+
+// Pass by reference — swap without pointers
+void swap_values(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+// Pass by const reference — efficient read-only access
+void print_vector(const std::vector<int>& vec) {
+    for (const auto& val : vec) {
+        std::cout << val << " ";
+    }
+    std::cout << "\n";
+}
+
+int main() {
+    int x = 5, y = 10;
+    swap_values(x, y);
+    std::cout << "After swap: x=" << x << ", y=" << y << "\n";
+
+    std::vector<int> nums = {3, 1, 4, 1, 5, 9, 2, 6};
+    std::sort(nums.begin(), nums.end());
+    print_vector(nums);
+
+    return 0;
+}
+```
+
+### Hard: Dynamic Memory and Pointer Arithmetic
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <cstring>
+
+// Dynamic array with manual memory management
+class DynamicBuffer {
+public:
+    explicit DynamicBuffer(size_t size)
+        : data_(new int[size]), size_(size), capacity_(size) {
+        std::memset(data_, 0, size_ * sizeof(int));
+    }
+
+    ~DynamicBuffer() { delete[] data_; }
+
+    // Rule of Five: copy/move semantics
+    DynamicBuffer(const DynamicBuffer& other)
+        : data_(new int[other.capacity_]), size_(other.size_), capacity_(other.capacity_) {
+        std::memcpy(data_, other.data_, size_ * sizeof(int));
+    }
+
+    DynamicBuffer& operator=(const DynamicBuffer& other) {
+        if (this != &other) {
+            delete[] data_;
+            data_ = new int[other.capacity_];
+            size_ = other.size_;
+            capacity_ = other.capacity_;
+            std::memcpy(data_, other.data_, size_ * sizeof(int));
+        }
+        return *this;
+    }
+
+    DynamicBuffer(DynamicBuffer&& other) noexcept
+        : data_(other.data_), size_(other.size_), capacity_(other.capacity_) {
+        other.data_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
+    }
+
+    DynamicBuffer& operator=(DynamicBuffer&& other) noexcept {
+        if (this != &other) {
+            delete[] data_;
+            data_ = other.data_;
+            size_ = other.size_;
+            capacity_ = other.capacity_;
+            other.data_ = nullptr;
+            other.size_ = 0;
+            other.capacity_ = 0;
+        }
+        return *this;
+    }
+
+    int& operator[](size_t idx) { return data_[idx]; }
+    const int& operator[](size_t idx) const { return data_[idx]; }
+    size_t size() const { return size_; }
+
+private:
+    int* data_;
+    size_t size_;
+    size_t capacity_;
+};
+
+// Pointer arithmetic — manually traverse and manipulate
+void pointer_arithmetic_demo() {
+    int arr[] = {10, 20, 30, 40, 50};
+    int* p = arr;              // Points to arr[0]
+
+    std::cout << *p << "\n";   // 10
+    std::cout << *(p + 2) << "\n";  // 30
+
+    p += 3;
+    std::cout << *p << "\n";   // 40
+
+    // Pointer difference
+    int diff = p - arr;        // 3
+    std::cout << "Offset: " << diff << "\n";
+}
+
+int main() {
+    DynamicBuffer buf(5);
+    for (size_t i = 0; i < buf.size(); ++i) {
+        buf[i] = static_cast<int>(i * i);
+    }
+
+    for (size_t i = 0; i < buf.size(); ++i) {
+        std::cout << buf[i] << " ";
+    }
+    std::cout << "\n";
+
+    pointer_arithmetic_demo();
+
+    return 0;
+}
+```
+
+### Enterprise: RAII Resource Manager and Smart Pointers
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <mutex>
+#include <stdexcept>
+
+// RAII file handle
+class FileHandle {
+public:
+    explicit FileHandle(const std::string& path)
+        : file_(std::fopen(path.c_str(), "w")) {
+        if (!file_) {
+            throw std::runtime_error("Failed to open file: " + path);
+        }
+    }
+
+    ~FileHandle() {
+        if (file_) std::fclose(file_);
+    }
+
+    // Non-copyable, movable
+    FileHandle(const FileHandle&) = delete;
+    FileHandle& operator=(const FileHandle&) = delete;
+
+    FileHandle(FileHandle&& other) noexcept : file_(other.file_) {
+        other.file_ = nullptr;
+    }
+
+    FileHandle& operator=(FileHandle&& other) noexcept {
+        if (this != &other) {
+            if (file_) std::fclose(file_);
+            file_ = other.file_;
+            other.file_ = nullptr;
+        }
+        return *this;
+    }
+
+    void write(const std::string& data) {
+        if (std::fwrite(data.c_str(), 1, data.size(), file_) != data.size()) {
+            throw std::runtime_error("Write failed");
+        }
+    }
+
+private:
+    std::FILE* file_;
+};
+
+// Thread-safe singleton with lazy initialization
+class Logger {
+public:
+    static Logger& instance() {
+        static Logger inst;  // Thread-safe since C++11
+        return inst;
+    }
+
+    void log(const std::string& message) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        std::cout << "[LOG] " << message << "\n";
+    }
+
+private:
+    Logger() = default;
+    ~Logger() = default;
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+    std::mutex mutex_;
+};
+
+// Smart pointer usage patterns
+class ResourcePool {
+public:
+    struct Resource {
+        int id;
+        std::string name;
+        virtual ~Resource() = default;  // Critical: virtual destructor
+    };
+
+    struct DatabaseConnection : Resource {
+        void connect() { std::cout << "Connected to DB #" << id << "\n"; }
+        void disconnect() { std::cout << "Disconnected from DB #" << id << "\n"; }
+    };
+
+    struct NetworkSocket : Resource {
+        void send(const std::string& msg) { std::cout << "Sending: " << msg << "\n"; }
+    };
+
+    // Factory method returning unique_ptr
+    static std::unique_ptr<Resource> create_resource(const std::string& type, int id) {
+        if (type == "db") {
+            auto conn = std::make_unique<DatabaseConnection>();
+            conn->id = id;
+            conn->name = "DB-" + std::to_string(id);
+            return conn;
+        } else if (type == "net") {
+            auto sock = std::make_unique<NetworkSocket>();
+            sock->id = id;
+            sock->name = "NET-" + std::to_string(id);
+            return sock;
+        }
+        throw std::invalid_argument("Unknown resource type: " + type);
+    }
+
+    // Shared ownership for resources used by multiple components
+    void register_resource(std::shared_ptr<Resource> res) {
+        resources_.push_back(std::move(res));
+    }
+
+private:
+    std::vector<std::shared_ptr<Resource>> resources_;
+};
+
+int main() {
+    Logger::instance().log("Application started");
+
+    // RAII file handling
+    {
+        FileHandle file("output.txt");
+        file.write("Hello, RAII!\n");
+        file.write("Automatic cleanup on scope exit.\n");
+    }  // File closed here automatically
+
+    // Smart pointer patterns
+    ResourcePool pool;
+    auto db = std::make_unique<ResourcePool::DatabaseConnection>();
+    db->id = 1;
+    db->connect();
+
+    // Shared ownership
+    auto shared_res = std::make_shared<ResourcePool::NetworkSocket>();
+    shared_res->id = 2;
+    shared_res->send("Hello, network!");
+    pool.register_resource(shared_res);  // shared_res still valid
+
+    return 0;
+}
+```
+
+## Performance Considerations
+
+### Stack vs Heap Allocation
+
+```
+Stack                              Heap
+┌─────────────────┐               ┌─────────────────┐
+│ Automatic        │               │ Manual/Smart     │
+│ Fast allocation  │               │ Slow allocation  │
+│ Limited size     │               │ Nearly unlimited │
+│ LIFO order       │               │ Any order        │
+│ Cache-friendly   │               │ Cache-unfriendly │
+│ No fragmentation │               │ May fragment     │
+└─────────────────┘               └─────────────────┘
+```
+
+```cpp
+// Stack: fast, automatic cleanup
+void stack_example() {
+    int arr[100];                    // Stack — extremely fast
+    std::array<int, 100> arr2;       // Stack — same speed, safer
+    std::string s = "hello";         // Small string optimization (SSO) — often stack
+}
+
+// Heap: slower, manual lifetime
+void heap_example() {
+    int* arr = new int[1000000];     // Heap — allocation overhead
+    delete[] arr;                    // Must manually deallocate
+    // Prefer: auto arr = std::make_unique<int[]>(1000000);
+}
+```
+
+### Move Semantics and Rvalue References
+
+```cpp
+std::string create_string() {
+    std::string result(10000, 'x');
+    return result;  // NRVO or move — no copy
+}
+
+// Move constructor — transfers ownership instead of copying
+class Buffer {
+public:
+    Buffer(Buffer&& other) noexcept
+        : data_(other.data_), size_(other.size_) {
+        other.data_ = nullptr;
+        other.size_ = 0;  // Source is now empty — no leak
+    }
+
+    Buffer& operator=(Buffer&& other) noexcept {
+        if (this != &other) {
+            delete[] data_;
+            data_ = other.data_;
+            size_ = other.size_;
+            other.data_ = nullptr;
+            other.size_ = 0;
+        }
+        return *this;
+    }
+
+private:
+    int* data_ = nullptr;
+    size_t size_ = 0;
+};
+
+// std::move doesn't move — it casts to rvalue reference
+void transfer() {
+    std::string a = "hello";
+    std::string b = std::move(a);  // a's internal buffer transferred to b
+    // a is now in valid but unspecified state — don't use except to destroy/assign
+}
+```
+
+### Compiler Optimization Hints
+
+```cpp
+// inline — suggest inlining (compiler may ignore)
+inline int fast_square(int x) { return x * x; }
+
+// constexpr — evaluate at compile time (zero runtime cost)
+constexpr int table_size = 256;
+
+// Likely/unlikely (C++20)
+if (condition) [[likely]] {
+    // Hot path — optimizer arranges code for this
+} else {
+    // Cold path — placed out-of-line
+}
+
+// noexcept — enables move semantics optimization
+void swap(int& a, int& b) noexcept {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+```
+
+### Performance Anti-Patterns
+
+| Anti-Pattern | Problem | Fix |
+|-------------|---------|-----|
+| Returning large objects by value | Unnecessary copies | Return `std::move` or use output parameters |
+| Passing small objects by `const&` | Reference indirection overhead | Pass by value for types ≤ pointer size |
+| `std::string` concatenation in loops | O(n²) reallocation | Use `std::ostringstream` or `reserve()` |
+| Frequent `new`/`delete` calls | Allocation overhead | Use `std::vector` or memory pools |
+| Virtual function in hot path | Indirect call, prevents inlining | Use CRTP or templates for static polymorphism |
+
+## Best Practices
+
+### Naming Conventions
+
+| Element | Convention | Example |
+|---------|-----------|---------|
+| Variables | `snake_case` | `user_count`, `is_valid` |
+| Functions | `snake_case` | `get_name()`, `process_data()` |
+| Classes | `PascalCase` | `FileManager`, `ThreadPool` |
+| Constants | `UPPER_SNAKE` or `kCamelCase` | `MAX_BUFFER_SIZE` or `kMaxBufferSize` |
+| Namespaces | `snake_case` | `my_project::utils` |
+| Templates | `PascalCase` | `SortedContainer<T>` |
+| Member variables | `snake_case_` or `m_name` | `data_`, `m_data` |
+
+### Modern C++ Idioms
+
+```cpp
+// 1. Use auto when type is obvious
+auto vec = std::vector<int>{1, 2, 3};
+auto ptr = std::make_unique<Widget>();
+
+// 2. Use range-based for for containers
+for (const auto& item : container) { /* ... */ }
+
+// 3. Use structured bindings (C++17)
+auto [key, value] = *map.begin();
+
+// 4. Use constexpr for compile-time constants
+constexpr int MAX = 100;
+
+// 5. Use std::optional for nullable values
+std::optional<int> find_value(const std::string& key);
+
+// 6. Use RAII — never raw new/delete
+auto resource = std::make_unique<Resource>();  // Not: Resource* r = new Resource();
+
+// 7. Use std::string_view for read-only strings
+void process(std::string_view sv);  // No allocation, works with any string
+
+// 8. Prefer initialization over assignment
+int x = 42;        // OK
+int y{42};         // Better — prevents narrowing
+```
+
+### Code Organization
+
+```
+project/
+├── include/           # Public headers (.h/.hpp)
+│   └── mylib/
+│       ├── widget.h
+│       └── utils.h
+├── src/               # Implementation files (.cpp)
+│   ├── widget.cpp
+│   └── utils.cpp
+├── tests/             # Unit tests
+│   ├── widget_test.cpp
+│   └── utils_test.cpp
+├── CMakeLists.txt     # Build configuration
+└── README.md
+```
+
+## Common Mistakes
+
+### Mistake 1: Uninitialized Variables
+
+```cpp
+// BAD — undefined behavior
+int count;
+if (user_input > 0) {
+    count = user_input;
+}
+std::cout << count;  // May be garbage if user_input <= 0
+
+// GOOD — always initialize
+int count = 0;
+if (user_input > 0) {
+    count = user_input;
+}
+```
+
+### Mistake 2: Dangling Pointers
+
+```cpp
+// BAD — pointer dangles after function returns
+int* get_value() {
+    int local = 42;
+    return &local;  // Returns address of stack variable
+}
+
+// GOOD — return by value or use smart pointer
+int get_value() {
+    int local = 42;
+    return local;  // Copy returned
+}
+```
+
+### Mistake 3: Memory Leaks
+
+```cpp
+// BAD — forgot to delete
+void leak() {
+    int* data = new int[1000];
+    if (some_condition) return;  // Leak: data never freed
+    delete[] data;
+}
+
+// GOOD — RAII handles cleanup
+void no_leak() {
+    auto data = std::make_unique<int[]>(1000);
+    if (some_condition) return;  // Data automatically freed
+}
+```
+
+### Mistake 4: Using sizeof on Pointers
+
+```cpp
+int arr[] = {1, 2, 3, 4, 5};
+int* ptr = arr;
+
+std::cout << sizeof(arr);   // 20 (5 × 4 bytes) — knows array size
+std::cout << sizeof(ptr);   // 8 (pointer size) — loses size information
+
+// Solution: pass size explicitly, or use std::array/std::vector
+void process(int* p, size_t size);  // Clear API
+```
+
+### Mistake 5: Forgetting Virtual Destructor
+
+```cpp
+// BAD — base class without virtual destructor
+struct Base {
+    ~Base() { /* cleanup */ }  // Non-virtual
+};
+struct Derived : Base {
+    int* data;
+    ~Derived() { delete[] data; }  // Never called if deleted via Base*
+};
+
+Base* p = new Derived();
+delete p;  // Undefined behavior — Derived destructor not called
+
+// GOOD — always virtual destructor in polymorphic base classes
+struct Base {
+    virtual ~Base() = default;
+};
+```
+
+### Mistake 6: Comparing Strings with == Incorrectly
+
+```cpp
+// This works but is misleading with C-style strings
+char a[] = "hello";
+char b[] = "hello";
+if (a == b) { /* ... */ }  // Compares pointers, NOT contents — always false
+
+// Correct comparison for C-style strings
+if (std::strcmp(a, b) == 0) { /* ... */ }
+
+// Better: use std::string
+std::string s1 = "hello";
+std::string s2 = "hello";
+if (s1 == s2) { /* ... */ }  // Compares contents — true
+```
+
 ## Production Incidents
 
 ### Incident 1: Uninitialized Variable Causing Crash
@@ -526,6 +1306,39 @@ std::string_view sv = s2;          // No copy, just a view
 **Detection**: An accountant noticed refund amounts didn't match original charges. Code review revealed the `uint16_t` usage.
 
 **Solution**: Use `int64_t` for all monetary calculations. Add runtime overflow checks: `if (amount > INT16_MAX) throw overflow_error(...)`. Use `static_assert(sizeof(int64_t) >= 8)` to ensure sufficient range.
+
+### Incident 3: Memory Leak in Long-Running Service
+**Problem**: A web server running C++ on the backend consumed 8GB of RAM over 72 hours, eventually triggering the OOM killer and crashing all active connections.
+
+**Cause**: A caching layer used `new` to allocate response objects but had a code path in the error handler that returned early without calling `delete`. Under normal traffic the leak was negligible, but when upstream services returned errors, thousands of cached objects leaked per hour.
+
+**Impact**: Service degraded gradually over 3 days. Automated restarts masked the issue until the final crash caused a 45-minute outage affecting 200K users. Estimated revenue loss: $120K.
+
+**Detection**: Memory profiling with `valgrind --leak-check=full --track-origins=yes` during a staging load test revealed 47,000 leaked blocks after 10 minutes of simulated error conditions.
+
+**Solution**: Replaced raw `new`/`delete` with `std::unique_ptr` for all cached objects. Added a memory budget check in the cache that evicts entries when total allocated exceeds a threshold. Enabled AddressSanitizer (`-fsanitize=address`) in CI to catch future leaks automatically.
+
+### Incident 4: Buffer Overflow in Network Packet Parser
+**Problem**: A custom binary protocol parser crashed with SIGSEGV when receiving malformed packets from a client. Under specific packet lengths, the crash corrupted adjacent memory, causing downstream logic to process garbage data.
+
+**Cause**: The parser used `memcpy(dest, src, packet_length)` where `packet_length` came directly from the network without bounds checking. A client sending `packet_length = 0xFFFFFFFF` caused a 4GB copy that overflowed a 4KB buffer, overwriting the return address on the stack.
+
+**Impact**: Exploitable vulnerability — a researcher demonstrated arbitrary code execution in a controlled lab. The vulnerability existed in production for 14 months. Patch required a full security audit of all protocol parsers. Estimated remediation cost: $350K.
+
+**Detection**: Fuzzing with AFL (American Fuzzy Lop) discovered the crash within 2 minutes of automated testing. Manual analysis revealed the exploitable overflow.
+
+**Solution**: Replaced `memcpy` with bounds-checked copy: `if (packet_length > buffer_size) throw protocol_error(...);`. Replaced C-style buffer with `std::array<uint8_t, MAX_PACKET_SIZE>` and used `.at()` for indexed access. Added `-fsanitize=bounds` to the build and fuzzing as a CI gate.
+
+### Incident 5: Uninitialized Variable in Financial Trading System
+**Problem**: A high-frequency trading platform occasionally computed incorrect order quantities, producing trades 100x larger than intended. The bug manifested only during the first trading session after a system restart.
+
+**Cause**: A member variable `double order_quantity_` in the `OrderEngine` class was not initialized in the constructor. On restart, the object was allocated on the heap (via `new`), and the memory happened to contain a stale value from a previously-deleted object. The stale value was a valid double but represented a much larger quantity.
+
+**Impact**: 3 occurrences over 2 months. The first two were caught by pre-trade risk checks. The third bypassed a race condition in the risk system, resulting in $2.3M in erroneous trades that required manual unwinding. Regulatory investigation followed.
+
+**Detection**: Post-incident analysis with Valgrind showed the uninitialized read. The bug was non-deterministic — it only appeared when the heap reuse pattern matched specific allocation sequences that occurred at market open.
+
+**Solution**: Added `-Wuninitialized -Werror` to the compiler flags. Changed the class to use member initializer lists for all variables: `OrderEngine() : order_quantity_(0.0), price_(0.0) {}`. Added a static analysis check (clang-tidy `cppcoreguidelines-init-variables`) that flags any uninitialized member. Ran the check on the entire codebase (340K lines) and fixed 23 similar issues.
 
 ## Production Checklist
 - [ ] Initialize all variables at declaration
@@ -590,7 +1403,7 @@ std::string_view sv = s2;          // No copy, just a view
 | std::string | Dynamic string | Text processing | Allocation overhead |
 | Range-based for | Container iteration | When index not needed | Copy vs reference |
 
-## Related Topics
+## Cross-References
 - [Knowledge Atoms](../00-knowledge-atoms/) — The foundation beneath fundamentals
 - [OOP](../02-oop/) — Organizing fundamentals into classes
 - [Memory Management](../05-memory-management/) — Deep dive into stack vs heap

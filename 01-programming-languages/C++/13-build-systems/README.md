@@ -1,12 +1,279 @@
 # Build Systems — C++
 
-## Why It Matters
+## Overview
 
-A build system is the foundation of every software project. When it's well-configured, it enables cross-platform development, dependency management, CI/CD integration, and reproducible builds. A broken build system means wasted hours debugging compilation issues instead of writing code, especially when "it works on my machine" but fails on CI.
+C++ build systems automate the process of compiling source files, resolving dependencies, linking object files, and producing executables or libraries. Unlike languages with package managers that handle everything (e.g., Rust's Cargo, Go's modules), C++ requires explicit build configuration due to its compilation model, platform diversity, and lack of a standard build system. The primary tools are CMake (meta-build system generating native build files), Make/Ninja (build automation), and package managers like vcpkg and Conan for dependency management. Choosing the right build system and configuration directly impacts compilation speed, cross-platform support, CI/CD reliability, and developer productivity.
 
-## What It Is
+## Learning Objectives
 
-Build systems in C++ include CMake, Make, and package managers like vcpkg and Conan, providing declarative configurations for compiling, linking, testing, and distributing code across multiple platforms.
+- Understand the role of build systems in the C++ compilation pipeline
+- Configure CMake projects using modern target-based design (CMake 3.16+)
+- Manage dependencies with vcpkg (manifest mode) and Conan (conanfile.py)
+- Set up cross-platform CI/CD pipelines with multi-compiler testing
+- Debug common build failures (missing headers, version conflicts, wrong build type)
+- Optimize build performance using Ninja, ccache, sccache, and parallel builds
+- Apply security hardening flags and validate build configurations in CI
+
+## Prerequisites
+
+- [Module 01: Fundamentals](../01-fundamentals/) — Basic C++ syntax, compilation model, header/source separation
+- Familiarity with terminal/command-line operations
+- Basic understanding of compiler flags and linking
+
+## History
+
+| Era | Tool | Year | Significance |
+|-----|------|------|--------------|
+| 1976 | Make | 1976 | Stuart Feldman created Make at Bell Labs. Introduced dependency-driven builds with rules. Became the Unix standard for decades. |
+| 2000 | CMake | 2000 | Bill Hoffman created CMake at Kitware. Solved the cross-platform problem by generating native build files (Makefiles, VS solutions, Ninja). |
+| 2004 | Bazel | 2014* | Google created Blaze (2004), open-sourced as Bazel (2014). Designed for massive monorepos with hermetic, reproducible builds. |
+| 2013 | Ninja | 2013 | Evan Martin created Ninja. Minimalist build system focused on speed. Typically used as a CMake backend instead of Make. |
+| 2016 | vcpkg | 2016 | Microsoft released vcpkg. Manifest mode (2020) brought version pinning and reproducible dependency management. |
+| 2016 | Conan | 2016 | JFrog released Conan. Cross-platform package manager with profiles, binary management, and remote repositories. |
+| 2020 | CMake Presets | 2020 | CMake 3.19 introduced presets (JSON configs). Eliminated shell-script-based build configuration, enabling team-wide consistency. |
+| 2023 | C++20 Modules | Ongoing | Modules replace `#include` with `import`. Build systems are evolving to support module dependency graphs and header-unit compilation. |
+
+*Bazel's open-source release; Blaze was internal at Google from 2004.
+
+**Evolution trajectory**: Manual Makefiles → CMake cross-platform generation → Package managers (vcpkg/Conan) → Presets for consistency → C++20 modules for faster builds.
+
+## Production Notes
+
+- **Build times matter**: Large C++ projects can take 30+ minutes to build. Ninja + ccache/sccache + parallel builds (`-j`) reduce this to minutes.
+- **CI costs scale with build time**: A 10-minute build at $0.10/min on 1000 daily CI runs costs ~$3,000/month. Optimizing builds directly reduces infrastructure costs.
+- **Dependency resolution is slow**: vcpkg and Conan download and compile dependencies from source. Cache dependency builds in CI and use binary packages when available.
+- **Cross-compilation requires toolchains**: Embedded systems, mobile (Android/iOS), and WASM targets need explicit toolchain files. Test cross-compilation in CI early.
+- **Lock files are essential**: Without `vcpkg.json` lock files or Conan lock files, builds are not reproducible. Always commit lock files to version control.
+
+## Core Concepts
+
+### Build Pipeline
+
+```
+Source Files (.cpp/.h) → Preprocessing → Compilation (.o/.obj) → Linking → Executable/Library
+```
+
+### CMake Target Model
+
+```cmake
+# Targets are the fundamental units — they carry properties transitively
+add_library(mylib STATIC src/mylib.cpp)
+target_include_directories(mylib PUBLIC include/)          # Propagates to consumers
+target_compile_features(mylib PUBLIC cxx_std_17)           # Propagates C++ standard
+target_link_libraries(mylib PUBLIC fmt::fmt)               # Propagates fmt dependency
+```
+
+### Dependency Resolution
+
+- **System packages**: Installed via apt/brew. Version uncontrolled, platform-specific.
+- **vcpkg**: Manifest mode (`vcpkg.json`) pins versions. Toolchain integration with CMake.
+- **Conan**: Profile-based configuration. Binary caching. Remote repositories.
+
+### Build Types
+
+| Type | Macros | Optimization | Debug Info | Use Case |
+|------|--------|-------------|------------|----------|
+| Debug | `NDEBUG` undefined | `-O0` | Full (`-g`) | Development |
+| Release | `NDEBUG` defined | `-O2`/`-O3` | None | Production |
+| RelWithDebInfo | `NDEBUG` defined | `-O2` | Minimal (`-g1`) | Profiling production |
+| MinSizeRel | `NDEBUG` defined | `-Os` | None | Size-constrained deployment |
+
+## Internal Working
+
+### How CMake Generates Build Files
+
+1. **Configure phase** (`cmake -B build`):
+   - Reads `CMakeLists.txt` files recursively
+   - Executes `find_package()` to locate dependencies
+   - Evaluates `if()` conditions and `option()` values
+   - Generates `CMakeCache.txt` with all configuration variables
+   - Outputs native build files (Makefiles, `build.ninja`, or `.sln`)
+
+2. **Generate phase** (part of configure):
+   - Creates `CMakeFiles/` directory with compiler detection results
+   - Generates dependency graphs between targets
+   - Writes build rules (compile commands, link commands) to native build files
+
+3. **Build phase** (`cmake --build build`):
+   - Native build tool (Make/Ninja) reads generated rules
+   - Compiles only changed source files (incremental builds)
+   - Links object files into executables/libraries
+   - CTest runs tests if configured
+
+### Dependency Resolution Flow
+
+```
+find_package(Boost 1.80 REQUIRED)
+  → CMake searches CMAKE_PREFIX_PATH, system paths
+  → Checks BoostConfig.cmake or FindBoost.cmake
+  → Sets Boost_FOUND, Boost_INCLUDE_DIRS, Boost_LIBRARIES
+  → target_link_libraries(mylib PUBLIC Boost::system) propagates to consumers
+```
+
+### Ninja vs Make
+
+| Aspect | Make | Ninja |
+|--------|------|-------|
+| Speed | Slower (rebuilds DAG each time) | Faster (pre-computed build graph) |
+| Parallelism | `-j N` flag | Built-in parallel execution |
+| Dependency tracking | Basic | Fine-grained, auto-generated by CMake |
+| Use case | Legacy, simple projects | Modern CMake projects |
+
+## Syntax
+
+### CMake Minimum Version and Project Declaration
+
+```cmake
+cmake_minimum_required(VERSION 3.16)       # Enforces minimum CMake version
+project(MyProject                           # Project name
+    VERSION 1.0.0                           # Semantic version
+    LANGUAGES CXX                           # Enable C++ compiler
+    DESCRIPTION "My C++ project"            # Optional description
+    HOMEPAGE_URL "https://example.com"      # Optional URL
+)
+```
+
+### Target-Based Commands
+
+```cmake
+# Libraries
+add_library(mylib STATIC src/a.cpp src/b.cpp)          # Static library
+add_library(mylib SHARED src/a.cpp src/b.cpp)          # Shared library
+add_library(mylib INTERFACE)                             # Header-only library
+
+# Executables
+add_executable(app src/main.cpp)
+
+# Properties
+target_include_directories(mylib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(mylib PRIVATE -Wall -Wextra -Werror)
+target_compile_definitions(mylib PRIVATE MY_DEFINE=1)
+target_link_libraries(mylib PUBLIC Boost::system Threads::Threads)
+target_compile_features(mylib PUBLIC cxx_std_17)
+```
+
+### Package Management
+
+```cmake
+# vcpkg integration (automatic with toolchain file)
+find_package(fmt CONFIG REQUIRED)    # vcpkg provides config files
+target_link_libraries(mylib PUBLIC fmt::fmt)
+
+# Conan integration
+find_package(fmt REQUIRED)           # Conan generates FindModule or config
+target_link_libraries(mylib PUBLIC fmt::fmt)
+```
+
+### Install Rules
+
+```cmake
+install(TARGETS mylib
+    EXPORT mylibTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+install(DIRECTORY include/ DESTINATION include)
+install(EXPORT mylibTargets
+    FILE mylibTargets.cmake
+    NAMESPACE mylib::
+    DESTINATION lib/cmake/mylib
+)
+```
+
+## Examples
+
+*(See existing "Expanded Code Examples" section above for CMake, vcpkg, Conan, CI/CD, and Presets examples.)*
+
+## Performance Considerations
+
+### Parallel Builds
+
+```bash
+# Use all CPU cores
+cmake --build build -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
+# Or set in CMake
+cmake -B build -DCMAKE_BUILD_PARALLEL_LEVEL=8
+```
+
+### Build Cache (ccache / sccache)
+
+```bash
+# ccache — caches compiler output, skips recompilation of unchanged files
+cmake -B build -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+# sccache — distributed cache (works with CI caches)
+cmake -B build -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+# Verify it's working
+ccache -s    # Show cache statistics
+```
+
+### Ninja Generator
+
+```bash
+# Ninja is 2-5x faster than Make for incremental builds
+cmake -B build -G Ninja
+```
+
+### Build Time Optimization
+
+| Technique | Speedup | Trade-off |
+|-----------|---------|-----------|
+| Ninja instead of Make | 2-5x | Less flexible than Make |
+| ccache/sccache | 5-10x (cached) | Requires cache management |
+| Parallel builds (`-j`) | Linear with cores | Memory usage increases |
+| Unity builds (`CMAKE_UNITY_BUILD`) | 2-3x | Hides TU-specific errors |
+| Precompiled headers (PCH) | 1.5-2x | Extra build step |
+| LTO | Runtime 5-15% | Significantly slower link time |
+
+### When to Use LTO
+
+```cmake
+# Release-only LTO (recommended)
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+if(ipo_supported AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_target_properties(mylib PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+```
+
+## Best Practices
+
+- **Use modern CMake (target-based)**: Prefer `target_include_directories` over `include_directories`. Use `target_link_libraries` for all dependencies.
+- **Pin dependency versions**: Always pin exact versions in `vcpkg.json` or `conanfile.py`. Use lock files.
+- **Test with multiple compilers**: CI should test GCC, Clang, and MSVC (if targeting Windows).
+- **Use CMake Presets**: Share build configurations across the team via `CMakePresets.json`.
+- **Default to RelWithDebInfo**: Never default to Debug in production CMakeLists.txt. Use presets for Debug.
+- **Enable compiler warnings**: Always `-Wall -Wextra -Wpedantic -Werror` (treat warnings as errors).
+- **Separate build from source**: Build in a `build/` directory, never in the source tree.
+- **Use `cmake_minimum_required`**: Enforce the minimum CMake version you actually need.
+- **Cache CI builds**: Cache `~/.ccache`, vcpkg installed packages, and Conan caches in CI.
+- **Validate build type in CI**: Add a step that checks the binary is not a Debug build.
+
+## Common Mistakes
+
+| Mistake | Why It's Wrong | Fix |
+|---------|---------------|-----|
+| Using `include_directories()` globally | Pollutes all targets, breaks encapsulation | Use `target_include_directories` per target |
+| No version pinning in dependencies | Builds break when dependencies update | Pin versions in `vcpkg.json` / `conanfile.py` |
+| Debug build in production | 10x slower, assertions crash service | CI validates build type; deployment uses `--config Release` |
+| Not using `cmake_minimum_required` | CMake behavior changes between versions | Always set minimum CMake version |
+| Hardcoded compiler flags | Breaks cross-platform/other compilers | Use `if(MSVC)...else()...endif()` or generator expressions |
+| Committing `build/` directory | Wastes repo space, merge conflicts | Add `build/` to `.gitignore` |
+| Ignoring CMake warnings | Warnings become errors in future versions | Fix CMake warnings immediately |
+| Not using `find_package` for deps | Manual paths break on other machines | Use `find_package` or package manager integration |
+
+## Cross-References
+
+- **Testing** → [Module 10: Testing](../10-testing/) — CTest integration, test targets in CMake
+- **Performance** → [Module 11: Performance](../11-performance/) — Compiler flags, LTO, PGO configuration
+- **Best Practices** → [Module 14: Best Practices](../14-best-practices/) — Build configuration as best practice
+- **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — C++ standard selection, feature detection
+- **Networking** → [Module 12: Networking](../12-networking/) — Linking libcurl, Boost.Asio
+- **Senior Level** → [Module 15: Senior](../15-senior/) — Build system architecture decisions
+- **Fundamentals** → [Module 01: Fundamentals](../01-fundamentals/) — Compilation model, linking basics
 
 ## Engineering Decision Framework
 
@@ -345,6 +612,53 @@ Added a CI matrix that tests with GCC 9, GCC 11, GCC 13, Clang 12, and Clang 15.
 
 **Prevention**: Always pin dependency versions. Use a package manager (vcpkg/Conan) instead of system packages. CI should use the same dependency versions as development. Document all dependency version requirements.
 
+### Incident 4: Non-Reproducible Build Due to Unpinned Tools
+**Problem**: A developer installed a new version of CMake (3.28) that changed the default behavior of `CMAKE_POLICY(SET CMP0077 NEW)`. The project built fine on their machine but failed on CI where CMake 3.22 was installed, with `option()` variables being silently ignored.
+
+**Cause**: `cmake_minimum_required(VERSION 3.16)` was set but the project used features that silently changed behavior in CMake 3.27 (policy CMP0077). CI had an older CMake; developer had a newer one. No lock on CMake version.
+
+**Impact**: Build failed on CI for 6 hours. Two developers spent time investigating the wrong root cause (suspected dependency issue). Sprint velocity dropped.
+
+**Detection**: CI build error: `option() variable not being set despite being passed on command line`.
+
+**Solution**: Pinned CMake version in CI via `pip install cmake==3.28.0`. Added a version check in CMakeLists.txt:
+```cmake
+if(CMAKE_VERSION VERSION_LESS "3.27")
+    message(WARNING "CMake 3.27+ recommended for policy CMP0077")
+endif()
+```
+Documented required CMake version in README and CI workflow.
+
+**Prevention**: Pin tool versions in CI (CMake, Ninja, compiler). Use `cmake_minimum_required` with the actual minimum you test against. Document all tool version requirements. Consider using `cmake --version` validation in CI scripts.
+
+### Incident 5: Race Condition in Parallel Builds
+**Problem**: A large C++ project with 500+ translation units failed intermittently during parallel builds (`-j32`). The error was a missing generated header file — sometimes it compiled, sometimes it didn't.
+
+**Cause**: A custom command generated a header file (`generated_config.h`) via `add_custom_command`, but the target that consumed it didn't properly declare the dependency. Under heavy parallelism, the consumer compiled before the generator finished.
+
+**Impact**: CI builds failed ~30% of the time. Developers reran builds wasting 10-15 minutes each time. False positives in CI reduced trust in the pipeline.
+
+**Detection**: Intermittent `fatal error: generated_config.h: No such file or directory` — only on high parallelism (`-j32`), not on `-j1`.
+
+**Solution**: Fixed the CMake dependency declaration:
+```cmake
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated_config.h
+    COMMAND ${CMAKE_COMMAND} -E env python3 ${CMAKE_SOURCE_DIR}/scripts/generate_config.py
+    DEPENDS ${CMAKE_SOURCE_DIR}/scripts/generate_config.py
+    COMMENT "Generating config header"
+)
+
+add_library(config SHARED)
+target_sources(config PRIVATE
+    src/config.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/generated_config.h
+)
+# CMake now knows config.cpp depends on the generated header
+```
+
+**Prevention**: Always use `add_custom_command` with proper `OUTPUT`/`DEPENDS` declarations. Never assume build order in parallel builds. Test with high parallelism (`-j$(nproc)`) in CI. Use Ninja (better dependency tracking than Make).
+
 ## Production Checklist
 
 - [ ] Use CMake 3.16+ with modern target-based approach
@@ -463,6 +777,26 @@ The build system is the foundation of every software project. It determines comp
 3. **Why pin dependency versions?**: Unpinned dependencies may change between builds, causing "works on my machine" failures. Pinning ensures reproducible builds across all developer machines and CI. Use lock files for deterministic resolution.
 4. **What is LTO (Link-Time Optimization) and when should you use it?**: LTO enables cross-module optimization during linking — the compiler can inline across TU boundaries, eliminate dead code, and optimize indirect calls. Use it for release builds; it increases link time but improves runtime performance.
 5. **How do you set up cross-compilation in CMake?**: Use a toolchain file (`-DCMAKE_TOOLCHAIN_FILE=toolchain.cmake`) that sets `CMAKE_SYSTEM_NAME`, `CMAKE_C_COMPILER`, and `CMAKE_CXX_COMPILER`. CMake uses these to generate the correct build system for the target platform.
+
+6. **What is the difference between `add_library(STATIC)` and `add_library(SHARED)`?**: Static libraries are archived into a single `.a`/`.lib` file and copied into the final executable at link time. Shared libraries (`.so`/`.dylib`/`.dll`) are loaded at runtime. Static = larger binary, no runtime dependency. Shared = smaller binary, requires library at runtime.
+
+7. **How does ccache improve build performance?**: ccache caches compiler output keyed by source file, compiler, and flags. On subsequent builds with the same inputs, it returns the cached `.o` file instead of recompiling. Typical speedup: 5-10x for clean builds, near-instant for unchanged files. Setup: `cmake -DCMAKE_CXX_COMPILER_LAUNCHER=ccache`.
+
+8. **What is a CMake Preset and why use it?**: CMake Presets (`CMakePresets.json`) define named build configurations (generator, flags, build directory). They replace shell scripts and ad-hoc cmake invocations. Benefits: team-wide consistency, version-controlled build configs, CI/dev parity. Use `cmake --preset <name>`.
+
+9. **When would you choose Bazel over CMake?**: Bazel for monorepos with thousands of targets, strict hermetic builds, and remote caching/execution. CMake for most C++ projects (industry standard, better library ecosystem, easier learning curve). Bazel requires BUILD files everywhere; CMake uses centralized `CMakeLists.txt`.
+
+10. **How do you handle transitive dependencies in CMake?**: Use `target_link_libraries(mylib PUBLIC dep)` — PUBLIC propagates include dirs, compile defs, and link dependencies to consumers. PRIVATE hides them. INTERFACE exposes to consumers but not to `mylib` itself. Use `find_package` and target-based commands, not global `include_directories`.
+
+11. **What is the purpose of `CMAKE_EXPORT_COMPILE_COMMANDS=ON`?**: Generates `compile_commands.json` — a JSON file listing every compilation command. Used by clangd, CMake-based IDEs, and static analysis tools (clang-tidy). Enables accurate code navigation and linting without a full build. Place in build directory.
+
+12. **How do you prevent Debug builds from reaching production?**: CI validation step: check the binary for debug symbols (`readelf -S binary | grep debug` or `file binary`). Deployment scripts must pass `--config Release`. CMakeLists.txt should not default to Debug. Use presets to enforce correct build types.
+
+13. **What is the difference between `find_package` modes (Module vs Config)?**: Module mode uses `FindXxx.cmake` scripts (CMake provides many). Config mode uses `XxxConfig.cmake` files installed by the library (or package manager). Config mode is preferred for modern CMake — more reliable, generated by the library vendor. vcpkg/Conan provide config files.
+
+14. **How do you version a CMake library for distribution?**: Use `project(MyLib VERSION 1.2.3)`. Pass version to `install(TARGETS ... EXPORT ...)`. Generate `*ConfigVersion.cmake` with `write_basic_package_version_file()`. Consumers use `find_package(MyLib 1.2)` with version constraints.
+
+15. **What are the trade-offs between static and dynamic linking?**: Static: self-contained binary, no runtime dependency, larger binary, slower link time, no shared code between processes. Dynamic: smaller binary, shared code, faster link time, requires library at runtime, potential ABI/version issues. Use static for distribution; dynamic for OS integration and shared libraries.
 
 ## References
 

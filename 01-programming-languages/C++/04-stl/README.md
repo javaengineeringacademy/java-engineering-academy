@@ -124,6 +124,63 @@ The original HP STL was designed around the idea that algorithms should be separ
 - **ABI stability**: GCC's `std::string` ABI changed in GCC 5 (COW vs. SSO). Mixing code compiled with different GCC versions can cause linking issues.
 - **Memory overhead**: `std::unordered_map` with default settings may allocate far more memory than expected due to bucket count growth. Call `reserve()` for known sizes.
 
+## Core Concepts
+
+### Four Pillars of the STL
+
+The STL is built on four interconnected components:
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **Containers** | Store collections of objects | `std::vector`, `std::map`, `std::unordered_set` |
+| **Iterators** | Provide uniform traversal interface | `begin()`, `end()`, `std::next()` |
+| **Algorithms** | Operate on ranges via iterators | `std::sort`, `std::find`, `std::transform` |
+| **Function Objects** | Customize algorithm behavior | `std::greater<>`, lambdas, `std::bind` |
+
+### Value Semantics vs. Reference Semantics
+
+STL containers store **values**, not references. Copying a container copies all elements. This differs from Java/C# collections which store references.
+
+```cpp
+std::vector<std::string> a = {"hello"};
+auto b = a;           // Deep copy — b is independent of a
+b[0] = "world";       // a[0] is still "hello"
+```
+
+To store polymorphic objects, use pointers or `std::reference_wrapper`:
+
+```cpp
+std::vector<std::unique_ptr<Base>> polys;    // Polymorphic objects
+std::vector<std::reference_wrapper<int>> refs; // References to existing ints
+```
+
+### Allocator Model
+
+Every STL container takes an optional allocator template parameter. The default `std::allocator<T>` uses `new`/`delete`. Custom allocators enable pool allocation, arena allocation, and memory-mapped storage.
+
+```cpp
+// Default allocator (hidden)
+std::vector<int> v;
+
+// Explicit allocator — same behavior
+std::vector<int, std::allocator<int>> v2;
+
+// Pool allocator example (conceptual)
+// std::vector<int, PoolAllocator<int>> pooled_vec;
+```
+
+### RAII and Exception Safety
+
+STL containers follow RAII: constructors allocate, destructors deallocate. Move semantics (C++11) enable efficient transfer without copying. Containers provide strong exception guarantees for operations like `push_back`.
+
+```cpp
+{
+    std::vector<int> v;
+    v.push_back(1);   // Allocates on construction of element
+    v.push_back(2);   // May reallocate — old memory freed automatically
+}   // v destructor frees all memory — no leak possible
+```
+
 ## Containers
 
 ### The Problem Containers Solve
@@ -212,6 +269,129 @@ pq.push(1);
 pq.top();    // 3 (largest)
 ```
 
+## Syntax
+
+### Container Declaration
+
+```cpp
+#include <vector>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+#include <deque>
+#include <list>
+#include <array>
+#include <forward_list>
+
+// Sequential containers
+std::vector<int> v;                          // Empty vector
+std::vector<int> v(10);                      // 10 elements, value-initialized to 0
+std::vector<int> v(10, 42);                  // 10 elements, all 42
+std::vector<int> v = {1, 2, 3, 4, 5};       // Initializer list
+std::vector<int> v(other_vec);               // Copy constructor
+std::vector<int> v(other_vec.begin(), other_vec.end()); // Iterator range
+
+// Associative containers
+std::map<std::string, int> m;                // Empty map
+std::map<std::string, int> m = {{"a", 1}};  // Initializer list
+std::unordered_map<std::string, int> um;     // Empty hash map
+
+// Fixed-size container
+std::array<int, 5> a = {1, 2, 3, 4, 5};    // std::array is fixed-size
+```
+
+### Iterator Operations
+
+```cpp
+std::vector<int> vec = {10, 20, 30};
+
+// Obtaining iterators
+auto it = vec.begin();        // Iterator to first element
+auto it_end = vec.end();      // Iterator past last element
+auto cit = vec.cbegin();      // Const iterator (C++11)
+auto rit = vec.rbegin();      // Reverse iterator
+
+// Traversal
+++it;                         // Forward (O(1) for all containers)
+--it;                         // Backward (O(1) for bidirectional+)
+it += 2;                      // Random access (O(1) for random access containers)
+std::advance(it, 2);          // Generic advance — works with any iterator category
+std::next(it);                // Returns iterator + n without modifying original
+
+// Dereferencing
+*it                           // Access element value
+it->member                    // Access member (for iterators to structs/classes)
+```
+
+### Algorithm Invocation
+
+```cpp
+#include <algorithm>
+#include <numeric>
+#include <functional>
+
+std::vector<int> vec = {5, 3, 1, 4, 2};
+
+// Sorting
+std::sort(vec.begin(), vec.end());
+std::sort(vec.begin(), vec.end(), std::greater<int>());
+
+// Searching
+auto it = std::find(vec.begin(), vec.end(), 3);
+bool found = std::binary_search(vec.begin(), vec.end(), 3);
+
+// Transform
+std::vector<int> result(vec.size());
+std::transform(vec.begin(), vec.end(), result.begin(),
+               [](int x) { return x * 2; });
+
+// Accumulate
+int sum = std::accumulate(vec.begin(), vec.end(), 0);
+
+// Erase-remove idiom
+vec.erase(std::remove(vec.begin(), vec.end(), 3), vec.end());
+
+// C++20 ranges
+std::ranges::sort(vec);
+auto even = vec | std::views::filter([](int x) { return x % 2 == 0; });
+```
+
+### Map and Set Operations
+
+```cpp
+std::map<std::string, int> ages = {{"Alice", 30}, {"Bob", 25}};
+
+// Insertion
+ages["Charlie"] = 35;                    // Insert or assign
+ages.insert({"Dave", 40});               // Insert only if not present
+ages.emplace("Eve", 28);                 // Construct in-place
+
+// Lookup
+ages.at("Alice");                         // Throws std::out_of_range if missing
+ages.count("Bob");                        // 1 if exists, 0 if not
+auto iter = ages.find("Charlie");         // Iterator or end()
+
+// Erase
+ages.erase("Dave");                       // By key
+ages.erase(iter);                         // By iterator
+ages.erase(ages.begin(), ages.end());     // By range
+```
+
+### Smart Pointer Containers
+
+```cpp
+#include <memory>
+
+// Vector of unique pointers (polymorphic objects)
+std::vector<std::unique_ptr<Base>> objects;
+objects.push_back(std::make_unique<Derived>());
+
+// Vector of shared pointers
+std::vector<std::shared_ptr<Base>> shared_objects;
+shared_objects.push_back(std::make_shared<Derived>());
+```
+
 ## Iterators
 
 ### The Problem Iterators Solve
@@ -285,18 +465,69 @@ auto above = std::count_if(vec.begin(), vec.end(),
                            [threshold](int x) { return x > threshold; });
 ```
 
-## Performance Characteristics
+## Performance Considerations
 
-| Container | Access | Search | Insert (end) | Insert (mid) | Memory |
-|-----------|--------|--------|--------------|--------------|--------|
-| vector | O(1) | O(n) | O(1) amortized | O(n) | Low |
-| deque | O(1) | O(n) | O(1) | O(n) | Medium |
-| list | O(n) | O(n) | O(1) | O(1) | High |
-| forward_list | O(n) | O(n) | O(1) | O(1) | Low |
-| map | O(log n) | O(log n) | O(log n) | O(log n) | Medium |
-| unordered_map | O(1) avg | O(1) avg | O(1) avg | O(n) | High |
-| set | O(log n) | O(log n) | O(log n) | O(log n) | Medium |
-| unordered_set | O(1) avg | O(1) avg | O(1) avg | O(n) | High |
+### Cache Locality
+
+The single most important performance factor for STL containers is **cache locality**. Modern CPUs are 10–100× faster at cache hits than main memory accesses.
+
+| Container | Cache Locality | Reason |
+|-----------|---------------|--------|
+| `std::vector` | Excellent | Contiguous memory layout — prefetcher-friendly |
+| `std::array` | Excellent | Stack-allocated contiguous memory |
+| `std::deque` | Good | Chunk-based, but chunks are contiguous |
+| `std::list` | Poor | Each node is a separate heap allocation |
+| `std::forward_list` | Poor | Same as `std::list` but smaller nodes |
+| `std::map`/`std::set` | Poor | Tree nodes scattered in heap |
+| `std::unordered_map` | Moderate | Bucket array is contiguous, but chains may scatter |
+
+### When to Reserve
+
+Calling `reserve()` avoids reallocation overhead and iterator invalidation:
+
+```cpp
+std::vector<int> v;
+v.reserve(10000);  // Pre-allocate — no reallocation until >10000 elements
+for (int i = 0; i < 10000; ++i) {
+    v.push_back(i);  // No reallocation, no iterator invalidation
+}
+```
+
+### Algorithm Complexity in Practice
+
+Worst-case complexity doesn't always predict real-world performance:
+
+- `std::sort` (introsort) is O(n log n) worst case, but cache effects make it faster than theoretically equivalent algorithms
+- `std::unordered_map` is O(1) average but cache misses can make `std::map` faster for small datasets
+- `std::list` has O(1) insert but the heap allocations and pointer chasing make it slower than `std::vector` with `std::move` for most workloads
+
+### Move Semantics Impact
+
+C++11 move semantics eliminated most performance concerns about STL containers returning by value:
+
+```cpp
+// Pre-C++11: expensive copy
+std::vector<int> createVec() {
+    std::vector<int> v = {1, 2, 3};
+    return v;  // Copy on return
+}
+
+// C++11+: move is automatic (NRVO or move constructor)
+std::vector<int> createVec() {
+    std::vector<int> v = {1, 2, 3};
+    return v;  // Move — no copy
+}
+```
+
+### Memory Overhead per Element
+
+| Container | Overhead per Element | Notes |
+|-----------|---------------------|-------|
+| `std::vector<T>` | 0 bytes | Contiguous — no per-element overhead |
+| `std::deque<T>` | ~8-16 bytes | Pointer to chunk + bookkeeping |
+| `std::list<T>` | 16-24 bytes | Two pointers (prev/next) + allocator |
+| `std::map<K,V>` | ~24-40 bytes | Parent + left + right pointers + color + key/value |
+| `std::unordered_map<K,V>` | ~16-32 bytes | Hash + next pointer + key/value |
 
 ## Engineering Decision Framework
 
@@ -340,6 +571,126 @@ auto above = std::count_if(vec.begin(), vec.end(),
 2. **Facebook Folly**: `fbvector` with optimized allocation strategies
 3. **LLVM**: Uses `SmallVector` (small buffer optimization) extensively
 4. **Game Engines**: Custom containers with pool allocators for frame-based allocation
+
+## Common Mistakes
+
+### Mistake 1: Iterator Invalidation After Erase
+
+```cpp
+// WRONG — undefined behavior
+std::vector<int> v = {1, 2, 3, 4, 5};
+for (auto it = v.begin(); it != v.end(); ++it) {
+    if (*it % 2 == 0) v.erase(it);  // it invalidated after erase
+}
+
+// CORRECT
+for (auto it = v.begin(); it != v.end(); ) {
+    if (*it % 2 == 0)
+        it = v.erase(it);  // erase returns next valid iterator
+    else
+        ++it;
+}
+
+// BEST — C++20 erase_if
+std::erase_if(v, [](int x) { return x % 2 == 0; });
+```
+
+### Mistake 2: Using `operator[]` on Maps for Lookup
+
+```cpp
+std::map<std::string, int> m = {{"a", 1}};
+
+// WRONG — inserts a default value if key doesn't exist
+int val = m["nonexistent"];  // m now contains {"a":1, "nonexistent":0}
+
+// CORRECT — use find() or count() for lookup
+auto it = m.find("nonexistent");
+if (it != m.end()) { /* use it->second */ }
+
+// OR use at() if you want an exception
+try {
+    int val = m.at("nonexistent");
+} catch (const std::out_of_range& e) { /* handle */ }
+```
+
+### Mistake 3: Copying Large Containers Unnecessarily
+
+```cpp
+// WRONG — deep copy of entire vector
+void process(std::vector<int> v) { /* ... */ }
+process(my_large_vector);  // Copies all elements
+
+// CORRECT — pass by reference
+void process(const std::vector<int>& v) { /* ... */ }
+
+// OR move if you need ownership
+void process(std::vector<int> v) { /* ... */ }
+process(std::move(my_large_vector));  // Moves, no copy
+```
+
+### Mistake 4: Using `std::list` Without Profiling
+
+```cpp
+// COMMON MISTAKE — choosing std::list "because insertions are O(1)"
+std::list<int> lst;
+for (int i = 0; i < 1000000; ++i) {
+    lst.push_back(i);  // O(1) per operation, but terrible cache performance
+}
+
+// USUALLY BETTER — std::vector with reserve
+std::vector<int> vec;
+vec.reserve(1000000);
+for (int i = 0; i < 1000000; ++i) {
+    vec.push_back(i);  // O(1) amortized, excellent cache performance
+}
+```
+
+### Mistake 5: Forgetting That `push_back` May Invalidate All Iterators
+
+```cpp
+std::vector<int> v = {1, 2, 3, 4, 5};
+auto it = v.begin() + 2;  // Points to 3
+
+v.push_back(6);  // May reallocate — it is now dangling!
+
+// CORRECT — re-acquire iterator after push_back, or reserve() first
+v.reserve(v.capacity() * 2);  // Prevent reallocation
+```
+
+### Mistake 6: Wrong Initial Value Type with `std::accumulate`
+
+```cpp
+std::vector<int> v = {1000000000, 2000000000, 3000000000};
+
+// WRONG — initial value 0 is int, result truncates
+int sum = std::accumulate(v.begin(), v.end(), 0);
+
+// CORRECT — explicit type
+long long sum = std::accumulate(v.begin(), v.end(), 0LL);
+```
+
+### Mistake 7: Assuming `std::unordered_map` Order Is Stable
+
+```cpp
+std::unordered_map<int, int> m = {{3,1}, {1,2}, {2,3}};
+// Iteration order is undefined and may change after rehash
+// Never rely on iteration order
+```
+
+### Mistake 8: Using Raw Loops Instead of Algorithms
+
+```cpp
+// LESS CLEAR
+std::vector<int> result;
+for (const auto& x : vec) {
+    if (x > 5) result.push_back(x);
+}
+
+// CLEARER — expresses intent
+std::vector<int> result;
+std::copy_if(vec.begin(), vec.end(), std::back_inserter(result),
+             [](int x) { return x > 5; });
+```
 
 ## Production Incidents
 
@@ -456,12 +807,22 @@ auto above = std::count_if(vec.begin(), vec.end(),
 | Iterator | Pointer-like traversal | Used with algorithms | Don't use invalidated iterators |
 | emplace_back | Construct in-place | Better than push_back | Avoids unnecessary copies |
 
-## Related Topics
-- [Templates](../03-templates/) — Templates power the STL's generic design
-- [Modern C++](../08-modern-cpp/) — Ranges (C++20) extend STL
-- [Performance](../11-performance/) — Cache optimization for containers
-- [Memory Management](../05-memory-management/) — Container memory strategies
+## Cross-References
+
+### Within This Learning Path
+- [C++ Fundamentals](../01-fundamentals/) — Variables, control flow, functions
+- [Templates](../03-templates/) — Generic programming powering STL's design
+- [Memory Management](../05-memory-management/) — Allocators, RAII, and container memory strategies
+- [Modern C++](../08-modern-cpp/) — Ranges (C++20), `std::span`, structured bindings
+- [Performance](../11-performance/) — Cache optimization, data-oriented design
 - [Best Practices](../14-best-practices/) — Choosing the right container
+
+### External References
+- [CppReference — Containers](https://en.cppreference.com/w/cpp/container)
+- [Effective STL — Scott Meyers](https://www.amazon.com/Effective-STL-Specific-Strategies-Containers/dp/0201749629)
+- [Google Abseil — Swiss Tables](https://abseil.io/about/design/swisstables)
+- [CppCon Talk: Back to Basics: C++ Containers](https://youtube.com/cppcon)
+- [C++ Core Guidelines: SL](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#sl-conventions-and-styles)
 
 ## Debugging Tips
 

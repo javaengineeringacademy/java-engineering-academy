@@ -1,25 +1,213 @@
 # Networking — C++
 
-## Why It Matters
+## Overview
 
-Networking is the backbone of modern software. Every mobile app, web service, game, and distributed system relies on network communication. When you understand sockets, protocols, and async I/O, you can build reliable, high-performance networked systems that handle millions of connections instead of copying HTTP snippets.
+Networking is the backbone of modern software. Every mobile app, web service, game, and distributed system relies on network communication. C++ networking encompasses low-level socket programming, kernel I/O multiplexing (epoll/kqueue), and high-level async frameworks like Boost.Asio. It enables building high-performance networked systems capable of handling millions of concurrent connections — from game servers and database drivers to HTTP reverse proxies and message brokers. C++ gives direct access to OS primitives for zero-copy I/O, non-blocking sockets, and io_uring, making it the language of choice for performance-critical network infrastructure. When you understand sockets, protocols, and async I/O, you can build reliable, high-performance networked systems that handle millions of connections instead of copying HTTP snippets.
 
-## What It Is
+## Learning Objectives
 
-C++ networking covers socket programming, TCP/UDP protocols, async I/O with epoll/kqueue, and libraries like Boost.Asio for building networked applications that handle partial reads, connection resets, and timeouts gracefully.
+- Understand socket programming fundamentals (TCP/UDP) using POSIX APIs and Boost.Asio
+- Implement non-blocking I/O with epoll (Linux) and kqueue (macOS/BSD)
+- Design async network servers using the Reactor or Proactor pattern
+- Apply connection pooling, backpressure, and reconnection with exponential backoff
+- Recognize security implications (TLS, buffer overflows, input validation)
+- Debug common networking issues (fd leaks, partial reads, DNS blocking)
 
-## Engineering Decision Framework
+## Prerequisites
 
-| Decision | Approach | When to Use | When NOT to Use |
-|----------|----------|-------------|-----------------|
-| Protocol | TCP vs UDP vs QUIC | TCP for reliability, UDP for speed, QUIC for modern web | Don't default to UDP without understanding reliability needs |
-| I/O model | Blocking vs async vs epoll/kqueue | Async for high concurrency, blocking for simple clients | Blocking I/O in high-concurrency servers |
-| Library | Raw sockets vs Boost.Asio vs libcurl | Asio for async, raw sockets for learning/custom protocols | Raw sockets for production HTTP (use libcurl instead) |
-| Serialization | JSON vs protobuf vs flatbuffers | Protobuf for performance, JSON for human readability | JSON in hot paths with millions of messages |
-| Security | TLS/SSL vs plain | Always TLS in production; plain only for localhost testing | Plain text over public networks |
-| Buffering | Fixed vs dynamic buffers | Fixed for predictable message sizes, dynamic for variable | Dynamic allocation in tight packet loops |
+- [Module 07: Concurrency](../07-concurrency/) — threads, mutexes, condition variables, futures
+- [Module 08: Modern C++](../08-modern-cpp/) — move semantics, RAII, `std::optional`, lambdas, smart pointers
 
-## Expanded Code Examples
+## History
+
+| Era | Event | Impact |
+|-----|-------|--------|
+| 1983 | BSD 4.2 sockets API introduced | First portable socket interface (`socket()`, `bind()`, `listen()`, `accept()`). Became the universal network programming model. |
+| 1993 | Solaris introduces `/dev/poll` | First scalable I/O multiplexing beyond `select()`. Required kernel event notification for high-fd-count servers. |
+| 1999 | Linux epoll API (kernel 2.1) | O(1) event notification replacing O(n) `poll()`/`select()`. Enabled 100K+ connection servers on Linux. |
+| 2000 | Boost.Asio (first release) | Portable async I/O library for C++ wrapping epoll/kqueue/IOCP under a unified API. |
+| 2004 | kqueue/kevent in FreeBSD 4.1 | BSD equivalent of epoll, available on macOS/BSD. Event-driven I/O notification with richer event types. |
+| 2014 | io_uring proposal (kernel 5.1) | Kernel-level async I/O with submission/completion queues. Bypasses syscall overhead for extreme throughput. |
+| 2019 | C++20 coroutines (standardized) | Enables async I/O with sequential-looking code via `co_await`, replacing callback chains. |
+| 2022 | QUIC protocol (RFC 9000) | UDP-based transport with built-in TLS 1.3, multiplexed streams, and 0-RTT connection. |
+
+## Production Notes
+
+- **File descriptors are limited**: Default ulimit is often 1024. For production servers, set `ulimit -n 100000+` and tune `fs.file-max` in `/proc/sys/fs/file-max`.
+- **Ephemeral port range**: Linux has ~28K ephemeral ports. For high-connection-rate servers, expand with `sysctl net.ipv4.ip_local_port_range="1024 65535"`.
+- **SO_REUSEADDR vs SO_REUSEPORT**: `SO_REUSEADDR` allows binding to addresses in `TIME_WAIT`. `SO_REUSEPORT` (Linux 3.9+) enables multiple processes to bind to the same port with kernel-level load balancing.
+- **TCP_NODELAY**: Disable Nagle's algorithm (`setsockopt(..., TCP_NODELAY, ...)`) for latency-sensitive protocols. Default Nagle buffering adds up to 40ms delay per message.
+- **Keep-alive tuning**: `TCP_KEEPIDLE`, `TCP_KEEPINTVL`, `TCP_KEEPCNT` control dead connection detection. Too aggressive wastes bandwidth; too lenient leaves zombie connections.
+- **AddressSanitizer in CI**: Always compile network-facing code with `-fsanitize=address,undefined` to catch buffer overflows and use-after-free in packet parsing.
+
+## Core Concepts
+
+| Concept | Description | C++ Relevance |
+|---------|-------------|---------------|
+| Socket | Bidirectional communication endpoint (fd on Unix) | `int fd = socket(AF_INET, SOCK_STREAM, 0)` or `boost::asio::ip::tcp::socket` |
+| TCP | Reliable, ordered byte stream with flow/congestion control | Three-way handshake, `SOCK_STREAM`, `TCP_NODELAY` |
+| UDP | Connectionless datagram with no ordering guarantees | `SOCK_DGRAM`, `recvfrom()`/`sendto()`, multicast |
+| Non-blocking I/O | `fcntl(fd, F_SETFL, O_NONBLOCK)` — returns `EAGAIN`/`EWOULDBLOCK` when no data available | Avoids blocking the event loop; required for epoll edge-triggered mode |
+| epoll / kqueue | Kernel event notification for I/O readiness | `epoll_create1()`, `epoll_wait()` on Linux; `kqueue()`, `kevent()` on BSD/macOS |
+| io_uring | Async I/O via shared kernel-user ring buffers | Zero-syscall I/O for extreme throughput; `io_uring_submit()` / `io_uring_wait_cqe()` |
+| Reactor pattern | Event loop dispatches to registered handlers | Most epoll-based servers; Boost.Asio's `io_context` |
+| Proactor pattern | OS performs I/O, notifies completion | Boost.Asio's async model; Windows IOCP |
+| Connection pooling | Reuse TCP connections across requests | Reduces handshake overhead; `curl_multi_*` or custom pool |
+| Backpressure | Slow down producers when consumer is overloaded | Prevents memory exhaustion under burst traffic |
+
+## Internal Working
+
+### Linux TCP Stack
+
+```
+Application → send() → TCP send buffer → NIC → wire
+wire → NIC → TCP receive buffer → recv() → Application
+```
+
+1. **`send()` / `write()`**: Copies data from user buffer into kernel TCP send buffer. Returns immediately if buffer has space (non-blocking).
+2. **TCP send buffer**: Kernel queues segments for transmission. Nagle's algorithm may batch small writes.
+3. **NIC driver**: DMA transfers data from kernel buffer to NIC ring buffer. Offload checksumming/TSO to hardware.
+4. **Wire**: Ethernet frame → IP packet → TCP segment.
+5. **Receive path**: NIC → DMA to receive ring buffer → kernel TCP stack reorders/ACKs → `recv()` copies to user buffer.
+
+### epoll Internal Mechanism
+
+```
+User process                      Kernel
+─────────────                     ──────
+epoll_create1()           →     Creates epoll instance (Red-Black tree + ready list)
+epoll_ctl(ADD, fd, EV)   →     Inserts fd into RB tree, registers callback
+                                   on socket ready → callback fires
+                                   callback adds fd to ready list
+epoll_wait()              →     Copies ready list to user space (O(ready events))
+```
+
+**Edge-triggered (EPOLLET)**: Only notifies when state *changes* (e.g., new data arrives). Requires reading until `EAGAIN` to avoid missing events. More efficient but harder to program.
+
+**Level-triggered (default)**: Notifies whenever fd is ready. Simpler but may cause busy-looping with naive code.
+
+### io_uring Flow
+
+```
+User space                          Kernel
+──────────                          ──────
+io_uring_setup()            →     Creates shared ring buffers (SQ/CQ)
+io_uring_get_sqe()          →     Get submission queue entry
+io_uring_prep_recv()        →     Prepare recv operation in SQE
+io_uring_submit()           →     Write SQEs, notify kernel
+                                   Kernel processes SQEs asynchronously
+                                   Writes completions to CQ ring
+io_uring_wait_cqe()         →     Read completion from CQ ring (zero-syscall)
+```
+
+io_uring eliminates per-I/O syscall overhead by batching submissions and completions in shared ring buffers. Achieves 2-3x throughput over epoll for high IOPS workloads.
+
+### Non-Blocking I/O State Machine
+
+```
+             ┌──────────────┐
+             │  WAITING     │  epoll_wait() / kqueue()
+             └──────┬───────┘
+                    │ event ready
+             ┌──────▼───────┐
+             │  READING     │  read() / recv()
+             └──────┬───────┘
+                    │ EAGAIN
+             ┌──────▼───────┐
+             │  BUFFERED    │  Accumulate partial message
+             └──────┬───────┘
+                    │ complete message
+             ┌──────▼───────┐
+             │  PROCESSING  │  Parse, handle, generate response
+             └──────┬───────┘
+                    │
+             ┌──────▼───────┐
+             │  WRITING     │  write() / send()
+             └──────┬───────┘
+                    │ EAGAIN or done
+                    └──────→ back to WAITING
+```
+
+## Syntax
+
+### POSIX Socket API
+
+```cpp
+// Create socket
+int fd = socket(AF_INET, SOCK_STREAM, 0);  // TCP
+int fd = socket(AF_INET, SOCK_DGRAM, 0);   // UDP
+
+// Set options
+int opt = 1;
+setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt));
+
+// Bind and listen (server)
+sockaddr_in addr{AF_INET, htons(port), INADDR_ANY};
+bind(fd, (sockaddr*)&addr, sizeof(addr));
+listen(fd, SOMAXCONN);  // backlog queue
+
+// Accept (server)
+sockaddr_in client;
+socklen_t len = sizeof(client);
+int client_fd = accept(fd, (sockaddr*)&client, &len);
+
+// Connect (client)
+sockaddr_in server{AF_INET, htons(port), {}};
+inet_pton(AF_INET, "127.0.0.1", &server.sin_addr);
+connect(fd, (sockaddr*)&server, sizeof(server));
+
+// Non-blocking
+fcntl(fd, F_SETFL, O_NONBLOCK);
+```
+
+### Boost.Asio Async Pattern
+
+```cpp
+#include <boost/asio.hpp>
+using boost::asio::ip::tcp;
+
+boost::asio::io_context io;
+tcp::acceptor acceptor(io, {tcp::v4(), 8080});
+
+// Async accept loop
+acceptor.async_accept([&](auto ec, tcp::socket sock) {
+    if (!ec) {
+        // Handle connection
+        auto buf = std::make_shared<std::array<char, 1024>>();
+        async_read(sock, boost::asio::buffer(*buf),
+            [buf, s = std::move(sock)](auto ec, auto n) {
+                if (!ec) { /* process buf[0..n] */ }
+            });
+    }
+    acceptor.async_accept(/* ... */);  // continue accepting
+});
+
+io.run();  // Event loop
+```
+
+### epoll Setup
+
+```cpp
+int epoll_fd = epoll_create1(0);
+
+epoll_event ev{};
+ev.events = EPOLLIN | EPOLLET;  // Edge-triggered read
+ev.data.fd = server_fd;
+epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &ev);
+
+std::vector<epoll_event> events(128);
+int n = epoll_wait(epoll_fd, events.data(), events.size(), -1);
+for (int i = 0; i < n; ++i) {
+    if (events[i].data.fd == server_fd) {
+        // Accept new connection
+    } else {
+        // Read data from client
+    }
+}
+```
+
+## Examples
 
 ### TCP Client and Server
 
@@ -338,6 +526,59 @@ void udp_server(int port) {
 }
 ```
 
+## Performance Considerations
+
+| Technique | Description | Impact |
+|-----------|-------------|--------|
+| **Connection pooling** | Reuse TCP connections across requests | Eliminates per-request TCP handshake + TLS negotiation (30-100ms saved per request) |
+| **Zero-copy I/O** | `sendfile()`, `splice()`, `MSG_ZEROCOPY` — data moves between kernel/NIC without user-space copy | 2-3x throughput for large file transfers; reduces CPU usage |
+| **io_uring** | Shared ring buffers for async I/O — bypasses per-I/O syscall overhead | 2-3x throughput vs. epoll for high IOPS (100K+ ops/sec); lower latency |
+| **TCP_NODELAY** | Disable Nagle's algorithm for latency-sensitive protocols | Eliminates up to 40ms batching delay per small message |
+| **SO_REUSEPORT** | Kernel-level load balancing across multiple sockets | Enables multi-process scaling without accept serialization |
+| **EPOLLET (edge-triggered)** | Notify only on state change, not continuously | Fewer epoll_wait wakeups; requires reading until EAGAIN |
+| **Buffer management** | Pre-allocated buffer pools avoid per-connection malloc/free | Reduces heap fragmentation; 10-20% throughput improvement under load |
+| **Protocol buffers (protobuf)** | Binary serialization vs. JSON | 5-10x smaller payloads, 2-5x faster serialization for structured data |
+| **TCP_CORK** | Batch small writes into larger segments | Reduces packet count; use before sending, unset before final flush |
+| **readv/writev (scatter-gather)** | Multiple buffers in a single syscall | Reduces syscall count; useful for header+body writes |
+
+### Latency vs. Throughput Trade-offs
+
+| Scenario | Best Approach | Why |
+|----------|---------------|-----|
+| Real-time gaming | UDP + custom reliability layer | No TCP head-of-line blocking; sub-millisecond latency |
+| High-throughput file transfer | TCP + zero-copy + TCP_CORK | Maximize bandwidth utilization; minimize CPU overhead |
+| High-concurrency HTTP | epoll + connection pooling + HTTP/2 | Multiplexed streams over single connection |
+| Microservice RPC | gRPC (protobuf over HTTP/2) | Typed contracts, streaming, multiplexing |
+| Ultra-low-latency | io_uring + kernel bypass (DPDK) | Eliminate kernel overhead entirely |
+
+## Best Practices
+
+1. **Always use RAII for sockets**: Wrap `socket()` in a class that calls `close()` in the destructor. Use move semantics to transfer ownership.
+2. **Validate every packet size**: Never trust the client. Reject packets exceeding the maximum expected size before parsing.
+3. **Use `snprintf`/`strncpy`**: Never `sprintf`/`strcpy` on network data. Always bound string operations.
+4. **Handle partial reads/writes**: TCP is a byte stream. Loop until the complete message is received. Use a state machine for protocol parsing.
+5. **Set timeouts on everything**: `connect()`, `read()`, `write()` can all block indefinitely. Use `SO_RCVTIMEO`/`SO_SNDTIMEO` or async timeouts.
+6. **Edge-triggered epoll requires discipline**: When using `EPOLLET`, always read/write until `EAGAIN`. Missing this loses events silently.
+7. **Cache DNS results**: Never call `getaddrinfo()` on the hot path. Cache results with TTL-based expiration.
+8. **Monitor file descriptors**: Track `fd` count in production. Alert when approaching `ulimit -n`.
+9. **Fuzz network parsers**: Use AFL/libFuzzer on all code that parses network input. Enable ASan/UBSan in CI.
+10. **Use connection pooling**: Never create a new TCP connection per request in production. Pool connections with size limits.
+
+## Common Mistakes
+
+| Mistake | Symptom | Fix |
+|---------|---------|-----|
+| Using `sprintf()` on network input | Buffer overflow, segfault, RCE | Use `snprintf(buf, sizeof(buf), ...)` |
+| Not handling partial reads | Protocol errors, hanging connections | Loop `read()` until complete message or `EAGAIN` |
+| Blocking I/O on event loop | Entire server freezes during slow client I/O | Use non-blocking sockets + epoll/kqueue |
+| Forgetting `close()` on error paths | File descriptor leak, eventual fd exhaustion | Use RAII wrappers; never return without cleanup |
+| Using level-triggered + not reading all data | Missed events or busy-looping | Use edge-triggered + read until EAGAIN, or use level-triggered correctly |
+| Hardcoding buffer sizes without validation | Crash on oversized packets | Validate packet size before copying into buffer |
+| Not setting `TCP_NODELAY` on latency-sensitive protocols | 40ms Nagle delay per message | `setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, ...)` |
+| Ignoring `EINTR` on signal interrupts | Spurious errors, connection drops | Retry `read()`/`write()` on `EINTR` |
+| Creating one thread per connection | Thread limit hit at ~10K connections | Use event loop with epoll/kqueue or Boost.Asio async |
+| No connection timeout | Zombie connections accumulate | Set `SO_KEEPALIVE` with tuned idle/interval/probes |
+
 ## Production Incidents
 
 ### Incident 1: Buffer Overflow in Network Parser
@@ -378,6 +619,32 @@ void udp_server(int port) {
 **Solution**: Moved DNS resolution to a background thread. Implemented DNS caching with TTL-based expiration (cache results for 5 minutes). Added a fallback DNS server. Set `getaddrinfo()` timeout to 2 seconds with `AI_NUMERICSERV` flag.
 
 **Prevention**: Never call blocking I/O on the main event loop. Use async DNS resolution (c-ares library). Cache DNS results. Set aggressive timeouts for all network operations.
+
+### Incident 4: TCP Accept Thundering Herd Under Spike Load
+**Problem**: A WebSocket server experienced 5-second startup stalls when 50K clients connected simultaneously after a maintenance window. CPU usage spiked to 100% during the storm.
+
+**Cause**: The server used a multi-process model with all workers calling `accept()` on the same listening socket. When the load spike hit, all 8 worker processes woke up simultaneously (thundering herd), each called `accept()`, and 7 of them got `EAGAIN` — wasting CPU cycles in a tight loop retrying `accept()`.
+
+**Impact**: Server took 5 seconds to stabilize after each spike. 50K clients experienced connection timeouts. Some clients gave up and failed over to backup, causing cascading load.
+
+**Detection**: `strace -p <pid>` showed thousands of `accept()` calls returning `EAGAIN`. Perf profiling revealed 60% CPU spent in kernel `tcp_accept()` contention.
+
+**Solution**: Switched to `SO_REUSEPORT` (Linux 3.9+) — each worker gets its own socket with kernel-level load balancing, eliminating accept contention. Added `EPOLLEXCLUSIVE` flag to epoll for processes that can't use `SO_REUSEPORT`. Reduced workers from 8 to 4 (fewer processes, no contention).
+
+**Prevention**: Use `SO_REUSEPORT` for multi-process servers. Add `EPOLLEXCLUSIVE` to prevent thundering herd. Benchmark under realistic spike conditions before deployment.
+
+### Incident 5: TLS Certificate Expiry Causing Silent Failures
+**Problem**: A payment processing service started silently dropping HTTPS connections at 2 AM on a Sunday. The service returned empty responses instead of errors, causing downstream services to cache stale data.
+
+**Cause**: The TLS certificate expired at midnight. The OpenSSL version in use treated expired certificates as non-fatal for outgoing connections (it depends on `SSL_CTX_set_verify` mode). The server accepted expired client certs and returned empty responses instead of closing the connection cleanly. Monitoring didn't alert because the server was still "healthy" (accepting connections).
+
+**Impact**: Payment processing silently failed for 6 hours. $200K in transactions were lost or duplicated when services retried. Customer trust damaged.
+
+**Detection**: Downstream services reported empty response bodies. `openssl s_client -connect` showed expired certificate. Certificate monitoring had a bug — it checked the wrong certificate chain.
+
+**Solution**: Set certificate expiration alerts at 30/14/7/1 days. Implemented strict TLS verification (`SSL_CTX_set_verify(SSL_VERIFY_PEER)`). Added health check that validates TLS handshake succeeds with valid cert. Fixed certificate monitoring to check the correct chain.
+
+**Prevention**: Never rely on "it works" without verifying the TLS handshake. Automate certificate rotation (Let's Encrypt + certbot). Set alerts well before expiry. Test certificate expiry scenarios in staging.
 
 ## Production Checklist
 
@@ -426,7 +693,7 @@ void udp_server(int port) {
 | Backoff | Retry with increasing delay | Prevents thundering herd |
 | Partial read | Network may deliver partial data | Always loop until complete message received |
 
-## Cross-Linked Related Topics
+## Cross-References
 
 - **Concurrency** → [Module 07: Concurrency](../07-concurrency/) — Thread pools, async patterns, mutexes
 - **Performance** → [Module 11: Performance](../11-performance/) — Zero-copy, memory pools for buffers
@@ -434,6 +701,13 @@ void udp_server(int port) {
 - **Build Systems** → [Module 13: Build Systems](../13-build-systems/) — Linking libcurl, Boost.Asio
 - **Memory Management** → [Module 05: Memory](../05-memory-management/) — Buffer management, avoid leaks
 - **Modern C++** → [Module 08: Modern C++](../08-modern-cpp/) — `std::optional` for results, lambdas for callbacks
+- Thread pools for async I/O → [07-concurrency](../07-concurrency/) — Boost.Asio and custom async frameworks rely on thread pools
+- RAII and move semantics → [08-modern-cpp](../08-modern-cpp/) — `std::unique_ptr<Socket>` enables safe socket ownership transfer
+- `std::optional` for nullable returns → [08-modern-cpp](../08-modern-cpp/) — `std::optional<TcpMessage> receive()`
+- Memory pools for buffer management → [05-memory-management](../05-memory-management/) — Pre-allocated buffer pools eliminate per-connection heap allocation
+- Build system: linking Boost.ASIO, libcurl → [13-build-systems](../13-build-systems/) — CMake `find_package(Boost)`, pkg-config for libcurl
+- Error handling patterns → [14-best-practices](../14-best-practices/) — `std::error_code` vs exceptions for network error propagation
+- Compiler flags and sanitizers → [04-compilers](../04-compilers/) — `-fsanitize=address,undefined`, `-pthread`
 
 ## Debugging Tips
 
@@ -472,23 +746,6 @@ Networking determines how systems communicate — from single TCP connections to
 | Connection leak causing fd exhaustion | Denial of service, server crash | RAII for all network handles; monitor fd count in production metrics |
 | DNS spoofing redirecting traffic | Man-in-the-middle attack, data theft | Use DNSSEC; validate certificates; implement certificate pinning |
 
-## Evolution & Modernization
-
-| Version | Change | Migration Path |
-|---------|--------|----------------|
-| C++11 | `std::future` for async results | Replace callback hell with `std::async` for simple async operations |
-| C++17 | `std::optional` for nullable network results | Use `std::optional` for function returns that may fail |
-| C++20 | Coroutines for async I/O | Replace callback-based async with coroutine-based sequential-looking code |
-
-## Version Validation
-
-| Feature | C++ Version | Status |
-|---------|------------|--------|
-| `std::thread` for background I/O | C++11 | Widely supported |
-| `std::future` / `std::async` | C++11 | Widely supported |
-| `std::optional` for nullable results | C++17 | Widely supported |
-| Coroutines (C++20) for async | C++20 | Supported in MSVC 19.22+, Clang 10+ (limited), GCC 10+ (limited) |
-
 ## Interview Questions
 
 1. **What is the difference between TCP and UDP?**: TCP provides reliable, ordered byte streams with flow control and congestion control (three-way handshake). UDP provides fast, connectionless datagrams with no ordering or reliability. Use TCP for HTTP, SSH, databases; UDP for real-time gaming, DNS, video streaming.
@@ -496,10 +753,13 @@ Networking determines how systems communicate — from single TCP connections to
 3. **Why must you handle partial reads/writes in network code?**: The network may deliver data in chunks — a `read()` of 1024 bytes may only return 100 bytes. You must loop until the complete message is received. This is especially important for TCP, which is a byte stream, not a message stream.
 4. **What is connection pooling and why is it important?**: Connection pooling reuses TCP connections across multiple requests, avoiding the overhead of repeated TCP handshakes and TLS negotiations. It reduces latency and prevents file descriptor exhaustion under high load.
 5. **How do you implement reconnection with exponential backoff?**: Start with a small delay (e.g., 100ms), double it on each failure (100ms, 200ms, 400ms, ...), cap at a maximum (e.g., 30s), and add jitter to prevent thundering herd. Reset the backoff on successful connection.
-
-## References
-
-- [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
-- [Boost.Asio Documentation](https://www.boost.org/doc/libs/1_82_0/doc/html/boost_asio.html)
-- [libcurl Documentation](https://curl.se/libcurl/c/)
-- [The Linux Programming Interface — Michael Kerrisk](https://www.amazon.com/Linux-Programming-Interface-System-Handbook/dp/1593272200)
+6. **What is the difference between edge-triggered and level-triggered epoll?**: Level-triggered notifies whenever a fd is ready (default). Edge-triggered notifies only on state *change*. Edge-triggered is more efficient but requires reading until `EAGAIN` to avoid losing events. Level-triggered is simpler but may cause busy-looping with naive code.
+7. **How does io_uring differ from epoll?**: `io_uring` uses shared ring buffers between kernel and user space, eliminating per-I/O syscalls. Submit I/O operations via a submission queue, receive completions via a completion queue. Achieves 2-3x throughput over epoll for high IOPS workloads due to zero-syscall overhead.
+8. **What is `SO_REUSEPORT` and when would you use it?**: `SO_REUSEPORT` allows multiple processes/threads to bind to the same port. The kernel distributes incoming connections across them via a hash-based load balancer. Use for multi-process servers to avoid accept thundering herd on the same listening socket.
+9. **How do you handle `EINTR` in network code?**: `EINTR` means a signal interrupted the syscall. You must retry the operation. In a loop: if `read()`/`write()` returns `EINTR`, retry instead of treating it as an error. This prevents spurious connection drops on signal delivery.
+10. **What is the problem with the thread-per-connection model?**: Each thread consumes ~8MB stack. At 10K connections, that's ~80GB of virtual memory. Thread context switches add overhead. Use event loops (epoll/kqueue) or async I/O (Boost.Asio, io_uring) instead.
+11. **Explain Nagle's algorithm and when to disable it**: Nagle buffers small TCP writes to reduce packet count (combines small segments). This adds up to 40ms latency per message. Disable with `TCP_NODELAY` for latency-sensitive protocols (gaming, trading, SSH). Keep enabled for bulk transfers.
+12. **How does Boost.Asio's Proactor pattern differ from the Reactor pattern?**: Reactor (epoll) notifies when an fd is *ready* — you call `read()`. Proactor (Boost.Asio, IOCP) completes the I/O and notifies you with the result. Proactor avoids non-blocking syscall complexity but requires OS support.
+13. **What is zero-copy networking and when is it worth implementing?**: Zero-copy avoids copying data between user space and kernel. `sendfile()` transfers files directly from page cache to NIC. `MSG_ZEROCOPY` avoids copy on send. Worth it for large payloads (>4KB). Small messages benefit more from connection pooling than zero-copy.
+14. **How would you design a chat server handling 100K concurrent connections?**: Single event loop with epoll/kqueue (edge-triggered), non-blocking sockets, per-connection state machines, connection pooling for outbound connections, backpressure via write buffer limits, optional io_uring on Linux 5.1+. Message broadcast via fan-out from epoll event handler.
+15. **What are the security implications of network programming in C++?**: Buffer overflows from unchecked input (use `snprintf`). Missing TLS allows MITM attacks. DNS spoofing redirects traffic (use DNSSEC). Certificate validation must be strict. Never trust client-sent sizes. Fuzz all network-facing parsers. Enable ASan/UBSan in CI.

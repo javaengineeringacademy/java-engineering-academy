@@ -49,6 +49,334 @@ CRTP, type erasure, and perfect forwarding are well-supported in GCC 7+, Clang 5
 ### ABI Stability
 Type erasure through `std::function` and `std::any` have stable ABI across compiler versions. Custom type erasure implementations may not — be careful when sharing libraries across compilation boundaries.
 
+## Internal Working
+
+### CRTP Internal Mechanism
+CRTP works by having the base class template accept the derived class as a template argument. When `area()` is called, the base class performs a `static_cast<Derived*>(this)` to obtain a pointer to the derived type, then calls the derived implementation. This cast is safe because the base is only ever instantiated with the correct derived type. The compiler resolves the call at compile time — no vtable, no indirect call, no runtime overhead.
+
+### Type Erasure Internals
+Type erasure uses a two-layer indirection: a `Concept` base class defines the interface, and a `Model<T>` derived class stores the concrete object. The wrapper holds a `unique_ptr<Concept>` and delegates calls through virtual dispatch on `Model`. Small buffer optimization avoids the heap allocation by storing the `Model` object in a fixed-size aligned buffer within the wrapper itself. The buffer size is a compile-time constant — typically 64 bytes.
+
+### Perfect Forwarding Mechanism
+Universal references (`T&&`) use reference collapsing rules: `T&&` with `T = int&` collapses to `int&`, and with `T = int` yields `int&&`. `std::forward<T>(x)` casts `x` to `T&&` only when `T` is deduced as a non-reference type, preserving the original value category. This happens entirely at compile time — no runtime branching.
+
+### Constexpr Evaluation
+The compiler evaluates `constexpr` functions during compilation when arguments are constant expressions. The function body must contain only expressions valid at compile time: no I/O, no mutation of non-local state, no dynamic allocation (until C++20). When arguments are runtime values, the function executes normally at runtime.
+
+### Policy-Based Design Internals
+Policies are passed as template parameters. The main class inherits privately from each policy, giving it direct access to policy methods. The compiler instantiates only the policies used — `FileStorage` for production, `MemoryStorage` for tests. Each instantiation is a separate compilation, enabling full inlining and dead code elimination.
+
+```
+Call flow: CRTP static_cast → direct method call
+Type erasure: wrapper → unique_ptr<Concept> → virtual dispatch → Model<T>::method
+Forwarding: T&& → reference collapsing → std::forward → target function
+Constexpr: compile-time AST evaluation → constant in binary
+```
+
+## Syntax
+
+### CRTP Syntax
+```cpp
+// Base class template with derived as parameter
+template <typename Derived>
+class Base {
+public:
+    void interface() {
+        static_cast<Derived*>(this)->implementation();
+    }
+};
+
+// Derived class passes itself as template argument
+class Derived : public Base<Derived> {
+public:
+    void implementation() { /* ... */ }
+};
+```
+
+### Type Erasure Syntax
+```cpp
+// Concept (interface) definition
+struct Concept {
+    virtual ~Concept() = default;
+    virtual void call() const = 0;
+    virtual std::unique_ptr<Concept> clone() const = 0;
+};
+
+// Model (concrete storage)
+template <typename T>
+struct Model : Concept {
+    T value_;
+    explicit Model(T v) : value_(std::move(v)) {}
+    void call() const override { /* use value_ */ }
+    std::unique_ptr<Concept> clone() const override {
+        return std::make_unique<Model>(value_);
+    }
+};
+
+// Wrapper class
+class Erased {
+    std::unique_ptr<Concept> impl_;
+public:
+    template <typename T>
+    Erased(T value) : impl_(std::make_unique<Model<T>>(std::move(value))) {}
+};
+```
+
+### Perfect Forwarding Syntax
+```cpp
+// Universal reference parameter
+template <typename T>
+void wrapper(T&& arg) {
+    target(std::forward<T>(arg));  // Preserves value category
+}
+
+// Variadic perfect forwarding
+template <typename T, typename... Args>
+std::unique_ptr<T> make(Args&&... args) {
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
+```
+
+### Constexpr Syntax
+```cpp
+// C++11/14: simple constexpr function
+constexpr int square(int x) { return x * x; }
+
+// C++14: mutable local variables in constexpr
+constexpr int fibonacci(int n) {
+    int a = 0, b = 1;
+    for (int i = 0; i < n; ++i) {
+        int temp = a;
+        a = b;
+        b = temp + b;
+    }
+    return a;
+}
+
+// C++17: constexpr if
+template <typename T>
+auto process(T val) {
+    if constexpr (std::is_integral_v<T>)
+        return val * 2;
+    else
+        return val * 2.5;
+}
+
+// C++20: consteval (must run at compile time)
+consteval int compile_time_only(int x) { return x + 1; }
+```
+
+### Policy-Based Design Syntax
+```cpp
+// Policy structs
+struct LoggingPolicy {
+    void log(const std::string& msg) { std::cout << msg; }
+};
+struct StoragePolicy {
+    void store(const std::string& k, const std::string& v) { /* ... */ }
+};
+
+// Class using policies via private inheritance
+template <typename Logger, typename Storage>
+class Service : private Logger, private Storage {
+public:
+    void run() {
+        this->log("running");
+        this->store("key", "value");
+    }
+};
+```
+
+## Examples
+
+### Easy: CRTP Static Counter
+```cpp
+#include <iostream>
+
+template <typename Derived>
+class Counter {
+    static inline int count_ = 0;
+public:
+    Counter() { ++count_; }
+    ~Counter() { --count_; }
+    static int count() { return count_; }
+};
+
+class Dog : public Counter<Dog> {};
+class Cat : public Counter<Cat> {};
+
+int main() {
+    Dog d1, d2;
+    Cat c1;
+    std::cout << "Dogs: " << Dog::count() << "\n";  // 2
+    std::cout << "Cats: " << Cat::count() << "\n";  // 1
+}
+```
+
+### Medium: Perfect Forwarding Factory
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
+
+class Widget {
+    std::string name_;
+    int value_;
+public:
+    Widget(std::string name, int value)
+        : name_(std::move(name)), value_(value) {
+        std::cout << "Constructed: " << name_ << "=" << value_ << "\n";
+    }
+};
+
+template <typename T, typename... Args>
+std::unique_ptr<T> create(Args&&... args) {
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
+
+int main() {
+    auto w1 = create<Widget>("hello", 42);
+    std::string key = "world";
+    auto w2 = create<Widget>(key, 100);  // lvalue forwarded
+    auto w3 = create<Widget>(std::string("temp"), 99);  // rvalue forwarded
+}
+```
+
+### Hard: Custom Type Erasure with SBO
+```cpp
+#include <iostream>
+#include <memory>
+#include <cstring>
+
+template <typename Interface, size_t BufSize = 64>
+class SBOContainer {
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual void invoke() const = 0;
+        virtual std::unique_ptr<Concept> clone() const = 0;
+    };
+
+    template <typename T>
+    struct Model : Concept {
+        T value_;
+        explicit Model(T v) : value_(std::move(v)) {}
+        void invoke() const override { value_(); }
+        std::unique_ptr<Concept> clone() const override {
+            return std::make_unique<Model>(value_);
+        }
+    };
+
+    alignas(alignof(void*)) char buf_[BufSize];
+    std::unique_ptr<Concept> heap_;
+    Concept* ptr_;
+
+    template <typename T>
+    void store(T value) {
+        using M = Model<T>;
+        if constexpr (sizeof(M) <= BufSize && alignof(M) <= alignof(void*)) {
+            ptr_ = new (buf_) M(std::move(value));
+            heap_.reset();
+        } else {
+            heap_ = std::make_unique<M>(std::move(value));
+            ptr_ = heap_.get();
+        }
+    }
+
+public:
+    template <typename T>
+    SBOContainer(T value) { store(std::move(value)); }
+
+    SBOContainer(const SBOContainer& o) : ptr_(nullptr) {
+        if (o.ptr_) {
+            heap_ = o.ptr_->clone();
+            ptr_ = heap_.get();
+        }
+    }
+
+    SBOContainer& operator=(const SBOContainer& o) {
+        if (this != &o) {
+            SBOContainer tmp(o);
+            swap(tmp);
+        }
+        return *this;
+    }
+
+    void swap(SBOContainer& o) {
+        std::swap(buf_, o.buf_);
+        std::swap(heap_, o.heap_);
+        std::swap(ptr_, o.ptr_);
+    }
+
+    void invoke() const { if (ptr_) ptr_->invoke(); }
+};
+
+int main() {
+    SBOContainer<std::function<void()>> a([]{ std::cout << "a\n"; });
+    SBOContainer<std::function<void()>> b(a);  // copy
+    a.invoke();
+    b.invoke();
+}
+```
+
+### Enterprise: Policy-Based Database with Type Erasure
+```cpp
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <memory>
+#include <vector>
+#include <functional>
+
+struct ConsoleLogger {
+    void log(const std::string& msg) const { std::cout << "[LOG] " << msg << "\n"; }
+};
+struct NullLogger { void log(const std::string&) const {} };
+
+struct MemoryStorage {
+    std::unordered_map<std::string, std::string> data_;
+    void store(const std::string& k, const std::string& v) { data_[k] = v; }
+    std::optional<std::string> load(const std::string& k) const {
+        auto it = data_.find(k);
+        return it != data_.end() ? std::make_optional(it->second) : std::nullopt;
+    }
+};
+
+template <typename Logger, typename Storage>
+class Database : private Logger, private Storage {
+    std::vector<std::string> audit_;
+public:
+    using Logger::log;
+    using Storage::store;
+    using Storage::load;
+
+    void save(const std::string& key, const std::string& value) {
+        log("Saving " + key);
+        store(key, value);
+        audit_.push_back("save:" + key);
+    }
+
+    std::optional<std::string> get(const std::string& key) {
+        log("Loading " + key);
+        return load(key);
+    }
+
+    const std::vector<std::string>& history() const { return audit_; }
+};
+
+int main() {
+    Database<ConsoleLogger, MemoryStorage> db;
+    db.save("user:1", "Alice");
+    db.save("user:2", "Bob");
+
+    if (auto val = db.get("user:1"))
+        std::cout << "Found: " << *val << "\n";
+
+    for (const auto& entry : db.history())
+        std::cout << "Audit: " << entry << "\n";
+}
+```
+
 ## Architecture: How Advanced C++ Fits Together
 
 ```
@@ -407,6 +735,27 @@ using TestDB = Database<MemoryStorage, NullLogger>;
 **Cause**: Each type-erased wrapper allocated its Model on the heap, even for small types. Cache misses from pointer chasing dominated the runtime.
 
 **Solution**: Added small buffer optimization (SBO) to the type erasure wrapper. Types smaller than 64 bytes are stored inline in the buffer. Heap allocation only for larger types.
+
+### Incident 3: Move Semantics Pitfall — Moved-From Object Use
+**Problem**: A high-throughput message queue crashed intermittently with use-after-free. Objects were moved from into the queue but then accessed for logging.
+
+**Cause**: After `std::move(msg)` inserted a message into the queue, the original `msg` variable was in a moved-from state. A subsequent `msg.timestamp()` call on the moved-from object accessed invalid memory. The move constructor of `Message` left `data_` as a nullptr, but the destructor still ran, double-freeing.
+
+**Solution**: Audited all move-eligible code paths. Added a `bool valid_` flag to `Message` that is set to `false` in the move constructor. Added `static_assert` checks ensuring move constructors leave objects in a valid-but-unspecified state. Replaced post-move accesses with the queue's returned iterator.
+
+### Incident 4: Perfect Forwarding Failure with braced-init-lists
+**Problem**: A generic factory function failed to compile when passed `{1, 2, 3}` as an argument. The error was cryptic template instantiation failure in the forwarding chain.
+
+**Cause**: Perfect forwarding with `std::forward<Args>(args)...` does not work with braced-init-lists because `std::initializer_list` has deduced type `std::initializer_list<E>` — the compiler cannot deduce `T` from `{}`. The forwarded argument lost its type information.
+
+**Solution**: Added explicit `std::initializer_list` overloads to the factory function. Documented that braced-init-lists must be explicitly typed (`std::vector<int>{1,2,3}`) when passed through forwarding references. Added a `static_assert` concept to reject `std::initializer_list` at the call site with a clear error message.
+
+### Incident 5: Lambda Capture Bug — Dangling Reference in Coroutine
+**Problem**: A server used lambda callbacks captured by reference in async handlers. Under load, the handler executed after the captured object was destroyed, causing segfaults.
+
+**Cause**: The lambda captured `const auto& request` by reference. When the async operation outlived the request object's scope, the reference dangled. The capture was by reference because the developer wanted to avoid copying large request objects, but did not consider lifetime.
+
+**Solution**: Changed captures to `[request = std::move(request)]` (by move-capture) where ownership was transferred, or `[request = request]` (by copy) where the lambda needed to outlive the scope. Added runtime address sanitizer checks in CI to catch dangling references. Added a lint rule flagging `[&]` captures in async callbacks.
 
 ## Production Checklist
 

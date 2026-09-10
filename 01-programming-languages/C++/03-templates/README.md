@@ -1,6 +1,397 @@
 # Templates — C++
 
-## Why It Matters
+## Overview
+
+C++ templates are a compile-time polymorphism mechanism that enables generic programming — writing type-independent code that the compiler instantiates for each concrete type used. Templates are the backbone of the Standard Template Library (STL), smart pointers, and most modern C++ libraries. They provide zero-overhead abstractions: the generated code is as efficient as hand-written type-specific code, with full type safety enforced at compile time.
+
+Templates operate on the principle of parameterization by type (and, since C++11, by non-type values and template templates). The compiler generates specialized implementations on-demand, eliminating runtime dispatch costs while maintaining a single source of truth for algorithms and data structures.
+
+## Learning Objectives
+
+- Understand the difference between function templates, class templates, and variable templates
+- Master template argument deduction and explicit template arguments
+- Implement full and partial template specialization
+- Use SFINAE and C++20 concepts to constrain template parameters
+- Write variadic templates and fold expressions
+- Apply `constexpr if` for compile-time conditional logic in templates
+- Recognize template bloat and apply mitigation strategies (`extern template`, factoring)
+- Debug common template errors using compiler diagnostics and modern tooling
+
+## Prerequisites
+
+- **C++ Fundamentals** ([01-fundamentals](../01-fundamentals/)): Variables, functions, classes, pointers, references, and basic OOP
+- **Compilation Model**: Understanding of translation units, headers, and the linker
+- **Basic STL Usage**: Familiarity with `std::vector`, `std::string`, and standard algorithms
+
+## History
+
+| Version | Template Feature | Significance |
+|---------|-----------------|--------------|
+| C++98 | Function and class templates, template specialization | Foundation of generic programming in C++ |
+| C++11 | Variadic templates, `constexpr`, template aliases, `nullptr` | Enabled type-safe variadic functions and compile-time computation |
+| C++14 | Generic lambdas, variable templates | Simplified generic code and compile-time constants |
+| C++17 | `if constexpr`, CTAD, fold expressions, class template argument deduction | Replaced SFINAE for branching, reduced boilerplate |
+| C++20 | Concepts, constrained auto, ranges | Made template constraints self-documenting and errors readable |
+
+## Production Notes
+
+- Templates are **header-only by nature** — the compiler needs the full definition at the point of instantiation. Putting template implementations in `.cpp` files causes linker errors.
+- Template instantiation happens **lazily**: code is generated only when the template is used with specific types. This means unused template code incurs no cost.
+- `extern template` (C++11) allows explicit control over where instantiation occurs, reducing duplicate work across translation units and speeding up builds.
+- Template error messages can span hundreds of lines. Modern compilers (GCC 13+, Clang 17+) and C++20 concepts significantly improve readability.
+- Binary size can grow with heavy template usage. Profile with tools like `bloaty` and factor type-independent logic into non-template base classes.
+
+## Core Concepts
+
+### Template Parameter Kinds
+
+| Kind | Syntax | Example |
+|------|--------|---------|
+| Type parameter | `typename T` or `class T` | `template <typename T> T max(T a, T b)` |
+| Non-type parameter | `int N`, `auto N` (C++17) | `template <int N> std::array<int, N> make_array()` |
+| Template template parameter | `template <typename> class C` | `template <template <typename> class C> void wrap()` |
+
+### Instantiation vs. Specialization
+
+- **Instantiation**: The compiler generates a concrete version of a template for a specific type. `std::vector<int>` instantiates the generic `std::vector` for `int`.
+- **Specialization**: You provide a custom implementation for a specific type or pattern. Full specialization provides an entirely different implementation; partial specialization refines the generic template.
+
+### SFINAE and Concepts
+
+**SFINAE** (Substitution Failure Is Not An Error) enables overload resolution to silently discard a template candidate when type substitution fails. It uses `std::enable_if` and type traits to conditionally enable functions.
+
+**C++20 Concepts** replace SFINAE with named constraints that produce clear error messages. A concept defines a set of requirements that a type must satisfy:
+
+```cpp
+template <typename T>
+concept Hashable = requires(T a) {
+    { std::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
+};
+```
+
+### Variadic Templates and Parameter Packs
+
+Variadic templates accept a variable number of arguments of any type. The `...` syntax expands parameter packs:
+
+```cpp
+template <typename... Args>
+void log(Args&&... args) {
+    (std::cout << ... << args) << "\n";  // C++17 fold expression
+}
+```
+
+## Internal Working
+
+### Template Instantiation
+
+When the compiler encounters a template used with specific types, it performs **implicit instantiation** — generating the concrete code. This happens in two phases:
+
+1. **Phase 1 (Template Definition Parsing)**: Non-dependent names are looked up; syntax is checked.
+2. **Phase 2 (Instantiation)**: Dependent names are resolved when the template is instantiated with actual types.
+
+```cpp
+template <typename T>
+T square(T x) { return x * x; }
+
+auto result = square(5);  // Compiler generates: int square(int x) { return x * x; }
+```
+
+**Explicit instantiation** forces the compiler to generate code immediately:
+
+```cpp
+template class std::vector<int>;   // Instantiate all member functions
+template int square<int>(int);     // Instantiate a specific function
+```
+
+### Name Resolution in Templates
+
+Name lookup in templates follows two-phase lookup:
+- **Unqualified names** in non-dependent contexts are resolved at template definition time.
+- **Dependent names** (names that depend on a template parameter) are resolved at instantiation time.
+
+This is why `this->` or `using` declarations are sometimes needed to access base class members in templates.
+
+### Two-Phase Lookup Example
+
+```cpp
+template <typename T>
+struct Base {
+    void foo() {}
+};
+
+template <typename T>
+struct Derived : Base<T> {
+    void bar() {
+        // foo();           // ERROR: foo not found (two-phase lookup)
+        this->foo();        // OK: dependent name, found at instantiation
+        Base<T>::foo();     // OK: fully qualified
+    }
+};
+```
+
+## Syntax
+
+### Function Template
+
+```cpp
+template <typename T>
+ReturnType function_name(T param) {
+    // body
+}
+```
+
+### Class Template
+
+```cpp
+template <typename T, size_t N = 10>
+class ClassName {
+    T data[N];
+public:
+    T& operator[](size_t index);
+};
+```
+
+### Variable Template (C++14)
+
+```cpp
+template <typename T>
+constexpr T pi = T(3.14159265358979323846);
+
+double r = pi<double>;   // 3.14159...
+float f = pi<float>;     // 3.14159f
+```
+
+### Template Specialization
+
+```cpp
+// Full specialization
+template <>
+class Serializer<std::string> {
+    // completely custom implementation
+};
+
+// Partial specialization
+template <typename T>
+class Serializer<T*> {
+    // custom for all pointer types
+};
+```
+
+### Concepts (C++20)
+
+```cpp
+template <typename T>
+concept Sortable = requires(T a, T b) {
+    { a < b } -> std::convertible_to<bool>;
+};
+
+template <Sortable T>
+void sort(std::vector<T>& vec);
+```
+
+### `constexpr if` (C++17)
+
+```cpp
+template <typename T>
+auto get_value(T t) {
+    if constexpr (std::is_pointer_v<T>)
+        return *t;
+    else
+        return t;
+}
+```
+
+## Examples
+
+### Easy: Generic Maximum
+
+```cpp
+#include <iostream>
+#include <string>
+
+template <typename T>
+T find_max(T a, T b) {
+    return (a > b) ? a : b;
+}
+
+int main() {
+    std::cout << find_max(3, 7) << "\n";                        // 7
+    std::cout << find_max(3.14, 2.71) << "\n";                  // 3.14
+    std::cout << find_max<std::string>("apple", "banana") << "\n"; // banana
+}
+```
+
+### Medium: Type-Safe Stack with Concepts
+
+```cpp
+#include <vector>
+#include <stdexcept>
+#include <concepts>
+
+template <typename T>
+concept Pushable = requires(T a, T b) {
+    { a == b } -> std::convertible_to<bool>;
+};
+
+template <Pushable T>
+class Stack {
+    std::vector<T> elems_;
+public:
+    void push(const T& elem) { elems_.push_back(elem); }
+    T pop() {
+        if (elems_.empty()) throw std::out_of_range("empty");
+        T top = elems_.back();
+        elems_.pop_back();
+        return top;
+    }
+    bool empty() const { return elems_.empty(); }
+};
+
+int main() {
+    Stack<int> s;
+    s.push(1);
+    s.push(2);
+    std::cout << s.pop() << "\n";  // 2
+}
+```
+
+### Hard: Compile-Time Tuple (Variadic Templates + Recursion)
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename... Ts>
+class Tuple;
+
+template <typename T, typename... Ts>
+class Tuple<T, Ts...> : public Tuple<Ts...> {
+    T head_;
+public:
+    Tuple(T head, Ts... rest) : Tuple<Ts...>(rest...), head_(head) {}
+    T& head() { return head_; }
+};
+
+template <>
+class Tuple<> {};
+
+template <typename T>
+struct Getter {
+    static T& get(auto& t) { return Getter<decltype(t.head())>::get(t); }
+};
+
+template <>
+struct Getter<auto> {
+    static auto& get(auto& t) { return t.head(); }
+};
+
+int main() {
+    Tuple<int, double, const char*> t(1, 3.14, "hello");
+    std::cout << Getter<int>::get(t) << "\n";        // 1
+    std::cout << Getter<double>::get(t) << "\n";      // 3.14
+}
+```
+
+### Enterprise: Policy-Based Design
+
+```cpp
+#include <iostream>
+#include <string>
+
+// Policies
+struct LogToStdout {
+    static void log(const std::string& msg) { std::cout << msg << "\n"; }
+};
+
+struct LogToNothing {
+    static void log(const std::string&) {}
+};
+
+struct ThrowOnError {
+    static void handle(const std::string& msg) { throw std::runtime_error(msg); }
+};
+
+struct IgnoreError {
+    static void handle(const std::string&) {}
+};
+
+// Policy-based class
+template <typename Logger = LogToStdout, typename ErrorHandler = ThrowOnError>
+class DataLoader {
+public:
+    void load(const std::string& path) {
+        Logger::log("Loading: " + path);
+        // simulation of failure
+        bool failed = false;
+        if (failed)
+            ErrorHandler::handle("Failed to load: " + path);
+    }
+};
+
+int main() {
+    DataLoader<LogToStdout, ThrowOnError> loader;
+    loader.load("data.csv");
+
+    DataLoader<LogToNothing, IgnoreError> silent_loader;
+    silent_loader.load("data.csv");  // no output, no exceptions
+}
+```
+
+## Performance Considerations
+
+### Template Bloat
+
+Each template instantiation generates a new copy of the template code. Instantiating a template for 50 types creates 50 copies, which can significantly increase binary size.
+
+**Mitigation strategies:**
+- **Factor type-independent logic** into non-template base classes
+- **Use `extern template`** to control where instantiation occurs
+- **Move non-dependent code** out of template bodies into non-template functions
+- **Profile with `bloaty`** to identify which instantiations consume the most space
+
+### Compile-Time Impact
+
+Templates increase compile time because the compiler must:
+1. Parse template definitions (even when not used)
+2. Instantiate templates at each use site
+3. Perform overload resolution with potentially many template candidates
+
+**Mitigation:**
+- Use `extern template` declarations in headers
+- Pre-compiled headers (PCH) for frequently included template-heavy headers
+- Modules (C++20) to reduce re-parsing overhead
+
+### Runtime Performance
+
+Templates have **zero runtime overhead** compared to hand-written code. The compiler generates specialized versions that are identical to manually written type-specific implementations. There is no virtual dispatch, no boxing/unboxing, and no type checks at runtime.
+
+### Instantiation Depth Limits
+
+Most compilers limit template recursion depth (default ~256-1024). Exceeding this causes a hard error. Use `constexpr` computation or iterative approaches for deep computations.
+
+## Best Practices
+
+| Practice | Rationale |
+|----------|-----------|
+| Keep template code in headers | Compiler needs the full definition at instantiation |
+| Use C++20 concepts over SFINAE | Clear error messages, self-documenting constraints |
+| Use `constexpr if` over SFINAE for branching | Readable, doesn't pollute overload set |
+| Use `extern template` for heavy types | Controls instantiation, reduces build time |
+| Prefer function overloading over specialization | Overload resolution is more predictable |
+| Constrain templates with `static_assert` | Fail-fast with clear messages |
+| Limit recursion depth | Avoids compiler limits and slow compilation |
+| Document template requirements | Concepts serve as living documentation |
+| Use CTAD (C++17) for convenience | Eliminates redundant template arguments |
+| Profile binary size | Detect template bloat early |
+
+## Cross-References
+
+- [C++ Fundamentals](../01-fundamentals/) — Prerequisite: variables, functions, classes, compilation model
+- [STL](../04-stl/) — Templates powering the Standard Template Library
+- [Modern C++](../08-modern-cpp/) — Concepts, constexpr if, fold expressions
+- [Performance](../11-performance/) — Template overhead and optimization
+- [Design Patterns](../09-design-patterns/) — Policy-based design with templates
+- [Knowledge Atoms](../00-knowledge-atoms/) — Template metaprogramming foundations
 
 Every language faces the same tension: write code once for many types, or write specialized code for each type. When you duplicate logic for every type, you get error-prone, unmaintainable code; when you use `void*` and macros, you lose type safety. C++ templates solve this by generating type-safe, zero-overhead generic code at compile time.
 
@@ -412,6 +803,24 @@ using Second = typename NthType<1, MyTypes>::type;  // double
 
 ---
 
+### Incident 4: Compile-Time Explosion from Deep Template Recursion
+**Problem**: A signal processing library used recursive template metaprogramming to compute compile-time filter coefficients. Compilation of a single TU took 45 minutes and consumed 16GB of RAM on the CI server.
+
+**Cause**: Templates recursed to depth 800+ to compute polynomial coefficients at compile time. Each recursion level generated a new type, and the compiler instantiated all intermediate types.
+
+**Solution**: Replaced recursive templates with `constexpr` functions using loops. The computation shifted from template metaprogramming to `constexpr` evaluation, reducing compile time to 90 seconds with minimal RAM usage.
+
+---
+
+### Incident 5: Subtle Bug from Implicit Template Argument Deduction
+**Problem**: A serialization library used `template <typename T> void serialize(T value)`. A call `serialize(42)` worked, but `serialize(42.0f)` unexpectedly converted to `double` due to implicit promotion, causing silent data corruption in the binary format.
+
+**Cause**: The compiler deduced `T` as `double` (not `float`) because `float` promotes to `double` in variadic contexts. The serialized bytes didn't match the expected `float` layout.
+
+**Solution**: Added explicit template arguments at the call site: `serialize<float>(42.0f)`. Also added `static_assert(std::is_same_v<T, decltype(value)>)` inside the template to catch future mismatches.
+
+---
+
 ## Production Checklist
 - [ ] Keep template implementations in header files
 - [ ] Use C++20 concepts instead of SFINAE where possible
@@ -473,13 +882,6 @@ using Second = typename NthType<1, MyTypes>::type;  // double
 | Variadic Templates | Templates with variable number of args | Implement printf-like functions | Use fold expressions (C++17) |
 | constexpr if | Compile-time conditional in templates | Replace SFINAE for type branching | Branches not taken are not instantiated |
 | Concepts | Named template constraints (C++20) | Clear errors, self-documenting code | Define concepts for common requirements |
-
-## Related Topics
-- [Knowledge Atoms](../00-knowledge-atoms/) — Template metaprogramming foundations
-- [STL](../04-stl/) — Templates powering the Standard Template Library
-- [Modern C++](../08-modern-cpp/) — Concepts, constexpr if, fold expressions
-- [Performance](../11-performance/) — Template overhead and optimization
-- [Design Patterns](../09-design-patterns/) — Policy-based design with templates
 
 ## Debugging Tips
 
@@ -543,6 +945,16 @@ Templates are the foundation of generic programming in C++ — they power the en
 3. **What is the difference between template specialization and overloading?**: Specialization provides a completely different implementation for a specific type. Overloading adds a new function with different parameters. Prefer overloading over specialization because overload resolution is more predictable.
 4. **How do fold expressions work in C++17?**: Fold expressions apply a binary operator over a parameter pack: `(args + ...)` expands to `arg1 + arg2 + ... + argN`. They replace recursive template expansion for variadic templates.
 5. **What problems do C++20 concepts solve?**: Concepts make template constraints self-documenting, produce clear error messages when constraints are violated, enable constrained auto, and replace the cryptic SFINAE pattern with readable `requires` clauses.
+6. **What is two-phase name lookup and why does it matter for templates?**: Templates are parsed in two phases: non-dependent names are resolved at definition time, dependent names at instantiation time. This means base class members, overloaded functions, and ADL-dependent names require `this->` or `using` declarations to be found correctly.
+7. **How does `extern template` reduce compile time?**: `extern template` tells the compiler not to instantiate a template in the current translation unit. Instead, instantiation happens in exactly one `.cpp` file via explicit instantiation. This avoids duplicating the same instantiation across hundreds of TUs.
+8. **What is the difference between `constexpr if` and SFINAE?**: `constexpr if` (C++17) evaluates a condition at compile time and discards the branch not taken — the discarded branch is not instantiated. SFINAE uses `enable_if` to remove overloads from the candidate set. `constexpr if` is simpler, keeps one function body, and doesn't pollute overload resolution.
+9. **How do fold expressions simplify variadic templates?**: Fold expressions apply a binary operator over a parameter pack in one expression: `(args + ...)` replaces recursive template expansion. They eliminate base cases, reduce template depth, and improve compile time.
+10. **What is CTAD and when should you use it?**: Class Template Argument Deduction (C++17) lets the compiler deduce template arguments from constructor arguments: `std::pair p(1, 3.14)` instead of `std::pair<int, double>(1, 3.14)`. Use it when the types are unambiguous to reduce boilerplate.
+11. **Why can't template implementations live in `.cpp` files?**: The compiler needs the full template definition at the point of instantiation. If the definition is in a `.cpp` file, other translation units can't see it, causing linker errors for unresolved symbols. Templates are effectively header-only.
+12. **What are variable templates and when are they useful?**: Variable templates (C++14) allow defining constants parameterized by type: `template<typename T> constexpr T pi = T(3.14159)`. They replace the pattern of defining separate `const` variables for each type and are useful for mathematical constants and configuration values.
+13. **How do you constrain a template to only accept iterator types?**: Use `std::iterator_traits` to detect iterator category, or define a concept: `template<typename T> concept Iterator = requires(T it) { ++it; *it; }`. C++20 concepts provide the clearest constraints.
+14. **What is template template parameter and when is it used?**: A template template parameter accepts a template as an argument: `template<template<typename> class Container>`. It's used when you need to parameterize a class by a container type without specifying the element type, common in policy-based design.
+15. **How do you test template code across multiple types?**: Use parameterized tests (Google Test `TYPED_TEST`), compile-time assertions (`static_assert`), and runtime tests for each supported type. Test edge cases: empty types, types with unusual constructors, and types that intentionally fail constraints.
 
 ## References
 

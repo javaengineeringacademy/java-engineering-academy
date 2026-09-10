@@ -1,5 +1,28 @@
 # Knowledge Atoms — C++
 
+## Overview
+
+C++ knowledge atoms are the foundational, irreducible concepts that govern how every C++ program is compiled, linked, and executed. They encompass the compilation model (preprocessing → compilation → linking), the static type system, the memory model (stack vs heap, alignment, storage duration), the object model (vtables, vptr, object layout), and template metaprogramming. Understanding these atoms is essential for writing correct, performant, and maintainable C++ code — they are the rules the compiler follows, not features you call.
+
+## Learning Objectives
+
+After studying this module, you will be able to:
+
+- Explain the C++ compilation pipeline (preprocessor → compiler → assembler → linker) and how translation units interact
+- Apply the One-Definition Rule (ODR) to prevent linker errors and undefined behavior
+- Distinguish stack vs heap allocation and choose appropriate storage durations
+- Explain object layout, vtable dispatch, and their performance implications
+- Use `constexpr`, `static_assert`, and template metaprogramming for zero-cost abstractions
+- Identify and prevent common C++ mistakes (ODR violations, slicing, UB from signed overflow)
+- Debug C++ programs using sanitizers, `perf`, and compiler diagnostics
+
+## Prerequisites
+
+- Basic C++ syntax (variables, functions, classes, inheritance)
+- Familiarity with compilation: what a compiler and linker do
+- Understanding of pointers and references
+- Command-line experience (compiling with `g++` or `clang++`)
+
 ## Why It Matters
 
 Before writing a single line of C++, you must understand how the language thinks. When you're building performance-critical systems, you need to know why the compiler generates certain code because violating the object model causes mysterious crashes that take months to debug. Engineers who internalize these atoms write code that works by design, not by accident.
@@ -7,6 +30,20 @@ Before writing a single line of C++, you must understand how the language thinks
 ## What It Is
 
 Knowledge atoms are the irreducible concepts that underpin every C++ program — the compilation model, type system, memory model, object model, and template metaprogramming. They are not features you call but rules the compiler follows.
+
+## History: C++ Evolution
+
+| Year | Version | Key Changes | Impact on Knowledge Atoms |
+|------|---------|-------------|---------------------------|
+| 1979 | C with Classes | Classes, derived classes, strong type checking | Foundation of object model |
+| 1983 | C++ | Virtual functions, function overloading, references | vtable dispatch introduced |
+| 1998 | C++98 | STL, templates, exceptions, namespaces | Template metaprogramming born |
+| 2003 | C++03 | Bug fixes, `export` templates | Minor corrections |
+| 2011 | C++11 | `auto`, `constexpr`, move semantics, lambdas, smart pointers | Modern C++ era begins |
+| 2014 | C++14 | `constexpr` relaxations, generic lambdas | Incremental improvements |
+| 2017 | C++17 | `if constexpr`, `inline` variables, `std::optional/variant/filesystem` | Header ODR solved |
+| 2020 | C++20 | Concepts, ranges, modules, coroutines | Modules replace headers |
+| 2023 | C++23 | `std::print`, `std::expected`, `import std` | Standard library modularization |
 
 ### The Five Atoms
 
@@ -406,15 +443,36 @@ auto process(T value) {
 3. **MySQL**: Uses knowledge of memory alignment for buffer pool management, achieving near-zero-copy data access
 4. **High-Frequency Trading**: Firms like Jump Trading use object layout knowledge to minimize cache misses in order books
 
-### Common Mistakes
+## Production Notes
 
-| Mistake | Consequence | Fix |
-|---------|-------------|-----|
-| Defining variables in headers | ODR violations, linker errors | Use `extern` declarations, `inline` variables |
-| Assuming `sizeof(pointer)` is constant | Code breaks on 32-bit vs 64-bit | Use `sizeof(T*)` explicitly |
-| Ignoring alignment | Performance penalties, crashes on ARM | Use `alignas()` or let compiler handle |
-| Overusing virtual functions | Cache misses, indirect call overhead | Consider CRTP for static polymorphism |
-| Using `reinterpret_cast` freely | Undefined behavior, portability issues | Use `static_cast` or `dynamic_cast` |
+### Build Configuration
+
+| Setting | Recommended Value | Why |
+|---------|------------------|-----|
+| Compiler warnings | `-Wall -Wextra -Wpedantic -Werror` | Catch bugs at compile time |
+| Sanitizers (CI) | `-fsanitize=address,undefined` | Detect memory errors and UB |
+| Optimization level | `-O2` for release, `-O0 -g` for debug | Balance between speed and debuggability |
+| Standard | `-std=c++17` or `-std=c++20` | Access to modern features |
+| LTO (Link-Time Optimization) | `-flto` | Cross-TU inlining and optimization |
+
+### Header File Guidelines
+
+- Use `#pragma once` or include guards — never both
+- Forward-declare instead of `#include` when possible (reduces compilation dependencies)
+- Place `#include` directives in this order: corresponding `.h`, C system, C++ stdlib, other libraries, project headers
+- Never define non-`inline` functions or variables in headers
+
+### Template Compilation
+
+- Templates are instantiated per translation unit — each `.cpp` that uses `vector<int>` instantiates it separately
+- Explicit instantiation (`template class std::vector<int>;`) in one TU reduces compile time
+- Consider C++20 modules to eliminate header-based template compilation
+
+### ABI Considerations
+
+- `std::string`, `std::vector`, and other STL types have ABI-stable layouts within a compiler version
+- ABI breaks occur when changing class layouts (adding virtual functions, changing member order)
+- Use the Itanium C++ ABI (GCC/Clang) or MSVC ABI consistently across linked code
 
 ## Production Checklist
 - [ ] Understand ODR — never define variables/functions in headers without `inline`/`extern`
@@ -463,6 +521,320 @@ auto process(T value) {
 
 ### Myth 5: "C++ has no garbage collection, so it leaks"
 **Reality**: RAII and smart pointers provide automatic resource management without GC pauses. Leaks are a programming error, not a language limitation.
+
+## Internal Working
+
+### How the Compiler Processes Your Code
+
+When you write `g++ -o program main.cpp`, the compiler performs these steps internally:
+
+1. **Preprocessing**: `#include` directives expand headers textually; `#define` macros are substituted; `#if`/`#ifdef` blocks are evaluated. The output is a single translation unit (TU) with all macros resolved.
+
+2. **Parsing & Semantic Analysis**: The compiler parses the TU into an Abstract Syntax Tree (AST), checks types, resolves overloads, instantiates templates, and verifies const-correctness. Errors here are compile-time errors.
+
+3. **IR Generation**: The AST is lowered to Intermediate Representation (SSA form). This is platform-independent and where most optimizations happen (dead code elimination, inlining, loop unrolling).
+
+4. **Optimization**: The optimizer applies transformations: constant folding, function inlining, vectorization (auto-SIMD), and devirtualization (when the compiler can prove the concrete type).
+
+5. **Code Generation**: IR is lowered to platform-specific assembly. The compiler maps virtual registers to physical registers, handles instruction scheduling, and emits machine code.
+
+6. **Assembly & Linking**: Assembler produces object files (`.o`). The linker resolves symbols across TUs, performs section merging, applies relocations, and produces the final executable.
+
+### Name Mangling in Detail
+
+The compiler encodes function signatures to support overloading:
+
+```cpp
+// Source
+int add(int a, int b);
+
+// Mangled (GCC/Clang)
+_Z3addii    // _Z = prefix, 3 = length, add = name, i i = two ints
+```
+
+This is why `extern "C"` is needed for C interoperability — it disables mangling.
+
+### Template Instantiation Process
+
+When the compiler encounters `std::vector<int>`, it:
+
+1. Parses the template definition from `<vector>`
+2. Substitutes `T = int` throughout the template body
+3. Compiles the resulting code as if it were hand-written
+4. Each unique type combination creates a new instantiation (template bloat)
+
+```cpp
+std::vector<int> vi;    // Instantiates vector<int>
+std::vector<double> vd; // Separate instantiation of vector<double>
+```
+
+## Syntax
+
+### Core Syntax Patterns
+
+```cpp
+// Variables and initialization
+int x = 42;            // Copy initialization
+int y{42};             // Direct list initialization (C++11)
+int z = {42};          // Copy list initialization
+auto w = 42;           // Type deduction
+
+// Functions
+int add(int a, int b) { return a + b; }        // Definition
+int add(int, int);                              // Declaration (no names)
+constexpr int square(int x) { return x * x; }  // Compile-time function
+
+// Classes
+class Widget {
+public:
+    Widget(int id) : id_(id) {}         // Constructor with initializer list
+    virtual ~Widget() = default;        // Virtual destructor
+    int id() const { return id_; }      // Const member function
+private:
+    int id_;
+};
+
+// Templates
+template <typename T>
+T max_value(T a, T b) { return a > b ? a : b; }
+
+// C++20 Concepts
+template <typename T>
+concept Numeric = std::is_arithmetic_v<T>;
+
+template <Numeric T>
+T safe_add(T a, T b) { return a + b; }
+```
+
+### Preprocessor Directives
+
+```cpp
+#include <iostream>        // System header (searches system paths)
+#include "myheader.h"      // Local header (searches current directory first)
+#define PI 3.14159         // Object-like macro
+#define SQUARE(x) ((x)*(x)) // Function-like macro (avoid — use constexpr)
+#ifdef DEBUG               // Conditional compilation
+    #define LOG(msg) std::cerr << msg << '\n'
+#else
+    #define LOG(msg)
+#endif
+#pragma once               // Include guard (non-standard, widely supported)
+```
+
+## Examples
+
+### Easy: Stack vs Heap Allocation
+
+```cpp
+#include <iostream>
+#include <memory>
+
+int main() {
+    // Stack: fast, automatic lifetime
+    int stack_var = 42;
+    std::cout << "Stack: " << stack_var << '\n';
+
+    // Heap: flexible, manual/RAII lifetime
+    auto heap_var = std::make_unique<int>(100);
+    std::cout << "Heap: " << *heap_var << '\n';
+    // Automatically freed when unique_ptr goes out of scope
+
+    return 0;
+}
+```
+
+### Medium: Virtual Dispatch and Object Layout
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <memory>
+
+class Shape {
+public:
+    virtual double area() const = 0;
+    virtual ~Shape() = default;
+};
+
+class Circle : public Shape {
+    double radius_;
+public:
+    explicit Circle(double r) : radius_(r) {}
+    double area() const override { return 3.14159 * radius_ * radius_; }
+};
+
+class Rectangle : public Shape {
+    double w_, h_;
+public:
+    Rectangle(double w, double h) : w_(w), h_(h) {}
+    double area() const override { return w_ * h_; }
+};
+
+int main() {
+    std::vector<std::unique_ptr<Shape>> shapes;
+    shapes.push_back(std::make_unique<Circle>(5.0));
+    shapes.push_back(std::make_unique<Rectangle>(4.0, 6.0));
+
+    for (const auto& s : shapes) {
+        std::cout << "Area: " << s->area() << '\n';  // Virtual dispatch
+    }
+}
+```
+
+### Hard: Compile-Time Computation with Templates
+
+```cpp
+#include <type_traits>
+#include <iostream>
+
+// Compile-time Fibonacci
+template <unsigned N>
+struct Fibonacci {
+    static constexpr unsigned value = Fibonacci<N-1>::value + Fibonacci<N-2>::value;
+};
+
+template <>
+struct Fibonacci<0> { static constexpr unsigned value = 0; };
+
+template <>
+struct Fibonacci<1> { static constexpr unsigned value = 1; };
+
+// Constexpr function (C++14 allows loops)
+constexpr unsigned fib(unsigned n) {
+    if (n <= 1) return n;
+    unsigned a = 0, b = 1;
+    for (unsigned i = 2; i <= n; ++i) {
+        unsigned temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return b;
+}
+
+int main() {
+    static_assert(Fibonacci<10>::value == 55);  // Compile-time
+    std::cout << "fib(10) = " << fib(10) << '\n';  // Runtime (but optimized)
+}
+```
+
+### Enterprise: Header-Only Library with ODR Safety
+
+```cpp
+// math_utils.h — Header-only, ODR-safe
+#pragma once
+#include <concepts>
+#include <cmath>
+
+namespace math_utils {
+
+// inline function: ODR-safe, one definition across all TUs
+template <std::floating_point T>
+inline T distance(T x1, T y1, T x2, T y2) {
+    T dx = x2 - x1;
+    T dy = y2 - y1;
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+// inline constexpr: ODR-safe constant
+inline constexpr double PI = 3.14159265358979323846;
+
+// C++20 concept for type constraints
+template <typename T>
+concept Numeric = std::is_arithmetic_v<T>;
+
+template <Numeric T>
+constexpr T clamp(T value, T lo, T hi) {
+    return (value < lo) ? lo : (value > hi) ? hi : value;
+}
+
+}  // namespace math_utils
+```
+
+## Performance Considerations
+
+| Factor | Impact | Recommendation |
+|--------|--------|----------------|
+| Stack vs Heap | Stack allocation is ~100x faster than heap | Prefer stack; use heap only for large/long-lived objects |
+| Virtual dispatch | ~2-5 ns per call (pointer dereference + indirect call) | Negligible for most code; use CRTP for hot paths |
+| Template instantiation | Each unique type combo creates new code | Limit template parameter combinations; use type erasure |
+| Cache misses | ~100 ns per miss (L1 ~1ns, L2 ~4ns, L3 ~12ns) | Use struct-of-arrays for hot data; align to cache lines |
+| `constexpr` computation | Zero runtime cost | Move computation to compile time when possible |
+| Move semantics | Avoids deep copies for large objects | Return by value (NRVO); use `std::move` for transfers |
+| `reinterpret_cast` | No runtime cost but dangerous | Avoid; use `static_cast` or `memcpy` for type punning |
+| Branch prediction | ~15 ns misprediction penalty | Use `[[likely]]`/`[[unlikely]]` hints (C++20) |
+
+### Cache-Friendly Data Layout
+
+```cpp
+// Bad: Array of Structures (AoS) — scattered cache lines
+struct Particle {
+    float x, y, z;     // Position (12 bytes)
+    float vx, vy, vz;  // Velocity (12 bytes)
+    int type;           // Type (4 bytes)
+};  // sizeof = 28 bytes, padded to 32
+
+// Good: Structure of Arrays (SoA) — contiguous access
+struct Particles {
+    std::vector<float> x, y, z;      // Positions contiguous
+    std::vector<float> vx, vy, vz;   // Velocities contiguous
+    std::vector<int> type;            // Types contiguous
+};
+```
+
+## Best Practices
+
+| Practice | Why | Example |
+|----------|-----|---------|
+| Use `constexpr` for constants | Compile-time safety, zero runtime cost | `constexpr int MAX = 100;` |
+| Prefer `static_cast` over C-style casts | Type-safe, searchable, explicit | `static_cast<int>(3.14)` |
+| Use smart pointers, not raw `new`/`delete` | Automatic lifetime management | `auto p = std::make_unique<T>();` |
+| Mark destructors `virtual` in base classes | Prevents UB when deleting derived via base | `virtual ~Base() = default;` |
+| Use `override` keyword | Compiler catches signature mismatches | `void f() override;` |
+| Prefer `auto` when type is obvious | Reduces verbosity, preserves refactorability | `auto v = std::vector<int>();` |
+| Use range-based for with `const&` | Avoids copies, prevents modification | `for (const auto& x : vec)` |
+| Enable compiler warnings | Catches bugs before runtime | `-Wall -Wextra -Wpedantic -Werror` |
+| Use `[[nodiscard]]` on important returns | Prevents ignoring error codes | `[[nodiscard]] int compute();` |
+| Prefer algorithms over hand-written loops | Readable, optimizable, less error-prone | `std::transform`, `std::accumulate` |
+
+## Common Mistakes
+
+| Mistake | Consequence | Fix |
+|---------|-------------|-----|
+| Defining variables in headers | ODR violations, linker errors | Use `extern` declarations, `inline` variables |
+| Assuming `sizeof(pointer)` is constant | Code breaks on 32-bit vs 64-bit | Use `sizeof(T*)` explicitly |
+| Ignoring alignment | Performance penalties, crashes on ARM | Use `alignas()` or let compiler handle |
+| Overusing virtual functions | Cache misses, indirect call overhead | Consider CRTP for static polymorphism |
+| Using `reinterpret_cast` freely | Undefined behavior, portability issues | Use `static_cast` or `dynamic_cast` |
+| Forgetting virtual destructor | UB when deleting derived via base pointer | Always add `virtual ~Base() = default;` |
+| Slicing objects in containers | Derived data lost silently | Use `std::unique_ptr<Base>` in containers |
+| Signed integer overflow | Undefined behavior | Use `int64_t` or unsigned types for large values |
+| Modifying container during range-for | Iterator invalidation, UB | Collect changes separately, apply after loop |
+| Mixing `new`/`delete` with `malloc`/`free` | Undefined behavior, no destructor calls | Use `new`/`delete` or smart pointers consistently |
+
+## Cross-References
+
+| Topic | Related Module | Connection |
+|-------|---------------|------------|
+| Compilation model | Build systems, Make/CMake | Understanding TUs informs build dependency design |
+| Type system | Templates, Concepts | Templates extend the type system with compile-time polymorphism |
+| Memory model | Smart pointers, RAII | RAII ties resource lifetime to scope, preventing leaks |
+| Object model | OOP, Polymorphism | Virtual dispatch enables runtime polymorphism |
+| Template metaprogramming | Design patterns, Policy-based design | Templates implement compile-time strategy patterns |
+| ODR | Linking, Shared libraries | ODR governs how symbols are resolved across TUs |
+| Undefined behavior | Security, Sanitizers | UB is a security vulnerability; sanitizers detect it |
+| Cache alignment | High-performance computing | Data layout determines cache efficiency |
+
+## Security
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Buffer overflow from unchecked pointer arithmetic | Remote code execution, memory corruption | Use `std::array`, bounds-checked access, and AddressSanitizer in CI |
+| Undefined behavior from `reinterpret_cast` | Exploitable memory corruption, non-portable code | Use `static_cast` or `dynamic_cast`; ban `reinterpret_cast` except for serialization |
+| Object layout assumptions across platforms | ABI breaks, security-critical misinterpretation of data | Use fixed-width types, test cross-compilation, avoid platform-specific packing |
+| Use-after-free from dangling pointers | Arbitrary code execution | Use `std::unique_ptr`/`std::shared_ptr`; run AddressSanitizer |
+| Integer overflow in size calculations | Heap buffer overflow | Use safe arithmetic libraries; validate sizes before allocation |
+| Format string vulnerabilities | Information disclosure, code execution | Never use user input as format string; use `std::format` (C++20) |
+| DLL/shared library ABI breaks | Crash on load, security vulnerabilities | Use stable ABI boundaries; prefer static linking for internal code |
 
 ## One-Minute Revision
 
