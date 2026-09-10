@@ -1,5 +1,9 @@
 # Design Patterns — C++
 
+## Overview
+
+Design patterns are reusable, battle-tested solutions to recurring software design problems. They are not libraries or frameworks — they are templates for solving common challenges like object creation, communication between objects, and composing structures. In C++, patterns interact directly with language features: virtual dispatch, templates, RAII, smart pointers, and move semantics. Understanding patterns in C++ means understanding how language mechanics shape the solution.
+
 ## Why It Matters
 
 Design patterns are not about writing clever code — they're about communicating solutions. When you say "we should use the Strategy pattern here," every developer on your team immediately understands the intent. Patterns are a shared vocabulary for solving recurring design problems like processing payments with multiple methods without writing giant if/else chains.
@@ -7,6 +11,48 @@ Design patterns are not about writing clever code — they're about communicatin
 ## What It Is
 
 Design patterns are reusable solutions to common software design problems, providing a shared vocabulary and proven approaches for structuring code, including creational, structural, and behavioral patterns.
+
+## Learning Objectives
+
+- Identify which design pattern solves a given recurring design problem
+- Implement the six core patterns (Singleton, Factory, Observer, Strategy, Decorator, Command) in modern C++
+- Distinguish between creational, structural, and behavioral pattern categories
+- Apply C++-specific optimizations (CRTP, templates, smart pointers, lambdas) to pattern implementations
+- Recognize when patterns add unnecessary complexity (YAGNI)
+- Thread-safe pattern implementations using `std::mutex`, `std::call_once`, and C++11 local statics
+
+## Prerequisites
+
+- **Module 02 — OOP**: Polymorphism, inheritance, encapsulation, abstract classes, virtual functions
+- **Module 03 — Templates**: Function templates, class templates, template specialization, SFINAE basics
+- **Module 06 — Smart Pointers**: `std::unique_ptr`, `std::shared_ptr`, `std::weak_ptr` for ownership management
+- **Module 08 — Modern C++**: Lambda expressions, `std::function`, move semantics
+
+## History
+
+The Gang of Four (GoF) — Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides — published *Design Patterns: Elements of Reusable Object-Oriented Software* in 1994. The book catalogued 23 patterns discovered across multiple industries and languages. C++ was one of the primary implementation languages in the book due to its support for both object-oriented and generic programming. Over time, C++ patterns evolved: C++11 lambdas simplified Strategy and Command patterns, CRTP replaced virtual dispatch for compile-time polymorphism, and C++20 concepts now enable compile-time pattern constraints. Modern C++ patterns blend OOP inheritance hierarchies with template metaprogramming, producing zero-overhead abstractions.
+
+## Production Notes
+
+- Patterns are a shared vocabulary, not mandatory architecture. Use them when a clear recurring problem exists.
+- In C++, prefer `std::unique_ptr` over raw pointers for ownership in Factory and Decorator patterns.
+- Meyer's Singleton (C++11 local static) is thread-safe without external synchronization — prefer it over `std::call_once` for simplicity.
+- Template-based patterns (CRTP, template factories) resolve at compile time with zero runtime cost.
+- Observer patterns in production must handle observer lifetime carefully — use `std::weak_ptr` to avoid dangling pointers.
+- Decorator chains should be shallow (2-3 levels). Deep chains hurt debuggability and add heap allocation overhead.
+
+## Core Concepts
+
+| Concept | Description | C++ Mechanism |
+|---------|-------------|---------------|
+| **Creational** | Control object creation (Singleton, Factory) | Private constructors, `static` methods, template factories |
+| **Structural** | Compose objects into larger structures (Adapter, Decorator) | Inheritance + composition, `std::unique_ptr` wrapping |
+| **Behavioral** | Define communication between objects (Observer, Strategy, Command) | Virtual dispatch, `std::function`, lambdas |
+| **Polymorphism** | Interface-based abstraction enabling interchangeable implementations | Virtual functions, CRTP for static polymorphism |
+| **Encapsulation** | Hide implementation details behind stable interfaces | Pimpl idiom, `private`/`protected` access control |
+| **Open/Closed Principle** | Open for extension, closed for modification | Strategy, Decorator, Template Method patterns |
+| **Composition over Inheritance** | Prefer has-a over is-a for behavior reuse | Decorator, Strategy, Command hold interface pointers |
+| **RAII** | Resource acquisition tied to object lifetime | Smart pointers in Factory, Observer, Decorator |
 
 ## Engineering Decision Framework
 
@@ -20,6 +66,150 @@ Design patterns are reusable solutions to common software design problems, provi
 | Interface incompatibility | Adapter | When integrating third-party or legacy code | Don't use when you can modify the original interface |
 | Simplify complex subsystem | Facade | When subsystem is too complex for callers | Don't use when callers need fine-grained control |
 | Sequential/parallel algorithm selection | Strategy | When algorithm selection is dynamic | Avoid for compile-time-known algorithms |
+
+## Internal Working
+
+### How Patterns Work at Compile Time
+
+**Template-based patterns** (CRTP Singleton, template Factory) are resolved during compilation. The compiler generates specialized code for each concrete type, eliminating virtual dispatch overhead. CRTP embeds the derived class name as a template parameter, allowing the base class to call derived-specific methods without runtime polymorphism.
+
+**Template specialization** allows factories to generate different creation logic per type. The compiler selects the correct specialization at compile time, producing zero-overhead object creation.
+
+### How Patterns Work at Runtime
+
+**Virtual-dispatch patterns** (Observer, Strategy, Decorator) use vtable indirection. When you call `strategy->sort()`, the CPU follows a pointer to the vtable, loads the function pointer, and calls it. This is one indirect branch — typically 1-2 ns overhead on modern CPUs.
+
+**`std::function` type erasure** wraps any callable (lambda, function pointer, functor) behind a uniform interface. Internally it uses small-buffer optimization (SBO) for callables up to ~24 bytes, avoiding heap allocation. Larger callables are heap-allocated.
+
+**Smart pointer patterns** (`unique_ptr` in Factory, `shared_ptr`/`weak_ptr` in Observer) add reference counting overhead. `shared_ptr` increment/decrement is atomic (thread-safe), adding ~10-20 ns per operation. `weak_ptr::lock()` checks a control block before returning a `shared_ptr`.
+
+### Memory Layout
+
+```
+Singleton (Meyer's):     Single static instance on stack (BSS segment)
+Factory (virtual):       vtable pointer + factory state → heap-allocated products
+Observer:                Subject holds vector<weak_ptr<Observer>>; Observer holds shared_ptr to itself
+Strategy:                Context holds unique_ptr<StrategyBase>; strategy owns vtable + data
+Decorator:               Chain of heap-objects, each wrapping a unique_ptr<Component>
+Command:                 Heap-allocated command objects with captured state
+```
+
+## Syntax
+
+### Singleton — Meyer's (C++11)
+```cpp
+class Singleton {
+    Singleton() = default;                           // private ctor
+public:
+    static Singleton& getInstance() {                // thread-safe in C++11+
+        static Singleton instance;
+        return instance;
+    }
+    Singleton(const Singleton&) = delete;            // no copy
+    Singleton& operator=(const Singleton&) = delete; // no assign
+};
+```
+
+### Factory — Template Registration
+```cpp
+template <typename Base, typename... Args>
+class Factory {
+    using Creator = std::function<std::unique_ptr<Base>(Args...)>;
+    std::unordered_map<std::string, Creator> registry_;
+public:
+    void registerType(const std::string& key, Creator creator) {
+        registry_[key] = std::move(creator);
+    }
+    std::unique_ptr<Base> create(const std::string& key, Args... args) {
+        auto it = registry_.find(key);
+        return (it != registry_.end()) ? it->second(std::forward<Args>(args)...) : nullptr;
+    }
+};
+```
+
+### Observer — weak_ptr Storage
+```cpp
+class Subject {
+    std::vector<std::weak_ptr<Observer>> observers_;
+public:
+    void attach(std::shared_ptr<Observer> obs) {
+        observers_.push_back(obs);
+    }
+    void notify(const Event& e) {
+        for (auto it = observers_.begin(); it != observers_.end(); ) {
+            if (auto obs = it->lock()) {
+                obs->update(e);
+                ++it;
+            } else {
+                it = observers_.erase(it);  // prune expired
+            }
+        }
+    }
+};
+```
+
+### Strategy — Lambda-Based (C++11)
+```cpp
+class Sorter {
+    std::function<void(std::vector<int>&)> strategy_;
+public:
+    void setStrategy(std::function<void(std::vector<int>&)> s) {
+        strategy_ = std::move(s);
+    }
+    void sort(std::vector<int>& data) {
+        if (strategy_) strategy_(data);
+    }
+};
+// Usage: sorter.setStrategy([](auto& v){ std::sort(v.begin(), v.end()); });
+```
+
+### Decorator — RAII Chain
+```cpp
+class Component {
+public:
+    virtual ~Component() = default;
+    virtual int execute() const = 0;
+};
+
+class Decorator : public Component {
+protected:
+    std::unique_ptr<Component> wrapped_;
+public:
+    explicit Decorator(std::unique_ptr<Component> c) : wrapped_(std::move(c)) {}
+};
+
+class LoggingDecorator : public Decorator {
+public:
+    using Decorator::Decorator;
+    int execute() const override {
+        std::cout << "Before\n";
+        int result = wrapped_->execute();
+        std::cout << "After\n";
+        return result;
+    }
+};
+```
+
+### Command — with Undo
+```cpp
+class Command {
+public:
+    virtual ~Command() = default;
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+};
+
+class TextInsertCommand : public Command {
+    std::string& text_;
+    std::string insertion_;
+    size_t position_;
+public:
+    TextInsertCommand(std::string& text, std::string ins, size_t pos)
+        : text_(text), insertion_(std::move(ins)), position_(pos) {}
+    void execute() override { text_.insert(position_, insertion_); }
+    void undo() override { text_.erase(position_, insertion_.size()); }
+};
+```
 
 ## Expanded Code Examples
 
@@ -369,6 +559,355 @@ void adapter_example() {
 }
 ```
 
+## Examples
+
+### Easy — Singleton (Configuration Manager)
+
+```cpp
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+class Config {
+    std::unordered_map<std::string, std::string> settings_;
+    Config() = default;
+
+public:
+    static Config& get() {
+        static Config instance;
+        return instance;
+    }
+
+    Config(const Config&) = delete;
+    Config& operator=(const Config&) = delete;
+
+    void set(const std::string& key, const std::string& value) {
+        settings_[key] = value;
+    }
+
+    std::string getSetting(const std::string& key) const {
+        auto it = settings_.find(key);
+        return (it != settings_.end()) ? it->second : "";
+    }
+};
+
+// Usage
+void easy_example() {
+    Config::get().set("theme", "dark");
+    Config::get().set("lang", "en");
+    std::cout << Config::get().getSetting("theme") << "\n";  // dark
+}
+```
+
+### Medium — Factory + Strategy (Payment Processing)
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <functional>
+
+class PaymentStrategy {
+public:
+    virtual ~PaymentStrategy() = default;
+    virtual bool pay(double amount) = 0;
+    virtual std::string name() const = 0;
+};
+
+class CreditCardPayment : public PaymentStrategy {
+    std::string card_number_;
+public:
+    explicit CreditCardPayment(std::string card) : card_number_(std::move(card)) {}
+    bool pay(double amount) override {
+        std::cout << "Charged $" << amount << " to card " << card_number_.substr(0, 4) << "****\n";
+        return true;
+    }
+    std::string name() const override { return "CreditCard"; }
+};
+
+class PayPalPayment : public PaymentStrategy {
+    std::string email_;
+public:
+    explicit PayPalPayment(std::string email) : email_(std::move(email)) {}
+    bool pay(double amount) override {
+        std::cout << "Paid $" << amount << " via PayPal (" << email_ << ")\n";
+        return true;
+    }
+    std::string name() const override { return "PayPal"; }
+};
+
+class PaymentProcessor {
+    std::unique_ptr<PaymentStrategy> strategy_;
+public:
+    void setStrategy(std::unique_ptr<PaymentStrategy> s) { strategy_ = std::move(s); }
+    bool process(double amount) {
+        if (!strategy_) return false;
+        return strategy_->pay(amount);
+    }
+};
+
+// Factory to create payment strategies
+class PaymentFactory {
+    using Creator = std::function<std::unique_ptr<PaymentStrategy>(std::string)>;
+    std::unordered_map<std::string, Creator> registry_;
+public:
+    void registerMethod(const std::string& key, Creator c) { registry_[key] = std::move(c); }
+    std::unique_ptr<PaymentStrategy> create(const std::string& method, const std::string& detail) {
+        auto it = registry_.find(method);
+        return (it != registry_.end()) ? it->second(detail) : nullptr;
+    }
+};
+
+// Usage
+void medium_example() {
+    PaymentFactory factory;
+    factory.registerMethod("cc", [](std::string s) { return std::make_unique<CreditCardPayment>(s); });
+    factory.registerMethod("paypal", [](std::string s) { return std::make_unique<PayPalPayment>(s); });
+
+    PaymentProcessor processor;
+    processor.setStrategy(factory.create("cc", "4111111111111234"));
+    processor.process(99.99);
+
+    processor.setStrategy(factory.create("paypal", "user@example.com"));
+    processor.process(49.50);
+}
+```
+
+### Hard — CRTP Singleton + Template Factory (Game Engine)
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <functional>
+
+// CRTP Singleton — compile-time, zero overhead
+template <typename Derived>
+class Singleton {
+protected:
+    Singleton() = default;
+public:
+    static Derived& instance() {
+        static Derived inst;
+        return inst;
+    }
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+};
+
+// Template Factory with automatic registration via static init
+template <typename Base, typename... Args>
+class TemplateFactory {
+    using Creator = std::function<std::unique_ptr<Base>(Args...)>;
+    std::unordered_map<std::string, Creator> registry_;
+
+    TemplateFactory() = default;
+
+public:
+    static TemplateFactory& instance() {
+        static TemplateFactory factory;
+        return factory;
+    }
+
+    bool registerType(const std::string& key, Creator creator) {
+        registry_[key] = std::move(creator);
+        return true;
+    }
+
+    std::unique_ptr<Base> create(const std::string& key, Args... args) {
+        auto it = registry_.find(key);
+        return (it != registry_.end()) ? it->second(std::forward<Args>(args)...) : nullptr;
+    }
+};
+
+// Auto-registration helper
+template <typename Base, typename Derived, typename... Args>
+struct AutoRegister {
+    static bool registered;
+    static bool doRegister() {
+        TemplateFactory<Base, Args...>::instance().registerType(
+            Derived::typeName(),
+            [](Args... args) -> std::unique_ptr<Base> {
+                return std::make_unique<Derived>(std::forward<Args>(args)...);
+            }
+        );
+        return true;
+    }
+};
+
+// Game entity hierarchy
+class Entity {
+public:
+    virtual ~Entity() = default;
+    virtual void update(double dt) = 0;
+    virtual std::string typeName() const = 0;
+};
+
+class Player : public Entity, public Singleton<Player> {
+    double health_ = 100.0;
+public:
+    static std::string typeName() { return "Player"; }
+    void update(double dt) override { health_ -= dt * 0.5; }
+    double health() const { return health_; }
+};
+
+class Enemy : public Entity {
+    std::string type_;
+public:
+    explicit Enemy(std::string t) : type_(std::move(t)) {}
+    static std::string typeName() { return "Enemy"; }
+    void update(double dt) override { /* AI logic */ }
+};
+
+// Usage
+void hard_example() {
+    auto& factory = TemplateFactory<Entity>::instance();
+    factory.registerType("enemy", [](std::string t) { return std::make_unique<Enemy>(t); });
+
+    auto enemy = factory.create("enemy", "goblin");
+    enemy->update(0.016);
+
+    auto& player = Player::instance();  // CRTP singleton
+    player.update(0.016);
+    std::cout << "Player health: " << player.health() << "\n";
+}
+```
+
+### Enterprise — Observer + Command (Undo/Redo Event System)
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <functional>
+#include <sstream>
+
+// Event system using Observer pattern
+class Event {
+public:
+    virtual ~Event() = default;
+    virtual std::string type() const = 0;
+    virtual std::string serialize() const = 0;
+};
+
+class EventHandler {
+public:
+    virtual ~EventHandler() = default;
+    virtual void handle(const Event& e) = 0;
+};
+
+class EventBus {
+    std::vector<std::weak_ptr<EventHandler>> listeners_;
+public:
+    void subscribe(std::shared_ptr<EventHandler> h) { listeners_.push_back(h); }
+
+    void publish(const Event& e) {
+        for (auto it = listeners_.begin(); it != listeners_.end(); ) {
+            if (auto handler = it->lock()) {
+                handler->handle(e);
+                ++it;
+            } else {
+                it = listeners_.erase(it);
+            }
+        }
+    }
+};
+
+// Command pattern for undo/redo
+class Command {
+public:
+    virtual ~Command() = default;
+    virtual void execute() = 0;
+    virtual void undo() = 0;
+    virtual std::string describe() const = 0;
+};
+
+class CommandHistory {
+    std::vector<std::unique_ptr<Command>> undo_stack_;
+    std::vector<std::unique_ptr<Command>> redo_stack_;
+public:
+    void execute(std::unique_ptr<Command> cmd) {
+        cmd->execute();
+        undo_stack_.push_back(std::move(cmd));
+        redo_stack_.clear();
+    }
+
+    void undo() {
+        if (undo_stack_.empty()) return;
+        undo_stack_.back()->undo();
+        redo_stack_.push_back(std::move(undo_stack_.back()));
+        undo_stack_.pop_back();
+    }
+
+    void redo() {
+        if (redo_stack_.empty()) return;
+        redo_stack_.back()->execute();
+        undo_stack_.push_back(std::move(redo_stack_.back()));
+        redo_stack_.pop_back();
+    }
+};
+
+// Concrete event
+class DocumentChangedEvent : public Event {
+    std::string content_;
+public:
+    explicit DocumentChangedEvent(std::string c) : content_(std::move(c)) {}
+    std::string type() const override { return "DocumentChanged"; }
+    std::string serialize() const override { return content_; }
+};
+
+// Concrete command
+class EditCommand : public Command {
+    std::string& document_;
+    std::string old_text_;
+    std::string new_text_;
+    size_t position_;
+    EventBus& bus_;
+public:
+    EditCommand(std::string& doc, std::string old_t, std::string new_t, size_t pos, EventBus& bus)
+        : document_(doc), old_text_(std::move(old_t)), new_text_(std::move(new_t)), position_(pos), bus_(bus) {}
+
+    void execute() override {
+        document_.replace(position_, old_text_.size(), new_text_);
+        bus_.publish(DocumentChangedEvent(document_));
+    }
+
+    void undo() override {
+        document_.replace(position_, new_text_.size(), old_text_);
+        bus_.publish(DocumentChangedEvent(document_));
+    }
+
+    std::string describe() const override {
+        return "Edit at pos " + std::to_string(position_);
+    }
+};
+
+// Usage
+void enterprise_example() {
+    std::string document = "Hello World";
+    EventBus bus;
+    CommandHistory history;
+
+    // Subscribe to events
+    auto logger = std::make_shared<EventHandler>();
+    bus.subscribe(logger);
+
+    // Execute edits
+    history.execute(std::make_unique<EditCommand>(document, "World", "C++", 6, bus));
+    std::cout << document << "\n";  // "Hello C++"
+
+    history.undo();
+    std::cout << document << "\n";  // "Hello World"
+
+    history.redo();
+    std::cout << document << "\n";  // "Hello C++"
+}
+```
+
 ## Production Incidents
 
 ### Incident 1: Observer Memory Leak
@@ -394,6 +933,45 @@ void adapter_example() {
 **Solution**: Extracted an `IDatabaseConnection` interface. The Singleton now returns `IDatabaseConnection&`. In production, it returns the real connection. In tests, a test fixture injects a mock: `DBManager::setInstance(mock_connection)`. After tests, restore the real instance.
 
 **Prevention**: Never use Singleton without an interface. Prefer dependency injection. If you must use Singleton, provide a `setInstance()` for testing (or use a service locator pattern).
+
+### Incident 3: Decorator Chain Heap Explosion
+**Problem**: An HTTP middleware pipeline using the Decorator pattern caused 2 GB of heap allocations per request under load.
+
+**Cause**: Each middleware layer (auth, logging, rate-limiting, compression) was a separate heap-allocated Decorator wrapping a `unique_ptr<Component>`. With 8 middleware layers and 500 concurrent requests, the system created 4,000 heap objects per request cycle. The allocator fragmented under sustained load.
+
+**Impact**: P99 latency spiked from 50 ms to 2.3 seconds. Memory usage grew linearly with concurrency. Production pods were OOM-killed every 4 hours.
+
+**Detection**: `jemalloc` heap profiling showed 80% of allocations were small (64-128 byte) Decorator objects. Flame graph confirmed allocation hotspots in Decorator constructors.
+
+**Solution**: Flattened the middleware chain into a single `Pipeline` class that holds a `vector<Middleware*>` (non-owning, middleware objects stored in a pool). Each middleware is a lightweight struct with `before()` and `after()` methods. The pipeline iterates the vector instead of following a pointer chain.
+
+**Prevention**: Profile decorator-heavy code under production concurrency. Prefer flat composition (vector of handlers) over deep nesting (chain of wrappers) when performance matters. Use object pools for frequently created pattern objects.
+
+### Incident 4: Factory Creating Objects with Circular Dependencies
+**Problem**: A plugin system using the Factory pattern deadlocked during initialization when two plugins depended on each other.
+
+**Cause**: Plugin A's factory creator called `PluginB::instance()`, and Plugin B's creator called `PluginA::instance()`. Both used Meyer's Singleton. During static initialization, the first call to `PluginA::instance()` triggered `PluginB::instance()`, which recursively called `PluginA::instance()` — causing a deadlock or undefined behavior on some compilers.
+
+**Impact**: Application hung on startup in 30% of runs (depending on static initialization order). Remaining 70% worked only by luck (initialization order happened to avoid the cycle).
+
+**Detection**: `gdb` backtrace showed threads stuck in `__cxa_guard_acquire`. AddressSanitizer reported stack overflow on the recursive path.
+
+**Solution**: Broke the cycle by extracting shared state into a separate `Registry` class that both plugins depend on. Plugins no longer reference each other directly — they communicate through the Registry. The Registry is initialized first (no dependencies), then plugins are created in dependency order.
+
+**Prevention**: Map plugin dependency graphs before implementing factories. Use lazy initialization (construct on first use) instead of static initialization for objects with interdependencies. Add a dependency resolver that topologically sorts plugins before creation.
+
+### Incident 5: Strategy Pattern Causing Cache Misses
+**Problem**: A hot loop processing 10 million elements/sec degraded 3x after switching from a simple `if/else` to the Strategy pattern.
+
+**Cause**: The Strategy pattern introduced a virtual `process()` call in the inner loop. Each strategy was a separate class with its own vtable. The CPU's branch predictor could not predict the indirect call reliably, causing pipeline stalls and instruction cache misses. The `if/else` version had predictable branches that the CPU could optimize.
+
+**Impact**: Throughput dropped from 10M to 3.3M elements/sec. Latency P99 increased from 12 ms to 38 ms. CPU utilization hit 100% (was 60%).
+
+**Detection**: `perf stat` showed L1 instruction cache miss rate increased from 0.1% to 2.8%. `perf record` + flame graph revealed the indirect call as the hotspot.
+
+**Solution**: Replaced runtime Strategy with a compile-time template parameter: `template <typename Strategy> void process(data)`. The compiler inlines the strategy into the hot loop, eliminating the indirect call. Alternatively, for cases where runtime switching is required, used `std::variant` + `std::visit` which enables direct devirtualization.
+
+**Prevention**: Profile hot loops before and after introducing patterns. Prefer compile-time polymorphism (templates, CRTP) for performance-critical inner loops. Reserve runtime polymorphism (Strategy) for cases where algorithm selection truly varies at runtime.
 
 ## Production Checklist
 
@@ -468,6 +1046,47 @@ void adapter_example() {
 - [ ] Observer registrations have matching unregistrations (RAII cleanup)
 - [ ] Singleton has an interface for testability and mock injection
 
+## Performance Considerations
+
+| Pattern | Overhead Source | Mitigation |
+|---------|----------------|------------|
+| Singleton (Meyer's) | None — static local variable, constructed once | Preferred implementation; no mutex needed in C++11+ |
+| Singleton (double-checked locking) | `std::call_once` atomic overhead (~20 ns) | Use Meyer's Singleton instead when possible |
+| Factory (virtual dispatch) | vtable indirection per creation call | Acceptable for object creation; not a hot path in most code |
+| Factory (template/CRTP) | Zero runtime overhead — resolved at compile time | Use for performance-critical creation paths |
+| Observer (shared_ptr) | Atomic ref-count increment/decrement (~10-20 ns per observer) | Use `weak_ptr` storage; prune expired observers during notification |
+| Strategy (std::function) | Small-buffer optimization avoids heap for callables ≤24 bytes | Keep strategies small; use lambdas over stateful functors |
+| Decorator (heap chain) | Each layer = 1 heap allocation + vtable indirection | Limit chain depth to 2-3; consider CRTP compile-time decoration for hot paths |
+| Command (heap allocation) | Each command object heap-allocated | Pool-allocate frequently created commands (e.g., text edits in editor) |
+
+## Best Practices
+
+- **Apply patterns only when a clear, recurring problem exists.** An `if/else` with 2-3 branches is simpler than a Strategy pattern.
+- **Prefer composition over inheritance.** Hold interface pointers (`unique_ptr<Base>`) rather than inheriting to extend behavior.
+- **Use RAII for all pattern-owned resources.** Smart pointers in Factory and Decorator; RAII wrappers for Observer registration.
+- **Interface-segregate Singletons.** Always expose an abstract interface behind the Singleton, enabling mock injection for tests.
+- **Thread-safety by default.** Use C++11 local statics for Singleton, `std::mutex` for shared Observer state, `std::atomic` for counters.
+- **Leverage C++11+ features.** Lambdas simplify Strategy and Command. `std::function` replaces manual functor classes. `std::variant` replaces Visitor hierarchies.
+- **CRTP for zero-overhead polymorphism.** When the derived type is known at compile time, CRTP eliminates vtable dispatch entirely.
+- **Document pattern rationale.** Comments should explain *why* a pattern was chosen, not *what* the pattern is.
+- **Keep decorator chains shallow.** Deep chains hurt debuggability and add allocation overhead. If you need many layers, reconsider the design.
+- **Clean up observers eagerly.** Don't rely on destructor-based unregistration alone — check `weak_ptr::expired()` during notification loops.
+
+## Common Mistakes
+
+| Mistake | Why It Hurts | Fix |
+|---------|-------------|-----|
+| Overusing Singleton | Hidden global state, untestable code, tight coupling | Prefer dependency injection; use Singleton only for genuinely singular resources (config, logger) |
+| Raw pointers in Observer | Dangling pointers after observer destruction → use-after-free | Use `std::weak_ptr` for storage; `shared_ptr` for observer lifetime |
+| Deep Decorator chains | Heap allocation per layer, hard to debug, unclear ownership | Limit to 2-3 layers; consider compile-time decoration with CRTP |
+| Strategy with large state | `std::function` heap-allocates when callable exceeds SBO size (~24 bytes) | Keep strategies small; use `unique_ptr<StrategyBase>` for large strategies |
+| Not deleting Singleton copy/move | Silent duplicate instances, violating the singleton guarantee | Delete copy/move constructors and assignment operators |
+| Factory returning raw pointers | Caller must manage lifetime → leaks if not careful | Return `std::unique_ptr<Base>` from factory methods |
+| Observer notification during modification | Iterator invalidation if observers modify the subject's observer list | Copy observer list before iterating, or use index-based iteration |
+| Command without undo support | Incomplete Command pattern; users expect undo/redo | Always implement `undo()` alongside `execute()` in Command |
+| Thread-unsafe Singleton in multi-threaded code | Data races on initialization (pre-C++11) or on mutable state | Use C++11 local statics; protect mutable state with `std::mutex` |
+| Applying patterns to one-off problems | YAGNI — adds complexity without benefit | Use the simplest solution that works; refactor to a pattern if the problem recurs |
+
 ## Architecture Considerations
 
 Design patterns are the shared vocabulary for recurring architectural problems. Creational patterns (Factory, Singleton) control object creation. Structural patterns (Adapter, Decorator, Facade) compose objects into larger structures. Behavioral patterns (Strategy, Observer, Command) define communication between objects. Patterns guide architectural decisions by encoding proven solutions, but they must be applied judiciously — over-engineering with patterns is worse than a simple `if/else`.
@@ -510,6 +1129,16 @@ Design patterns are the shared vocabulary for recurring architectural problems. 
 3. **What makes a good Singleton?**: A good Singleton has an interface for testability, is thread-safe (C++11 local static), is lazy-initialized, and is genuinely needed as a single instance (e.g., configuration, logging). Most "Singletons" should be dependency-injected instead.
 4. **How does the Adapter pattern differ from the Facade pattern?**: Adapter converts one interface to another (legacy → modern). Facade simplifies a complex subsystem behind a single, easy-to-use interface. Adapter targets interface incompatibility; Facade targets complexity reduction.
 5. **When is the Decorator pattern preferable to inheritance?**: Use Decorator when you need to add behavior dynamically at runtime without creating a combinatorial explosion of subclasses. Decorators are composable and follow the Open/Closed Principle.
+6. **How does CRTP improve the Singleton pattern?**: CRTP Singleton resolves the base class at compile time — `Singleton<Logger>` knows the derived type is `Logger` without virtual dispatch. This eliminates vtable overhead and enables inlining of `instance()`. The trade-off is that each derived type gets a separate Singleton (no shared base).
+7. **What is the difference between Factory Method and Abstract Factory?**: Factory Method creates a single product via a virtual method (one creator, one product type). Abstract Factory creates families of related products (e.g., `WindowsButton` + `WindowsCheckbox` from `WindowsFactory`). Abstract Factory ensures product compatibility; Factory Method delegates a single creation decision.
+8. **How would you make the Observer pattern thread-safe?**: Store observers as `std::weak_ptr` in the subject. During notification, call `weak_ptr::lock()` — if expired, prune the entry. Protect the observer list with `std::mutex`. Alternatively, use a lock-free approach with `std::atomic` flags on each observer and a separate notification queue.
+9. **Can the Strategy pattern be implemented without virtual functions?**: Yes. Use `std::function<void(Data&)>` to store lambdas as strategies — no virtual dispatch, no derived classes. For zero-overhead, use template parameters: `template<typename F> void process(F strategy)`. C++20 concepts can constrain the template to ensure the callable has the right signature.
+10. **When should you use Command vs Strategy?**: Command encapsulates an action with undo/redo, state, and a receiver — it's about *what happened*. Strategy encapsulates an algorithm that varies — it's about *how something is done*. Use Command for undo systems, transaction logs, and task queues. Use Strategy for interchangeable algorithms (sorting, validation, rendering).
+11. **How does the Decorator pattern differ from middleware chains?**: They're conceptually similar — both wrap behavior. Decorator wraps a single interface and adds behavior before/after delegating. Middleware chains are typically linear pipelines (each stage calls `next()`). In C++, middleware often uses `std::function<std::string(Request)>` composition rather than class inheritance.
+12. **What are the thread-safety guarantees of Meyer's Singleton?**: C++11 guarantees that function-local statics are initialized exactly once, even when called concurrently from multiple threads. The compiler inserts a hidden guard variable and uses `__cxa_guard_acquire`/`__cxa_guard_release`. After initialization, `getInstance()` is just a pointer return — no synchronization needed.
+13. **How do you test code that uses the Singleton pattern?**: Extract an interface (e.g., `ILogger`). The Singleton returns a reference to the interface. In production, the concrete implementation is returned. In tests, inject a mock: provide a `setInstance()` method or use a service locator. Alternatively, use function injection — pass a factory function that returns the singleton instance.
+14. **What is the OCP violation in the Factory pattern and how do you fix it?**: Adding a new product type requires modifying the factory's `create()` method with a new `if/else` or `switch` case. Fix it with registration: each product registers itself with the factory using a static initializer, so adding a new product requires zero changes to the factory class.
+15. **How do patterns interact in real systems? Give an example.**: A payment processing system might use: Factory to create payment strategies, Strategy to select the payment algorithm, Observer to notify downstream systems (fraud detection, analytics), Command to encapsulate each transaction (for undo/redo), and Decorator to add logging or encryption around the payment flow. Patterns compose — a Factory can produce Strategy objects that implement Command interfaces.
 
 ## References
 

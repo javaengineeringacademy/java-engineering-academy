@@ -1,5 +1,35 @@
 # Testing — C++
 
+## Overview
+
+Testing in C++ is the practice of writing automated programs that verify the correctness, performance, and reliability of production code. The C++ testing ecosystem is mature and production-grade, anchored by Google Test (gtest) and Google Mock (gmock) — the same frameworks used internally at Google, NVIDIA, AMD, and thousands of other companies. C++ testing encompasses unit testing, integration testing, mocking, parameterized data-driven tests, and performance benchmarking. Unlike interpreted languages, C++ testing must account for manual memory management, undefined behavior, template instantiation errors, and platform-specific differences, making a robust test suite not just beneficial but essential.
+
+## Learning Objectives
+
+- Understand why automated testing is critical for C++ projects
+- Write unit tests, test fixtures, and parameterized tests using Google Test
+- Create mock objects with Google Mock to isolate units under test
+- Apply boundary value analysis and edge-case testing techniques
+- Design testable code using dependency injection and SOLID principles
+- Set up and integrate Google Test into CMake-based build systems
+- Identify and eliminate flaky, non-deterministic, and order-dependent tests
+- Measure and improve test coverage for production-critical code paths
+
+## Prerequisites
+
+| Prerequisite | Why It's Needed |
+|--------------|-----------------|
+| [01-fundamentals](../01-fundamentals/) | Understanding of C++ syntax, types, functions, classes, and the compilation model |
+| [03-templates](../03-templates/) | Templates are used extensively in Google Test's macro system and in writing generic test utilities |
+
+## History
+
+The history of C++ unit testing mirrors the broader evolution of automated testing. In the early days, developers wrote ad-hoc `main()` functions with `assert()` calls — fragile, non-standard, and hard to maintain. The xUnit paradigm, originating with SUnit (Smalltalk, 1994) and JUnit (Java, 1997), introduced structured test frameworks with assertions, fixtures, and test discovery. C++ followed: CppUnit (1999) brought xUnit to C++, followed by Boost.Test (2001), then Google Test (2005), originally developed internally at Google for testing their massive C++ codebase. Google Mock emerged in 2008 to address C++ mocking needs. By 2010, Google Test became the de facto standard for C++ testing in industry, adopted by Android's native code, Chromium, LLVM, and most major C++ open-source projects. Today, Google Test remains actively maintained and is the framework of choice for production C++ systems worldwide.
+
+## Production Notes
+
+C++ testing has unique constraints compared to other languages. Google Test must be compiled as a static library and linked into test binaries — it is not header-only. Tests execute as native machine code, making them fast but also meaning memory errors in test code can crash the test runner itself. Undefined behavior in test assertions (e.g., signed integer overflow) is undefined — literally. C++ templates can produce cryptic compiler errors in test macros. Test fixtures rely on class inheritance, which couples test structure to the framework's object model. For large codebases, test compilation time becomes a real concern — incremental compilation and parallel test execution are essential. CI pipelines should compile tests with the same compiler flags, sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer), and optimization levels as production to catch real bugs.
+
 ## Why It Matters
 
 Testing is not a chore — it's an investment. Every hour spent writing tests saves multiple hours of debugging production incidents. When you deploy a release candidate on Friday evening and customers report broken login Monday morning, a single test case would have caught the one-line change in seconds instead of gambling with every deployment.
@@ -19,9 +49,168 @@ Testing in C++ involves writing automated tests to verify code behavior, using f
 | Performance | Benchmark tests | Google Benchmark | Medium |
 | Cross-platform | CI matrix testing | GitHub Actions / Jenkins | High |
 
+## Core Concepts
+
+### Test Suites and Test Cases
+
+A **test suite** groups related tests. A **test case** (or test) is a single verification of behavior. In Google Test, `TEST(SuiteName, TestName)` defines both. `TEST_F` uses a fixture class, allowing shared setup across tests in the same suite.
+
+### Assertions
+
+Google Test provides two classes of assertions:
+
+- `EXPECT_*` macros — record failures but continue executing the test. Use these for non-fatal checks.
+- `ASSERT_*` macros — abort the test immediately on failure. Use these when subsequent checks depend on a prior condition.
+
+| Assertion | Purpose |
+|-----------|---------|
+| `EXPECT_EQ(a, b)` | Equality check |
+| `EXPECT_NE(a, b)` | Inequality check |
+| `EXPECT_LT(a, b)` | Less than |
+| `EXPECT_GT(a, b)` | Greater than |
+| `EXPECT_TRUE(expr)` | Boolean true |
+| `EXPECT_FALSE(expr)` | Boolean false |
+| `EXPECT_THROW(stmt, type)` | Exception expected |
+| `EXPECT_NO_THROW(stmt)` | No exception expected |
+| `EXPECT_NEAR(a, b, tol)` | Floating-point tolerance |
+
+### Test Fixtures
+
+A fixture is a class derived from `::testing::Test` that provides `SetUp()` and `TearDown()` methods. Each `TEST_F` test gets a fresh fixture instance, ensuring test isolation. Fixtures are essential when tests share expensive setup logic (database connections, file I/O, large data structures).
+
+### Parameterized Tests
+
+`TEST_P` and `INSTANTIATE_TEST_SUITE_P` allow running the same test logic with different input values. This is critical for boundary-value testing, data-driven validation, and testing across multiple configurations.
+
+### Mocking
+
+Google Mock creates fake implementations of interfaces. `MOCK_METHOD` declares mock methods. `EXPECT_CALL` sets expectations: which methods should be called, with what arguments, how many times, and in what order. Mocks decouple tests from external systems (databases, networks, filesystems) and enable deterministic, fast test execution.
+
+### Matchers
+
+Google Mock provides a rich matcher library for flexible argument matching: `testing::_` (any), `testing::Eq(value)`, `testing::HasSubstr(s)`, `testing::Contains(elem)`, `testing::SizeIs(n)`, and many more. Matchers make mock expectations expressive and self-documenting.
+
+## Internal Working
+
+### How Google Test Works
+
+Google Test compiles each `TEST()` and `TEST_F()` macro into a unique function that is registered with a global test registry at static initialization time. When the test binary runs, `main()` (provided by `gtest_main`) iterates the registry and executes matching tests. The `--gtest_filter` command-line flag filters tests by name using glob patterns.
+
+### How Mocking Works
+
+Google Mock uses C++ virtual dispatch. When you declare `MOCK_METHOD` in a mock class, Google Mock generates a virtual method that records calls and replays configured responses. At runtime, `EXPECT_CALL(mock, Method(...))` installs a matcher and action pair. When the production code calls `mock.Method(args)`, Google Mock checks the active expectations in reverse declaration order (last-defined wins), matches arguments against matchers, and either returns the configured action or fails the test. The mock object's destructor verifies that all expectations were satisfied.
+
+### Test Discovery and Execution
+
+Google Test uses static initialization to register tests before `main()` runs. Each `TEST()` macro creates a `::testing::TestInfo` object and adds it to `::testing::UnitTest::GetInstance()`. The test runner filters by `--gtest_filter`, supports `--gtest_repeat` for stress testing, and `--gtest_shuffle` to detect ordering dependencies. Exit code 0 means all tests passed; 1 means at least one failure.
+
+### Build Integration with CMake
+
+Google Test is typically integrated via CMake's `FetchContent` or `add_subdirectory`. A minimal CMake setup:
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+add_executable(tests test_file.cpp)
+target_link_libraries(tests GTest::gtest_main)
+include(GoogleTest)
+gtest_discover_tests(tests)
+```
+
+`gtest_discover_tests` automatically discovers all test cases and registers them with CTest, enabling `ctest` to run and report results.
+
+## Syntax
+
+### Basic Test
+
+```cpp
+#include <gtest/gtest.h>
+
+TEST(TestSuiteName, TestName) {
+    EXPECT_EQ(1 + 1, 2);
+}
+```
+
+### Test with Fixture
+
+```cpp
+#include <gtest/gtest.h>
+
+class MyFixture : public ::testing::Test {
+protected:
+    void SetUp() override { /* per-test setup */ }
+    void TearDown() override { /* per-test teardown */ }
+    int shared_value = 0;
+};
+
+TEST_F(MyFixture, TestName) {
+    shared_value = 42;
+    EXPECT_EQ(shared_value, 42);
+}
+```
+
+### Parameterized Test
+
+```cpp
+#include <gtest/gtest.h>
+
+class ParamTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(ParamTest, Validates) {
+    int val = GetParam();
+    EXPECT_GE(val, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NonNegative,
+    ParamTest,
+    ::testing::Values(0, 1, 5, 100)
+);
+```
+
+### Mock Declaration
+
+```cpp
+#include <gmock/gmock.h>
+
+class Interface {
+public:
+    virtual ~Interface() = default;
+    virtual int compute(int x) = 0;
+    virtual void reset() = 0;
+};
+
+class MockInterface : public Interface {
+public:
+    MOCK_METHOD(int, compute, (int), (override));
+    MOCK_METHOD(void, reset, (), (override));
+};
+```
+
+### Expectation Setting
+
+```cpp
+MockInterface mock;
+
+// Must be called once with argument 5, returns 10
+EXPECT_CALL(mock, compute(5))
+    .Times(1)
+    .WillOnce(testing::Return(10));
+
+// Called any number of times with any argument
+EXPECT_CALL(mock, reset())
+    .Times(testing::AnyNumber());
+```
+
 ## Expanded Code Examples
 
-### Unit Testing with Google Test
+### Easy — Unit Testing with Google Test
 
 ```cpp
 #include <gtest/gtest.h>
@@ -55,7 +244,7 @@ TEST(FactorialTest, DetailedCheck) {
 }
 ```
 
-### Test Fixtures — Shared Setup/Teardown
+### Medium — Test Fixtures: Shared Setup/Teardown
 
 ```cpp
 #include <gtest/gtest.h>
@@ -96,7 +285,7 @@ TEST_F(SortingTest, SingleElementIsSorted) {
 }
 ```
 
-### Parameterized Tests
+### Medium — Parameterized Tests
 
 ```cpp
 #include <gtest/gtest.h>
@@ -119,7 +308,7 @@ INSTANTIATE_TEST_SUITE_P(
 );
 ```
 
-### Mocking with Google Mock
+### Hard — Mocking with Google Mock
 
 ```cpp
 #include <gtest/gtest.h>
@@ -193,7 +382,7 @@ TEST_F(UserServiceTest, GetUserHandlesDbFailure) {
 }
 ```
 
-### Testing Edge Cases — Detailed Examples
+### Hard — Testing Edge Cases
 
 ```cpp
 #include <gtest/gtest.h>
@@ -253,7 +442,7 @@ TEST_F(SafeParseIntTest, WhitespaceOnly) {
 }
 ```
 
-### Test Coverage and TDD Workflow
+### Enterprise — Test Coverage and TDD Workflow
 
 ```cpp
 // TDD Cycle: Red -> Green -> Refactor
@@ -279,6 +468,45 @@ TEST_F(SafeParseIntTest, WhitespaceOnly) {
 // - Function coverage: % of functions called
 // Aim for 80%+ line coverage, 70%+ branch coverage for critical code
 ```
+
+## Performance Considerations
+
+| Factor | Impact | Mitigation |
+|--------|--------|------------|
+| Test compilation time | Large projects with thousands of test files compile slowly | Use incremental builds, precompiled headers, and `ccache`; compile tests in parallel |
+| Test execution time | Slow tests discourage frequent running | Isolate unit tests from I/O; mock external dependencies; keep unit tests under 100ms each |
+| Memory overhead | Each test binary links Google Test statically (~500KB+) | Share a single `gtest_main` across all test targets; avoid unnecessary includes |
+| Sanitizer cost | ASan/UBSan slow execution by 2-5x | Run sanitizers in CI, not locally; use them selectively on critical paths |
+| Test fixture setup | Expensive `SetUp()` repeated across tests | Use `SetUpTestSuite()` (static) for one-time setup shared across tests in a suite |
+| Parameterized test combinatorics | Many parameter combinations explode test count | Limit combinations to meaningful cases; use `::testing::Combine()` sparingly |
+| Mock object overhead | Virtual dispatch adds indirection per call | Acceptable for unit tests; avoid in performance-critical test paths |
+| Parallel test execution | `--gtest_parallel` or CTest `-j` flag | Speeds up CI; ensure tests are truly independent before parallelizing |
+
+## Best Practices
+
+- **Test behavior, not implementation** — Tests should verify what code does, not how it does it. Refactoring internals shouldn't break tests.
+- **One assertion of concept per test** — Each test should verify one logical behavior. Multiple assertions are fine if they validate a single concept.
+- **Use descriptive test names** — `TEST_F(PaymentTest, RejectsNegativeAmount)` is better than `TEST_F(PaymentTest, Test1)`.
+- **Test boundary values** — Always test min-1, min, min+1, max-1, max, max+1 for numeric ranges.
+- **Mock at boundaries, not internals** — Mock external dependencies (databases, APIs, filesystems), not internal helper functions.
+- **Keep tests independent** — No test should depend on another test's execution or shared mutable state.
+- **Run tests early and often** — Run unit tests locally before committing; run the full suite in CI on every push.
+- **Use `ASSERT_*` for preconditions** — If a check is a prerequisite for the rest of the test, use `ASSERT_*` so the test aborts cleanly on failure.
+- **Test error paths** — Happy-path tests are insufficient. Test exceptions, error codes, edge cases, and boundary conditions.
+- **Delete dead tests** — If production code is removed, delete its tests. Dead tests create confusion and slow down the suite.
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Testing implementation details | Tests break on internal refactors even when behavior is correct | Test public interfaces and observable behavior only |
+| Shared mutable state between tests | Non-deterministic failures depending on test execution order | Each test gets its own fixture instance; never use global mutable state in tests |
+| Using `ASSERT_*` where `EXPECT_*` suffices | Test aborts on first failure, hiding additional failures | Use `ASSERT_*` only for preconditions; prefer `EXPECT_*` for most checks |
+| Mocking everything | Brittle tests tightly coupled to implementation; mocks diverge from real behavior | Mock only external dependencies; use real objects for internal collaborators |
+| Ignoring compiler warnings in test code | Tests compile with warnings that mask real issues | Treat test code with the same strictness as production code (`-Wall -Wextra -Werror`) |
+| Writing tests after shipping | Bugs discovered in production are harder to reproduce and fix | Write tests as part of development, before or alongside the implementation |
+| Hardcoded timeouts in tests | Flaky failures on slow CI machines or under load | Use `testing::UnitTest::Timeout` or polling with backoff instead of fixed sleeps |
+| Copy-pasting test code | Duplicated setup logic hides inconsistencies | Extract shared logic into fixtures or helper functions |
 
 ## Production Incidents
 
@@ -320,6 +548,32 @@ TEST_F(SafeParseIntTest, WhitespaceOnly) {
 **Solution**: Each test now creates its own configuration instance in SetUp(). Removed all global mutable state from tests. Added a `TEST_P` permutation test to verify independence.
 
 **Prevention**: Tests must be independent and order-agnostic. Never share mutable state between tests. Use SetUp()/TearDown() to reset state. Run tests in random order in CI to detect dependencies.
+
+### Incident 4: Missing Mock Led to Production Outage
+**Problem**: A service that sent SMS notifications passed all tests but crashed in production when the third-party SMS provider returned an unexpected HTTP 503 response.
+
+**Cause**: The SMS client was not mocked in tests — tests used a stub that always returned success. The production code had no handling for non-200 HTTP responses. The `std::stoi()` call on the response body threw `std::invalid_argument` when it received an HTML error page instead of a numeric status code.
+
+**Impact**: SMS notifications stopped for 6 hours. 12,000 customers missed critical two-factor authentication codes. Support tickets spiked. Manual failover to a backup provider was required.
+
+**Detection**: Monitoring dashboards showed a 100% drop in SMS sends. Log aggregation revealed uncaught `std::invalid_argument` exceptions at the `std::stoi()` line.
+
+**Solution**: Added Google Mock for the HTTP client interface. Wrote tests for all HTTP error codes (4xx, 5xx, timeout, malformed response). Added `try/catch` around response parsing with a fallback error path. Deployed the fix with a canary release.
+
+**Prevention**: Mock all external service interfaces. Test error paths for every external call. Include HTTP status codes, timeouts, malformed responses, and partial responses in test scenarios. Code review must verify that external dependencies are mocked in unit tests.
+
+### Incident 5: Undefined Behavior in Test Code
+**Problem**: A test suite passed on GCC but segfaulted on Clang. The CI matrix showed green for GCC builds while Clang builds were silently skipped due to a configuration error.
+
+**Cause**: A test used `reinterpret_cast` to convert between unrelated types, which is undefined behavior in C++. GCC happened to produce the "correct" result on the target platform, but Clang's optimizer exploited the UB and generated a crash. The CI configuration had a typo that skipped Clang builds.
+
+**Impact**: The code was released to production where a small percentage of users (Clang-compiled binaries on certain architectures) experienced crashes. Customer crash reports went unnoticed for two weeks because the crash rate was below the alerting threshold.
+
+**Detection**: A customer reported a reproducible crash on an ARM device. Crash analysis showed a `SIGSEGV` at the `reinterpret_cast` location.
+
+**Solution**: Replaced `reinterpret_cast` with `static_cast` through a proper type conversion. Added UndefinedBehaviorSanitizer (UBSan) to the CI pipeline. Fixed the CI configuration typo that was skipping Clang builds. Enabled ASan and UBSan for all CI matrix entries.
+
+**Prevention**: Run tests with sanitizers (ASan, UBSan, TSan) in CI. Test on all target platforms and compilers in the CI matrix. Never skip CI matrix entries silently. Treat undefined behavior in test code as seriously as in production code.
 
 ## Production Checklist
 
@@ -436,6 +690,16 @@ Testing is the architectural safety net that enables confident refactoring and d
 3. **What is the purpose of mocking?**: Mocks replace external dependencies (databases, APIs, file systems) with controlled fakes. They enable deterministic, fast tests that don't depend on external services. Mocks verify interactions (was this method called with these arguments?).
 4. **How do you handle flaky tests?**: Never ignore them. Track flaky test rates. Fix root causes (timing issues, shared state, external dependencies). Use retries with exponential backoff for network-dependent tests. Delete tests that can't be made reliable.
 5. **What is TDD and what are its benefits?**: Test-Driven Development: write a failing test, write minimal code to pass, refactor. Benefits: tests drive design toward testability, immediate feedback, safe refactoring, living documentation of expected behavior.
+6. **Explain the difference between `EXPECT_*` and `ASSERT_*` macros**: `EXPECT_*` records a failure but continues executing the test, allowing multiple failures to be reported in one run. `ASSERT_*` aborts the test immediately on failure. Use `ASSERT_*` when subsequent code depends on a prior check (e.g., dereferencing a pointer only after asserting it's non-null).
+7. **How do test fixtures achieve test isolation?**: Each `TEST_F` test receives a fresh instance of the fixture class. `SetUp()` runs before each test, and `TearDown()` runs after. This means tests never share state — even if they use the same fixture, they operate on independent objects. This prevents order-dependent failures.
+8. **What are Google Mock matchers and why are they useful?**: Matchers are flexible argument comparators used in `EXPECT_CALL`. `testing::_` matches any value, `testing::HasSubstr("error")` checks substring membership, `testing::Lt(10)` checks less-than. They make expectations expressive, reduce boilerplate, and produce clear failure messages like "Expected: has substring 'error', actual: 'success'".
+9. **How do you test code that depends on the filesystem?**: Extract filesystem operations behind an interface (e.g., `IFileSystem`). In production, use a `RealFileSystem` implementation. In tests, use a `MockFileSystem` or `FakeFileSystem` that operates on an in-memory directory tree. Google Mock's `EXPECT_CALL` lets you verify file operations without touching the real filesystem.
+10. **What is the role of `gtest_discover_tests` in CMake?**: `gtest_discover_tests` is a CMake macro that runs the test binary at build time to discover all registered tests, then registers them with CTest. This enables `ctest` to report per-test results, supports `--gtest_filter` via CTest, and allows CI systems to show individual test pass/fail status.
+11. **How would you test a multithreaded producer-consumer queue?**: Launch multiple producer threads that enqueue items and multiple consumer threads that dequeue. Use barriers to synchronize thread start times. After all threads finish, verify that every item was dequeued exactly once, the queue is empty, and no data races occurred (run with ThreadSanitizer). Use `std::atomic` counters for thread-safe metrics.
+12. **What is mutation testing and how does it differ from code coverage?**: Mutation testing introduces small faults (mutations) into production code — changing `>` to `>=`, deleting a line, inverting a condition — and checks whether the test suite catches them. A test suite with high mutation score (mutations that cause test failure) is more effective than one with high line coverage alone, because coverage measures execution while mutation testing measures detection capability.
+13. **How do you test template-heavy code?**: Instantiate templates with specific types in test code. For example, `SortedList<int>` and `SortedList<std::string>`. Test edge cases specific to each type (e.g., empty containers, single elements, large collections). Use `static_assert` in template code to validate invariants at compile time. Parameterized tests can exercise the same template with multiple type instantiations.
+14. **What is the Google Test `PrettyUnitTestResultPrinter` and when would you customize it?**: It's the default test output formatter that shows PASS/FAIL for each test with timing. You can customize it by subclassing `::testing::EmptyTestEventListener` and registering it with `UnitTest::GetInstance()->listeners().Append()`. Custom printers are useful for CI integration (JUnit XML output), specialized failure formatting, or adding metadata like test owner or severity.
+15. **How do you achieve 80%+ test coverage without writing meaningless tests?**: Focus coverage effort on critical paths (authentication, payment, data processing) rather than chasing a global number. Use coverage tools (gcov, llvm-cov) to identify untested branches, not as a goal in itself. Meaningless tests (e.g., `EXPECT_TRUE(true)`) inflate coverage without adding value. Prioritize tests that verify business logic, boundary conditions, and error handling over boilerplate and trivial getters/setters.
 
 ## References
 
